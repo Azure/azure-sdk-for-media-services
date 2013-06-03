@@ -22,6 +22,14 @@ To get the source code of our SDKs and samples via **git** just type:
 3. .NET Framework 4.5 or .NET Framework 4.
 4. Visual Studio 2012 or Visual Studio 2010 SP1 (Professional, Premium, Ultimate, or Express).
 
+### Building and Referencing the SDK
+
+To build sdk sources and tests type following commands:
+
+	cd ./azure-sdk-for-media-services/
+	msbuild ./SDK.Client.sln
+
+
 ### Running the Tests
 
 This set of test allows you to verify Windows Azure Media Services .Net SDK functionality using your existing Windows Azure Media Services account. Please check out [Test instruction](https://github.com/WindowsAzure/azure-sdk-for-media-services/tree/master/test) on how to use it.
