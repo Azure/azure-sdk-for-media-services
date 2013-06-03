@@ -22,11 +22,6 @@ To get the source code of our SDKs and samples via **git** just type:
 3. .NET Framework 4.5 or .NET Framework 4.
 4. Visual Studio 2012 or Visual Studio 2010 SP1 (Professional, Premium, Ultimate, or Express).
 
-### Building and Referencing the SDK
-
-When you build the solution the output is written to the  ```/azure-sdk-for-media-services/sdk/windows/bin``` folder. To reference the SDK from a C# Windows Store application, use the dll located at
- ```/azure-sdk-for-media-services/sdk/windows/bin/{Flavor}/Windows 8/Managed/Microsoft.WindowsAzure.MobileServices.Managed.dll``` (where {Flavor} is Debug or Release).
-
 ### Running the Tests
 
 This set of test allows you to verify Windows Azure Media Services .Net SDK functionality using your existing Windows Azure Media Services account. Please check out [Test instruction](https://github.com/WindowsAzure/azure-sdk-for-media-services/tree/master/test) on how to use it.
