@@ -211,7 +211,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>$(ProjectDir)..\..\..\build\NuGet\NuGet.exe install $(ProjectDir)packages.config -OutputDirectory $(ProjectDir)..\packages\</PreBuildEvent>
+   <PreBuildEvent>"$(ProjectDir)..\..\..\build\NuGet\NuGet.exe" install "$(ProjectDir)packages.config" -OutputDirectory  "$([System.IO.Path]::GetFullPath('$(ProjectDir)..\packages'))"</PreBuildEvent>
   </PropertyGroup>
   <Target Name="BeforeBuild">
   </Target>
