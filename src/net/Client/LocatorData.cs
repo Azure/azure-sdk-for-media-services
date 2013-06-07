@@ -17,6 +17,7 @@
 using System;
 using System.Data.Services.Client;
 using System.Data.Services.Common;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -215,6 +216,29 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             {
                 throw exception.InnerException;
             }
+        }
+
+        internal static string NormalizeLocatorId(string locatorId)
+        {
+            if (string.IsNullOrWhiteSpace(locatorId))
+            {
+                return null;
+            }
+
+            if (locatorId.StartsWith(LocatorBaseCollection.LocatorIdentifierPrefix, StringComparison.OrdinalIgnoreCase))
+            {
+                locatorId = locatorId.Remove(0, LocatorBaseCollection.LocatorIdentifierPrefix.Length);
+            }
+
+            Guid locatorIdGuid;
+            if (!Guid.TryParse(locatorId, out locatorIdGuid))
+            {
+                throw new ArgumentException(
+                    string.Format(CultureInfo.InvariantCulture, "Invalid locator Id. Make sure to use the following format: '{0}<GUID>'", LocatorBaseCollection.LocatorIdentifierPrefix),
+                    "locatorId");
+            }
+
+            return string.Concat(LocatorBaseCollection.LocatorIdentifierPrefix, locatorId);
         }
 
         private static LocatorType GetExposedType(int type)

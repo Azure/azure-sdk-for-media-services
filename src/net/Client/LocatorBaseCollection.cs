@@ -26,6 +26,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     public class LocatorBaseCollection : CloudBaseCollection<ILocator>
     {
         /// <summary>
+        /// The prefix for the locator Id.
+        /// </summary>
+        public const string LocatorIdentifierPrefix = "nb:lid:UUID:";
+
+        /// <summary>
         /// The entity set name for locators.
         /// </summary>
         internal const string LocatorSet = "Locators";
@@ -96,7 +101,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <exception cref="ArgumentNullException">When <paramref name="accessPolicy"/> is null.</exception>
         public Task<ILocator> CreateSasLocatorAsync(IAsset asset, IAccessPolicy accessPolicy, DateTime? startTime)
         {
-            return this.CreateLocatorAsync(LocatorType.Sas, asset, accessPolicy, startTime);
+            return this.CreateLocatorAsync(null, LocatorType.Sas, asset, accessPolicy, startTime);
         }
 
         /// <summary>
@@ -110,7 +115,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <exception cref="ArgumentNullException">When <paramref name="accessPolicy"/> is null.</exception>
         public ILocator CreateSasLocator(IAsset asset, IAccessPolicy accessPolicy, DateTime? startTime)
         {
-            return this.CreateLocator(LocatorType.Sas, asset, accessPolicy, startTime);
+            return this.CreateLocator(null, LocatorType.Sas, asset, accessPolicy, startTime);
         }
 
         /// <summary>
@@ -133,20 +138,23 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Creates the locator async.
         /// </summary>
+        /// <param name="locatorId">The locator Id.</param>
         /// <param name="locatorType">Type of the locator.</param>
         /// <param name="asset">The asset.</param>
         /// <param name="accessPolicy">The access policy.</param>
         /// <param name="startTime">The start time.</param>
         /// <returns>A function delegate that returns the future result to be available through the Task&lt;ILocator&gt;.</returns>
-        public Task<ILocator> CreateLocatorAsync(LocatorType locatorType, IAsset asset, IAccessPolicy accessPolicy, DateTime? startTime)
+        public Task<ILocator> CreateLocatorAsync(string locatorId, LocatorType locatorType, IAsset asset, IAccessPolicy accessPolicy, DateTime? startTime)
         {
             AccessPolicyBaseCollection.VerifyAccessPolicy(accessPolicy);
             AssetCollection.VerifyAsset(asset);
 
             AssetData assetData = (AssetData)asset;
+            locatorId = LocatorData.NormalizeLocatorId(locatorId);
 
             LocatorData locator = new LocatorData
             {
+                Id = locatorId,
                 AccessPolicy = (AccessPolicyData)accessPolicy,
                 Asset = assetData,
                 Type = (int)locatorType,
@@ -176,24 +184,30 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     TaskContinuationOptions.ExecuteSynchronously);
         }
 
+        public Task<ILocator> CreateLocatorAsync(string locatorId, LocatorType locatorType, IAsset asset, IAccessPolicy accessPolicy)
+        {
+            return CreateLocatorAsync(locatorId, locatorType, asset, accessPolicy, null);
+        }
+
         public Task<ILocator> CreateLocatorAsync(LocatorType locatorType, IAsset asset, IAccessPolicy accessPolicy)
         {
-            return CreateLocatorAsync(locatorType, asset, accessPolicy, null);
+            return CreateLocatorAsync(null, locatorType, asset, accessPolicy, null);
         }
 
         /// <summary>
         /// Creates the locator.
         /// </summary>
+        /// <param name="locatorType">The locator Id.</param>
         /// <param name="locatorType">Type of the locator.</param>
         /// <param name="asset">The asset.</param>
         /// <param name="accessPolicy">The access policy.</param>
         /// <param name="startTime">The start time.</param>
         /// <returns>A locator enabling streaming access to the specified <paramref name="asset" />.</returns>
-        public ILocator CreateLocator(LocatorType locatorType, IAsset asset, IAccessPolicy accessPolicy, DateTime? startTime)
+        public ILocator CreateLocator(string locatorId, LocatorType locatorType, IAsset asset, IAccessPolicy accessPolicy, DateTime? startTime)
         {
             try
             {
-                Task<ILocator> task = this.CreateLocatorAsync(locatorType, asset, accessPolicy, startTime);
+                Task<ILocator> task = this.CreateLocatorAsync(locatorId, locatorType, asset, accessPolicy, startTime);
                 task.Wait();
 
                 return task.Result;
@@ -204,9 +218,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
         }
 
-         public ILocator CreateLocator(LocatorType locatorType, IAsset asset, IAccessPolicy accessPolicy)
-         {
-             return CreateLocator(locatorType, asset, accessPolicy, null);
-         }
+        public ILocator CreateLocator(string locatorId, LocatorType locatorType, IAsset asset, IAccessPolicy accessPolicy)
+        {
+            return CreateLocator(locatorId, locatorType, asset, accessPolicy, null);
+        }
+
+        public ILocator CreateLocator(LocatorType locatorType, IAsset asset, IAccessPolicy accessPolicy)
+        {
+            return CreateLocator(null, locatorType, asset, accessPolicy, null);
+        }
     }
 }
