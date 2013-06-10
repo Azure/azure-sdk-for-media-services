@@ -87,11 +87,14 @@
     <Compile Include="AccessPoliciesTests.cs" />
     <Compile Include="AssetFilesTests.cs" />
     <Compile Include="ContentKeyTests.cs" />
+    <Compile Include="IngestManifestTests.cs" />
     <Compile Include="JobTests.cs" />
+    <Compile Include="JobTests.StorageAccounts.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AssetTests.cs" />
     <Compile Include="Helpers\SelfSignedCertificateFactory.cs" />
     <Compile Include="Helpers\WindowsAzureMediaServicesTestConfiguration.cs" />
+    <Compile Include="StorageAccountTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Configuration\MP4 to Smooth Streams.xml">
@@ -211,7 +214,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-   <PreBuildEvent>"$(ProjectDir)..\..\..\build\NuGet\NuGet.exe" install "$(ProjectDir)packages.config" -OutputDirectory  "$([System.IO.Path]::GetFullPath('$(ProjectDir)..\packages'))"</PreBuildEvent>
+    <PreBuildEvent>"$(ProjectDir)..\..\..\build\NuGet\NuGet.exe" install "$(ProjectDir)packages.config" -OutputDirectory  "$([System.IO.Path]::GetFullPath('$(ProjectDir)..\packages'))"</PreBuildEvent>
   </PropertyGroup>
   <Target Name="BeforeBuild">
   </Target>

@@ -596,6 +596,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             get;
         }
+
+        /// <summary>
+        /// Gets storage account name associated with the the <see cref="IIngestManifest"/> 
+        /// </summary>
+        string StorageAccountName { get; set; }
     }
     public partial interface IIngestManifestAsset
     {

@@ -29,6 +29,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private readonly List<IAsset> _assets;
 
         private ITask _task;
+        private readonly CloudMediaContext _cloudMediaContext;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OutputAssetCollection"/> class.
@@ -43,10 +44,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <param name="task">The task.</param>
         /// <param name="assets">The assets.</param>
-        internal OutputAssetCollection(ITask task, IEnumerable<IAsset> assets)
+        /// <param name="cloudMediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
+        internal OutputAssetCollection(ITask task, IEnumerable<IAsset> assets, CloudMediaContext cloudMediaContext)
         {
             this._assets = new List<IAsset>(assets);
             this._task = task;
+            this._cloudMediaContext = cloudMediaContext;
         }
 
         /// <summary>
@@ -110,13 +113,25 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>The new asset.</returns>
         public IAsset AddNew(string assetName,  AssetCreationOptions options)
         {
+           return this.AddNew(assetName, _cloudMediaContext.DefaultStorageAccount.Name, options);
+        }
+
+        /// <summary>
+        /// Adds the new output asset.
+        /// </summary>
+        /// <param name="assetName">The asset name.</param>
+        /// <param name="storageAccountName">he name of storage account where asset will be hosted</param>
+        /// <param name="options">The options.</param>
+        /// <returns>The new asset.</returns>
+        public IAsset AddNew(string assetName, string storageAccountName, AssetCreationOptions options)
+        {
             this.CheckIfTaskIsPersistedAndThrowNotSupported();
 
             var asset = new OutputAsset
-                            {
-                                Name = assetName,
-                                Options = options
-                            };
+            {
+                Name = assetName,
+                Options = options
+            };
 
             this._assets.Add(asset);
 
