@@ -155,7 +155,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         public void ShouldCreateEmptymanifestWithDefaultStorageAccountName()
         {
             const string manifestName = "TestManifest";
-            IIngestManifest ingestManifest = _context.IngestManifests.Create(manifestName, _context.DefaultStorageAccount.Name);
+            _context.IngestManifests.Create(manifestName, _context.DefaultStorageAccount.Name);
         }
 
         [TestMethod]
@@ -165,11 +165,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             const string manifestName = "TestManifest";
             try
             {
-                IIngestManifest ingestManifest = _context.IngestManifests.Create(manifestName, Guid.NewGuid().ToString());
+                _context.IngestManifests.Create(manifestName, Guid.NewGuid().ToString());
             }
             catch (DataServiceRequestException ex)
             {
-                //TODO:add exception validation
+                var response = ex.Response.FirstOrDefault();
+                Assert.IsNotNull(response, "DataServiceRequestException Response is Null");
+                Assert.IsTrue(response.Error.Message.Contains("Cannot find the storage account"));
                 throw;
             }
         }
@@ -181,12 +183,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             const string manifestName = "TestManifest";
             try
             {
-                IIngestManifest ingestManifest = _context.IngestManifests.Create(manifestName, String.Empty);
+                _context.IngestManifests.Create(manifestName, String.Empty);
             }
             catch (DataServiceRequestException ex)
             {
-                //TODO:add exception validation
-                throw;
+                var response = ex.Response.FirstOrDefault();
+                Assert.IsNotNull(response, "DataServiceRequestException Response is Null");
             }
         }
 
@@ -323,9 +325,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [ExpectedException(typeof(InvalidOperationException))]
         public void ShouldThrowKeyNotFoundExceptionDuringEncryptIfKeyIsMissing()
         {
-            var sourcePath = @"\\iis-mediadist\content\NimbusTest\Videos\Large Test files";
+            var sourcePath =DeploymentFolder1;
             Assert.IsTrue(Directory.Exists(sourcePath));
-            List<string> files = Directory.EnumerateFiles(sourcePath, "Medium*.wmv").ToList();
+            List<string> files = Directory.EnumerateFiles(sourcePath, "*.txt").ToList();
 
             //Creating empty manifest
             const string manifestName = "Manifest 1";
@@ -395,21 +397,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             }
         }
 
-        [TestMethod]
-        public void EncryptManifestWithFewMediumFilesFromUncPath()
-        {
-            var sourcePath = @"\\iis-mediadist\content\NimbusTest\Videos\Large Test files";
-            Assert.IsTrue(Directory.Exists(sourcePath));
-            List<string> files = Directory.EnumerateFiles(sourcePath, "Medium*.wmv").ToList();
-            EncryptFilesDecryptAndCompare(files);
-        }
+       
 
         [TestMethod]
-        public void EncryptManifestWithFewSmalFilesFromUncPath()
+        [DeploymentItem(TestFile1, DeploymentFolder1)]
+        [DeploymentItem(TestFile2, DeploymentFolder1)]
+        public void EncryptManifestWithFewSmalFiles()
         {
-            var sourcePath = @"\\iis-mediadist\content\NimbusTest\Videos\Large Test files";
+            var sourcePath = DeploymentFolder1;
             Assert.IsTrue(Directory.Exists(sourcePath));
-            List<string> files = Directory.EnumerateFiles(sourcePath, "Small*.wmv").ToList();
+            List<string> files = Directory.EnumerateFiles(sourcePath, "*.txt").ToList();
             EncryptFilesDecryptAndCompare(files);
         }
 
@@ -622,11 +619,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             Assert.AreEqual(1, asset2.ContentKeys.Count, "No keys associated with asset");
             VerifyManifestAsset(ingestManifestAssetInfo2);
 
-            // ingestManifest = context.IngestManifests.Where(c => c.Id == ingestManifest.Id).FirstOrDefault();
             Assert.AreEqual(2, ingestManifestAssetInfo2.IngestManifestFiles.Count(), "Files collection size is not matching expectations");
-            //TODO: Encryption is not working if we refreshing manifest
-            // Assert.AreEqual(IngestManifestState.Activating, ingestManifest.State, "Expecting empty manifest to be active after adding files");
-            return ingestManifest;
+           return ingestManifest;
         }
 
 
@@ -649,9 +643,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             //ingestManifest = context.IngestManifests.Where(c => c.Id == ingestManifest.Id).FirstOrDefault();
             Assert.IsNotNull(ingestManifest);
             Assert.IsFalse(String.IsNullOrEmpty(ingestManifest.Id), "Manifest Id is null or empty");
-            // Assert.IsFalse(String.IsNullOrEmpty(manifest.BlobStorageUriForUpload), "BlobStorageUriForUpload is null or empty");
-            //This check need to be done in e2e test since repository shoul correctly initialize this value 
-            //Bug in rest API
+           
             Assert.AreEqual(IngestManifestState.Inactive, ingestManifest.State, "Unexpected manifest state.Expected value is InActive");
             Assert.IsTrue(before < ingestManifest.Created, "Invalid manifest Created date should be greater then date time taken before rest call");
             Assert.IsTrue(after > ingestManifest.Created, "Invalid manifest Created date should be smaller then future date time");

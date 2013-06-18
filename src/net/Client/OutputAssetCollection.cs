@@ -130,7 +130,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             var asset = new OutputAsset
             {
                 Name = assetName,
-                Options = options
+                Options = options,
+                StorageAccountName = storageAccountName
             };
 
             this._assets.Add(asset);

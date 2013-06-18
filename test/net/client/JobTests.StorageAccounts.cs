@@ -60,8 +60,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
           ITask task = job.Tasks.AddNew("Task1", mediaProcessor, GetWamePreset(mediaProcessor), TaskOptions.None);
           task.InputAssets.Add(asset);
           var outputAsset = task.OutputAssets.AddNew("Output asset", nondefault.Name, AssetCreationOptions.None);
+          job.Submit(); 
           Assert.AreEqual(nondefault.Name,outputAsset.StorageAccountName,"Storage account are not matching");
-          job.Submit();
           WaitForJob(job.Id, JobState.Finished, VerifyAllTasksFinished);   
           
           var refreshed = _dataContext.Jobs.Where(c => c.Id == job.Id).FirstOrDefault();
