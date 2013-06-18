@@ -60,9 +60,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             Assert.AreEqual("video/x-ms-wmv", file.MimeType, "Asset file's MimeType is wrong");
             IAccessPolicy policy = _dataContext.AccessPolicies.Create("temp", TimeSpan.FromMinutes(10), AccessPermissions.Write);
             ILocator locator = _dataContext.Locators.CreateSasLocator(asset, policy);
-            file.UploadAsync(_smallWmv, new BlobTransferClient(), locator, CancellationToken.None).Wait();
-
+            BlobTransferClient blobTransferClient = new BlobTransferClient();
+            bool transferCompletedFired = false;
+            blobTransferClient.TransferCompleted += (sender, args) =>
+            {
+                transferCompletedFired = true;
+                Assert.Equals(BlobTransferType.Upload, args.TransferType);
+            };
+            file.UploadAsync(_smallWmv, blobTransferClient, locator, CancellationToken.None).Wait();
             Assert.IsNotNull(asset, "Asset should be non null");
+            Assert.IsTrue(transferCompletedFired, "TransferCompleted event has not been fired");
             Assert.AreNotEqual(Guid.Empty, asset.Id, "Asset ID shuold not be null");
             Assert.AreEqual(AssetState.Initialized, asset.State, "Asset state wrong");
 
