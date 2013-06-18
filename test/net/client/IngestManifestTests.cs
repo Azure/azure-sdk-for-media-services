@@ -634,17 +634,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         private IIngestManifest CreateEmptyManifestAndVerifyIt()
         {
-            DateTime before = DateTime.UtcNow;
-
             const string manifestName = "TestManifest";
             IIngestManifest ingestManifest = _context.IngestManifests.Create(manifestName);
-            //ingestManifest = context.IngestManifests.Where(c => c.Id == ingestManifest.Id).FirstOrDefault();
             Assert.IsNotNull(ingestManifest);
             Assert.IsFalse(String.IsNullOrEmpty(ingestManifest.Id), "Manifest Id is null or empty");
-           
             Assert.AreEqual(IngestManifestState.Inactive, ingestManifest.State, "Unexpected manifest state.Expected value is InActive");
-            Assert.IsTrue(before < ingestManifest.Created, "Invalid manifest Created date should be greater then date time taken before rest call");
-            Assert.IsTrue(before < ingestManifest.LastModified, "Invalid manifest LastModified date should be greater then date time taken before rest call");
             Assert.AreEqual(0, ingestManifest.IngestManifestAssets.Count(), "Newly created asset should not contain any assets");
             Assert.AreEqual(0, _context.IngestManifestAssets.Where(c => c.ParentIngestManifestId == ingestManifest.Id).Count(), "Newly created asset should not contain any assets");
             return ingestManifest;

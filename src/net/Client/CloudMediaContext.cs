@@ -202,7 +202,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets the collection of notification endpoints avaiable in the system.
         /// </summary>
-        public NotificationEndPointCollection NotificationEndPoints
+        public override NotificationEndPointCollection NotificationEndPoints
         {
             get { return this._notificationEndPoints; }
         }

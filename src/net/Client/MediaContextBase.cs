@@ -81,5 +81,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Returns default storage account
         /// </summary>
         public abstract IStorageAccount DefaultStorageAccount { get; }
+
+        /// <summary>
+        /// Gets the collection of notification endpoints avaiable in the system.
+        /// </summary>
+        public abstract NotificationEndPointCollection NotificationEndPoints { get; }
     }
 }
