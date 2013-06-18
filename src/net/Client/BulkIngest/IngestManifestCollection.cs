@@ -77,6 +77,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns><see cref="Task"/> of type <see cref="IIngestManifest"/></returns>
         public Task<IIngestManifest> CreateAsync(string name,string storageAccountName)
         {
+            if (name == null) throw new ArgumentNullException("name");
+            if (storageAccountName == null) throw new ArgumentNullException("storageAccountName");
+
             IngestManifestData ingestManifestData = new IngestManifestData
                                     {
                                         Name = name,
