@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<smil xmlns="http://www.w3.org/2001/SMIL20/Language">
+	<body>
+		<switch>
+			<video src="BigBuckBunny.mp4" />
+			<video src="interview1.wmv" />
+			<video src="interview2.wmv" />
+			<video src="interview3.wmv" />
+			<video src="WindowsAzure-bumper.wmv" />
+		</switch>
+	</body>
+</smil>
