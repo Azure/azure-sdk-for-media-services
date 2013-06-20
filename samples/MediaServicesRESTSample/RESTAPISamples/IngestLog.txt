@@ -1,0 +1,272 @@
+/api/Assets
+REQUEST
+
+POST https://wamsamsclus001rest-hs.cloudapp.net/api/Assets HTTP/1.1
+User-Agent: Microsoft ADO.NET Data Services
+Accept-Charset: UTF-8
+DataServiceVersion: 1.0;NetFx
+MaxDataServiceVersion: 3.0;NetFx
+Accept: application/atom+xml,application/xml
+Authorization: Bearer http%3a%2f%2fschemas.xmlsoap.org%2fws%2f2005%2f05%2fidentity%2fclaims%2fnameidentifier=migreemediaservices&urn%3aSubscriptionId=f29bbc21-7bbe-4a00-b0df-6b6901a535db&http%3a%2f%2fschemas.microsoft.com%2faccesscontrolservice%2f2010%2f07%2fclaims%2fidentityprovider=https%3a%2f%2fwamsprodglobal001acs.accesscontrol.windows.net%2f&Audience=urn%3aWindowsAzureMediaServices&ExpiresOn=1365703770&Issuer=https%3a%2f%2fwamsprodglobal001acs.accesscontrol.windows.net%2f&HMACSHA256=EXNN7dvxxhJsyV%2bVDu%2b%2beCdXVDy4vV22Jo9xGHRgg3M%3d
+x-ms-version: 2.0
+Content-Type: application/atom+xml
+Host: wamsamsclus001rest-hs.cloudapp.net
+Content-Length: 703
+Expect: 100-continue
+
+<?xml version="1.0" encoding="utf-8"?><entry xmlns="http://www.w3.org/2005/Atom" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata">  <id />  <title />  <updated>2013-04-11T16:29:39Z</updated>  <author>    <name />  </author>  <content type="application/xml">    <m:properties>      <d:AlternateId m:null="true" />      <d:Created m:type="Edm.DateTime">0001-01-01T00:00:00</d:Created>      <d:Id m:null="true" />      <d:LastModified m:type="Edm.DateTime">0001-01-01T00:00:00</d:LastModified>      <d:Name>UploadSingleFile_4/11/2013 4:29:38 PM</d:Name>      <d:Options m:type="Edm.Int32">0</d:Options>      <d:State m:type="Edm.Int32">0</d:State>    </m:properties>  </content></entry>
+
+RESPONSE
+<?xml version="1.0" encoding="utf-8"?><entry xml:base="https://wamsamsclus001rest-hs.cloudapp.net/api/" xmlns="http://www.w3.org/2005/Atom" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata">	<id>https://wamsamsclus001rest-hs.cloudapp.net/api/Assets('nb%3Acid%3AUUID%3A8551e702-a306-4ecc-a74b-47f7bfdcf7fa')</id>	<category term="Microsoft.Cloud.Media.Vod.Rest.Data.Models.Asset" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />	<link rel="edit" title="Asset" href="Assets('nb%3Acid%3AUUID%3A8551e702-a306-4ecc-a74b-47f7bfdcf7fa')" />	<link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Locators" type="application/atom+xml;type=feed" title="Locators" href="Assets('nb%3Acid%3AUUID%3A8551e702-a306-4ecc-a74b-47f7bfdcf7fa')/Locators" />	<link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/ContentKeys" type="application/atom+xml;type=feed" title="ContentKeys" href="Assets('nb%3Acid%3AUUID%3A8551e702-a306-4ecc-a74b-47f7bfdcf7fa')/ContentKeys" />	<link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Files" type="application/atom+xml;type=feed" title="Files" href="Assets('nb%3Acid%3AUUID%3A8551e702-a306-4ecc-a74b-47f7bfdcf7fa')/Files" />	<link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/ParentAssets" type="application/atom+xml;type=feed" title="ParentAssets" href="Assets('nb%3Acid%3AUUID%3A8551e702-a306-4ecc-a74b-47f7bfdcf7fa')/ParentAssets" />	<title />	<updated>2013-04-11T16:29:41Z</updated>	<author>		<name />	</author>	<m:action metadata="https://wamsamsclus001rest-hs.cloudapp.net/api/$metadata#WindowsAzureMediaServices.Publish" title="Publish" target="https://wamsamsclus001rest-hs.cloudapp.net/api/Assets('nb%3Acid%3AUUID%3A8551e702-a306-4ecc-a74b-47f7bfdcf7fa')/Publish" />	<content type="application/xml">		<m:properties>			<d:Id>nb:cid:UUID:8551e702-a306-4ecc-a74b-47f7bfdcf7fa</d:Id>			<d:State m:type="Edm.Int32">0</d:State>			<d:Created m:type="Edm.DateTime">2013-04-11T16:29:41.0515166Z</d:Created>			<d:LastModified m:type="Edm.DateTime">2013-04-11T16:29:41.0515166Z</d:LastModified>			<d:AlternateId m:null="true" />
+			<d:Name>UploadSingleFile_4/11/2013 4:29:38 PM</d:Name>
+			<d:Options m:type="Edm.Int32">0</d:Options>
+		</m:properties>
+	</content>
+</entry>
+-----------------------------
+
+/api/Files
+REQUEST
+
+POST https://wamsamsclus001rest-hs.cloudapp.net/api/Files HTTP/1.1
+User-Agent: Microsoft ADO.NET Data Services
+Accept-Charset: UTF-8
+DataServiceVersion: 1.0;NetFx
+MaxDataServiceVersion: 3.0;NetFx
+Accept: application/atom+xml,application/xml
+Authorization: Bearer http%3a%2f%2fschemas.xmlsoap.org%2fws%2f2005%2f05%2fidentity%2fclaims%2fnameidentifier=migreemediaservices&urn%3aSubscriptionId=f29bbc21-7bbe-4a00-b0df-6b6901a535db&http%3a%2f%2fschemas.microsoft.com%2faccesscontrolservice%2f2010%2f07%2fclaims%2fidentityprovider=https%3a%2f%2fwamsprodglobal001acs.accesscontrol.windows.net%2f&Audience=urn%3aWindowsAzureMediaServices&ExpiresOn=1365703770&Issuer=https%3a%2f%2fwamsprodglobal001acs.accesscontrol.windows.net%2f&HMACSHA256=EXNN7dvxxhJsyV%2bVDu%2b%2beCdXVDy4vV22Jo9xGHRgg3M%3d
+x-ms-version: 2.0
+Content-Type: application/atom+xml
+Host: wamsamsclus001rest-hs.cloudapp.net
+Content-Length: 1038
+Expect: 100-continue
+
+<?xml version="1.0" encoding="utf-8"?><entry xmlns="http://www.w3.org/2005/Atom" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices"xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata">  <id />  <title />  <updated>2013-04-11T16:29:48Z</updated>  <author>    <name />  </author>  <contenttype="application/xml">    <m:properties>      <d:ContentChecksum m:null="true" />      <d:ContentFileSize m:type="Edm.Int64">0</d:ContentFileSize>      <d:Created m:type="Edm.DateTime">0001-01-01T00:00:00</d:Created>      <d:EncryptionKeyId m:null="true" />      <d:EncryptionScheme m:null="true" />      <d:EncryptionVersion m:null="true" />      <d:Id m:null="true" />      <d:InitializationVector m:null="true" />      <d:IsEncrypted m:type="Edm.Boolean">false</d:IsEncrypted>      <d:IsPrimary m:type="Edm.Boolean">false</d:IsPrimary>      <d:LastModified m:type="Edm.DateTime">0001-01-01T00:00:00</d:LastModified>      <d:MimeType>video/mp4</d:MimeType>      <d:Name>BigBuckBunny.mp4</d:Name>      <d:ParentAssetId>nb:cid:UUID:8551e702-a306-4ecc-a74b-47f7bfdcf7fa</d:ParentAssetId>    </m:properties>  </content></entry>
+
+RESPONSE
+<?xml version="1.0" encoding="utf-8"?><entry xml:base="https://wamsamsclus001rest-hs.cloudapp.net/api/" xmlns="http://www.w3.org/2005/Atom" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata">  <id>https://wamsamsclus001rest-hs.cloudapp.net/api/Files('nb%3Acid%3AUUID%3Af192f10b-6c65-dd41-851f-38521e12d9c5')</id>  <category term="Microsoft.Cloud.Media.Vod.Rest.Data.Models.AssetFile" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />  <link rel="edit" title="AssetFile" href="Files('nb%3Acid%3AUUID%3Af192f10b-6c65-dd41-851f-38521e12d9c5')" />  <title />  <updated>2013-04-11T16:29:49Z</updated>  <author>    <name />  </author>  <content type="application/xml">    <m:properties>      <d:Id>nb:cid:UUID:f192f10b-6c65-dd41-851f-38521e12d9c5</d:Id>      <d:Name>BigBuckBunny.mp4</d:Name>      <d:ContentFileSize m:type="Edm.Int64">0</d:ContentFileSize>      <d:ParentAssetId>nb:cid:UUID:8551e702-a306-4ecc-a74b-47f7bfdcf7fa</d:ParentAssetId>      <d:EncryptionVersion m:null="true" />      <d:EncryptionScheme m:null="true" />      <d:IsEncrypted m:type="Edm.Boolean">false</d:IsEncrypted>      <d:EncryptionKeyId m:null="true"/>      <d:InitializationVector m:null="true" />      <d:IsPrimary m:type="Edm.Boolean">false</d:IsPrimary>      <d:LastModified m:type="Edm.DateTime">2013-04-11T16:29:49.0670903Z</d:LastModified>      <d:Created m:type="Edm.DateTime">2013-04-11T16:29:49.0670903Z</d:Created>      <d:MimeType>video/mp4</d:MimeType>      <d:ContentChecksum m:null="true" />    </m:properties>  </content></entry>
+---------------------------------
+
+/api/Files()?$filter
+REQUEST
+
+GET https://wamsamsclus001rest-hs.cloudapp.net/api/Files()?$filter=Id%20eq%20'nb%3Acid%3AUUID%3Af192f10b-6c65-dd41-851f-38521e12d9c5'&$top=1 HTTP/1.1
+User-Agent: Microsoft ADO.NET Data Services
+Accept-Charset: UTF-8
+DataServiceVersion: 1.0;NetFx
+MaxDataServiceVersion: 3.0;NetFx
+Accept: application/atom+xml,application/xml
+Authorization: Bearer http%3a%2f%2fschemas.xmlsoap.org%2fws%2f2005%2f05%2fidentity%2fclaims%2fnameidentifier=migreemediaservices&urn%3aSubscriptionId=f29bbc21-7bbe-4a00-b0df-6b6901a535db&http%3a%2f%2fschemas.microsoft.com%2faccesscontrolservice%2f2010%2f07%2fclaims%2fidentityprovider=https%3a%2f%2fwamsprodglobal001acs.accesscontrol.windows.net%2f&Audience=urn%3aWindowsAzureMediaServices&ExpiresOn=1365703770&Issuer=https%3a%2f%2fwamsprodglobal001acs.accesscontrol.windows.net%2f&HMACSHA256=EXNN7dvxxhJsyV%2bVDu%2b%2beCdXVDy4vV22Jo9xGHRgg3M%3d
+x-ms-version: 2.0
+Host: wamsamsclus001rest-hs.cloudapp.net
+
+RESPONSE
+<?xml version="1.0" encoding="utf-8"?><feed xml:base="https://wamsamsclus001rest-hs.cloudapp.net/api/" xmlns="http://www.w3.org/2005/Atom" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata">  <id>https://wamsamsclus001rest-hs.cloudapp.net/api/Files</id>  <title type="text">Files</title>  <updated>2013-04-11T16:29:49Z</updated>  <link rel="self" title="Files" href="Files" />  <entry>    <id>https://wamsamsclus001rest-hs.cloudapp.net/api/Files('nb%3Acid%3AUUID%3Af192f10b-6c65-dd41-851f-38521e12d9c5')</id>    <category term="Microsoft.Cloud.Media.Vod.Rest.Data.Models.AssetFile" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />    <link rel="edit" title="AssetFile" href="Files('nb%3Acid%3AUUID%3Af192f10b-6c65-dd41-851f-38521e12d9c5')" />    <title />    <updated>2013-04-11T16:29:49Z</updated>    <author>      <name />    </author>    <content type="application/xml">      <m:properties>        <d:Id>nb:cid:UUID:f192f10b-6c65-dd41-851f-38521e12d9c5        </d:Id>        <d:Name>BigBuckBunny.mp4</d:Name>        <d:ContentFileSize m:type="Edm.Int64">0</d:ContentFileSize>        <d:ParentAssetId>nb:cid:UUID:8551e702-a306-4ecc-a74b-47f7bfdcf7fa</d:ParentAssetId>        <d:EncryptionVersion m:null="true" />        <d:EncryptionScheme m:null="true" />        <d:IsEncrypted m:type="Edm.Boolean">false</d:IsEncrypted>        <d:EncryptionKeyId m:null="true"/>        <d:InitializationVector m:null="true" />        <d:IsPrimary m:type="Edm.Boolean">false</d:IsPrimary>        <d:LastModified m:type="Edm.DateTime">2013-04-11T16:29:49.067</d:LastModified>        <d:Created m:type="Edm.DateTime">2013-04-11T16:29:49.067</d:Created>        <d:MimeType>video/mp4</d:MimeType>        <d:ContentChecksum m:null="true" />      </m:properties>    </content>  </entry></feed>
+----------------------------
+
+/api/AccessPolicies
+
+REQUEST
+POST https://wamsamsclus001rest-hs.cloudapp.net/api/AccessPolicies HTTP/1.1
+User-Agent: Microsoft ADO.NET Data Services
+Accept-Charset: UTF-8
+DataServiceVersion: 1.0;NetFx
+MaxDataServiceVersion: 3.0;NetFx
+Accept: application/atom+xml,application/xml
+Authorization: Bearer http%3a%2f%2fschemas.xmlsoap.org%2fws%2f2005%2f05%2fidentity%2fclaims%2fnameidentifier=migreemediaservices&urn%3aSubscriptionId=f29bbc21-7bbe-4a00-b0df-6b6901a535db&http%3a%2f%2fschemas.microsoft.com%2faccesscontrolservice%2f2010%2f07%2fclaims%2fidentityprovider=https%3a%2f%2fwamsprodglobal001acs.accesscontrol.windows.net%2f&Audience=urn%3aWindowsAzureMediaServices&ExpiresOn=1365703770&Issuer=https%3a%2f%2fwamsprodglobal001acs.accesscontrol.windows.net%2f&HMACSHA256=EXNN7dvxxhJsyV%2bVDu%2b%2beCdXVDy4vV22Jo9xGHRgg3M%3d
+x-ms-version: 2.0
+Content-Type: application/atom+xml
+Host: wamsamsclus001rest-hs.cloudapp.net
+Content-Length: 715
+Expect: 100-continue
+Connection: Keep-Alive
+
+<?xml version="1.0" encoding="utf-8"?><entry xmlns="http://www.w3.org/2005/Atom" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata">  <id />  <title />  <updated>2013-04-11T16:37:15Z</updated>  <author>    <name />  </author>  <content type="application/xml">    <m:properties>      <d:Created m:type="Edm.DateTime">0001-01-01T00:00:00</d:Created>      <d:DurationInMinutes m:type="Edm.Double">720</d:DurationInMinutes>      <d:Id m:null="true" />      <d:LastModified m:type="Edm.DateTime">0001-01-01T00:00:00</d:LastModified>      <d:Name>SdkUploadefb3cb44-78ae-4bba-afaf-cd421159bfd2</d:Name>      <d:Permissions m:type="Edm.Int32">2</d:Permissions>    </m:properties>  </content></entry>
+
+
+RESPONSE
+HTTP/1.1 201 Created
+Cache-Control: no-cache
+Content-Length: 1218
+Content-Type: application/atom+xml;type=entry;charset=utf-8
+Location: https://wamsamsclus001rest-hs.cloudapp.net/api/AccessPolicies('nb%3Apid%3AUUID%3A9d971a4b-67e8-43bb-95df-db3466893df2')
+Server: Microsoft-IIS/7.5
+request-id: ec3d4047-a449-4bb3-b249-7a9b6bc82f0a
+x-ms-request-id: ec3d4047-a449-4bb3-b249-7a9b6bc82f0a
+X-Content-Type-Options: nosniff
+DataServiceVersion: 1.0;
+X-AspNet-Version: 4.0.30319
+X-Powered-By: ASP.NET
+Date: Thu, 11 Apr 2013 16:37:16 GMT
+
+<?xml version="1.0" encoding="utf-8"?><entry xml:base="https://wamsamsclus001rest-hs.cloudapp.net/api/" xmlns="http://www.w3.org/2005/Atom" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata">  <id>https://wamsamsclus001rest-hs.cloudapp.net/api/AccessPolicies('nb%3Apid%3AUUID%3A9d971a4b-67e8-43bb-95df-db3466893df2')</id>  <category term="Microsoft.Cloud.Media.Vod.Rest.Data.Models.AccessPolicy" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />  <link rel="edit" title="AccessPolicy" href="AccessPolicies('nb%3Apid%3AUUID%3A9d971a4b-67e8-43bb-95df-db3466893df2')" />  <title />  <updated>2013-04-11T16:37:16Z</updated>  <author>    <name />  </author>  <content type="application/xml">    <m:properties>      <d:Id>nb:pid:UUID:9d971a4b-67e8-43bb-95df-db3466893df2</d:Id>      <d:Created m:type="Edm.DateTime">2013-04-11T16:37:16.4389198Z</d:Created>      <d:LastModified m:type="Edm.DateTime">2013-04-11T16:37:16.4389198Z</d:LastModified>      <d:Name>SdkUploadefb3cb44-78ae-4bba-afaf-cd421159bfd2</d:Name>      <d:DurationInMinutes m:type="Edm.Double">720</d:DurationInMinutes>      <d:Permissions m:type="Edm.Int32">2</d:Permissions>    </m:properties>  </content></entry>
+-----------------------------------------
+
+REQUEST
+GET https://wamsamsclus001rest-hs.cloudapp.net/api/Assets()?$filter=Id%20eq%20'nb%3Acid%3AUUID%3A8551e702-a306-4ecc-a74b-47f7bfdcf7fa'&$top=2 HTTP/1.1
+User-Agent: Microsoft ADO.NET Data Services
+Accept-Charset: UTF-8
+DataServiceVersion: 1.0;NetFx
+MaxDataServiceVersion: 3.0;NetFx
+Accept: application/atom+xml,application/xml
+Authorization: Bearer http%3a%2f%2fschemas.xmlsoap.org%2fws%2f2005%2f05%2fidentity%2fclaims%2fnameidentifier=migreemediaservices&urn%3aSubscriptionId=f29bbc21-7bbe-4a00-b0df-6b6901a535db&http%3a%2f%2fschemas.microsoft.com%2faccesscontrolservice%2f2010%2f07%2fclaims%2fidentityprovider=https%3a%2f%2fwamsprodglobal001acs.accesscontrol.windows.net%2f&Audience=urn%3aWindowsAzureMediaServices&ExpiresOn=1365703770&Issuer=https%3a%2f%2fwamsprodglobal001acs.accesscontrol.windows.net%2f&HMACSHA256=EXNN7dvxxhJsyV%2bVDu%2b%2beCdXVDy4vV22Jo9xGHRgg3M%3d
+x-ms-version: 2.0
+Host: wamsamsclus001rest-hs.cloudapp.net
+
+RESPONSE
+HTTP/1.1 200 OK
+Cache-Control: no-cache
+Content-Length: 2514
+Content-Type: application/atom+xml;type=feed;charset=utf-8
+Server: Microsoft-IIS/7.5
+request-id: 3be4c64e-de12-49d8-8535-c63e3d6839b2
+x-ms-request-id: 3be4c64e-de12-49d8-8535-c63e3d6839b2
+X-Content-Type-Options: nosniff
+DataServiceVersion: 2.0;
+X-AspNet-Version: 4.0.30319
+X-Powered-By: ASP.NET
+Date: Thu, 11 Apr 2013 16:37:16 GMT
+
+<?xml version="1.0" encoding="utf-8"?><feed xml:base="https://wamsamsclus001rest-hs.cloudapp.net/api/" xmlns="http://www.w3.org/2005/Atom" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata">  <id>https://wamsamsclus001rest-hs.cloudapp.net/api/Assets</id>  <title type="text">Assets</title>  <updated>2013-04-11T16:37:17Z</updated>  <link rel="self" title="Assets" href="Assets" />  <entry>    <id>https://wamsamsclus001rest-hs.cloudapp.net/api/Assets('nb%3Acid%3AUUID%3A8551e702-a306-4ecc-a74b-47f7bfdcf7fa')</id>    <category term="Microsoft.Cloud.Media.Vod.Rest.Data.Models.Asset" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />    <link rel="edit" title="Asset" href="Assets('nb%3Acid%3AUUID%3A8551e702-a306-4ecc-a74b-47f7bfdcf7fa')" />    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Locators" type="application/atom+xml;type=feed" title="Locators" href="Assets('nb%3Acid%3AUUID%3A8551e702-a306-4ecc-a74b-47f7bfdcf7fa')/Locators" />    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/ContentKeys" type="application/atom+xml;type=feed" title="ContentKeys" href="Assets('nb%3Acid%3AUUID%3A8551e702-a306-4ecc-a74b-47f7bfdcf7fa')/ContentKeys" />    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Files" type="application/atom+xml;type=feed" title="Files" href="Assets('nb%3Acid%3AUUID%3A8551e702-a306-4ecc-a74b-47f7bfdcf7fa')/Files" />    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/ParentAssets" type="application/atom+xml;type=feed" title="ParentAssets" href="Assets('nb%3Acid%3AUUID%3A8551e702-a306-4ecc-a74b-47f7bfdcf7fa')/ParentAssets" />    <title />    <updated>2013-04-11T16:37:17Z</updated>    <author>      <name />    </author>    <m:action metadata="https://wamsamsclus001rest-hs.cloudapp.net/api/$metadata#WindowsAzureMediaServices.Publish" title="Publish" target="https://wamsamsclus001rest-hs.cloudapp.net/api/Assets('nb%3Acid%3AUUID%3A8551e702-a306-4ecc-a74b-47f7bfdcf7fa')/Publish" />    <content type="application/xml">      <m:properties>        <d:Id>nb:cid:UUID:8551e702-a306-4ecc-a74b-47f7bfdcf7fa</d:Id>        <d:State m:type="Edm.Int32">0</d:State>        <d:Created m:type="Edm.DateTime">2013-04-11T16:29:41.05</d:Created>        <d:LastModified m:type="Edm.DateTime">2013-04-11T16:29:41.05</d:LastModified>        <d:AlternateId m:null="true"/>        <d:Name>UploadSingleFile_4/11/2013 4:29:38 PM</d:Name>        <d:Options m:type="Edm.Int32">0</d:Options>      </m:properties>    </content>  </entry></feed>
+--------------------------------------------
+
+REQUEST
+HTTP/1.1 200 OK
+Cache-Control: no-cache
+Content-Length: 2514
+Content-Type: application/atom+xml;type=feed;charset=utf-8
+Server: Microsoft-IIS/7.5
+request-id: 3be4c64e-de12-49d8-8535-c63e3d6839b2
+x-ms-request-id: 3be4c64e-de12-49d8-8535-c63e3d6839b2
+X-Content-Type-Options: nosniff
+DataServiceVersion: 2.0;
+X-AspNet-Version: 4.0.30319
+X-Powered-By: ASP.NET
+Date: Thu, 11 Apr 2013 16:37:16 GMT
+
+<?xml version="1.0" encoding="utf-8"?><feed xml:base="https://wamsamsclus001rest-hs.cloudapp.net/api/" xmlns="http://www.w3.org/2005/Atom" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata">  <id>https://wamsamsclus001rest-hs.cloudapp.net/api/Assets</id>  <title type="text">Assets</title>  <updated>2013-04-11T16:37:17Z</updated>  <link rel="self" title="Assets" href="Assets" />  <entry>    <id>https://wamsamsclus001rest-hs.cloudapp.net/api/Assets('nb%3Acid%3AUUID%3A8551e702-a306-4ecc-a74b-47f7bfdcf7fa')</id>    <category term="Microsoft.Cloud.Media.Vod.Rest.Data.Models.Asset" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />    <link rel="edit" title="Asset" href="Assets('nb%3Acid%3AUUID%3A8551e702-a306-4ecc-a74b-47f7bfdcf7fa')" />    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Locators" type="application/atom+xml;type=feed" title="Locators" href="Assets('nb%3Acid%3AUUID%3A8551e702-a306-4ecc-a74b-47f7bfdcf7fa')/Locators" />    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/ContentKeys" type="application/atom+xml;type=feed" title="ContentKeys" href="Assets('nb%3Acid%3AUUID%3A8551e702-a306-4ecc-a74b-47f7bfdcf7fa')/ContentKeys" />    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Files" type="application/atom+xml;type=feed" title="Files" href="Assets('nb%3Acid%3AUUID%3A8551e702-a306-4ecc-a74b-47f7bfdcf7fa')/Files" />    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/ParentAssets" type="application/atom+xml;type=feed" title="ParentAssets" href="Assets('nb%3Acid%3AUUID%3A8551e702-a306-4ecc-a74b-47f7bfdcf7fa')/ParentAssets" />    <title />    <updated>2013-04-11T16:37:17Z</updated>    <author>      <name />    </author>    <m:action metadata="https://wamsamsclus001rest-hs.cloudapp.net/api/$metadata#WindowsAzureMediaServices.Publish" title="Publish" target="https://wamsamsclus001rest-hs.cloudapp.net/api/Assets('nb%3Acid%3AUUID%3A8551e702-a306-4ecc-a74b-47f7bfdcf7fa')/Publish" />    <content type="application/xml">      <m:properties>        <d:Id>nb:cid:UUID:8551e702-a306-4ecc-a74b-47f7bfdcf7fa</d:Id>        <d:State m:type="Edm.Int32">0</d:State>        <d:Created m:type="Edm.DateTime">2013-04-11T16:29:41.05</d:Created>        <d:LastModified m:type="Edm.DateTime">2013-04-11T16:29:41.05</d:LastModified>        <d:AlternateId m:null="true"/>        <d:Name>UploadSingleFile_4/11/2013 4:29:38 PM</d:Name>        <d:Options m:type="Edm.Int32">0</d:Options>      </m:properties>    </content>  </entry></feed>
+
+RESPONSE
+HTTP/1.1 201 Created
+Cache-Control: no-cache
+Content-Length: 2208
+Content-Type: application/atom+xml;type=entry;charset=utf-8
+Location: https://wamsamsclus001rest-hs.cloudapp.net/api/Locators('nb%3Alid%3AUUID%3A93503528-88f9-469c-93ca-53d52dcdd0f9')
+Server: Microsoft-IIS/7.5
+request-id: 64cfc97c-b119-47a4-8c94-b49757479e28
+x-ms-request-id: 64cfc97c-b119-47a4-8c94-b49757479e28
+X-Content-Type-Options: nosniff
+DataServiceVersion: 1.0;
+X-AspNet-Version: 4.0.30319
+X-Powered-By: ASP.NET
+Date: Thu, 11 Apr 2013 16:37:18 GMT
+
+<?xml version="1.0" encoding="utf-8"?><entry xml:base="https://wamsamsclus001rest-hs.cloudapp.net/api/" xmlns="http://www.w3.org/2005/Atom" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata">  <id>https://wamsamsclus001rest-hs.cloudapp.net/api/Locators('nb%3Alid%3AUUID%3A93503528-88f9-469c-93ca-53d52dcdd0f9')</id>  <category term="Microsoft.Cloud.Media.Vod.Rest.Data.Models.Locator" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />  <link rel="edit" title="Locator" href="Locators('nb%3Alid%3AUUID%3A93503528-88f9-469c-93ca-53d52dcdd0f9')" />  <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/AccessPolicy" type="application/atom+xml;type=entry" title="AccessPolicy" href="Locators('nb%3Alid%3AUUID%3A93503528-88f9-469c-93ca-53d52dcdd0f9')/AccessPolicy" />  <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Asset" type="application/atom+xml;type=entry" title="Asset" href="Locators('nb%3Alid%3AUUID%3A93503528-88f9-469c-93ca-53d52dcdd0f9')/Asset" />  <title />  <updated>2013-04-11T16:37:18Z</updated>  <author>    <name />  </author>  <content type="application/xml">    <m:properties>      <d:Id>nb:lid:UUID:93503528-88f9-469c-93ca-53d52dcdd0f9</d:Id>      <d:ExpirationDateTime m:type="Edm.DateTime">2013-04-12T04:37:17.2826644Z</d:ExpirationDateTime>      <d:Type m:type="Edm.Int32">1</d:Type>      <d:Path>https://mediasvcm13w6rsvm521t.blob.core.windows.net/asset-dbc83cf3-1edb-409c-8393-203040e5dc4d?se=2013-04-12T04%3A37%3A17Z&amp;sr=c&amp;si=93503528-88f9-469c-93ca-53d52dcdd0f9&amp;sig=F4t9lsQ7jcm6u5q6ygbjRBPTVXHdKbvlCdGrl5Z%2Bqpg%3D</d:Path>      <d:BaseUri>https://mediasvcm13w6rsvm521t.blob.core.windows.net/asset-dbc83cf3-1edb-409c-8393-203040e5dc4d</d:BaseUri>      <d:ContentAccessComponent>?se=2013-04-12T04%3A37%3A17Z&amp;sr=c&amp;si=93503528-88f9-469c-93ca-53d52dcdd0f9&amp;sig=F4t9lsQ7jcm6u5q6ygbjRBPTVXHdKbvlCdGrl5Z%2Bqpg%3D</d:ContentAccessComponent>      <d:AccessPolicyId>nb:pid:UUID:9d971a4b-67e8-43bb-95df-db3466893df2</d:AccessPolicyId>      <d:AssetId>nb:cid:UUID:8551e702-a306-4ecc-a74b-47f7bfdcf7fa</d:AssetId>      <d:StartTime m:type="Edm.DateTime" m:null="true" />    </m:properties>  </content></entry>
+--------------------------------------------
+
+REQUEST
+DELETE https://mediasvcm13w6rsvm521t.blob.core.windows.net/asset-dbc83cf3-1edb-409c-8393-203040e5dc4d/BigBuckBunny.mp4?se=2013-04-12T04%3A37%3A17Z&sr=c&si=93503528-88f9-469c-93ca-
+53d52dcdd0f9&sig=F4t9lsQ7jcm6u5q6ygbjRBPTVXHdKbvlCdGrl5Z%2Bqpg%3D&timeout=90 HTTP/1.1
+x-ms-version: 2011-08-18
+User-Agent: WA-Storage/1.7.0
+Host: mediasvcm13w6rsvm521t.blob.core.windows.net
+
+
+RESPONSE
+HTTP/1.1 404 The specified resource does not exist.
+Content-Length: 223
+Content-Type: application/xml
+Server: Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0
+x-ms-request-id: 076dbc39-6d08-4e94-9846-4d204ce8eec2
+x-ms-version: 2011-08-18
+Date: Thu, 11 Apr 2013 16:37:18 GMT
+
+<?xml version="1.0" encoding="utf-8"?>
+<Error>
+  <Code>ResourceNotFound</Code>
+  <Message>The specified resource does not exist.RequestId:076dbc39-6d08-4e94-9846-4d204ce8eec2 Time:2013-04-11T16:37:19.0667306Z</Message>
+</Error>
+----------------------------------------
+
+REQUEST
+PUT https://mediasvcm13w6rsvm521t.blob.core.windows.net/asset-dbc83cf3-1edb-409c-8393-203040e5dc4d/BigBuckBunny.mp4?se=2013-04-12T04%3A37%3A17Z&sr=c&si=93503528-88f9-469c-93ca-53d52dcdd0f9&sig=F4t9lsQ7jcm6u5q6ygbjRBPTVXHdKbvlCdGrl5Z%2Bqpg%3D&comp=block&blockid=QmxvY2tJZDAwMDAwMDI%3D&timeout=90 HTTP/1.1
+x-ms-version: 2011-08-18
+User-Agent: WA-Storage/1.7.0
+Content-MD5: 0Sy9UerpChEBc8S2XkMjHw==
+Host: mediasvcm13w6rsvm521t.blob.core.windows.net
+Content-Length: 1048576
+
+REQUEST
+PUT https://mediasvcm13w6rsvm521t.blob.core.windows.net/asset-dbc83cf3-1edb-409c-8393-203040e5dc4d/BigBuckBunny.mp4?se=2013-04-12T04%3A37%3A17Z&sr=c&si=93503528-88f9-469c-93ca-53d52dcdd0f9&sig=F4t9lsQ7jcm6u5q6ygbjRBPTVXHdKbvlCdGrl5Z%2Bqpg%3D&comp=block&blockid=QmxvY2tJZDAwMDAwMDM%3D&timeout=90 HTTP/1.1
+x-ms-version: 2011-08-18
+User-Agent: WA-Storage/1.7.0
+Content-MD5: 4son7XMtdjo8MkJyQcl9Ew==
+Host: mediasvcm13w6rsvm521t.blob.core.windows.net
+Content-Length: 40814
+
+REQUEST
+PUT https://mediasvcm13w6rsvm521t.blob.core.windows.net/asset-dbc83cf3-1edb-409c-8393-203040e5dc4d/BigBuckBunny.mp4?se=2013-04-12T04%3A37%3A17Z&sr=c&si=93503528-88f9-469c-93ca-53d52dcdd0f9&sig=F4t9lsQ7jcm6u5q6ygbjRBPTVXHdKbvlCdGrl5Z%2Bqpg%3D&comp=block&blockid=QmxvY2tJZDAwMDAwMDA%3D&timeout=90 HTTP/1.1
+x-ms-version: 2011-08-18
+User-Agent: WA-Storage/1.7.0
+Content-MD5: 2SH0Qcod7wU4+O45uhm8Lw==
+Host: mediasvcm13w6rsvm521t.blob.core.windows.net
+Content-Length: 1048576
+
+REQUEST
+PUT https://mediasvcm13w6rsvm521t.blob.core.windows.net/asset-dbc83cf3-1edb-409c-8393-203040e5dc4d/BigBuckBunny.mp4?se=2013-04-12T04%3A37%3A17Z&sr=c&si=93503528-88f9-469c-93ca-53d52dcdd0f9&sig=F4t9lsQ7jcm6u5q6ygbjRBPTVXHdKbvlCdGrl5Z%2Bqpg%3D&comp=block&blockid=QmxvY2tJZDAwMDAwMDE%3D&timeout=90 HTTP/1.1
+x-ms-version: 2011-08-18
+User-Agent: WA-Storage/1.7.0
+Content-MD5: mpmiwuSaroYlFrOzh/9cqQ==
+Host: mediasvcm13w6rsvm521t.blob.core.windows.net
+
+PUT https://mediasvcm13w6rsvm521t.blob.core.windows.net/asset-dbc83cf3-1edb-409c-8393-203040e5dc4d/BigBuckBunny.mp4?se=2013-04-12T04%3A37%3A17Z&sr=c&si=93503528-88f9-469c-93ca-53d52dcdd0f9&sig=F4t9lsQ7jcm6u5q6ygbjRBPTVXHdKbvlCdGrl5Z%2Bqpg%3D&comp=blocklist&timeout=90 HTTP/1.1
+x-ms-version: 2011-08-18
+User-Agent: WA-Storage/1.7.0
+x-ms-blob-content-type: video/mp4
+Content-MD5: MxVKhKhZHtlWg0ZhYANkmg==
+Host: mediasvcm13w6rsvm521t.blob.core.windows.net
+Content-Length: 212
+
+<?xml version="1.0" encoding="utf-8"?><BlockList>  <Latest>QmxvY2tJZDAwMDAwMDA=</Latest>  <Latest>QmxvY2tJZDAwMDAwMDE=</Latest>  <Latest>QmxvY2tJZDAwMDAwMDI=</Latest>  <Latest>QmxvY2tJZDAwMDAwMDM=</Latest></BlockList>
+
+RESPONSE
+HTTP/1.1 201 Created
+Transfer-Encoding: chunked
+Content-MD5: MxVKhKhZHtlWg0ZhYANkmg==
+Last-Modified: Thu, 11 Apr 2013 16:37:23 GMT
+ETag: "0x8D004E9FA389CB8"
+Server: Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0
+x-ms-request-id: f06297ea-8682-4af8-a529-e44c3f72b68a
+x-ms-version: 2011-08-18
+Date: Thu, 11 Apr 2013 16:37:20 GMT
+
+0
+---------------------------------------
+
+REQUEST
+MERGE https://wamsamsclus001rest-hs.cloudapp.net/api/Files('nb%3Acid%3AUUID%3Af192f10b-6c65-dd41-851f-38521e12d9c5') HTTP/1.1
+User-Agent: Microsoft ADO.NET Data Services
+Accept-Charset: UTF-8
+DataServiceVersion: 1.0;NetFx
+MaxDataServiceVersion: 3.0;NetFx
+Accept: application/atom+xml,application/xml
+Authorization: Bearer http%3a%2f%2fschemas.xmlsoap.org%2fws%2f2005%2f05%2fidentity%2fclaims%2fnameidentifier=migreemediaservices&urn%3aSubscriptionId=f29bbc21-7bbe-4a00-b0df-6b6901a535db&http%3a%2f%2fschemas.microsoft.com%2faccesscontrolservice%2f2010%2f07%2fclaims%2fidentityprovider=https%3a%2f%2fwamsprodglobal001acs.accesscontrol.windows.net%2f&Audience=urn%3aWindowsAzureMediaServices&ExpiresOn=1365703770&Issuer=https%3a%2f%2fwamsprodglobal001acs.accesscontrol.windows.net%2f&HMACSHA256=EXNN7dvxxhJsyV%2bVDu%2b%2beCdXVDy4vV22Jo9xGHRgg3M%3d
+x-ms-version: 2.0
+Content-Type: application/atom+xml
+Host: wamsamsclus001rest-hs.cloudapp.net
+Content-Length: 1204
+
+<?xml version="1.0" encoding="utf-8"?><entry xmlns="http://www.w3.org/2005/Atom" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata">  <id>https://wamsamsclus001rest-hs.cloudapp.net/api/Files('nb%3Acid%3AUUID%3Af192f10b-6c65-dd41-851f-38521e12d9c5')</id>  <title />  <updated>2013-04-11T16:37:22Z</updated>  <author>    <name />  </author>  <content type="application/xml">    <m:properties>      <d:ContentChecksum m:null="true" />      <d:ContentFileSize m:type="Edm.Int64">3186542</d:ContentFileSize>      <d:Created m:type="Edm.DateTime">2013-04-11T16:29:49.067</d:Created>      <d:EncryptionKeyId m:null="true" />      <d:EncryptionScheme m:null="true" />      <d:EncryptionVersion m:null="true" />      <d:Id>nb:cid:UUID:f192f10b-6c65-dd41-851f-38521e12d9c5</d:Id>      <d:InitializationVector m:null="true" />      <d:IsEncrypted m:type="Edm.Boolean">false</d:IsEncrypted>      <d:IsPrimary m:type="Edm.Boolean">false</d:IsPrimary>      <d:LastModified m:type="Edm.DateTime">2013-04-11T16:29:49.067</d:LastModified>      <d:MimeType>video/mp4</d:MimeType>      <d:Name>BigBuckBunny.mp4</d:Name>      <d:ParentAssetId>nb:cid:UUID:8551e702-a306-4ecc-a74b-47f7bfdcf7fa</d:ParentAssetId>    </m:properties>  </content></entry>
+Content-Length: 1048576
+
+RESPONSE
+HTTP/1.1 204 No Content
+Cache-Control: no-cache
+Server: Microsoft-IIS/7.5
+request-id: d14bbdf2-a590-4f4a-a931-8a3862770ece
+x-ms-request-id: d14bbdf2-a590-4f4a-a931-8a3862770ece
+X-Content-Type-Options: nosniff
+DataServiceVersion: 1.0;
+X-AspNet-Version: 4.0.30319
+X-Powered-By: ASP.NET
+Date: Thu, 11 Apr 2013 16:37:22 GMT
