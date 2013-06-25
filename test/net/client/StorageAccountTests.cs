@@ -35,8 +35,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
              Assert.AreEqual(1, defaultAccountsCount,"Expecting to have only one default storage account");
          }
 
+         /// <summary>
+         /// This test can be executed if you media account has multiple storage accounts
+         /// </summary>
          [TestMethod]
          [Priority(0)]
+         [Ignore]
          public void ShouldReturnNoneDefaultAccount()
          {
              var noneDefaultAccount = _dataContext.StorageAccounts.Where(c => c.IsDefault == false).FirstOrDefault();
