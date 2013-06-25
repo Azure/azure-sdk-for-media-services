@@ -363,9 +363,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestMethod]
         public void ShouldThrowAggregateExceptionWithMultipleKetNotFoundExceptionDuringEncryptIfKeyIsMissing()
         {
-            var sourcePath = @"\\iis-mediadist\content\NimbusTest\Videos\Large Test files";
+            var sourcePath = @".\Resources\TestFiles\";
+            var path = @".\Resources\TestFiles\" + Guid.NewGuid();
             Assert.IsTrue(Directory.Exists(sourcePath));
-            List<string> files = Directory.EnumerateFiles(sourcePath, "Medium*.wmv").ToList();
+            List<string> files = Directory.EnumerateFiles(sourcePath, "File0.txt").ToList();
 
             //Creating empty manifest
             const string manifestName = "Manifest 1";
@@ -378,7 +379,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             Assert.IsNotNull(ingestManifestAsset);
             emptyAsset.ContentKeys.RemoveAt(0);
 
-            files = Directory.EnumerateFiles(sourcePath, "Small*.wmv").ToList();
+            files = Directory.EnumerateFiles(sourcePath, "File1.txt").ToList();
             emptyAsset = _context.Assets.Create(Guid.NewGuid().ToString(), AssetCreationOptions.StorageEncrypted);
 
             ingestManifestAsset = ingestManifestCreated.IngestManifestAssets.CreateAsync(emptyAsset, files.ToArray(), CancellationToken.None).Result;
@@ -387,7 +388,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             //also deleting a key on server side if no other links are found
             emptyAsset.ContentKeys.RemoveAt(0);
 
-            var path = @".\Resources\TestFiles\" + Guid.NewGuid();
+            
             Directory.CreateDirectory(path);
             try
             {
