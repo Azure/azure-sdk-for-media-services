@@ -360,6 +360,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        public void ShouldQueryAssetsByNameWithContains()
+        {
+            IAsset createdAsset = CreateAsset(_dataContext, _smallWmv, AssetCreationOptions.StorageEncrypted);
+            IAsset foundAsset = _dataContext.Assets.Where(c => c.Name.Contains(createdAsset.Name)).FirstOrDefault();
+            Assert.IsNotNull(foundAsset);
+
+        }
+
+        [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldModifyAssetFile()
         {

@@ -47,12 +47,17 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
           WaitForJob(job.Id, JobState.Finished, VerifyAllTasksFinished);
       }
 
+      
       [TestMethod]
       [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
       public void ShouldSubmitJobWhereOutPutInNoneDefaultStorage()
       {
           var nondefault = _dataContext.StorageAccounts.Where(c => c.IsDefault == false).FirstOrDefault();
-          Assert.IsNotNull(nondefault);
+          //This test need to be executed when media account multiple storage account associated with it. 
+          if (nondefault == null)
+          {
+              return;
+          }
           IAsset asset = AssetTests.CreateAsset(_dataContext, _smallWmv, AssetCreationOptions.StorageEncrypted);
           IMediaProcessor mediaProcessor = GetMediaProcessor(_dataContext, WindowsAzureMediaServicesTestConfiguration.MpEncoderName, WindowsAzureMediaServicesTestConfiguration.MpEncoderVersion);
           string name = GenerateName("Job 1");
@@ -72,12 +77,19 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
           
       }
 
+      
       [TestMethod]
       [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
       public void ShouldSaveJobAsTemplateAndCreateNewJobwithItWhereOutPutInNoneDefaultStorage()
       {
           var nondefault = _dataContext.StorageAccounts.Where(c => c.IsDefault == false).FirstOrDefault();
-          Assert.IsNotNull(nondefault);
+
+          //This test need to be executed when media account multiple storage account associated with it. 
+          if (nondefault == null)
+          {
+              return;
+          }
+
           IAsset asset = AssetTests.CreateAsset(_dataContext, _smallWmv, AssetCreationOptions.StorageEncrypted);
           IMediaProcessor mediaProcessor = GetMediaProcessor(_dataContext, WindowsAzureMediaServicesTestConfiguration.MpEncoderName, WindowsAzureMediaServicesTestConfiguration.MpEncoderVersion);
           string name = GenerateName("Job 1");

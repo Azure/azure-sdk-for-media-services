@@ -176,6 +176,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             }
         }
 
+        /// <summary>
+        /// Known issue in REST API.
+        /// </summary>
+        [Ignore]
         [TestMethod]
         [ExpectedException(typeof(DataServiceRequestException))]
         public void ShouldThrowTryingToCreateEmptyManifestWithEmptyAccountName()
