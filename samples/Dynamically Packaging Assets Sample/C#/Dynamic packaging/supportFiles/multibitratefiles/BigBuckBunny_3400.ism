@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<smil xmlns="http://www.w3.org/2001/SMIL20/Language">
+  <head>
+    <meta name="formats" content="mp4" />
+  </head>
+  <body>
+    <switch>
+      <video src="BigBuckBunny_1000.mp4" />
+      <video src="BigBuckBunny_1500.mp4" />
+      <video src="BigBuckBunny_2250.mp4" />
+      <video src="BigBuckBunny_3400.mp4" />
+      <video src="BigBuckBunny_400.mp4" />
+      <video src="BigBuckBunny_650.mp4" />
+      <audio src="BigBuckBunny_400.mp4" />
+    </switch>
+  </body>
+</smil>

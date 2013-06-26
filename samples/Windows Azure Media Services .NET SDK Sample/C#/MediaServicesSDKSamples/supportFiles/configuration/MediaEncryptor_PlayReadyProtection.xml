@@ -1,0 +1,18 @@
+<taskDefinition xmlns="http://schemas.microsoft.com/iis/media/v4/TM/TaskDefinition#">
+  <name>PlayReady Protection</name>
+  <id>9A3BFEAC-F8AE-41CA-87FA-D639E4D1C753</id>
+  <properties namespace="http://schemas.microsoft.com/iis/media/v4/SharedData#" prefix="sd">
+    <property name="contentKey"              required="false" value="" helpText="A base64-encoded 16-byte value, which is produced by the key seed in conjunction with the key ID and is used to encrypt content. You must enter a content key value if no key seed value is specified." />
+    <property name="customAttributes"        required="false" value="" helpText="A comma-delimited list of name:value pairs (in the form name1:value1,name2:value2,name3:value3) to be included in the CUSTOMATTRIBUTES section of the WRM header. The WRM header is XML metadata added to encrypted content and included in the client manifest. It is also included in license challenges made to license servers." />
+    <property name="dataFormats"             required="false" value="h264, avc1, mp4a, vc1, wma, owma, ovc1, aacl, aach, ac-3, ec-3, mlpa, dtsc, dtsh, dtsl, dtse" helpText="A comma-delimited list of four-character codes (FourCCs) that specify the data formats to be encrypted. If no value is specified, all data formats are encrypted." />
+    <property name="keyId"                   required="false" value="" helpText="A globally unique identifier (GUID) that uniquely identifies content for the purposes of licensing. Each presentation should use a unique value. If no value is specified, a random value is used." />
+    <property name="keySeedValue"            required="false" value="XVBovsmzhP9gRIZxWfFta3VVRPzVEWmJsazEJ46I" helpText="A base64-encoded 30-byte value, which is used in conjunction with the key ID to create the content key. Typically, one key seed is used with many key IDs to protect multiple files or sets of files; for example, all files issued by a license server or perhaps all files by a particular artist. Key seeds are stored on license servers." />
+    <property name="licenseAcquisitionUrl"   required="true"  value="https://play-lic.cimcontent.net/playready/RightsManager.asmx" helpText="The Web page address on a license server from which clients can obtain a license to play the encrypted content." />
+  </properties>
+  <description xml:lang="en">Encrypts on-demand Smooth Streams for use by Microsoft PlayReady and updates the client manifest used by Silverlight clients.</description>
+  <inputFolder></inputFolder>
+  <outputFolder>Protected</outputFolder>
+  <taskCode>
+    <type>Microsoft.Web.Media.TransformManager.DigitalRightsManagementTask, Microsoft.Web.Media.TransformManager.DigitalRightsManagement, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35</type>
+  </taskCode>
+</taskDefinition>
