@@ -17,8 +17,6 @@
 
 using System;
 using System.Data.Services.Client;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
@@ -50,6 +48,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             this._cloudMediaContext = cloudMediaContext;
             this._dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
             this._assetQuery = new Lazy<IQueryable<IAsset>>(() => this._dataContext.CreateQuery<AssetData>(AssetSet));
+            
         }
 
         /// <summary>
@@ -72,11 +71,38 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </returns>
         public override Task<IAsset> CreateAsync(string assetName, AssetCreationOptions options,CancellationToken cancellationToken)
         {
+            return this.CreateAsync(assetName, this._cloudMediaContext.DefaultStorageAccount.Name, options, cancellationToken);
+        }
+
+        /// <summary>
+        /// Creates an asset that does not contain any files and <see cref="AssetState"/> is Initialized. 
+        /// </summary>
+        /// <param name="assetName">The asset name.</param>
+        /// <param name="options">A <see cref="AssetCreationOptions"/> which will be associated with created asset.</param>
+        /// <returns>The created asset.</returns>
+        public override IAsset Create(string assetName, AssetCreationOptions options)
+        {
+            return this.Create(assetName, this._cloudMediaContext.DefaultStorageAccount.Name, options);
+        }
+
+        /// <summary>
+        /// Asynchronously creates an asset for specified storage account. Asset  does not contain any files and <see cref="AssetState" /> is Initialized.
+        /// </summary>
+        /// <param name="assetName">The asset name.</param>
+        /// <param name="storageAccountName">The storage account name</param>
+        /// <param name="options">A <see cref="AssetCreationOptions" /> which will be associated with created asset.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>
+        /// An <see cref="Task" /> of type <see cref="IAsset" />, where IAsset created according to the specified creation <paramref name="options" />.
+        /// </returns>
+        public override Task<IAsset> CreateAsync(string assetName, string storageAccountName, AssetCreationOptions options, CancellationToken cancellationToken)
+        {
             AssetData emptyAsset = new AssetData
-                                       {
-                                           Name = assetName,
-                                           Options = (int) options
-                                       };
+            {
+                Name = assetName,
+                Options = (int)options,
+                StorageAccountName = storageAccountName
+            };
 
             emptyAsset.InitCloudMediaContext(this._cloudMediaContext);
 
@@ -88,36 +114,38 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 .SaveChangesAsync(emptyAsset)
                 .ContinueWith<IAsset>(
                     t =>
+                    {
+                        t.ThrowIfFaulted();
+                        cancellationToken.ThrowIfCancellationRequested();
+
+                        AssetData data = (AssetData)t.AsyncState;
+                        if (options.HasFlag(AssetCreationOptions.StorageEncrypted))
                         {
-                            t.ThrowIfFaulted();
-                            cancellationToken.ThrowIfCancellationRequested();
-
-                            AssetData data = (AssetData) t.AsyncState;
-                            if (options.HasFlag(AssetCreationOptions.StorageEncrypted))
+                            using (var fileEncryption = new NullableFileEncryption())
                             {
-                                using (var fileEncryption = new NullableFileEncryption())
-                                {
-                                    CreateStorageContentKey(data, fileEncryption, dataContext);
-                                }
+                                CreateStorageContentKey(data, fileEncryption, dataContext);
                             }
+                        }
 
-                            return data;
-                        });
+                        return data;
+                    });
         }
 
         /// <summary>
-        /// Creates an asset that does not contain any files and <see cref="AssetState"/> is Initialized. 
+        /// Creates an asset for specified storage account. Asset does not contain any files and <see cref="AssetState" /> is Initialized.
         /// </summary>
         /// <param name="assetName">The asset name.</param>
-        /// <param name="options">A <see cref="AssetCreationOptions"/> which will be associated with created asset.</param>
-        /// <returns>The created asset.</returns>
-        public override IAsset Create(string assetName, AssetCreationOptions options)
+        /// <param name="storageAccountName"></param>
+        /// <param name="options">A <see cref="AssetCreationOptions" /> which will be associated with created asset.</param>
+        /// <returns>
+        /// The created asset.
+        /// </returns>
+        public override IAsset Create(string assetName, string storageAccountName, AssetCreationOptions options)
         {
             try
             {
-                Task<IAsset> task = this.CreateAsync(assetName, options,CancellationToken.None);
+                Task<IAsset> task = this.CreateAsync(assetName,storageAccountName, options, CancellationToken.None);
                 task.Wait();
-
                 return task.Result;
             }
             catch (AggregateException exception)
@@ -125,9 +153,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw exception.InnerException;
             }
         }
-
-
-
 
 
         private static ContentKeyData CreateStorageContentKey(AssetData tempAsset, NullableFileEncryption fileEncryption, DataServiceContext dataContext)

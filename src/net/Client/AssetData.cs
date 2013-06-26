@@ -20,7 +20,9 @@ using System.Collections.ObjectModel;
 using System.Data.Services.Client;
 using System.Data.Services.Common;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -60,7 +62,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// The parent assets.
         /// </value>
         public List<AssetData> ParentAssets { get; set; }
-     
 
         /// <summary>
         /// Gets or sets the content keys.
@@ -188,7 +189,17 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             this._fileCollection = new AssetFileCollection(context,this);
         }
 
-       
+        /// <summary>
+        /// Gets <see cref="IStorageAccount"/> associated with the Asset
+        /// </summary>
+        IStorageAccount IAsset.StorageAccount
+        {
+            get
+            {
+                return this._cloudMediaContext.StorageAccounts.Where(c => c.Name == this.StorageAccountName).FirstOrDefault();
+            }
+        }
+
         /// <summary>
         /// Asynchronously updates this asset instance.
         /// </summary>
