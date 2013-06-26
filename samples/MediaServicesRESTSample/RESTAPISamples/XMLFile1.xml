@@ -1,0 +1,46 @@
+﻿<d type="object">
+  <results type="array">
+    <item type="object">
+      <__metadata type="object">
+        <id type="string">https://wamsamsclus001rest-hs.cloudapp.net/api/Assets('nb%3Acid%3AUUID%3A4bc00f87-0812-4701-b3ea-8054259f96af')</id>
+        <uri type="string">https://wamsamsclus001rest-hs.cloudapp.net/api/Assets('nb%3Acid%3AUUID%3A4bc00f87-0812-4701-b3ea-8054259f96af')</uri>
+        <type type="string">Microsoft.Cloud.Media.Vod.Rest.Data.Models.Asset</type>
+        <actions type="object">
+          <a:item xmlns:a="item" item="https://wamsamsclus001rest-hs.cloudapp.net/api/$metadata#WindowsAzureMediaServices.Publish" type="array">
+            <item type="object">
+              <title type="string">Publish</title>
+              <target type="string">https://wamsamsclus001rest-hs.cloudapp.net/api/Assets('nb%3Acid%3AUUID%3A4bc00f87-0812-4701-b3ea-8054259f96af')/Publish</target>
+            </item>
+          </a:item>
+        </actions>
+      </__metadata>
+      <Locators type="object">
+        <__deferred type="object">
+          <uri type="string">https://wamsamsclus001rest-hs.cloudapp.net/api/Assets('nb%3Acid%3AUUID%3A4bc00f87-0812-4701-b3ea-8054259f96af')/Locators</uri>
+        </__deferred>
+      </Locators>
+      <ContentKeys type="object">
+        <__deferred type="object">
+          <uri type="string">https://wamsamsclus001rest-hs.cloudapp.net/api/Assets('nb%3Acid%3AUUID%3A4bc00f87-0812-4701-b3ea-8054259f96af')/ContentKeys</uri>
+        </__deferred>
+      </ContentKeys>
+      <Files type="object">
+        <__deferred type="object">
+          <uri type="string">https://wamsamsclus001rest-hs.cloudapp.net/api/Assets('nb%3Acid%3AUUID%3A4bc00f87-0812-4701-b3ea-8054259f96af')/Files</uri>
+        </__deferred>
+      </Files>
+      <ParentAssets type="object">
+        <__deferred type="object">
+          <uri type="string">https://wamsamsclus001rest-hs.cloudapp.net/api/Assets('nb%3Acid%3AUUID%3A4bc00f87-0812-4701-b3ea-8054259f96af')/ParentAssets</uri>
+        </__deferred>
+      </ParentAssets>
+      <Id type="string">nb:cid:UUID:4bc00f87-0812-4701-b3ea-8054259f96af</Id>
+      <State type="number">0</State>
+      <Created type="string">/Date(1366925019187)/</Created>
+      <LastModified type="string">/Date(1366925019187)/</LastModified>
+      <AlternateId type="null"></AlternateId>
+      <Name type="string">BigBuckBunny_Asset</Name>
+      <Options type="number">0</Options>
+    </item>
+  </results>
+</d>
