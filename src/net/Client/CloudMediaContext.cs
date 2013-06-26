@@ -15,6 +15,7 @@
 // </license>
 
 using System;
+using System.Linq;
 using Microsoft.WindowsAzure.MediaServices.Client.OAuth;
 using Microsoft.WindowsAzure.MediaServices.Client.Versioning;
 
@@ -52,6 +53,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private readonly IngestManifestCollection _ingestManifests;
         private readonly IngestManifestAssetCollection _ingestManifestAssets;
         private readonly IngestManifestFileCollection _ingestManifestFiles;
+        private readonly StorageAccountBaseCollection _storageAccounts;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CloudMediaContext"/> class.
@@ -105,6 +107,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             this._ingestManifests = new IngestManifestCollection(this);
             this._ingestManifestAssets = new IngestManifestAssetCollection(this,null);
             this._ingestManifestFiles = new IngestManifestFileCollection(this, null);
+            this._storageAccounts = new StorageAccountBaseCollection(this);
         }
 
         /// <summary>
@@ -176,9 +179,30 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
         /// <summary>
+        /// Gets a collection to operate on StorageAccounts.
+        /// </summary>
+        /// <seealso cref="StorageAccountBaseCollection" />
+        ///   <seealso cref="IStorageAccount" />
+        public override StorageAccountBaseCollection StorageAccounts
+        {
+            get { return this._storageAccounts; }
+        }
+
+        /// <summary>
+        /// Returns default storage account
+        /// </summary>
+        public override IStorageAccount DefaultStorageAccount
+        {
+            get 
+            { 
+                return this.StorageAccounts.Where(c=>c.IsDefault == true).FirstOrDefault(); 
+            }
+        }
+
+        /// <summary>
         /// Gets the collection of notification endpoints avaiable in the system.
         /// </summary>
-        public NotificationEndPointCollection NotificationEndPoints
+        public override NotificationEndPointCollection NotificationEndPoints
         {
             get { return this._notificationEndPoints; }
         }

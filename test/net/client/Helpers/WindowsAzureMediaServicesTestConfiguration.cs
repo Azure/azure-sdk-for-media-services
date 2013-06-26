@@ -45,9 +45,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Helpers
         public const string SmoothToHlsConfig = @"Configuration\Smooth Streams to Apple HTTP Live Streams.xml";
         public const string SmoothToEncryptHlsConfig = @"Configuration\Smooth Streams to Encrypted Apple HTTP Live Streams.xml";
         
-        public static string ClientSecret = ConfigurationManager.AppSettings["ClientSecret"];
-        public static string ClientId = ConfigurationManager.AppSettings["ClientId"];
+        public static string MediaServiceAccountName = ConfigurationManager.AppSettings["MediaServiceAccountName"];
+        public static string MediaServiceAccountKey = ConfigurationManager.AppSettings["MediaServiceAccountKey"];
         public static string ClientStorageConnectionString = ConfigurationManager.AppSettings["ClientStorageConnectionString"];
+        
+        public static string MediaServicesUri = ConfigurationManager.AppSettings["MediaServicesUri"];
+        public static string MediaServicesAcsBaseAddress = ConfigurationManager.AppSettings["MediaServicesAcsBaseAddress"];
+        public static string MediaServicesAccessScope = ConfigurationManager.AppSettings["MediaServicesAccessScope"];
 
         public static string MpEncoderName = ConfigurationManager.AppSettings["MPEncoderName"];
         public static string MpEncoderVersion = ConfigurationManager.AppSettings["MPEncoderVersion"];
@@ -60,7 +64,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Helpers
 
         public static CloudMediaContext CreateCloudMediaContext()
         {
-            return new CloudMediaContext( ClientId, ClientSecret);
+            // This overload is used for testing purposes
+            // It is recommended to use public CloudMediaContext(string accountName, string accountKey) in your code to avoid code changes if default values will be changed later
+            return new CloudMediaContext(new Uri(MediaServicesUri), MediaServiceAccountName, MediaServiceAccountKey, MediaServicesAccessScope, MediaServicesAcsBaseAddress);
         }
 
         public static string GetVideoSampleFilePath(TestContext testContext, string filepath)

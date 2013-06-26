@@ -50,6 +50,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private const string OutputAssetNameAttributeName = "assetName";
         private const string TaskTemplateIdAttributeName = "taskTemplateId";
         private const string JobNotificationSubscriptionsPropertyName = "JobNotificationSubscriptions";
+        private const string StorageAttributeName = "storageAccountName";
+
 
         private CloudMediaContext _cloudMediaContext;
         private ReadOnlyCollection<IAsset> _inputMediaAssets;
@@ -457,6 +459,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                         taskBody.WriteAttributeString(OutputAssetNameAttributeName, outputAsset.Name);
 
                     }
+                    if (!string.IsNullOrEmpty(outputAsset.StorageAccountName))// Ignore empty string for the storage account
+                    {
+                        taskBody.WriteAttributeString(StorageAttributeName, outputAsset.StorageAccountName);
+
+                    }
                     taskBody.WriteString(assetNamingSchemeResolver.GetAssetId(output));
                     taskBody.WriteEndElement();
                 }
@@ -467,6 +474,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 return stringWriter.ToString();
             }
         }
+
+       
 
         private static void Verify(IJob job)
         {
@@ -620,6 +629,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
                             int options = (int)output.Options;
                             jobTemplateBodyWriter.WriteAttributeString(AssetCreationOptionsAttributeName, options.ToString(CultureInfo.InvariantCulture));
+
+                            if (!String.IsNullOrEmpty(output.StorageAccountName))
+                            {
+                                jobTemplateBodyWriter.WriteAttributeString(StorageAttributeName, output.StorageAccountName);
+                            }
 
                             jobTemplateBodyWriter.WriteString(assetMap.GetAssetId(output));
                             jobTemplateBodyWriter.WriteEndElement();
