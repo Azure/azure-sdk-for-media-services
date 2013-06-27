@@ -1,0 +1,13 @@
+<taskDefinition xmlns="http://schemas.microsoft.com/iis/media/v4/TM/TaskDefinition#">
+    <name>MP4 Preprocessor</name>
+    <id>859515BF-9BA3-4BDD-A3B6-400CEF07F870</id>
+    <description xml:lang="en">Prepares MP4 asset for dynamic packaging</description>
+    <inputFolder />
+    <properties namespace="http://schemas.microsoft.com/iis/media/V4/TM/MP4Preprocessor#" prefix="mp4p">
+    <property name="SmoothRequired" required="false" value="false" helpText="If the value property is set to true, the pre-processor task will check whether or not the specified content can be converted to Smooth Streaming format. If the content cannot be converted successfully, the pre-processor validation task will fail. This indicates that the On-Demand Streaming server will also fail to convert this content to Smooth Streaming." />
+    <property name="HLSRequired" required="false" value="false" helpText="If the value property is set to true, the pre-processor task will check whether or not the specified content can be converted to HLS format. If the content cannot be converted successfully, the pre-processor validation task will fail. This indicates that the On-Demand Streaming server will also fail to convert this content to HLS." />
+    </properties>
+    <taskCode>
+  <type>Microsoft.Web.Media.TransformManager.MP4PreProcessor.MP4Preprocessor_Task, Microsoft.Web.Media.TransformManager.MP4Preprocessor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35</type>
+    </taskCode>
+</taskDefinition>

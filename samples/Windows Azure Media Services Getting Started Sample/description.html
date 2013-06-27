@@ -1,0 +1,205 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Windows Azure Media Services Getting Started Sample</title>
+        <link href="description/Galleries.css" type="text/css" rel="Stylesheet" /><link href="description/Layout.css" type="text/css" rel="Stylesheet" /><link href="description/Brand.css" type="text/css" rel="Stylesheet" />
+        <link href="description/iframedescription.css" rel="Stylesheet" type="text/css" />
+        <script src="description/offline.js" type="text/javascript"></script>
+        <style type="text/css">
+            #projectInfo {
+                overflow: auto;
+            }
+            #longDesc {
+                clear:both;
+                margin: 25px 0 10px 0;
+            }
+
+            #SampleIndexList{
+                margin-left: 15px;
+            }
+        </style>
+    </head>
+<body>
+    <div id="offlineDescription">
+        <h1>Windows Azure Media Services Getting Started Sample</h1>
+        <br/>
+        <div id="projectInfo">
+            <div class="section">
+                    <div class="itemBarLong tagsContainer">
+                        <label for="Technologies">Technologies</label>
+                        <div id="Technologies">
+                            Windows Azure Media Services
+                        </div>
+                    </div>
+                    <div class="itemBarLong tagsContainer">
+                        <label for="Topics">Topics</label>
+                        <div id="Topics">
+                            Connecting to Media Services, Creating an asset in Media Services, Encoding an asset in Media Services, Downloading an asset from Media Services
+                        </div>
+                    </div>
+                <div class="itemBarLong">
+                    <label for="Platforms">Platforms</label>
+                    <div id="Platforms">
+                        Cloud
+                    </div>
+                </div>
+                <div class="itemBarLong">
+                    <label for="Requirements">Requirements</label>
+                    <div id="Requirements">
+                        
+                    </div>
+                </div>
+                <div class="itemBar">
+                    <label for="LastUpdated">Primary Language</label>
+                    <div id="LastUpdated">en-US</div>
+                </div>
+                <div class="itemBar">
+                    <label for="LastUpdated">Last Updated</label>
+                    <div id="LastUpdated">1/7/2013</div>
+                </div>
+                <div class="itemBarLong">
+                    <label for="License">License</label>
+                    <div id="License">
+                        <a href="license.rtf">Apache License, Version 2.0</a></div>
+                </div>
+                <div class="itemBar">
+                    <div class="viewonlinecont">
+                        <a data-link="online" href="http://code.msdn.microsoft.com/Windows-Azure-Media-040435f8">View this sample online</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+                   
+<script type="text/javascript">
+    function initializePage() {
+        var otherTabClass = 'otherTab';
+        var hiddenPreClass = 'hidden';
+
+        var htmlDecode = function(encodedData) {
+            var decodedData = "";
+            if (encodedData) {
+                var div = document.createElement('div');
+                div.innerHTML = encodedData;
+                decodedData = div.firstChild.nodeValue.replace( /\\r\\n/ig , '\r\n');
+            }
+            return decodedData;
+        };
+                
+        Galleries.iterateElem(Galleries.findElem(null, 'div', 'scriptcode'), function (index, scriptBlock) {
+            var titleElem = Galleries.findElem(scriptBlock, 'div', 'title')[0];
+            var labelElems = Galleries.findElem(titleElem, 'span');
+            if (labelElems.length == 0) {
+                labelElems = titleElem;
+            }
+            var languageSpans = Galleries.findElem(scriptBlock, 'span', 'hidden');
+            var pres = Galleries.findElem(scriptBlock, 'pre');
+            if (languageSpans.length > 0 && pres.length > 1) {
+                Galleries.iterateElem(labelElems, function(index, elem) {
+                    var codePre = pres[index];
+                    var labelSpan = elem;
+                    var languageSpan = languageSpans[index];
+                            
+                    elem.code = codePre.innerHTML.replace( /(\r(\n)?)|((\r)?\n)/ig , '\\r\\n');
+                            
+                    codePre.className = codePre.className.replace(hiddenPreClass, '');
+                            
+                    languageSpan.parentNode.removeChild(languageSpan);
+                });
+
+                pres = Galleries.findElem(scriptBlock, 'pre');
+                Galleries.iterateElem(labelElems, function(index, elem) {
+                    var codePre = pres[index];
+                    var labelSpan = elem;
+                    if (index == 0) {
+                        scriptBlock.activeTab = 0;
+                    }
+                    else {
+                        labelSpan.className += otherTabClass;
+                        codePre.className += hiddenPreClass;
+                    }
+                    Galleries.attachEventHandler(labelSpan, 'click', function(e) {
+                        var activeTab = scriptBlock.activeTab;
+                        labelElems[activeTab].className += otherTabClass;
+                        pres[activeTab].className += hiddenPreClass;
+
+                        codePre.className = codePre.className.replace(hiddenPreClass, '');
+                        labelSpan.className = labelSpan.className.replace(otherTabClass, '');
+                        scriptBlock.activeTab = index;
+                    });
+                });
+
+                var preview = Galleries.findElem(scriptBlock, 'div', 'preview');
+                if (preview.length == 0) {
+                    preview.push(pres[pres.length - 1]);
+                }
+                Galleries.iterateElem(preview, function(index, elem) {
+                    elem.parentNode.removeChild(elem);
+                });
+
+                if (window.clipboardData && clipboardData.setData) {
+                    var copyLink = document.createElement('a');
+                    copyLink.href = 'javascript:void(0);';
+                    copyLink.className = 'copyCode';
+                    copyLink.innerHTML = 'Copy Code';
+                    Galleries.attachEventHandler(copyLink, 'click', function (e) {
+                        clipboardData.setData("Text", htmlDecode(labelElems[scriptBlock.activeTab].code));
+                        return false;
+                    });
+                    scriptBlock.insertBefore(copyLink, scriptBlock.childNodes[0]);
+                }
+            }
+        });
+    }
+
+    Galleries.onWindowLoad(function(){
+        initializePage();
+    });
+
+</script>
+<div id="longDesc">
+    
+<h1>Introduction</h1>
+<p>The code examples in this project show a first-time developer on Windows Azure Media Services how to complete a simple end-to-end workflow of creating an asset, uploading it, encoding it, and then downloading the output asset.&nbsp; The code examples are
+ written in C#, and the project uses the Media Services SDK for .NET.&nbsp; The project is a Windows Console application and is designed to accompany the following Getting Started tutorial on MSDN. The documentation also provides information on the setup and
+ connection process: <a href="http://go.microsoft.com/fwlink/?linkid=252966" >
+Getting Started with the Media Services SDK for .NET</a>&nbsp;topic.</p>
+<p><span style="font-size:20px; font-weight:bold">Building the sample</span></p>
+<p>After you download and extract the files for the sample, there are several steps required to set up and run the project.</p>
+<p>&nbsp;For more information, see <a href="http://go.microsoft.com/fwlink/?linkid=252966" >
+Getting Started with the Media Services SDK for .NET</a>&nbsp;topic.&nbsp;</p>
+<ul style="text-align:left; widows:2; text-transform:none; list-style-type:disc; text-indent:0px; padding-left:0px; font:13px 'Segoe UI',Verdana,Arial; white-space:normal; orphans:2; letter-spacing:normal; color:#000000; margin-left:40px; word-spacing:0px">
+<li class="unordered" style="list-style-type:disc; padding-left:0px"><span style="text-align:left; widows:2; text-transform:none; text-indent:0px; display:inline!important; font:13px 'Segoe UI',Verdana,Arial; white-space:normal; orphans:2; float:none; letter-spacing:normal; color:#000000; word-spacing:0px">A&nbsp;Media
+ Services account in a new or existing Windows Azure subscription. See the topic<span class="Apple">&nbsp;</span></span><a href="http://go.microsoft.com/fwlink/?LinkId=256662" style="text-align:left; widows:2; text-transform:none; text-indent:0px; font:13px 'Segoe UI',Verdana,Arial; white-space:normal; orphans:2; letter-spacing:normal; color:#960bb4; word-spacing:0px">How
+ to Create a Media Services Account</a><span style="text-align:left; widows:2; text-transform:none; text-indent:0px; display:inline!important; font:13px 'Segoe UI',Verdana,Arial; white-space:normal; orphans:2; float:none; letter-spacing:normal; color:#000000; word-spacing:0px">.</span>&nbsp;
+</li><li class="unordered" style="list-style-type:disc; padding-left:0px">Operating Systems: Windows 7, Windows 2008 R2, or Windows 8.
+</li><li class="unordered" style="list-style-type:disc; padding-left:0px">.NET Framework 4.5 or .NET Framework 4.
+</li><li class="unordered" style="list-style-type:disc; padding-left:0px">Visual Studio 2012 or Visual Studio 2010 SP1 (Professional, Premium, or Ultimate).
+</li><li class="unordered" style="list-style-type:disc; padding-left:0px">Use the <a href="http://nuget.org/packages/windowsazure.mediaservices" style="text-align:left; widows:2; text-transform:none; text-indent:0px; font:13px/18px 'Segoe UI',Verdana,Arial; white-space:normal; orphans:2; letter-spacing:normal; color:#960bb4; word-spacing:0px">
+windowsazure.mediaservices Nuget package</a>&nbsp;to install and add references to:
+<span style="text-align:left; widows:2; text-transform:none; text-indent:0px; display:inline!important; font:13px 'Segoe UI',Verdana,Arial; white-space:normal; orphans:2; float:none; letter-spacing:normal; color:#000000; word-spacing:0px">
+Windows Azure SDK for .NET, <span style="text-align:left; widows:2; text-transform:none; text-indent:0px; display:inline!important; font:13px 'Segoe UI',Verdana,Arial; white-space:normal; orphans:2; float:none; letter-spacing:normal; color:#000000; word-spacing:0px">
+Windows Azure Media Services SDK for .NET (r<span style="text-align:left; widows:2; text-transform:none; text-indent:0px; display:inline!important; font:13px 'Segoe UI',Verdana,Arial; white-space:normal; orphans:2; float:none; letter-spacing:normal; color:#000000; word-spacing:0px">emove
+ any previous versions of the Media Services SDK before installing the current release<span class="Apple">&nbsp;), and
+<span style="text-align:left; widows:2; text-transform:none; text-indent:0px; display:inline!important; font:13px 'Segoe UI',Verdana,Arial; white-space:normal; orphans:2; float:none; letter-spacing:normal; color:#000000; word-spacing:0px">
+WCF Data Services 5.0 for OData V3.</span></span></span></span></span> </li><li class="unordered" style="list-style-type:disc; padding-left:0px"><span style="text-align:left; widows:2; text-transform:none; text-indent:0px; display:inline!important; font:13px 'Segoe UI',Verdana,Arial; white-space:normal; orphans:2; float:none; letter-spacing:normal; color:#000000; word-spacing:0px">Add
+ an<span class="Apple">&nbsp;</span></span><code style="text-align:left; line-height:normal; widows:2; text-transform:none; font-variant:normal; font-style:normal; text-indent:0px; white-space:normal; orphans:2; letter-spacing:normal; color:#000000; font-weight:normal; word-spacing:0px">appSettings</code><span style="text-align:left; widows:2; text-transform:none; text-indent:0px; display:inline!important; font:13px 'Segoe UI',Verdana,Arial; white-space:normal; orphans:2; float:none; letter-spacing:normal; color:#000000; word-spacing:0px"><span class="Apple">&nbsp;</span>section
+ to the app.config file, and set the values for your Media Services account name and account key. You obtained the Media Services account name and account key during the account setup process. Add these values to the<span class="Apple">&nbsp;</span></span><code style="text-align:left; line-height:normal; widows:2; text-transform:none; font-variant:normal; font-style:normal; text-indent:0px; white-space:normal; orphans:2; letter-spacing:normal; color:#000000; font-weight:normal; word-spacing:0px">value</code><span style="text-align:left; widows:2; text-transform:none; text-indent:0px; display:inline!important; font:13px 'Segoe UI',Verdana,Arial; white-space:normal; orphans:2; float:none; letter-spacing:normal; color:#000000; word-spacing:0px"><span class="Apple">&nbsp;</span>attribute
+ for each setting in the app.config file in the Visual Studio project.</span> </li></ul>
+<h1>Running the Sample</h1>
+<p>To run the sample, follow the steps described in the accompanying tutorial:</p>
+<p><a href="http://go.microsoft.com/fwlink/?linkid=252966" >Getting Started with the Media Services SDK for .NET</a></p>
+<h1><span>Source Code Files</span></h1>
+<p>For the Visual Studio project:</p>
+<ul>
+<li>Program.cs.&nbsp;&nbsp; Contains all the source code for the Windows Console application.
+</li><li>App.config.&nbsp; Contains configuration data with your account name and account key for connecting to Media Services.
+</li></ul>
+
+</div>
+
+
+    </div>
+</body>
+</html>

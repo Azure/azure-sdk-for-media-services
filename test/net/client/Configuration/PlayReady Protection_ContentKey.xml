@@ -1,0 +1,17 @@
+﻿<taskDefinition xmlns="http://schemas.microsoft.com/iis/media/v4/TM/TaskDefinition#">
+  <name>PlayReady Protection</name>
+  <id>9A3BFEAC-F8AE-41CA-87FA-D639E4D1C753</id>
+  <properties namespace="http://schemas.microsoft.com/iis/media/v4/SharedData#" prefix="sd" >
+    <property name="contentKey" value="zRq3zoulR0+gO8MCVj8xRQ==" />
+    <property name="customAttributes" value="KSID:9bfc7ba9-d42d-4390-a86f-4f7487578443,VID:MTIzNDV8MDAwMDAwMDAwMQ==,VPID:T3V0cHV0IGFzc2V0,CT:Test" />
+    <property name="dataFormats" value="h264, avc1, mp4a, vc1, wma, owma, ovc1, aacl, aach, ac-3, ec-3, mlpa, dtsc, dtsh, dtsl, dtse" />
+    <property name="keyId" value="074d1855-71d8-43b1-a3e4-daeeb50f7aab"  />
+    <property name="licenseAcquisitionUrl" value="http://juprmtest.redmond.corp.microsoft.com/silverlight2/rightsmanager.asmx" />
+  </properties>
+  <description xml:lang="en">Encrypts on-demand Smooth Streams for use by Microsoft PlayReady and updates the client manifest used by Silverlight clients.</description>
+  <inputFolder></inputFolder>
+  <outputFolder>Protected</outputFolder>
+  <taskCode>
+    <type>Microsoft.Web.Media.TransformManager.DigitalRightsManagementTask, Microsoft.Web.Media.TransformManager.DigitalRightsManagement, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35</type>
+  </taskCode>
+</taskDefinition>
