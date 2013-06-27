@@ -1,16 +1,22 @@
 ﻿using System;
-using System.Linq;
 using System.Configuration;
+using System.Globalization;
 using System.IO;
+using System.Net;
+using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using Microsoft.WindowsAzure.StorageClient;
-using Microsoft.WindowsAzure.MediaServices.Client;
+using System.Web;
+using System.Xml;
+using System.Linq;
 using Microsoft.WindowsAzure;
+using Microsoft.WindowsAzure.MediaServices.Client;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.WindowsAzure.Storage.Auth;
+using System.Collections.Generic;
 using System.Reflection;
-
 namespace ConsoleApplication1
 {
     // This code sample demonstrates how to use the Windows Azure Media Services   
@@ -209,15 +215,16 @@ namespace ConsoleApplication1
         {
             Task copytask = new Task(() =>
             {
-                StorageCredentialsAccountAndKey accountAndKey = new StorageCredentialsAccountAndKey(_storageAccountName, _storageAccountKey);
-                var storageaccount = new CloudStorageAccount(accountAndKey, true);
+                var storageaccount = new CloudStorageAccount(new StorageCredentials(_storageAccountName, _storageAccountKey), true);
                 CloudBlobClient blobClient = storageaccount.CreateCloudBlobClient();
                 CloudBlobContainer blobContainer = blobClient.GetContainerReference(destBlobURI);
 
                 string[] splitfilename = filename.Split('\\');
-                CloudBlob blob = blobContainer.GetBlobReference(splitfilename[splitfilename.Length - 1]);
+                var blob = blobContainer.GetBlockBlobReference(splitfilename[splitfilename.Length - 1]);
 
-                blob.UploadFile(filename);
+                using (var stream = System.IO.File.OpenRead(filename))
+                    blob.UploadFromStream(stream);
+
                 lock (consoleWriteLock)
                 {
                     Console.WriteLine("Upload for {0} completed.", filename);
@@ -396,63 +403,85 @@ namespace ConsoleApplication1
             Console.WriteLine("{0}% upload competed for {1}.", e.ProgressPercentage, e.LocalFile);
         }
 
-        private static IAsset CreateAssetFromStorageBlob(StorageCredentialsAccountAndKey storageInfo)
+        static public void CopyBlobToAssetContainerInTheSameMediaServicesAccount()
         {
-            //Create an empty asset:
-            Guid g = Guid.NewGuid();
-            IAsset assetToBeProcessed = _context.Assets.Create("YourAsset_" + g.ToString(), AssetCreationOptions.None);
+            CloudMediaContext context = new CloudMediaContext(_accountName, _accountKey);
 
-            // Create an access policy and locator to get the SAS url for the blob in storage.
-            IAccessPolicy writePolicy =
-                _context.AccessPolicies.Create("Policy For Copying",
-                TimeSpan.FromMinutes(30),
-                AccessPermissions.Write | AccessPermissions.List);
-            ILocator destinationLocator =
-                _context.Locators.CreateSasLocator(assetToBeProcessed,
-                writePolicy,
-                DateTime.UtcNow.AddMinutes(-5));
+            var storageAccount = new CloudStorageAccount(new StorageCredentials(_storageAccountName, _storageAccountKey), true);
+            var cloudBlobClient = storageAccount.CreateCloudBlobClient();
+            var mediaBlobContainer = cloudBlobClient.GetContainerReference(cloudBlobClient.BaseUri + "mediafiles001");
 
-            // Create CloudBlobClient:
-            CloudStorageAccount storageAccount = new CloudStorageAccount(storageInfo, true);
-            CloudBlobClient cloudBlobClient = storageAccount.CreateCloudBlobClient();
+            mediaBlobContainer.CreateIfNotExists();
 
-            // Create the reference to the destination container.
-            string destinationContainerName = (new Uri(destinationLocator.Path)).Segments[1];
-            CloudBlobContainer destinationContainer =
-                cloudBlobClient.GetContainerReference(destinationContainerName);
+            string StreamingFilesFolder = Path.GetFullPath(@"c:../..\SupportFiles\streamingfiles\");
+
+            // Upload some files to the blob container (for testing purposes). 
+            DirectoryInfo uploadDirectory = new DirectoryInfo(StreamingFilesFolder);
+            foreach (var file in uploadDirectory.EnumerateFiles())
+            {
+                CloudBlockBlob blob = mediaBlobContainer.GetBlockBlobReference(file.Name);
+                var name = file.Name;
+                using (var stream = System.IO.File.OpenRead(StreamingFilesFolder + name))
+                    blob.UploadFromStream(stream);
+            }
 
 
-            // Create the reference to the source container, in this case, an existing container 
-            // called myuploads. This container was created by first running the method  
-            // CreateBlobStorageFile in this project. To get this working with a different storage 
-            // account outside of Media Services storage, you will need to create a 2nd CloudStorageAccount and  
-            // CloudBlobClient as above, pointing to the external account.  
-            CloudBlobContainer sourceContainer = cloudBlobClient.GetContainerReference("myuploads");
-            // Refer to the existing source file blob. This blob was created by first running the method  
-            // CreateBlobStorageFile in this project. 
-            CloudBlob sourceFileBlob = sourceContainer.GetBlobReference("BigBuckBunny.mp4");
+            // Create a new asset.
+            IAsset asset = context.Assets.Create("NewAsset_" + Guid.NewGuid(), AssetCreationOptions.None);
+            IAccessPolicy writePolicy = context.AccessPolicies.Create("writePolicy",
+                TimeSpan.FromMinutes(120), AccessPermissions.Write);
+            ILocator destinationLocator = context.Locators.CreateLocator(LocatorType.Sas, asset, writePolicy);
 
-            // Fetch attributes on the source blob.
-            sourceFileBlob.FetchAttributes();
+            // Get the asset container URI and copy blobs from mediaContainer to assetContainer.
+            Uri uploadUri = new Uri(destinationLocator.Path);
+            string assetContainerName = uploadUri.Segments[1];
+            CloudBlobContainer assetContainer =
+                cloudBlobClient.GetContainerReference(assetContainerName);
 
-            // If we got this far we can assume the source is valid and accessible.
-            // Create destination blob for copy, in this case, we choose to rename the file:
-            CloudBlob destinationFileBlob = destinationContainer.GetBlobReference("MyCopiedBlobFile.mp4");
+            foreach (var sourceBlob in mediaBlobContainer.ListBlobs())
+            {
+                string fileName = HttpUtility.UrlDecode(Path.GetFileName(sourceBlob.Uri.AbsoluteUri));
 
-            destinationFileBlob.CopyFromBlob(sourceFileBlob);
+                var sourceCloudBlob = mediaBlobContainer.GetBlockBlobReference(fileName);
+                sourceCloudBlob.FetchAttributes();
 
-            //Check destination blob. 
-            destinationFileBlob.FetchAttributes();
+                if (sourceCloudBlob.Properties.Length > 0)
+                {
+                    IAssetFile assetFile = asset.AssetFiles.Create(fileName);
+                    var destinationBlob = assetContainer.GetBlockBlobReference(fileName);
 
-            // Get an updated reference to the asset to be processed. 
-            assetToBeProcessed = GetAsset(assetToBeProcessed.Id);
+                    destinationBlob.DeleteIfExists();
+                    destinationBlob.StartCopyFromBlob(sourceCloudBlob);
+
+                    destinationBlob.FetchAttributes();
+                    if (sourceCloudBlob.Properties.Length != destinationBlob.Properties.Length)
+                        Console.WriteLine("Failed to copy");
+                }
+            }
+
+            destinationLocator.Delete();
+            writePolicy.Delete();
+
+            // Refresh the asset.
+            asset = context.Assets.Where(a => a.Id == asset.Id).FirstOrDefault();
+
             //At this point, you can create a job using your asset.
-            Console.WriteLine("You are ready to use " + assetToBeProcessed.Name);
-            Console.WriteLine("The new asset file name is: "
-                + assetToBeProcessed.AssetFiles.FirstOrDefault().Name);
+            Console.WriteLine("You are ready to use " + asset.Name);
 
-            return assetToBeProcessed;
+            // Since we copied a set of Smooth Streaming files,
+            // set the .ism file to be the primary file
+            var ismAssetFiles = asset.AssetFiles.ToList().
+                        Where(f => f.Name.EndsWith(".ism", StringComparison.OrdinalIgnoreCase))
+                        .ToArray();
+
+            if (ismAssetFiles.Count() != 1)
+                throw new ArgumentException("The asset should have only one, .ism file");
+
+            ismAssetFiles.First().IsPrimary = true;
+            ismAssetFiles.First().Update();
+
         }
+
         #endregion
 
         #region Samples from Process Assets with the Media Services SDK for .NET
@@ -1379,7 +1408,7 @@ namespace ConsoleApplication1
 
         #region HelperMethods
 
-        static void DownloadProgress(object sender, DownloadProgressChangedEventArgs e)
+        static void DownloadProgress(object sender, Microsoft.WindowsAzure.MediaServices.Client.DownloadProgressChangedEventArgs e)
         {
             Console.WriteLine(string.Format("Asset File:{0}  {1}% download progress. ", ((IAssetFile)sender).Name, e.Progress));
         }

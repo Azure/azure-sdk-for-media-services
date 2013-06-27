@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaServicesSDKSamples", "MediaServicesSDKSamples\MediaServicesSDKSamples.csproj", "{BAF8135D-121E-49F5-8D80-3B8B1A5BA6BD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CopyBlobsIntoAnAsset", "CopyBlobsIntoAnAsset\CopyBlobsIntoAnAsset.csproj", "{CD7C7099-B8D9-4A8E-AC01-ED03477CD063}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{5A9A2DD8-EED2-4C7A-A638-DEC24CA17F1A}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{09B31A8E-5E85-4557-A6B4-A70724576CE2}"
 	ProjectSection(SolutionItems) = preProject
 		.nuget\NuGet.Config = .nuget\NuGet.Config
 		.nuget\NuGet.exe = .nuget\NuGet.exe
@@ -16,10 +16,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{BAF8135D-121E-49F5-8D80-3B8B1A5BA6BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BAF8135D-121E-49F5-8D80-3B8B1A5BA6BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BAF8135D-121E-49F5-8D80-3B8B1A5BA6BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BAF8135D-121E-49F5-8D80-3B8B1A5BA6BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD7C7099-B8D9-4A8E-AC01-ED03477CD063}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD7C7099-B8D9-4A8E-AC01-ED03477CD063}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD7C7099-B8D9-4A8E-AC01-ED03477CD063}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD7C7099-B8D9-4A8E-AC01-ED03477CD063}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
