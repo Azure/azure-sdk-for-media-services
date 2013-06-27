@@ -31,7 +31,7 @@ using Microsoft.WindowsAzure.Storage.Queue;
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 {
     [TestClass]
-    public class JobTests
+    public partial class JobTests
     {
 
         public const string ExpressionEncoder = "Windows Azure Media Encoder";
@@ -149,7 +149,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof (ArgumentException))]
+        [ExpectedException(typeof(ArgumentException))]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldThrowTryingToCreateJobWithOneTaskAndNoOutput()
         {
@@ -162,7 +162,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof (ArgumentException))]
+        [ExpectedException(typeof(ArgumentException))]
         public void ShouldThrowTryingTocreateCreateJobWithNoTasks()
         {
             try
@@ -200,16 +200,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             IMediaProcessor processor = GetMediaProcessor(_dataContext, WindowsAzureMediaServicesTestConfiguration.MpEncoderName, WindowsAzureMediaServicesTestConfiguration.MpEncoderVersion);
             IJob job = CreateAndSubmitOneTaskJob(_dataContext, GenerateName("ShouldFinishJobWithErrorWithInvalidPreset"), processor, "Some wrong Preset", asset, TaskOptions.None);
             Action<string> verify = id =>
-                {
-                    IJob job2 = _dataContext.Jobs.Where(c => c.Id == id).FirstOrDefault();
-                    Assert.IsNotNull(job2);
-                    Assert.IsNotNull(job2.Tasks);
-                    Assert.AreEqual(1, job2.Tasks.Count);
-                    Assert.IsNotNull(job2.Tasks[0].ErrorDetails);
-                    Assert.AreEqual(1, job2.Tasks[0].ErrorDetails.Count);
-                    Assert.IsNotNull(job2.Tasks[0].ErrorDetails[0]);
-                    Assert.AreEqual("UserInput", job2.Tasks[0].ErrorDetails[0].Code);
-                };
+            {
+                IJob job2 = _dataContext.Jobs.Where(c => c.Id == id).FirstOrDefault();
+                Assert.IsNotNull(job2);
+                Assert.IsNotNull(job2.Tasks);
+                Assert.AreEqual(1, job2.Tasks.Count);
+                Assert.IsNotNull(job2.Tasks[0].ErrorDetails);
+                Assert.AreEqual(1, job2.Tasks[0].ErrorDetails.Count);
+                Assert.IsNotNull(job2.Tasks[0].ErrorDetails[0]);
+                Assert.AreEqual("UserInput", job2.Tasks[0].ErrorDetails[0].Code);
+            };
             WaitForJob(job.Id, JobState.Error, verify);
         }
 
@@ -366,7 +366,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             WaitForJob(job.Id, JobState.Finished, VerifyAllTasksFinished);
         }
 
-        
+
 
         [TestMethod]
         [DeploymentItem(@"Configuration\MP4 to Smooth Streams.xml", "Configuration")]
@@ -509,7 +509,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(1)]
-        [ExpectedException(typeof (DataServiceRequestException))]
+        [ExpectedException(typeof(DataServiceRequestException))]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldThrowTryingToDeleteJobInProcessingState()
         {
@@ -577,7 +577,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             Assert.IsTrue(job.JobNotificationSubscriptions.Count > 0);
 
             WaitForJob(job.Id, JobState.Finished, VerifyAllTasksFinished);
-            Thread.Sleep((int) TimeSpan.FromMinutes(5).TotalMilliseconds);
+            Thread.Sleep((int)TimeSpan.FromMinutes(5).TotalMilliseconds);
 
             Assert.IsNotNull(queue);
             Assert.IsTrue(queue.Exists());
@@ -598,7 +598,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         private IAsset CreateSmoothAsset()
         {
-            var filePaths = new[] {WindowsAzureMediaServicesTestConfiguration.SmallIsm, WindowsAzureMediaServicesTestConfiguration.SmallIsmc, WindowsAzureMediaServicesTestConfiguration.SmallIsmv};
+            var filePaths = new[] { WindowsAzureMediaServicesTestConfiguration.SmallIsm, WindowsAzureMediaServicesTestConfiguration.SmallIsmc, WindowsAzureMediaServicesTestConfiguration.SmallIsmv };
             return CreateSmoothAsset(filePaths);
         }
 
@@ -608,10 +608,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             IAccessPolicy policy = _dataContext.AccessPolicies.Create("Write", TimeSpan.FromMinutes(5), AccessPermissions.Write);
             ILocator locator = _dataContext.Locators.CreateSasLocator(asset, policy);
             var blobclient = new BlobTransferClient
-                {
-                    NumberOfConcurrentTransfers = 5,
-                    ParallelTransferThreadCount = 5
-                };
+            {
+                NumberOfConcurrentTransfers = 5,
+                ParallelTransferThreadCount = 5
+            };
 
 
             foreach (string filePath in filePaths)
@@ -661,7 +661,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 }
                 if (job2.State == JobState.Error)
                 {
-                    StringBuilder str =new StringBuilder();
+                    StringBuilder str = new StringBuilder();
                     str.AppendFormat("Job should not fail - Current State = {0} Expected State = {1} jobId = {2}", job2.State, jobState, jobId);
                     str.AppendLine();
                     foreach (var task in job2.Tasks)
@@ -672,7 +672,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                             str.AppendLine();
                         }
                     }
-                    
+
                     throw new Exception(str.ToString());
                 }
                 if (DateTime.Now - start > TimeSpan.FromMinutes(5))

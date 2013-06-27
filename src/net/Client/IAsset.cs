@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -52,6 +53,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <value>A collection of <see cref="IAsset"/> associated with the Asset.</value>
         ReadOnlyCollection<IAsset> ParentAssets { get; }
+
+        /// <summary>
+        /// Gets storage account name associated with the Asset
+        /// </summary>
+        string StorageAccountName { get; }
+
+        /// <summary>
+        /// Gets <see cref="IStorageAccount"/> associated with the Asset
+        /// </summary>
+        IStorageAccount StorageAccount { get; } 
 
         /// <summary>
         /// Asynchronously updates this asset instance.

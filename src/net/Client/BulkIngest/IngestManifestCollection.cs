@@ -56,18 +56,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns><see cref="IIngestManifest"/></returns>
         public IIngestManifest Create(string name)
         {
-
-            try
-            {
-                Task<IIngestManifest> task = this.CreateAsync(name);
-                task.Wait();
-                return task.Result;
-            }
-            catch (AggregateException exception)
-            {
-                throw exception.InnerException;
-            }
-            
+            return Create(name, this._cloudMediaContext.DefaultStorageAccount.Name);
         }
 
         /// <summary>
@@ -77,10 +66,27 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns><see cref="Task"/> of type <see cref="IIngestManifest"/></returns>
         public Task<IIngestManifest> CreateAsync(string name)
         {
+            return CreateAsync(name, this._cloudMediaContext.DefaultStorageAccount.Name);
+        }
+
+        /// <summary>
+        /// Creates the manifest async.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="storageAccountName">The name of storage account </param>
+        /// <returns><see cref="Task"/> of type <see cref="IIngestManifest"/></returns>
+        public Task<IIngestManifest> CreateAsync(string name,string storageAccountName)
+        {
+            if (name == null) throw new ArgumentNullException("name");
+            if (storageAccountName == null) throw new ArgumentNullException("storageAccountName");
+
             IngestManifestData ingestManifestData = new IngestManifestData
                                     {
-                                        Name = name
+                                        Name = name,
+                                        StorageAccountName = storageAccountName
                                     };
+
+
             ingestManifestData.InitCloudMediaContext(this._cloudMediaContext);
             DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
             dataContext.AddObject(EntitySet, ingestManifestData);
@@ -111,6 +117,26 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             if (!(ingestManifest is IngestManifestData))
             {
                 throw new InvalidCastException(StringTable.ErrorInvalidManifestType);
+            }
+        }
+
+        /// <summary>
+        /// Creates the manifest
+        /// </summary>
+        /// <param name="manifestName">Name of the manifest.</param>
+        /// <param name="storageAccountName">Name of the storage account.</param>
+        /// <returns></returns>
+        public IIngestManifest Create(string manifestName, string storageAccountName)
+        {
+            try
+            {
+                Task<IIngestManifest> task = this.CreateAsync(manifestName, storageAccountName);
+                task.Wait();
+                return task.Result;
+            }
+            catch (AggregateException exception)
+            {
+                throw exception.InnerException;
             }
         }
     }
