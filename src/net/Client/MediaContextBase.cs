@@ -69,5 +69,22 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <seealso cref="MediaProcessorBaseCollection" />
         /// <seealso cref="IMediaProcessor" />
         public abstract MediaProcessorBaseCollection MediaProcessors { get; }
+
+        /// <summary>
+        ///   Gets a collection to operate on StorageAccounts.
+        /// </summary>
+        /// <seealso cref="StorageAccountBaseCollection" />
+        /// <seealso cref="IStorageAccount" />
+        public abstract StorageAccountBaseCollection StorageAccounts { get; }
+
+        /// <summary>
+        /// Returns default storage account
+        /// </summary>
+        public abstract IStorageAccount DefaultStorageAccount { get; }
+
+        /// <summary>
+        /// Gets the collection of notification endpoints avaiable in the system.
+        /// </summary>
+        public abstract NotificationEndPointCollection NotificationEndPoints { get; }
     }
 }

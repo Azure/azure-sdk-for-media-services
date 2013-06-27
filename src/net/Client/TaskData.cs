@@ -172,7 +172,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                         dataContext.LoadProperty(this, OutputMediaAssetsPropertyName);
                     }
 
-                    this._outputMediaAssets = new OutputAssetCollection(this, this.OutputMediaAssets);
+                    this._outputMediaAssets = new OutputAssetCollection(this, this.OutputMediaAssets, this._cloudMediaContext);
                 }
 
                 return this._outputMediaAssets;

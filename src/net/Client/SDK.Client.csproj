@@ -162,6 +162,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="INotificationEndpoint.cs" />
+    <Compile Include="IStorageAccount.cs" />
     <Compile Include="ITaskHistoricalEvent.cs" />
     <Compile Include="JobBaseCollection.cs">
       <SubType>Code</SubType>
@@ -227,6 +228,8 @@
     <Compile Include="MediaContextBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProtectionKeyType.cs" />
+    <Compile Include="StorageAccountBaseCollection.cs" />
+    <Compile Include="StorageAccountData.cs" />
     <Compile Include="StringTable.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
