@@ -404,6 +404,23 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         public IIngestManifestStatistics Statistics { get; set; }
 
+
+        /// <summary>
+        /// Gets <see cref="IStorageAccount"/> associated with the <see cref="IIngestManifest"/> 
+        /// </summary>
+        IStorageAccount IIngestManifest.StorageAccount
+        {
+            get
+            {
+                if (_cloudMediaContext == null)
+                {
+                    throw new NullReferenceException("Operation can't be performed. CloudMediaContext hasn't been initiliazed for IngestManifestData type");
+                }
+
+                return _cloudMediaContext.StorageAccounts.Where(c => c.Name == this.StorageAccountName).FirstOrDefault();
+            }
+        }
+
         /// <summary>
         /// Gets the manifest statistics.
         /// </summary>

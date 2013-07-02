@@ -86,5 +86,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Gets the manifest statistics.
         /// </summary>
         IIngestManifestStatistics Statistics { get; }
+
+        /// <summary>
+        /// Gets <see cref="IStorageAccount"/> associated with the <see cref="IIngestManifest"/> 
+        /// </summary>
+        IStorageAccount StorageAccount { get; } 
     }
 }

@@ -40,6 +40,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public string AlternateId {get;set;}
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public int Options {get;set;}
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        public string StorageAccountName { get; set; }
 
         AssetState IAsset.State
         {
@@ -382,6 +384,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public int State {get;set;}
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public string BlobStorageUriForUpload {get;set;}
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        public string StorageAccountName { get; set; }
 
         IngestManifestState IIngestManifest.State
         {

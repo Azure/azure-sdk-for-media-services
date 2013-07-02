@@ -36,7 +36,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Occurs when upload/download operation has been completed or cancelled.
         /// </summary>
-        public event EventHandler TransferCompleted;
+        public event EventHandler<BlobTransferCompleteEventArgs> TransferCompleted;
 
         /// <summary>
         /// Gets or sets the number of threads to use to for each blob transfer.
