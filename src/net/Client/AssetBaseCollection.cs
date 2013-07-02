@@ -48,6 +48,29 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="options">A <see cref="AssetCreationOptions"/> which will be associated with created asset.</param>
         /// <returns>The created asset.</returns>
         public abstract IAsset Create(string assetName, AssetCreationOptions options);
+
+
+        /// <summary>
+        /// Asynchronously creates an asset for specified storage account. Asset  does not contain any files and <see cref="AssetState"/> is Initialized.
+        /// </summary>
+        /// <param name="assetName">The asset name.</param>
+        /// <param name="storageAccountName">The storage account name</param>
+        /// <param name="options">A <see cref="AssetCreationOptions"/> which will be associated with created asset.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>
+        /// An <see cref="Task"/> of type <see cref="IAsset"/>, where IAsset created according to the specified creation <paramref name="options"/>.
+        /// </returns>
+        public abstract Task<IAsset> CreateAsync(string assetName,string storageAccountName, AssetCreationOptions options, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Creates an asset for specified storage account. Asset does not contain any files and <see cref="AssetState"/> is Initialized. 
+        /// </summary>
+        /// <param name="assetName">The asset name.</param>
+        /// <param name="storageAccountName"></param>
+        /// <param name="options">A <see cref="AssetCreationOptions"/> which will be associated with created asset.</param>
+        /// <returns>The created asset.</returns>
+        public abstract IAsset Create(string assetName, string storageAccountName, AssetCreationOptions options);
+        
         
    
 

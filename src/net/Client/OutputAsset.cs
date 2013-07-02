@@ -17,7 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Threading;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
@@ -26,8 +26,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// Represents a Task output asset.
     /// </summary>
     /// <remarks>This is used when creating task to specify properties for a Task's output.</remarks>
-    internal class OutputAsset : IAsset
+    internal class OutputAsset : IAsset, ICloudMediaContextInit
     {
+        private CloudMediaContext _cloudMediaContext;
+
         /// <summary>
         /// Gets or sets the Id.
         /// </summary>
@@ -97,7 +99,27 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <value>A collection of <see cref="IAsset"/> associated with the Asset.</value>
         public ReadOnlyCollection<IAsset> ParentAssets { get; set; }
-  
+
+        /// <summary>
+        /// Gets storage account name associated with the Asset
+        /// </summary>
+        public string StorageAccountName { get; internal set; }
+
+        /// <summary>
+        /// Gets <see cref="IStorageAccount"/> associated with the Asset
+        /// </summary>
+        IStorageAccount IAsset.StorageAccount
+        {
+            get
+            {
+                if (_cloudMediaContext == null)
+                {
+                    throw new NullReferenceException("Operation can't be performed. CloudMediaContext hasn't been initiliazed for OutputAsset type");
+                }
+                return this._cloudMediaContext.StorageAccounts.Where(c => c.Name == this.StorageAccountName).FirstOrDefault();
+            }
+        }
+
 
         /// <summary>
         /// Updates this instance.
@@ -132,7 +154,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             throw new NotImplementedException();
         }
-        
 
+
+        public void InitCloudMediaContext(CloudMediaContext context)
+        {
+            this._cloudMediaContext = context;
+        }
     }
 }
