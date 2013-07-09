@@ -12,31 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
     /// Describes Origin settings.
     /// </summary>
-    public class OriginSettings
+    public class OriginServiceSettings
     {
         /// <summary>
-        /// Playback settings.
+        /// Gets or sets playback settings.
         /// </summary>
         public PlaybackEndpointSettings Playback { get; set; }
     }
 
     /// <summary>
-    /// Describes playback settings.
+    /// Describes playback endpoint settings.
     /// </summary>
     public class PlaybackEndpointSettings
     {
         /// <summary>
-        /// Maximum cache age in minutes.
+        /// Gets or sets maximum age of the cache in minutes.
         /// </summary>
-        public long MaxCacheAgeInMins { get; set; }
+        public long? MaxCacheAgeInMins { get; set; }
 
         /// <summary>
-        /// Security settings.
+        /// Gets or sets security settings.
         /// </summary>
         public SecuritySettings Security { get; set; }
     }

@@ -95,11 +95,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets or sets origin settings.
         /// </summary>
-        OriginSettings IOrigin.Settings 
+        OriginServiceSettings IOrigin.Settings 
         { 
             get 
             {
-                return Serializer.Deserialize<OriginSettings>(Settings); 
+                return Serializer.Deserialize<OriginServiceSettings>(Settings); 
             }
 
             set

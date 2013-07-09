@@ -45,7 +45,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets or sets origin settings.
         /// </summary>
-        OriginSettings Settings { get; set; }
+        OriginServiceSettings Settings { get; set; }
 
         /// <summary>
         /// Gets origin creation date.
