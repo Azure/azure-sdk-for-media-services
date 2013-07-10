@@ -20,7 +20,6 @@ namespace CopyBlobsIntoAnAsset
 {
     class Program
     {
-        // Read values from the App.config file.
         // Make sure to add the appropriate values to the App.config file.
         private static readonly string MediaServicesAccountName = ConfigurationManager.AppSettings["MediaServicesAccountName"];
         private static readonly string MediaServicesAccountKey = ConfigurationManager.AppSettings["MediaServicesAccountKey"];
@@ -47,7 +46,7 @@ namespace CopyBlobsIntoAnAsset
 
             mediaBlobContainer.CreateIfNotExists();
 
-            string StreamingFilesFolder = Path.GetFullPath(@"c:../..\SupportFiles\streamingfiles\");
+            string StreamingFilesFolder = Path.GetFullPath(@"../..\SupportFiles\streamingfiles\");
 
             // Upload some files to the blob container (for testing purposes). 
             DirectoryInfo uploadDirectory = new DirectoryInfo(StreamingFilesFolder);
