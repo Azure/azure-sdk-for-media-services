@@ -19,7 +19,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// <summary>
     /// Information about G20 authentication key.
     /// </summary>
-    public class G20Auth
+    public class G20Key
     {
         /// <summary>
         /// Expiration of the key.

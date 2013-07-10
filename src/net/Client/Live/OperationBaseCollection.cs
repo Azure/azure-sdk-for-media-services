@@ -32,9 +32,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             Uri uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/{0}('{1}')", OperationSet, id), UriKind.Relative);
             DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
-            var operation = new OperationData() { Id = id };
-            dataContext.AttachTo(OperationSet, operation, Guid.NewGuid().ToString());
-            dataContext.Execute<OperationData>(uri).Single();
+            IOperation operation = dataContext.Execute<OperationData>(uri).SingleOrDefault();
             return operation;
         }
     }
