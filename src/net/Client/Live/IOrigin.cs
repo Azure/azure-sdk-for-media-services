@@ -148,6 +148,18 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         void Update();
 
         /// <summary>
+        /// Sends update request to the service and returns. Use Operations collection to get operation's status.
+        /// </summary>
+        /// <returns>Operation info that can be used to track the operation.</returns>
+        IOperation SendUpdateOperation();
+
+        /// <summary>
+        /// Sends update request to the service asynchronously. Use Operations collection to get operation's status.
+        /// </summary>
+        /// <returns>Task to wait on for operation sending completion.</returns>
+        Task<IOperation> SendUpdateOperationAsync();
+
+        /// <summary>
         /// Scales the origin.
         /// </summary>
         /// <param name="reservedUnits">New reserved units.</param>
