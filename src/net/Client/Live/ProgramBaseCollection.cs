@@ -69,7 +69,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="name">Name of the program.</param>
         /// <param name="description">Program description.</param>
         /// <param name="enableArchive">True if the program must be archived.</param>
-        /// <param name="lookAheadChunks">Number of look ahead chunks.</param>
+        /// <param name="lookAheadFragments">Number of look ahead fragments.</param>
         /// <param name="dvrWindowLength">Length of the DVR window. 
         /// Set to StreamingConstants.InfiniteDvrLenth for infinite DVR.</param>
         /// <param name="estimatedDuration">Estimated duration of the program.</param>
@@ -79,7 +79,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             string name,
             string description,
             bool enableArchive,
-            int lookAheadChunks,
+            int lookAheadFragments,
             TimeSpan? dvrWindowLength,
             TimeSpan estimatedDuration,
             string assetId)
@@ -88,7 +88,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 name,
                 description,
                 enableArchive,
-                lookAheadChunks,
+                lookAheadFragments,
                 dvrWindowLength,
                 estimatedDuration,
                 assetId));
@@ -99,7 +99,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <param name="name">Name of the program.</param>
         /// <param name="enableArchive">True if the program must be archived.</param>
-        /// <param name="lookAheadChunks">Number of look ahead chunks.</param>
+        /// <param name="lookAheadFragments">Number of look ahead fragments.</param>
         /// <param name="dvrWindowLength">Length of the DVR window. 
         /// Set to StreamingConstants.InfiniteDvrLenth for infinite DVR.</param>
         /// <param name="estimatedDuration">Estimated duration of the program.</param>
@@ -108,7 +108,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public IProgram Create(
             string name,
             bool enableArchive,
-            int lookAheadChunks,
+            int lookAheadFragments,
             TimeSpan? dvrWindowLength,
             TimeSpan estimatedDuration,
             string assetId)
@@ -117,7 +117,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 name,
                 null,
                 enableArchive,
-                lookAheadChunks,
+                lookAheadFragments,
                 dvrWindowLength,
                 estimatedDuration,
                 assetId);
@@ -128,7 +128,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <param name="name">Name of the program.</param>
         /// <param name="enableArchive">True if the program must be archived.</param>
-        /// <param name="lookAheadChunks">Number of look ahead chunks.</param>
+        /// <param name="lookAheadFragments">Number of look ahead fragments.</param>
         /// <param name="dvrWindowLength">Length of the DVR window. 
         /// Set to StreamingConstants.InfiniteDvrLenth for infinite DVR.</param>
         /// <param name="estimatedDuration">Estimated duration of the program.</param>
@@ -137,7 +137,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public Task<IProgram> CreateAsync(
             string name,
             bool enableArchive,
-            int lookAheadChunks,
+            int lookAheadFragments,
             TimeSpan? dvrWindowLength,
             TimeSpan estimatedDuration,
             string assetId)
@@ -146,7 +146,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 name,
                 null,
                 enableArchive,
-                lookAheadChunks,
+                lookAheadFragments,
                 dvrWindowLength,
                 estimatedDuration,
                 assetId);
@@ -158,7 +158,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="name">Name of the program.</param>
         /// <param name="description">Program description.</param>
         /// <param name="enableArchive">True if the program must be archived.</param>
-        /// <param name="lookAheadChunks">Number of look ahead chunks.</param>
+        /// <param name="lookAheadFragments">Number of look ahead fragments.</param>
         /// <param name="dvrWindowLength">Length of the DVR window. 
         /// Set to StreamingConstants.InfiniteDvrLenth for infinite DVR.</param>
         /// <param name="estimatedDuration">Estimated duration of the program.</param>
@@ -168,7 +168,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             string name,
             string description,
             bool enableArchive,
-            int lookAheadChunks,
+            int lookAheadFragments,
             TimeSpan? dvrWindowLength, 
             TimeSpan estimatedDuration,
             string assetId)
@@ -190,7 +190,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 Description = description,
                 EstimatedDurationSeconds = (int)estimatedDuration.TotalSeconds,
                 EnableArchive = enableArchive,
-                LookAheadChunks = lookAheadChunks,
+                LookAheadFragments = lookAheadFragments,
                 Name = name
             };
 
