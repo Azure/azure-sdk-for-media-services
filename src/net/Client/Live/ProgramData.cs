@@ -69,11 +69,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public bool EnableArchive { get; set; }
 
         /// <summary>
-        /// Gets or sets number of look ahead chunks.
-        /// </summary>
-        public int LookAheadChunks { get; set; }
-
-        /// <summary>
         /// Gets or sets program state.
         /// </summary>
         public string State { get; set; }

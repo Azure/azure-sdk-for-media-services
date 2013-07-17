@@ -19,6 +19,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.MediaServices.Client.Properties;
+using System.Net;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
