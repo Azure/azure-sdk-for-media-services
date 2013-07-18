@@ -583,6 +583,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Job not submitted yet and can&apos;t be updated..
+        /// </summary>
+        internal static string InvalidOperationUpdateForNotSubmittedJob {
+            get {
+                return ResourceManager.GetString("InvalidOperationUpdateForNotSubmittedJob", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Files can&apos;t be uploaded to asset with Published state..
         /// </summary>
         internal static string InvalidOperationUploadFilesForPublishedAsset {

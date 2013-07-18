@@ -47,6 +47,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         private CloudMediaContext _dataContext;
         private string _smallWmv;
         private const string NamePrefix = "JobTests_";
+        private const int InitialJobPriority = 1;
 
 
         /// <summary>
@@ -596,6 +597,72 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             Assert.AreEqual(endPointAddress, lastNotificationEndPoint.EndPointAddress);
         }
 
+        [TestMethod]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        public void ShouldUpdateJobPriorityWhenJobIsQueued()
+        {
+            const int newPriority = 3;
+
+            IMediaProcessor processor = GetMediaProcessor(_dataContext, WindowsAzureMediaServicesTestConfiguration.MpEncoderName, WindowsAzureMediaServicesTestConfiguration.MpEncoderVersion);
+            IAsset asset = AssetTests.CreateAsset(_dataContext, _smallWmv, AssetCreationOptions.StorageEncrypted);
+            //Create temp job to simuate queue when no reserved unit are allocated
+            IJob tempJob = CreateAndSubmitOneTaskJob(_dataContext, GenerateName("SubmitJobToCreateQueue"), processor, GetWamePreset(processor), asset, TaskOptions.None);
+            IJob job = CreateAndSubmitOneTaskJob(_dataContext, GenerateName("ShouldSubmitJobAndUpdatePriorityWhenJobIsQueued"), processor, GetWamePreset(processor), asset, TaskOptions.None);
+
+            WaitForJobStateAndUpdatePriority(job, JobState.Queued, newPriority);
+            WaitForJob(job.Id, JobState.Finished, (string id) =>
+                { 
+                    var finished = _dataContext.Jobs.Where(c => c.Id == job.Id && c.Priority == newPriority).FirstOrDefault();
+                    Assert.IsNotNull(finished);
+                });
+        }
+
+        [TestMethod]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [ExpectedException(typeof(DataServiceRequestException))]
+        public void ShouldThrowTryingUpdateJobPriorityWhenJobIsProcessing()
+        {
+            const int newPriority = 3;
+
+            IMediaProcessor processor = GetMediaProcessor(_dataContext, WindowsAzureMediaServicesTestConfiguration.MpEncoderName, WindowsAzureMediaServicesTestConfiguration.MpEncoderVersion);
+            IAsset asset = AssetTests.CreateAsset(_dataContext, _smallWmv, AssetCreationOptions.StorageEncrypted);
+            IJob job = CreateAndSubmitOneTaskJob(_dataContext, GenerateName("ShouldSubmitJobAndUpdatePriorityWhenJobIsQueued"), processor, GetWamePreset(processor), asset, TaskOptions.None);
+            try
+            {
+                WaitForJobStateAndUpdatePriority(job, JobState.Processing, newPriority);
+            }
+            catch (DataServiceRequestException ex)
+            {
+                Assert.IsTrue(ex.InnerException.Message.Contains("Job's priority can only be changed if the job is in Queued state"));
+                throw ex;
+            }
+        }
+
+        [TestMethod]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [ExpectedException(typeof(DataServiceRequestException))]
+        public void ShouldThrowTryingUpdateJobPriorityWhenJobIsFinished()
+        {
+            const int newPriority = 3;
+            
+            IMediaProcessor processor = GetMediaProcessor(_dataContext, WindowsAzureMediaServicesTestConfiguration.MpEncoderName, WindowsAzureMediaServicesTestConfiguration.MpEncoderVersion);
+            IAsset asset = AssetTests.CreateAsset(_dataContext, _smallWmv, AssetCreationOptions.StorageEncrypted);
+            IJob job = CreateAndSubmitOneTaskJob(_dataContext, GenerateName("ShouldSubmitJobAndUpdatePriorityWhenJobIsQueued"), processor, GetWamePreset(processor), asset, TaskOptions.None);
+            try
+            {
+                WaitForJobStateAndUpdatePriority(job, JobState.Finished, newPriority);
+            }
+            catch (DataServiceRequestException ex)
+            {
+                Assert.IsTrue(ex.InnerException.Message.Contains("Job's priority can only be changed if the job is in Queued state"));
+                throw ex;
+            }
+        }
+
+
+
+        #region Helper Methods
+
         private IAsset CreateSmoothAsset()
         {
             var filePaths = new[] { WindowsAzureMediaServicesTestConfiguration.SmallIsm, WindowsAzureMediaServicesTestConfiguration.SmallIsmc, WindowsAzureMediaServicesTestConfiguration.SmallIsmv };
@@ -628,10 +695,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             return asset;
         }
 
-
         public static IJob CreateAndSubmitOneTaskJob(CloudMediaContext context, string name, IMediaProcessor mediaProcessor, string preset, IAsset asset, TaskOptions options)
         {
             IJob job = context.Jobs.Create(name);
+            job.Priority = InitialJobPriority;
             ITask task = job.Tasks.AddNew("Task1", mediaProcessor, preset, options);
             task.InputAssets.Add(asset);
             task.OutputAssets.AddNew("Output asset", AssetCreationOptions.None);
@@ -700,9 +767,32 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             Trace.WriteLine(string.Format("Using media processor {0} Version {1}, ID {2}", mp.Name, mp.Version, mp.Id));
             return mp;
         }
+
         private string GenerateName(string name)
         {
             return NamePrefix + name;
         }
+
+        /// <summary>
+        /// Waits for expected job state and updates job priority.
+        /// </summary>
+        /// <param name="job">The job.</param>
+        /// <param name="expectedJobState">Expected state of the job.</param>
+        /// <param name="newPriority">The new priority.</param>
+        private void WaitForJobStateAndUpdatePriority(IJob job, JobState expectedJobState, int newPriority)
+        {
+            WaitForJob(job.Id, expectedJobState, (string id) => { });
+
+            job = _dataContext.Jobs.Where(c => c.Id == job.Id).FirstOrDefault();
+            Assert.IsNotNull(job);
+            Assert.AreEqual(InitialJobPriority, job.Priority);
+            job.Priority = newPriority;
+            job.Update();
+
+            job = _dataContext.Jobs.Where(c => c.Id == job.Id).FirstOrDefault();
+            Assert.IsNotNull(job);
+            Assert.AreEqual(newPriority, job.Priority, "Job Priority is not matching expected value");
+        }
+        #endregion
     }
 }
