@@ -155,6 +155,9 @@
   <data name="ErrorOrphanProgram" xml:space="preserve">
     <value>Creating a program that is not a child of a channel.</value>
   </data>
+  <data name="ErrorUpdateFailedFormat" xml:space="preserve">
+    <value>Update operation {0}, operation id: {1}, {2}</value>
+  </data>
   <data name="Failed" xml:space="preserve">
     <value>failed</value>
   </data>
