@@ -71,7 +71,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 var code = (HttpStatusCode)response.StatusCode;
                 throw new InvalidOperationException(code.ToString());
             }
-            else if (response.StatusCode != (int)HttpStatusCode.PartialContent) // synchronous complete
+            else if (response.StatusCode != (int)HttpStatusCode.Accepted) // synchronous complete
             {
                 Refresh();
                 return new OperationData()
@@ -169,7 +169,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                         var code = (HttpStatusCode)response.StatusCode;
                         throw new InvalidOperationException(code.ToString());
                     }
-                    else if (response.StatusCode != (int)HttpStatusCode.PartialContent) // synchronous complete
+                    else if (response.StatusCode != (int)HttpStatusCode.Accepted) // synchronous complete
                     {
                         Refresh();
                         return;
@@ -216,7 +216,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 var code = (HttpStatusCode)response.StatusCode;
                 throw new InvalidOperationException(code.ToString());
             }
-            else if (response.StatusCode != (int)HttpStatusCode.PartialContent) // synchronous complete
+            else if (response.StatusCode != (int)HttpStatusCode.Accepted) // synchronous complete
             {
                 Refresh();
                 return new OperationData()
