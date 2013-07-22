@@ -68,7 +68,18 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets or sets origin settings.
         /// </summary>
-        public string Settings { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        public string Settings 
+        {
+            get
+            {
+                return Serializer.Serialize(_settings);
+            }
+            set
+            {
+                _settings = Serializer.Deserialize<OriginServiceSettings>(value);
+            }
+        }
 
         #region ICloudMediaContextInit Members
         /// <summary>
@@ -100,12 +111,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         { 
             get 
             {
-                return Serializer.Deserialize<OriginServiceSettings>(Settings); 
+                return _settings; 
             }
 
             set
             {
-                Settings = Serializer.Serialize(value); 
+                _settings = value; 
             } 
         }
 
@@ -315,5 +326,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
         protected override string EntitySetName { get { return OriginBaseCollection.OriginSet; } }
+
+        private OriginServiceSettings _settings;
     }
 }

@@ -76,7 +76,18 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets or sets channel settings.
         /// </summary>
-        public string Settings { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        public string Settings 
+        {
+            get
+            {
+                return Serializer.Serialize(_settings);
+            }
+            set
+            {
+                _settings = Serializer.Deserialize<ChannelSinkSettings>(value);
+            }
+        }
 
         #region ICloudMediaContextInit Members
         /// <summary>
@@ -125,12 +136,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             get
             {
-                return Serializer.Deserialize<ChannelSinkSettings>(Settings);
+                return _settings;
             }
 
             set
             {
-                Settings = Serializer.Serialize(value);
+                _settings = value;
             }
         }
 
@@ -346,5 +357,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
         private ProgramBaseCollection _programCollection;
+
+        private ChannelSinkSettings _settings;
     }
 }
