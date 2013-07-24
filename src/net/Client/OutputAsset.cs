@@ -61,6 +61,32 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         public string AlternateId { get; set; }
 
+
+        /// <summary>
+        /// Gets or sets the URL of asset container.
+        /// </summary>
+        /// <value>
+        /// The URL.
+        /// </value>
+        Uri IAsset.Uri
+        {
+            get
+            {
+                System.Uri uri;
+                if (System.Uri.TryCreate(this.Uri, UriKind.Absolute, out uri))
+                {
+                    return uri;
+                }
+                else
+                {
+                    return null;
+                }
+
+            }
+        }
+
+        public string Uri { get; set; }
+
         /// <summary>
         /// Gets or sets the options for creating the asset.
         /// </summary>
