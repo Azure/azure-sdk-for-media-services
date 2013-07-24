@@ -27,6 +27,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public string Id { get; set; }
 
         /// <summary>
+        /// Id of the entity associated with this operation.
+        /// </summary>
+        public string TargetEntityId { get; set; }
+
+        /// <summary>
         /// Gets or sets operation state.
         /// </summary>
         public string State { get; set; }
@@ -51,18 +56,5 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 return (OperationState)Enum.Parse(typeof(OperationState), State, true);
             }
         }
-    }
-
-    internal class Operation<T> : OperationData, IOperation<T>
-    {
-        #region IOperation<T> Members
-
-        public T Target
-        {
-            get;
-            internal set;
-        }
-
-        #endregion
     }
 }

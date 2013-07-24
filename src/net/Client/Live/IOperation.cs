@@ -25,6 +25,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         string Id { get; set; }
 
         /// <summary>
+        /// Id of the entity associated with this operation.
+        /// </summary>
+        string TargetEntityId { get; set; }
+
+        /// <summary>
         /// Gets operation error code.
         /// </summary>
         string ErrorCode { get; }
@@ -38,16 +43,5 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Gets operation state.
         /// </summary>
         OperationState State { get; }
-    }
-
-    /// <summary>
-    /// Describes an Operation for a particular object.
-    /// </summary>
-    public interface IOperation<T> : IOperation
-    {
-        /// <summary>
-        /// Target object of the operation.
-        /// </summary>
-        T Target { get; }
     }
 }

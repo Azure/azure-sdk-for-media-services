@@ -147,7 +147,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="size">Size of the channel.</param>
         /// <param name="settings">Channel settings.</param>
         /// <returns>Operation info that can be used to track the operation.</returns>
-        public IOperation<IChannel> SendCreateOperation(
+        public IOperation SendCreateOperation(
             string name,
             ChannelSize size,
             ChannelSinkSettings settings)
@@ -163,7 +163,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="size">Size of the channel.</param>
         /// <param name="settings">Channel settings.</param>
         /// <returns>Operation info that can be used to track the operation.</returns>
-        public IOperation<IChannel> SendCreateOperation(
+        public IOperation SendCreateOperation(
             string name,
             string description,
             ChannelSize size, 
@@ -190,13 +190,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             string operationId = response.Single().Headers[StreamingConstants.OperationIdHeader];
 
-            var result = new Operation<IChannel>()
+            IOperation result = new OperationData()
             {
                 ErrorCode = null,
                 ErrorMessage = null,
                 Id = operationId,
                 State = OperationState.InProgress.ToString(),
-                Target = channel
             };
 
             return result;
@@ -209,7 +208,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="size">Size of the channel.</param>
         /// <param name="settings">Channel settings.</param>
         /// <returns>Task to wait on for operation sending completion.</returns>
-        public Task<IOperation<IChannel>> SendCreateOperationAsync(
+        public Task<IOperation> SendCreateOperationAsync(
             string name,
             ChannelSize size,
             ChannelSinkSettings settings)
@@ -225,7 +224,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="size">Size of the channel.</param>
         /// <param name="settings">Channel settings.</param>
         /// <returns>Task to wait on for operation sending completion.</returns>
-        public Task<IOperation<IChannel>> SendCreateOperationAsync(
+        public Task<IOperation> SendCreateOperationAsync(
             string name,
             string description,
             ChannelSize size,
