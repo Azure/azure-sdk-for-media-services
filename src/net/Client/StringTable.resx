@@ -319,4 +319,7 @@
   <data name="AssetFileCreateParentAssetIsNull" xml:space="preserve">
     <value>AssetFile can't be created out of context of asset. Use IAsset.AssetFiles.Create  method instead. </value>
   </data>
+  <data name="InvalidOperationUpdateForNotSubmittedJob" xml:space="preserve">
+    <value>Job not submitted yet and can't be updated.</value>
+  </data>
 </root>
