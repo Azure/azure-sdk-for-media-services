@@ -68,29 +68,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
         /// <summary>
-        /// Creates new channel.
-        /// </summary>
-        /// <param name="name">Unique name of the channel.</param>
-        /// <param name="description">Description of the channel.</param>
-        /// <param name="size">Size of the channel.</param>
-        /// <returns>The created channel.</returns>
-        public IChannel Create(string name, string description, ChannelSize size)
-        {
-            return Create(name, description, size, null);
-        }
-
-        /// <summary>
-        /// Creates new channel.
-        /// </summary>
-        /// <param name="name">Unique name of the channel.</param>
-        /// <param name="size">Size of the channel.</param>
-        /// <returns>The created channel.</returns>
-        public IChannel Create(string name, ChannelSize size)
-        {
-            return Create(name, null, size, null);
-        }
-
-        /// <summary>
         /// Asynchronously creates new channel.
         /// </summary>
         /// <param name="name">Unique name of the channel.</param>
@@ -153,29 +130,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Asynchronously creates new channel.
         /// </summary>
         /// <param name="name">Unique name of the channel.</param>
-        /// <param name="description">Description of the channel.</param>
-        /// <param name="size">Size of the channel.</param>
-        /// <returns>The created channel.</returns>
-        public Task<IChannel> CreateAsync(string name, string description, ChannelSize size)
-        {
-            return CreateAsync(name, description, size, null);
-        }
-
-        /// <summary>
-        /// Asynchronously creates new channel.
-        /// </summary>
-        /// <param name="name">Unique name of the channel.</param>
-        /// <param name="size">Size of the channel.</param>
-        /// <returns>The created channel.</returns>
-        public Task<IChannel> CreateAsync(string name, ChannelSize size)
-        {
-            return CreateAsync(name, null, size, null);
-        }
-
-        /// <summary>
-        /// Asynchronously creates new channel.
-        /// </summary>
-        /// <param name="name">Unique name of the channel.</param>
         /// <param name="size">Size of the channel.</param>
         /// <param name="settings">Channel settings.</param>
         /// <returns>The created channel.</returns>
@@ -191,42 +145,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <param name="name">Unique name of the channel.</param>
         /// <param name="size">Size of the channel.</param>
-        /// <returns>Operation info that can be used to track the operation.</returns>
-        public IOperation<IChannel> SendCreateOperation(
-            string name,
-            ChannelSize size)
-        {
-            return SendCreateOperation(name, null, size, null);
-        }
-
-        /// <summary>
-        /// Sends create channel operation to the service and returns. Use Operations collection to get operation's status.
-        /// </summary>
-        /// <param name="name">Unique name of the channel.</param>
-        /// <param name="size">Size of the channel.</param>
         /// <param name="settings">Channel settings.</param>
         /// <returns>Operation info that can be used to track the operation.</returns>
-        public IOperation<IChannel> SendCreateOperation(
+        public IOperation SendCreateOperation(
             string name,
             ChannelSize size,
             ChannelSinkSettings settings)
         {
             return SendCreateOperation(name, null, size, settings);
         }
-        /// <summary>
-        /// Sends create channel operation to the service and returns. Use Operations collection to get operation's status.
-        /// </summary>
-        /// <param name="name">Unique name of the channel.</param>
-        /// <param name="description">Description of the channel.</param>
-        /// <param name="size">Size of the channel.</param>
-        /// <returns>Operation info that can be used to track the operation.</returns>
-        public IOperation<IChannel> SendCreateOperation(
-            string name,
-            string description,
-            ChannelSize size)
-        {
-            return SendCreateOperation(name, description, size, null);
-        }
 
         /// <summary>
         /// Sends create channel operation to the service and returns. Use Operations collection to get operation's status.
@@ -236,7 +163,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="size">Size of the channel.</param>
         /// <param name="settings">Channel settings.</param>
         /// <returns>Operation info that can be used to track the operation.</returns>
-        public IOperation<IChannel> SendCreateOperation(
+        public IOperation SendCreateOperation(
             string name,
             string description,
             ChannelSize size, 
@@ -263,13 +190,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             string operationId = response.Single().Headers[StreamingConstants.OperationIdHeader];
 
-            var result = new Operation<IChannel>()
+            IOperation result = new OperationData()
             {
                 ErrorCode = null,
                 ErrorMessage = null,
                 Id = operationId,
                 State = OperationState.InProgress.ToString(),
-                Target = channel
             };
 
             return result;
@@ -280,37 +206,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <param name="name">Unique name of the channel.</param>
         /// <param name="size">Size of the channel.</param>
-        /// <returns>Task to wait on for operation sending completion.</returns>
-        public Task<IOperation<IChannel>> SendCreateOperationAsync(
-            string name,
-            ChannelSize size)
-        {
-            return SendCreateOperationAsync(name, null, size, null);
-        }
-
-        /// <summary>
-        /// Sends create channel operation to the service asynchronously. Use Operations collection to get operation's status.
-        /// </summary>
-        /// <param name="name">Unique name of the channel.</param>
-        /// <param name="description">Description of the channel.</param>
-        /// <param name="size">Size of the channel.</param>
-        /// <returns>Task to wait on for operation sending completion.</returns>
-        public Task<IOperation<IChannel>> SendCreateOperationAsync(
-            string name,
-            string description,
-            ChannelSize size)
-        {
-            return SendCreateOperationAsync(name, description, size, null);
-        }
-
-        /// <summary>
-        /// Sends create channel operation to the service asynchronously. Use Operations collection to get operation's status.
-        /// </summary>
-        /// <param name="name">Unique name of the channel.</param>
-        /// <param name="size">Size of the channel.</param>
         /// <param name="settings">Channel settings.</param>
         /// <returns>Task to wait on for operation sending completion.</returns>
-        public Task<IOperation<IChannel>> SendCreateOperationAsync(
+        public Task<IOperation> SendCreateOperationAsync(
             string name,
             ChannelSize size,
             ChannelSinkSettings settings)
@@ -326,7 +224,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="size">Size of the channel.</param>
         /// <param name="settings">Channel settings.</param>
         /// <returns>Task to wait on for operation sending completion.</returns>
-        public Task<IOperation<IChannel>> SendCreateOperationAsync(
+        public Task<IOperation> SendCreateOperationAsync(
             string name,
             string description,
             ChannelSize size,

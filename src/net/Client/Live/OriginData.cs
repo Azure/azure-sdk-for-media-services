@@ -68,7 +68,18 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets or sets origin settings.
         /// </summary>
-        public string Settings { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        public string Settings 
+        {
+            get
+            {
+                return Serializer.Serialize(_settings);
+            }
+            set
+            {
+                _settings = Serializer.Deserialize<OriginServiceSettings>(value);
+            }
+        }
 
         #region ICloudMediaContextInit Members
         /// <summary>
@@ -100,12 +111,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         { 
             get 
             {
-                return Serializer.Deserialize<OriginServiceSettings>(Settings); 
+                return _settings; 
             }
 
             set
             {
-                Settings = Serializer.Serialize(value); 
+                _settings = value; 
             } 
         }
 
@@ -314,58 +325,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             return Task.Factory.StartNew(() => SendDeleteOperation());
         }
 
-        /// <summary>
-        /// Sends update request to the service and returns. Use Operations collection to get operation's status.
-        /// </summary>
-        /// <returns>Operation info that can be used to track the operation.</returns>
-        public IOperation SendUpdateOperation()
-        {
-            DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
-            dataContext.AttachTo(this.EntitySetName, this);
-            dataContext.UpdateObject(this);
-            var response = dataContext.SaveChanges().Single();
-
-            if (response.StatusCode == (int)HttpStatusCode.NotFound)
-            {
-                throw new InvalidOperationException("Entity not found");
-            }
-            else if (response.StatusCode >= 400)
-            {
-                var code = (HttpStatusCode)response.StatusCode;
-                throw new InvalidOperationException(code.ToString());
-            }
-            else if (response.StatusCode != (int)HttpStatusCode.PartialContent) // synchronous complete
-            {
-                Refresh();
-                return new OperationData()
-                {
-                    ErrorCode = null,
-                    ErrorMessage = null,
-                    State = OperationState.Succeeded.ToString(),
-                    Id = null
-                };
-            }
-
-            string operationId = response.Headers[StreamingConstants.OperationIdHeader];
-
-            return new OperationData()
-            {
-                ErrorCode = null,
-                ErrorMessage = null,
-                Id = operationId,
-                State = OperationState.InProgress.ToString(),
-            };
-        }
-
-        /// <summary>
-        /// Sends update request to the service asynchronously. Use Operations collection to get operation's status.
-        /// </summary>
-        /// <returns>Task to wait on for operation sending completion.</returns>
-        public Task<IOperation> SendUpdateOperationAsync()
-        {
-            return Task.Factory.StartNew(() => SendUpdateOperation());
-        }
-
         protected override string EntitySetName { get { return OriginBaseCollection.OriginSet; } }
+
+        private OriginServiceSettings _settings;
     }
 }
