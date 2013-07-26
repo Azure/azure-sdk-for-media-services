@@ -322,4 +322,7 @@
   <data name="InvalidOperationUpdateForNotSubmittedJob" xml:space="preserve">
     <value>Job not submitted yet and can't be updated.</value>
   </data>
+  <data name="InvalidAssetUriException" xml:space="preserve">
+    <value>IAsset.Uri can't be created since invalid string value for property has been returned by REST layer</value>
+  </data>
 </root>
