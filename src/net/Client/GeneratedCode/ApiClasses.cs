@@ -63,6 +63,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             get;
         }
+
+        /// <include file='Documentation.xml' path='Documentation/Member[@name="IAsset.Uri"]'/>
+        Uri Uri
+        {
+            get;
+        }
     }
     public partial interface IAssetFile
     {
@@ -527,6 +533,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         string ContentAccessComponent
         {
             get;
+        }
+
+        /// <include file='Documentation.xml' path='Documentation/Member[@name="ILocator.Name"]'/>
+        string Name
+        {
+            get; 
         }
     }
     public partial interface IMediaProcessor

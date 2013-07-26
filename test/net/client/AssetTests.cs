@@ -53,7 +53,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestMethod]
         [Priority(1)]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [Ignore()]
         public void ShouldCreateAssetFile()
         {
             IAsset asset = _dataContext.Assets.Create("Empty", AssetCreationOptions.StorageEncrypted);
@@ -66,7 +65,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             blobTransferClient.TransferCompleted += (sender, args) =>
             {
                 transferCompletedFired = true;
-                Assert.Equals(BlobTransferType.Upload, args.TransferType);
+                Assert.AreEqual(BlobTransferType.Upload, args.TransferType, "file.UploadAsync Transfer completed expected BlobTransferType is Upload");
             };
             file.UploadAsync(_smallWmv, blobTransferClient, locator, CancellationToken.None).Wait();
             Assert.IsNotNull(asset, "Asset should be non null");
@@ -879,6 +878,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         {
             Assert.IsNotNull(asset, "Asset should be non null");
             Assert.AreNotEqual(Guid.Empty, asset.Id, "Asset ID shuold not be null");
+            Assert.IsNotNull(asset.Uri);
             Assert.AreEqual(AssetState.Initialized, asset.State, "Asset state wrong");
         }
 

@@ -24,6 +24,10 @@
     <summary>Optional. An alternate Id value that corresponds to an Id in another content management system.</summary>
     <value></value>
   </Member>
+  <Member name="IAsset.Uri">
+    <summary>Asset azure storage container URI.</summary>
+    <value></value>
+  </Member>
   <Member name="IAssetFile.Id">
     <summary>Unique identifier set by Media Services.</summary>
     <value></value>
@@ -391,6 +395,13 @@
   <Member name="ILocator.Id">
     <summary>Unique identifier set by Media Services.
   </summary>
+    <value></value>
+  </Member>
+
+  <Member name="ILocator.Name">
+    <summary>
+      The Name of the Asset
+    </summary>
     <value></value>
   </Member>
   <Member name="ILocator.AssetId">

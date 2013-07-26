@@ -201,6 +201,29 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
         /// <summary>
+        /// Gets the asset storage container Uri.
+        /// </summary>
+        /// <value>
+        /// The URI.
+        /// </value>
+        Uri IAsset.Uri
+        {
+            get
+            {
+                System.Uri uri;
+                if (System.Uri.TryCreate(this.Uri, UriKind.Absolute, out uri))
+                {
+                    return uri;
+                }
+                else
+                {
+                    throw new UriFormatException(StringTable.InvalidAssetUriException);
+                }
+                
+            } 
+        }
+
+        /// <summary>
         /// Asynchronously updates this asset instance.
         /// </summary>
         /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
