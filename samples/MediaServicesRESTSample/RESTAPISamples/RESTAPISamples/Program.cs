@@ -9,8 +9,8 @@ using System.Web;
 using System.Xml;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
-using Microsoft.WindowsAzure;
-using Microsoft.WindowsAzure.StorageClient;
+//using Microsoft.WindowsAzure;
+//using Microsoft.WindowsAzure.StorageClient;
 using System.Reflection;
 using System.CodeDom;
 using System.CodeDom.Compiler;
@@ -24,15 +24,15 @@ namespace Microsoft.Samples.RESTAPI
         #region AppSettings
         private static Uri serviceURI = new Uri(ConfigurationManager.AppSettings["serviceURI"]);
         private static readonly string accessControlURI = ConfigurationManager.AppSettings["accessControlURI"];
-        private static readonly string clientSecret = ConfigurationManager.AppSettings["accountKey"];
-        private static readonly string clientId  = ConfigurationManager.AppSettings["accountName"];
+        private static readonly string clientSecret = ConfigurationManager.AppSettings["MediaServicesAccountKey"];
+        private static readonly string clientId = ConfigurationManager.AppSettings["MediaServicesAccountName"];
         private static readonly string scope = ConfigurationManager.AppSettings["scope"];
         #endregion
 
         #region storage account credentials
-        // WAMS storage account credentials used for file upload example.
-        private static readonly string _storageAccountName = ConfigurationManager.AppSettings["WamsStorageAccountName"];
-        private static readonly string _storageAccountKey = ConfigurationManager.AppSettings["WamsStorageAccountKey"];
+        // Media Services storage account credentials used for file upload example.
+        private static readonly string _storageAccountName = ConfigurationManager.AppSettings["MediaServicesStorageAccountName"];
+        private static readonly string _storageAccountKey = ConfigurationManager.AppSettings["MediaServicesStorageAccountKey"];
         #endregion
 
         #region Paths
@@ -55,7 +55,6 @@ namespace Microsoft.Samples.RESTAPI
         {
             token = GetACSToken(accessControlURI, clientId, clientSecret, scope);
            // Call the method(s) of your choice here
-          
         }
    
         #region  Samples from Ingest Assets with the Media Services REST API
@@ -988,7 +987,7 @@ namespace Microsoft.Samples.RESTAPI
             request.Headers.Add("Accept-Charset", "UTF-8");
             request.Headers.Add("DataServiceVersion", "3.0;NetFx");
             request.Headers.Add("MaxDataServiceVersion", "3.0;NetFx");
-            request.Headers.Add("x-ms-version", "2.0");
+            request.Headers.Add("x-ms-version", "2.2");
             request.Headers.Add(HttpRequestHeader.Authorization, "Bearer " + token);
 
             // If a request body was passed in, read it in and write it to the
