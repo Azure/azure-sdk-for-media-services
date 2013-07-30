@@ -82,6 +82,25 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Creates new Origin.
         /// </summary>
         /// <param name="name">Name of the origin.</param>
+        /// <param name="reservedUnits">Reserved units.</param>
+        /// <param name="settings">Origin settings.</param>
+        /// <returns>The created Origin.</returns>
+        public IOrigin Create(
+                    string name,
+                    int reservedUnits,
+                    OriginServiceSettings settings)
+        {
+            return Create(
+                name,
+                null,
+                reservedUnits,
+                settings);
+        }
+
+        /// <summary>
+        /// Creates new Origin.
+        /// </summary>
+        /// <param name="name">Name of the origin.</param>
         /// <param name="description">Description of the Origin.</param>
         /// <param name="reservedUnits">Reserved units.</param>
         /// <param name="settings">Origin settings.</param>
@@ -112,6 +131,21 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             int reservedUnits)
         {
             return CreateAsync(name, description, reservedUnits, null);
+        }
+
+        /// <summary>
+        /// Creates new Origin.
+        /// </summary>
+        /// <param name="name">Name of the origin.</param>
+        /// <param name="reservedUnits">Reserved units.</param>
+        /// <param name="settings">Origin settings.</param>
+        /// <returns>Task to wait on for operation completion.</returns>
+        public Task<IOrigin> CreateAsync(
+                    string name,
+                    int reservedUnits,
+                    OriginServiceSettings settings)
+        {
+            return CreateAsync(name, null, reservedUnits, settings);
         }
 
         /// <summary>
@@ -225,6 +259,21 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Sends create origin operation to the service and returns. Use Operations collection to get operation's status.
         /// </summary>
         /// <param name="name">Name of the origin.</param>
+        /// <param name="reservedUnits">Reserved units.</param>
+        /// <param name="settings">Origin settings.</param>
+        /// <returns>Operation info that can be used to track the operation.</returns>
+        public IOperation SendCreateOperation(
+            string name,
+            int reservedUnits,
+            OriginServiceSettings settings)
+        {
+            return SendCreateOperation(name, null, reservedUnits, settings);
+        }
+
+        /// <summary>
+        /// Sends create origin operation to the service and returns. Use Operations collection to get operation's status.
+        /// </summary>
+        /// <param name="name">Name of the origin.</param>
         /// <param name="description">Description of the Origin.</param>
         /// <param name="reservedUnits">Reserved units.</param>
         /// <param name="settings">Origin settings.</param>
@@ -293,6 +342,21 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             int reservedUnits)
         {
             return SendCreateOperationAsync(name, description, reservedUnits, null);
+        }
+
+        /// <summary>
+        /// Sends create origin operation to the service asynchronously. Use Operations collection to get operation's status.
+        /// </summary>
+        /// <param name="name">Name of the origin.</param>
+        /// <param name="reservedUnits">Reserved units.</param>
+        /// <param name="settings">Origin settings.</param>
+        /// <returns>Task to wait on for operation sending completion.</returns>
+        public Task<IOperation> SendCreateOperationAsync(
+            string name,
+            int reservedUnits,
+            OriginServiceSettings settings)
+        {
+            return SendCreateOperationAsync(name, null, reservedUnits, settings);
         }
 
         /// <summary>
