@@ -32,6 +32,7 @@ namespace SDK.Client.Samples.LoadBalancing
 
             //Setup step which will be run once to enable storage analytics
             //Please note that it will take time for capacity metric data to appear in storage account after configuration
+            //Also we confirmed with storage team that in some instances you have to create container or blob in order analytics data to start showing up
             foreach (var storageAccount in accountsMapping.Keys)
             {
                 storageAccount.EnableBlobStorageAnalytics();
