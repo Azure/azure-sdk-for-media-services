@@ -99,12 +99,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             get;
             set;
         }
+        
         /// <include file='Documentation.xml' path='Documentation/Member[@name="IAssetFile.ContentFileSize"]'/>
+        [Obsolete]
         long ContentFileSize
         {
             get; set;
         }
+        
         /// <include file='Documentation.xml' path='Documentation/Member[@name="IAssetFile.ContentChecksum"]'/>
+        [Obsolete]
         string ContentChecksum
         {
             get;

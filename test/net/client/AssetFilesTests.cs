@@ -75,26 +75,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             }
         }
 
-        [TestMethod]
-        public void ShouldSetContentFileSizeOnAssetFileWithoutUpload()
-        {
-            IAsset asset = _dataContext.Assets.Create("test", AssetCreationOptions.None);
-            IAssetFile fileInfo = asset.AssetFiles.Create("test.txt");
-            int expected = 0;
-            Assert.AreEqual(expected, fileInfo.ContentFileSize, "Unexpected ContentFileSize value");
-            expected = 100;
-            fileInfo.ContentFileSize = expected;
-            fileInfo.Update();
-            IAssetFile refreshedFile = _dataContext.Files.Where(c => c.Id == fileInfo.Id).FirstOrDefault();
-            Assert.IsNotNull(refreshedFile);
-            Assert.AreEqual(expected, refreshedFile.ContentFileSize, "ContentFileSize Mismatch after Update");
-
-            //Double check with new context
-            _dataContext = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
-            refreshedFile = _dataContext.Files.Where(c => c.Id == fileInfo.Id).FirstOrDefault();
-            Assert.IsNotNull(refreshedFile);
-            Assert.AreEqual(expected, refreshedFile.ContentFileSize, "ContentFileSize Mismatch after Update");
-        }
+       
 
         [TestMethod]
         [ExpectedException(typeof (ArgumentException))]
