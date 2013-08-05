@@ -199,7 +199,7 @@
     <Compile Include="JobTemplateData.cs" />
     <Compile Include="Live\ChannelBaseCollection.cs" />
     <Compile Include="Live\ChannelData.cs" />
-    <Compile Include="Live\ChannelSinkSettings.cs" />
+    <Compile Include="Live\ChannelSettings.cs" />
     <Compile Include="Live\ChannelSize.cs" />
     <Compile Include="Live\ChannelState.cs" />
     <Compile Include="Live\G20Key.cs" />
@@ -214,6 +214,7 @@
     <Compile Include="Live\OriginBaseCollection.cs" />
     <Compile Include="Live\OriginData.cs" />
     <Compile Include="Live\OriginServiceSettings.cs" />
+    <Compile Include="Live\OriginSettings.cs" />
     <Compile Include="Live\OriginState.cs" />
     <Compile Include="Live\ProgramBaseCollection.cs" />
     <Compile Include="Live\ProgramData.cs" />

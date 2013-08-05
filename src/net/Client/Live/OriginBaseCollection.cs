@@ -88,7 +88,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public IOrigin Create(
                     string name,
                     int reservedUnits,
-                    OriginServiceSettings settings)
+                    OriginSettings settings)
         {
             return Create(
                 name,
@@ -109,7 +109,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     string name,
                     string description,
                     int reservedUnits,
-                    OriginServiceSettings settings)
+                    OriginSettings settings)
         {
             return AsyncHelper.Wait(this.CreateAsync(
                 name,
@@ -143,7 +143,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public Task<IOrigin> CreateAsync(
                     string name,
                     int reservedUnits,
-                    OriginServiceSettings settings)
+                    OriginSettings settings)
         {
             return CreateAsync(name, null, reservedUnits, settings);
         }
@@ -173,7 +173,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             string name,
             string description,
             int reservedUnits,
-            OriginServiceSettings settings)
+            OriginSettings settings)
         {
             if (string.IsNullOrEmpty(name))
             {
@@ -265,7 +265,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public IOperation SendCreateOperation(
             string name,
             int reservedUnits,
-            OriginServiceSettings settings)
+            OriginSettings settings)
         {
             return SendCreateOperation(name, null, reservedUnits, settings);
         }
@@ -282,7 +282,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             string name,
             string description,
             int reservedUnits,
-            OriginServiceSettings settings)
+            OriginSettings settings)
         {
             if (string.IsNullOrEmpty(name))
             {
@@ -354,7 +354,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public Task<IOperation> SendCreateOperationAsync(
             string name,
             int reservedUnits,
-            OriginServiceSettings settings)
+            OriginSettings settings)
         {
             return SendCreateOperationAsync(name, null, reservedUnits, settings);
         }
@@ -371,7 +371,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             string name,
             string description,
             int reservedUnits,
-            OriginServiceSettings settings)
+            OriginSettings settings)
         {
             return Task.Factory.StartNew(() => SendCreateOperation(name, description, reservedUnits, settings));
         }

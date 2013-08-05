@@ -15,33 +15,40 @@
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
-    /// Specifies the state of a channel
+    /// Describes Live channel settings.
     /// </summary>
-    public enum ChannelState
+    public class ChannelSettings 
     {
         /// <summary>
-        /// Channel is stopped
+        /// Gets or sets preview settings.
         /// </summary>
-        Stopped = 0,
+        public PreviewEndpointSettings Preview { get; set; }
 
         /// <summary>
-        /// Channel is starting
+        /// Gets or sets ingest settings.
         /// </summary>
-        Starting = 1,
+        public IngestEndpointSettings Ingest { get; set; }
+    }
 
+    /// <summary>
+    /// Describes Preview endpoint settings.
+    /// </summary>
+    public class PreviewEndpointSettings
+    {
         /// <summary>
-        /// Channel is running
+        /// Gets or sets security settings.
         /// </summary>
-        Running = 2,
+        public SecuritySettings Security { get; set; }
+    }
 
+    /// <summary>
+    /// Describes Preview endpoint settings.
+    /// </summary>
+    public class IngestEndpointSettings
+    {
         /// <summary>
-        /// Channel is stopping
+        /// Gets or sets security settings.
         /// </summary>
-        Stopping = 3,
-
-        /// <summary>
-        /// Channel is being deleted
-        /// </summary>
-        Deleting = 4,
+        public SecuritySettings Security { get; set; }
     }
 }

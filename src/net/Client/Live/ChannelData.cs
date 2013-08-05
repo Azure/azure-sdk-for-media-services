@@ -85,7 +85,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
             set
             {
-                _settings = Serializer.Deserialize<ChannelSinkSettings>(value);
+                _settings = Serializer.Deserialize<ChannelSettings>(value);
             }
         }
 
@@ -130,9 +130,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
         /// <summary>
-        /// Gets or sets origin settings.
+        /// Gets or sets channel settings.
         /// </summary>
-        ChannelSinkSettings IChannel.Settings
+        ChannelSettings IChannel.Settings
         {
             get
             {
@@ -358,6 +358,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
         private ProgramBaseCollection _programCollection;
 
-        private ChannelSinkSettings _settings;
+        private ChannelSettings _settings;
     }
 }

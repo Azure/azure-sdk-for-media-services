@@ -70,7 +70,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets or sets channel settings.
         /// </summary>
-        ChannelSinkSettings Settings { get; set; }
+        ChannelSettings Settings { get; set; }
 
         /// <summary>
         /// Deletes the channel.

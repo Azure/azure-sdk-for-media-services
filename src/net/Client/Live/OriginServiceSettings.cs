@@ -12,33 +12,87 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 
-namespace Microsoft.WindowsAzure.MediaServices.Client
+namespace Microsoft.WindowsAzure.MediaServices.Client.Rest
 {
     /// <summary>
     /// Describes Origin settings.
     /// </summary>
-    public class OriginServiceSettings
+    internal class OriginServiceSettings
     {
+        /// <summary>
+        /// Creates an instance of OriginServiceSettings class.
+        /// </summary>
+        public OriginServiceSettings() { }
+
+        /// <summary>
+        /// Creates an instance of OriginServiceSettings class from an instance of OriginSettings.
+        /// </summary>
+        /// <param name="settings">Settings to copy into newly created instance.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        public OriginServiceSettings(OriginSettings settings) 
+        {
+            if (settings != null && settings.Playback != null)
+            {
+                Playback = new PlaybackEndpointSettings { Security = settings.Playback.Security };
+
+                if (settings.Playback.MaxCacheAge.HasValue)
+                {
+                    Playback.MaxCacheAge = (long)settings.Playback.MaxCacheAge.Value.TotalSeconds;
+                }
+            }
+        }
+
         /// <summary>
         /// Gets or sets playback settings.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public PlaybackEndpointSettings Playback { get; set; }
+
+        /// <summary>
+        /// Casts OriginServiceSettings to OriginSettings.
+        /// </summary>
+        /// <param name="settings">Object to cast.</param>
+        /// <returns>Casted object.</returns>
+        public static explicit operator OriginSettings(OriginServiceSettings settings)
+        {
+            if (settings == null)
+            {
+                return null;
+            }
+
+            var result = new OriginSettings();
+
+            if (settings.Playback != null)
+            {
+                result.Playback = new Client.PlaybackEndpointSettings { Security = settings.Playback.Security };
+
+                if (settings.Playback.MaxCacheAge.HasValue)
+                {
+                    result.Playback.MaxCacheAge = TimeSpan.FromSeconds(settings.Playback.MaxCacheAge.Value);
+                }
+            }
+
+            return result;
+        }
     }
 
     /// <summary>
     /// Describes playback endpoint settings.
     /// </summary>
-    public class PlaybackEndpointSettings
+    internal class PlaybackEndpointSettings
     {
         /// <summary>
-        /// Gets or sets maximum age of the cache in minutes.
+        /// Gets or sets maximum age of the cache in seconds.
         /// </summary>
-        public long? MaxCacheAgeInMins { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        public long? MaxCacheAge { get; set; }
 
         /// <summary>
         /// Gets or sets security settings.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public SecuritySettings Security { get; set; }
     }
 }

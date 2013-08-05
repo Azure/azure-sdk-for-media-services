@@ -50,7 +50,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="size">Size of the channel.</param>
         /// <param name="settings">Channel settings.</param>
         /// <returns>The created channel.</returns>
-        public IChannel Create(string name, string description, ChannelSize size, ChannelSinkSettings settings)
+        public IChannel Create(string name, string description, ChannelSize size, ChannelSettings settings)
         {
             return AsyncHelper.Wait(CreateAsync(name, description, size, settings));
         }
@@ -62,7 +62,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="size">Size of the channel.</param>
         /// <param name="settings">Channel settings.</param>
         /// <returns>The created channel.</returns>
-        public IChannel Create(string name, ChannelSize size, ChannelSinkSettings settings)
+        public IChannel Create(string name, ChannelSize size, ChannelSettings settings)
         {
             return Create(name, null, size, settings);
         }
@@ -75,7 +75,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="size">Size of the channel.</param>
         /// <param name="settings">Channel settings.</param>
         /// <returns>The created channel.</returns>
-        public Task<IChannel> CreateAsync(string name, string description, ChannelSize size, ChannelSinkSettings settings)
+        public Task<IChannel> CreateAsync(string name, string description, ChannelSize size, ChannelSettings settings)
         {
             if (string.IsNullOrEmpty(name))
             {
@@ -133,7 +133,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="size">Size of the channel.</param>
         /// <param name="settings">Channel settings.</param>
         /// <returns>The created channel.</returns>
-        public Task<IChannel> CreateAsync(string name, ChannelSize size, ChannelSinkSettings settings)
+        public Task<IChannel> CreateAsync(string name, ChannelSize size, ChannelSettings settings)
         {
             return CreateAsync(name, null, size, settings);
         }
@@ -150,7 +150,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public IOperation SendCreateOperation(
             string name,
             ChannelSize size,
-            ChannelSinkSettings settings)
+            ChannelSettings settings)
         {
             return SendCreateOperation(name, null, size, settings);
         }
@@ -167,7 +167,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             string name,
             string description,
             ChannelSize size, 
-            ChannelSinkSettings settings)
+            ChannelSettings settings)
         {
             if (string.IsNullOrEmpty(name))
             {
@@ -211,7 +211,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public Task<IOperation> SendCreateOperationAsync(
             string name,
             ChannelSize size,
-            ChannelSinkSettings settings)
+            ChannelSettings settings)
         {
             return SendCreateOperationAsync(name, null, size, settings);
         }
@@ -228,7 +228,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             string name,
             string description,
             ChannelSize size,
-            ChannelSinkSettings settings)
+            ChannelSettings settings)
         {
             return Task.Factory.StartNew(() => SendCreateOperation(name, description, size, settings));
         }
