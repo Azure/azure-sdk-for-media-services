@@ -19,6 +19,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.MediaServices.Client.Properties;
+using Microsoft.WindowsAzure.MediaServices.Client.Rest;
 using System.Net;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
@@ -73,11 +74,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             get
             {
-                return Serializer.Serialize(_settings);
+                return Serializer.Serialize(new OriginServiceSettings(_settings));
             }
             set
             {
-                _settings = Serializer.Deserialize<OriginServiceSettings>(value);
+                _settings = (OriginSettings)Serializer.Deserialize<OriginServiceSettings>(value);
             }
         }
 
@@ -107,7 +108,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets or sets origin settings.
         /// </summary>
-        OriginServiceSettings IOrigin.Settings 
+        OriginSettings IOrigin.Settings 
         { 
             get 
             {
@@ -327,6 +328,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
         protected override string EntitySetName { get { return OriginBaseCollection.OriginSet; } }
 
-        private OriginServiceSettings _settings;
+        private OriginSettings _settings;
     }
 }

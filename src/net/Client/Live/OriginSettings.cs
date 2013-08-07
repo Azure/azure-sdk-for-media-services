@@ -12,40 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
-    /// Describes Live channel settings.
+    /// Describes Origin settings.
     /// </summary>
-    public class ChannelSinkSettings 
+    public class OriginSettings
     {
         /// <summary>
-        /// Gets or sets preview settings.
+        /// Gets or sets playback settings.
         /// </summary>
-        public PreviewEndpointSettings Preview { get; set; }
-
-        /// <summary>
-        /// Gets or sets ingest settings.
-        /// </summary>
-        public IngestEndpointSettings Ingest { get; set; }
+        public PlaybackEndpointSettings Playback { get; set; }
     }
 
     /// <summary>
-    /// Describes Preview endpoint settings.
+    /// Describes playback endpoint settings.
     /// </summary>
-    public class PreviewEndpointSettings
+    public class PlaybackEndpointSettings
     {
         /// <summary>
-        /// Gets or sets security settings.
+        /// Gets or sets maximum age of the cache.
         /// </summary>
-        public SecuritySettings Security { get; set; }
-    }
+        public TimeSpan? MaxCacheAge { get; set; }
 
-    /// <summary>
-    /// Describes Preview endpoint settings.
-    /// </summary>
-    public class IngestEndpointSettings
-    {
         /// <summary>
         /// Gets or sets security settings.
         /// </summary>

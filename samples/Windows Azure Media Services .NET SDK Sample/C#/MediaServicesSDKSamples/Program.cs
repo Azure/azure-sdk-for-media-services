@@ -1329,6 +1329,96 @@ namespace ConsoleApplication1
 
         #endregion
 
+        #region Samples from Live Streaming with the Media Services SDK for .NET
+
+        static void SetupLiveStreaming()
+        {
+            IChannel channel = CreateLiveChannle();
+
+            IAsset asset = _context.Assets.First();
+
+            IProgram program = CreateLiveProgram(channel, asset);
+
+            IOrigin origin = CreateOrigin();
+
+            channel.Start();
+
+            program.Start();
+
+            origin.Start();
+        }
+
+        private static IOrigin CreateOrigin()
+        {
+            OriginServiceSettings settings = MakeOriginSettings();
+            IOrigin origin = _context.Origins.Create(
+                name: "testorigin", 
+                description: "test origin", 
+                reservedUnits: 1, 
+                settings: settings);
+            return origin;
+        }
+
+        private static IProgram CreateLiveProgram(IChannel channel, IAsset asset)
+        {
+            IProgram program = channel.Programs.Create(
+                name: "testprogram",
+                enableArchive: false,
+                dvrWindowLength: StreamingConstants.InfiniteDvrLenth,
+                estimatedDuration: TimeSpan.FromHours(1),
+                assetId: asset.Id);
+
+            return program;
+        }
+
+        private static IChannel CreateLiveChannle()
+        {
+            ChannelSinkSettings settings = MakeChannelSettings();
+            IChannel channel = _context.Channels.Create("test", ChannelSize.Large, settings);
+            return channel;
+        }
+
+        private static ChannelSinkSettings MakeChannelSettings()
+        {
+            var settings = new ChannelSinkSettings
+            {
+                Ingest = new IngestEndpointSettings
+                {
+                    Security = new SecuritySettings
+                    {
+                        AkamaiG20Authentication = new List<G20Key> 
+                        { 
+                            new G20Key { Base64Key = "vUeuvDU3MIgHuFZCU3cX+24wWg6r4qho594cRcEr5fU=", Expiration = new DateTime(2018, 10, 30), Identifier = "id1" },
+                        },
+                    }
+                },
+            };
+
+            return settings;
+        }
+
+        private static OriginServiceSettings MakeOriginSettings()
+        {
+            var settings = new OriginServiceSettings
+            {
+                Playback = new PlaybackEndpointSettings
+                {
+                    Security = new SecuritySettings
+                    {
+                        Ipv4Whitelist = new List<Ipv4>
+                        {
+                            new Ipv4 { Name = "testName1", IP = "1.1.1.1" },
+                            new Ipv4 { Name = "testName2", IP = "1.1.1.2" },
+                        }
+                    }
+                },
+            };
+
+            return settings;
+        }
+
+        #endregion
+
         private static IJob CreatePlayReadyProtectionJob(string inputMediaFilePath, string configFilePath)
         {
             // Create a storage-encrypted asset and upload the mp4. 
