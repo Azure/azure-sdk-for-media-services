@@ -43,5 +43,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Origin is scaling.
         /// </summary>
         Scaling = 4,
+
+        /// <summary>
+        /// Origin is being deleted
+        /// </summary>
+        Deleting = 5,
     }
 }

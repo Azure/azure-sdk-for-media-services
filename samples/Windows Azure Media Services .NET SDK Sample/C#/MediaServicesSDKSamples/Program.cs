@@ -1331,6 +1331,9 @@ namespace ConsoleApplication1
 
         #region Samples from Live Streaming with the Media Services SDK for .NET
 
+        /// <summary>
+        /// Demonstrates how to setup a Live program together with it's prerequisites (Channel and Origin).
+        /// </summary>
         static void SetupLiveStreaming()
         {
             IChannel channel = CreateLiveChannle();
@@ -1348,9 +1351,12 @@ namespace ConsoleApplication1
             origin.Start();
         }
 
+        /// <summary>
+        /// Creates a demo Origin.
+        /// </summary>
         private static IOrigin CreateOrigin()
         {
-            OriginServiceSettings settings = MakeOriginSettings();
+            OriginSettings settings = MakeOriginSettings();
             IOrigin origin = _context.Origins.Create(
                 name: "testorigin", 
                 description: "test origin", 
@@ -1359,6 +1365,9 @@ namespace ConsoleApplication1
             return origin;
         }
 
+        /// <summary>
+        /// Creates a demo Program.
+        /// </summary>
         private static IProgram CreateLiveProgram(IChannel channel, IAsset asset)
         {
             IProgram program = channel.Programs.Create(
@@ -1371,16 +1380,23 @@ namespace ConsoleApplication1
             return program;
         }
 
+        /// <summary>
+        /// Creates a demo Channel.
+        /// </summary>
+        /// <returns></returns>
         private static IChannel CreateLiveChannle()
         {
-            ChannelSinkSettings settings = MakeChannelSettings();
+            ChannelSettings settings = MakeChannelSettings();
             IChannel channel = _context.Channels.Create("test", ChannelSize.Large, settings);
             return channel;
         }
 
-        private static ChannelSinkSettings MakeChannelSettings()
+        /// <summary>
+        /// Creates minimalistic channel settings.
+        /// </summary>
+        private static ChannelSettings MakeChannelSettings()
         {
-            var settings = new ChannelSinkSettings
+            var settings = new ChannelSettings
             {
                 Ingest = new IngestEndpointSettings
                 {
@@ -1397,9 +1413,12 @@ namespace ConsoleApplication1
             return settings;
         }
 
-        private static OriginServiceSettings MakeOriginSettings()
+        /// <summary>
+        /// Creates minimalistic origin settings.
+        /// </summary>
+        private static OriginSettings MakeOriginSettings()
         {
-            var settings = new OriginServiceSettings
+            var settings = new OriginSettings
             {
                 Playback = new PlaybackEndpointSettings
                 {

@@ -87,8 +87,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 Description = description,
                 Name = name,
                 Size = size.ToString(),
-                Settings = Serializer.Serialize(settings),
             };
+
+            ((IChannel)channel).Settings = settings;
 
             channel.InitCloudMediaContext(this._cloudMediaContext);
 
@@ -179,8 +180,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 Description = description,
                 Name = name,
                 Size = size.ToString(),
-                Settings = Serializer.Serialize(settings),
             };
+
+            ((IChannel)channel).Settings = settings;
 
             channel.InitCloudMediaContext(this._cloudMediaContext);
 
