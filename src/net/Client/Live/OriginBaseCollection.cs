@@ -185,8 +185,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 Description = description,
                 Name = name,
                 ReservedUnits = reservedUnits,
-                Settings = Serializer.Serialize(settings),
             };
+
+            ((IOrigin)origin).Settings = settings;
 
             origin.InitCloudMediaContext(this._cloudMediaContext);
 
@@ -294,8 +295,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 Description = description,
                 Name = name,
                 ReservedUnits = reservedUnits,
-                Settings = Serializer.Serialize(settings),
             };
+
+            ((IOrigin)origin).Settings = settings;
 
             origin.InitCloudMediaContext(this._cloudMediaContext);
 

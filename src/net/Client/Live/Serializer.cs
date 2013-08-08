@@ -27,6 +27,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <typeparam name="T">Object type to produce.</typeparam>
         /// <param name="s">Serialized object.</param>
         /// <returns>Deserialized object</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static T Deserialize<T>(string s)
         {
             if (string.IsNullOrWhiteSpace(s))
@@ -44,6 +45,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <typeparam name="T">Object type.</typeparam>
         /// <param name="obj">Object to serialize.</param>
         /// <returns>Serialized object.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public static string Serialize<T>(T obj)
         {
             if (obj == null)
