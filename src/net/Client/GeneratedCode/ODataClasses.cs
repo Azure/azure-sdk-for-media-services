@@ -41,6 +41,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public int Options {get;set;}
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        public string Uri { get; set; }
+        
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public string StorageAccountName { get; set; }
 
         AssetState IAsset.State
@@ -73,8 +77,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public bool IsPrimary {get;set;}
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        [Obsolete]
         public long ContentFileSize {get;set;}
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        [Obsolete]
         public string ContentChecksum {get;set;}
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public string Name {get;set;}
@@ -344,6 +350,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public string BaseUri { get;  set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public string ContentAccessComponent { get;  set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        public string Name { get; set; }
 
         LocatorType ILocator.Type
         {

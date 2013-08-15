@@ -297,7 +297,9 @@
     <CodeAnalysisDictionary Include="..\..\..\build\CustomDictionary.xml">
       <Link>CustomDictionary.xml</Link>
     </CodeAnalysisDictionary>
-    <Content Include="GeneratedCode\Documentation.xml" />
+    <Content Include="GeneratedCode\Documentation.xml">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

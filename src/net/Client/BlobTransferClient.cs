@@ -26,7 +26,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     {
         private const int Timeout = 60;
         private const int Capacity = 100;
-        private const int MaxSasSignatureRetry = 10;
         private object lockobject = new object();
         private readonly TimeSpan _forceSharedAccessSignatureRetry;
 
@@ -101,7 +100,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="retryPolicy">The RetryPolicy delegate returns a ShouldRetry delegate, which can be used to implement a custom retry policy.RetryPolicies class can bee used to get default policies</param>
         /// <param name="contentType">Content type of the blob</param>
         /// <param name="subDirectory">Virtual subdirectory for this file in the blog container.</param>
-        /// <param name="getSharedAccessSignature">A callback function which returns Sas url with read write delete access for the container.</param>
         /// <returns></returns>
         public Task UploadBlob(
             Uri url,
@@ -111,12 +109,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             CloudBlobClient client,
             IRetryPolicy retryPolicy,
             string contentType = null,
-            string subDirectory = "",
-            Func<string> getSharedAccessSignature = null)
+            string subDirectory = "")
         {
             SetMaxConnectionLimit(url);
             return Task.Factory.StartNew(
-                () => UploadFileToBlob(cancellationToken, url, localFile, contentType, subDirectory, fileEncryption, client, retryPolicy, getSharedAccessSignature),
+                () => UploadFileToBlob(cancellationToken, url, localFile, contentType, subDirectory, fileEncryption, client, retryPolicy),
                 cancellationToken);
         }
 
@@ -154,29 +151,23 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="client">The azure client to access a blob.</param>
         /// <param name="cancellationToken">The cancellation token to cancel the download operation.</param>
         /// <param name="retryPolicy">The RetryPolicy delegate returns a ShouldRetry delegate, which can be used to implement a custom retry policy.RetryPolicies class can bee used to get default policies</param>
-        /// /// <param name="getSharedAccessSignature">A callback function which returns Sas signature for the file to be downloaded</param>
         /// <returns>A task that downloads the specified blob.</returns>
-        public Task DownloadBlob(Uri uri, string localFile, FileEncryption fileEncryption, ulong initializationVector, CloudBlobClient client, CancellationToken cancellationToken, IRetryPolicy retryPolicy, Func<string> getSharedAccessSignature = null)
+        public Task DownloadBlob(Uri uri, string localFile, FileEncryption fileEncryption, ulong initializationVector, CloudBlobClient client, CancellationToken cancellationToken, IRetryPolicy retryPolicy)
         {
-            if (client != null && getSharedAccessSignature != null)
-            {
-                throw new InvalidOperationException("The arguments client and getSharedAccessSignature cannot both be non-null");
-            }
-
             SetMaxConnectionLimit(uri);
-            Task task = Task.Factory.StartNew(() => DownloadFileFromBlob(uri, localFile, fileEncryption, initializationVector, client, cancellationToken, retryPolicy, getSharedAccessSignature));
+            Task task = Task.Factory.StartNew(() => DownloadFileFromBlob(uri, localFile, fileEncryption, initializationVector, client, cancellationToken, retryPolicy));
             return task;
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
-        private void DownloadFileFromBlob(Uri uri, string localFile, FileEncryption fileEncryption, ulong initializationVector, CloudBlobClient client, CancellationToken cancellationToken, IRetryPolicy retryPolicy, Func<string> getSharedAccessSignature)
+        private void DownloadFileFromBlob(Uri uri, string localFile, FileEncryption fileEncryption, ulong initializationVector, CloudBlobClient client, CancellationToken cancellationToken, IRetryPolicy retryPolicy)
         {
-            int exceptionCount = 0;
             int numThreads = ParallelTransferThreadCount;
-            Exception lastException = null;
+            List<Exception> exceptions = new List<Exception>();
+            AggregateException aggregateException = null;
             long bytesDownloaded = 0;
 
-            CloudBlockBlob blob = InitializeCloudBlockBlob(uri, client, retryPolicy, getSharedAccessSignature);
+            CloudBlockBlob blob = InitializeCloudBlockBlob(uri, client, retryPolicy);
 
             long blobLength = blob.Properties.Length;
             int bufferLength = GetBlockSize(blobLength);
@@ -196,7 +187,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 {
                     KeyValuePair<long, int> blockOffsetAndLength;
                     int exceptionPerThread = 0;
-                    int sasRetry = 0;
                     // A buffer to fill per read request.
                     var buffer = new byte[bufferLength];
 
@@ -224,7 +214,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                                     ReadResponseStream(fileEncryption, initializationVector, fs, buffer, response, blockOffsetAndLength, ref bytesDownloaded);
                                     var progress = (int)((double)bytesDownloaded / blob.Properties.Length * 100);
                                     // raise the progress changed event
-                                    var eArgs = new BlobTransferProgressChangedEventArgs(bytesDownloaded,blockOffsetAndLength.Value, blob.Properties.Length, progress, _downloadSpeedCalculator.UpdateCountersAndCalculateSpeed(bytesDownloaded), uri, localFile, null);
+                                    var eArgs = new BlobTransferProgressChangedEventArgs(bytesDownloaded, blockOffsetAndLength.Value, blob.Properties.Length, progress, _downloadSpeedCalculator.UpdateCountersAndCalculateSpeed(bytesDownloaded), uri, localFile, null);
                                     OnTaskProgressChanged(eArgs);
                                 }
                             }
@@ -233,47 +223,33 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                         {
                             var webEx = ex as WebException;
                             bool ok = (webEx != null) || ex is ObjectDisposedException;
-                            bool isSasException = false;
                             if (!ok)
                             {
                                 throw;
                             }
 
-                            if (webEx != null && getSharedAccessSignature != null)
+                            if (webEx != null)
                             {
                                 if (webEx.Response is HttpWebResponse)
                                 {
                                     var httpex = (HttpWebResponse)webEx.Response;
                                     if (httpex.StatusCode == HttpStatusCode.Forbidden)
                                     {
-                                        sasRetry++;
-                                        if (sasRetry > MaxSasSignatureRetry)
-                                        {
-                                            throw;
-                                        }
-                                        isSasException = true;
+                                       blob = InitializeCloudBlockBlob(uri, null, retryPolicy);
                                     }
                                 }
                             }
 
-                            if (isSasException)
+                            TimeSpan tm;
+                            exceptionPerThread++;
+                            exceptions.Add(ex);
+                            if (!retryPolicy.ShouldRetry(exceptionPerThread, 0, ex, out tm, new OperationContext()))
                             {
-                                blob = InitializeCloudBlockBlob(uri, client, retryPolicy,
-                                                                getSharedAccessSignature);
+                                aggregateException = new AggregateException(String.Format(CultureInfo.InvariantCulture, "Received {0} exceptions while downloading. Canceling download.", exceptions.Count), exceptions);
+                                throw aggregateException;
                             }
-                            else
-                            {
-                                TimeSpan tm;
-                                exceptionCount++;
-                                exceptionPerThread++;
-                                if (!retryPolicy.ShouldRetry(exceptionPerThread, 0, ex, out tm, new OperationContext()))
-                                {
-                                    lastException = new AggregateException(String.Format(CultureInfo.InvariantCulture, "Received {0} exceptions while downloading. Canceling download.", exceptionCount), ex);
-                                    break;
-                                }
 
-                                Thread.Sleep(tm);
-                            }
+                            Thread.Sleep(tm);
                             // Add block back to queue
                             queue.Enqueue(blockOffsetAndLength);
                         }
@@ -289,11 +265,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
                 if (cancellationToken.IsCancellationRequested)
                 {
-                    TaskCompletedCallback(true, lastException, BlobTransferType.Download, localFile, uri);
+                    TaskCompletedCallback(true, aggregateException, BlobTransferType.Download, localFile, uri);
                     cancellationToken.ThrowIfCancellationRequested();
                 }
                 Task.WaitAll(tasks.ToArray(), cancellationToken);
-                TaskCompletedCallback(cancellationToken.IsCancellationRequested, lastException, BlobTransferType.Download, localFile, uri);
+                TaskCompletedCallback(cancellationToken.IsCancellationRequested, aggregateException, BlobTransferType.Download, localFile, uri);
             }
         }
 
@@ -361,26 +337,20 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             return blobGetRequest;
         }
 
-        private static CloudBlockBlob InitializeCloudBlockBlob(Uri uri, CloudBlobClient client, IRetryPolicy retryPolicy, Func<String> getSharedAccessSignature)
+        private static CloudBlockBlob InitializeCloudBlockBlob(Uri uri, CloudBlobClient client, IRetryPolicy retryPolicy)
         {
             CloudBlockBlob blob = null;
 
-            if (getSharedAccessSignature != null)
+
+            if (client != null)
             {
-                string signature = getSharedAccessSignature();
-                blob = new CloudBlockBlob(uri, new StorageCredentials(signature));
+                blob = new CloudBlockBlob(uri, client.Credentials);
             }
             else
             {
-                if (client != null)
-                {
-                    blob = new CloudBlockBlob(uri, client.Credentials);
-                }
-                else
-                {
-                    blob = new CloudBlockBlob(uri);
-                }
+                blob = new CloudBlockBlob(uri);
             }
+
 
             bool fetch = false;
             bool shouldRetry = true;
@@ -433,7 +403,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             return queue;
         }
 
-        private static CloudBlockBlob GetCloudBlockBlob(Uri uri, CloudBlobClient client, string subFolder, string localFile, string contentType, Func<string> getSharedAccessSignature)
+        private static CloudBlockBlob GetCloudBlockBlob(Uri uri, CloudBlobClient client, string subFolder, string localFile, string contentType)
         {
             CloudBlobContainer blobContainer = null;
             CloudBlockBlob blob = null;
@@ -443,16 +413,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
             else
             {
-                if (getSharedAccessSignature != null)
-                {
-                    string signature = getSharedAccessSignature();
-                    blobContainer = new CloudBlobContainer(uri, new StorageCredentials(signature));
-
-                }
-                else
-                {
                     blobContainer = new CloudBlobContainer(uri);
-                }
             }
 
             string blobFileName = Path.Combine(subFolder, Path.GetFileName(localFile));
@@ -471,8 +432,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             string subFolder,
             FileEncryption fileEncryption,
             CloudBlobClient client,
-            IRetryPolicy retryPolicy,
-            Func<string> getSharedAccessSignature)
+            IRetryPolicy retryPolicy)
         {
             //attempt to open the file first so that we throw an exception before getting into the async work
             using (new FileStream(localFile, FileMode.Open, FileAccess.Read))
@@ -494,7 +454,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             var queue = PreapreUploadQueue(maxBlockSize, fileSize, ref numThreads, out blockList);
             int exceptionCount = 0;
 
-            blob = GetCloudBlockBlob(uri, client, subFolder, localFile, contentType, getSharedAccessSignature);
+            blob = GetCloudBlockBlob(uri, client, subFolder, localFile, contentType);
             blob.DeleteIfExists(options: new BlobRequestOptions() { RetryPolicy = retryPolicy });
 
             if (cancellationToken.IsCancellationRequested)
@@ -516,7 +476,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             {
 
                 List<Exception> exceptions = new List<Exception>();
-                int sasRetry = 0;
 
                 if (_forceSharedAccessSignatureRetry != TimeSpan.Zero)
                 {
@@ -570,28 +529,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                             }
                             catch (StorageException ex)
                             {
-                                if (ex.RequestInformation.HttpStatusCode == (int)HttpStatusCode.Forbidden && getSharedAccessSignature != null)
+                                TimeSpan tm;
+                                exceptionCount++;
+                                exceptions.Add(ex);
+                                if (!retryPolicy.ShouldRetry(exceptions.Count, ex.RequestInformation.HttpStatusCode, ex, out tm, new OperationContext()))
                                 {
-                                    sasRetry++;
-                                    if (sasRetry > MaxSasSignatureRetry)
-                                    {
-                                        throw;
-                                    }
-                                    blob = GetCloudBlockBlob(uri, client, subFolder, localFile,
-                                                                   contentType, getSharedAccessSignature);
+                                    lastException = new AggregateException(String.Format(CultureInfo.InvariantCulture, "Received {0} exceptions while uploading. Canceling upload.", exceptions.Count), exceptions);
+                                    throw lastException;
                                 }
-                                else
-                                {
-                                    TimeSpan tm;
-                                    exceptionCount++;
-                                    exceptions.Add(ex);
-                                    if (!retryPolicy.ShouldRetry(exceptions.Count, ex.RequestInformation.HttpStatusCode, ex, out tm, new OperationContext()))
-                                    {
-                                        lastException = new AggregateException(String.Format(CultureInfo.InvariantCulture, "Received {0} exceptions while uploading. Canceling upload.", exceptions.Count), exceptions);
-                                        throw lastException;
-                                    }
-                                    Thread.Sleep(tm);
-                                }
+                                Thread.Sleep(tm);
+
                                 queue.Enqueue(blockIdAndLength);
                             }
                             catch (IOException ex)
@@ -651,22 +598,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 {
                     return;
                 }
-                try
-                {
-                    blob.PutBlockList(blockList, options: options);
-                }
-                catch (StorageException ex)
-                {
-                    if (ex.RequestInformation.HttpStatusCode == (int)HttpStatusCode.Forbidden && getSharedAccessSignature != null)
-                    {
-                        blob = GetCloudBlockBlob(uri, client, subFolder, localFile, contentType, getSharedAccessSignature);
-                        blob.PutBlockList(blockList, options: options);
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                blob.PutBlockList(blockList, options: options);
+               
             }, TaskContinuationOptions.None).Wait(cancellationToken);
 
             TaskCompletedCallback(cancellationToken.IsCancellationRequested, lastException, BlobTransferType.Upload, localFile, uri);
