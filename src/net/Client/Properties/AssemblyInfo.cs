@@ -50,3 +50,5 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion("2.4.0.0")]
 [assembly: AssemblyFileVersion("2.4.0.0")]
 [assembly: NeutralResourcesLanguage("en-US")]
+
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Microsoft.WindowsAzure.MediaServices.Client.Tests")]
