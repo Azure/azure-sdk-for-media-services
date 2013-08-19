@@ -26,10 +26,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
     public class LiveE2ETests
     {
         private CloudMediaContext _dataContext;
-        private string _testOriginName = "e2etestorigin";
-        private string _testChannelName = "e2etestchannel";
-        private string _testAssetlName = "e2etestasset";
-        private string _testProgramlName = "e2etestprogram";
+        private string _testOriginName = "e2etestorigin-fd3a8745-3a03";
+        private string _testChannelName = "e2etestchannel-fd3a8745-3a03";
+        private string _testAssetlName = "e2etestasset-fd3a8745-3a03";
+        private string _testProgramlName = "e2etestprogram-fd3a8745-3a03";
 
         [TestInitialize]
         public void SetupTest()
@@ -44,6 +44,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
             Cleanup();
         }
 
+        /// <summary>
+        /// Creates everything needed for streaming.
+        /// </summary>
         [TestMethod]
         public void CreateStreamingTest()
         {
