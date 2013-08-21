@@ -119,7 +119,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
                             new G20Key { Base64Key = "vUeuvDU3MIgHuFZCU3cX+24wWg6r4qho594cRcEr5fU=", Expiration = new DateTime(2030, 10, 30), Identifier = "id1" },
                         },
 
-                        Ipv4Whitelist = new List<Ipv4>
+                        IPv4AllowList = new List<Ipv4>
                         {
                             new Ipv4 { Name = "testName1", IP = "1.1.1.1" },
                             new Ipv4 { Name = "testName2", IP = "1.1.1.2" },
@@ -139,7 +139,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
                 {
                     Security = new SecuritySettings
                     {
-                        Ipv4Whitelist = new List<Ipv4>
+                        IPv4AllowList = new List<Ipv4>
                         {
                             new Ipv4 { Name = "testName1", IP = "1.1.1.1" },
                         }

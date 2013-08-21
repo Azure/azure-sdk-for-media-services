@@ -42,7 +42,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
 	                    ""MaxCacheAge"":0,
 	                    ""Security"":
 	                    {
-		                    ""Ipv4Whitelist"": [{""Name"":""testName1"",""IP"":""1.1.1.1""},{""Name"":""testName2"",""IP"":""1.1.1.2""}],	
+		                    ""IPv4AllowList"": [{""Name"":""testName1"",""IP"":""1.1.1.1""},{""Name"":""testName2"",""IP"":""1.1.1.2""}],	
 		                    ""AkamaiG20Authentication"":
 		                    [
 			                    {""Expiration"":""\/Date(1359532800000)\/"",""Identifier"":""id1"",""Base64Key"":""b64Key1""},
@@ -56,11 +56,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
             target.Settings = serialized;
             var actual = ((IOrigin)target).Settings;
 
-            Assert.AreEqual(2, actual.Playback.Security.Ipv4Whitelist.Count);
+            Assert.AreEqual(2, actual.Playback.Security.IPv4AllowList.Count);
             Assert.AreEqual(3, actual.Playback.Security.AkamaiG20Authentication.Count);
             Assert.AreEqual(new DateTime(2013, 1, 30).ToUniversalTime(), actual.Playback.Security.AkamaiG20Authentication[2].Expiration);
-            Assert.AreEqual("1.1.1.2", actual.Playback.Security.Ipv4Whitelist[1].IP);
-            Assert.AreEqual("testName2", actual.Playback.Security.Ipv4Whitelist[1].Name);
+            Assert.AreEqual("1.1.1.2", actual.Playback.Security.IPv4AllowList[1].IP);
+            Assert.AreEqual("testName2", actual.Playback.Security.IPv4AllowList[1].Name);
             Assert.AreEqual(0, actual.Playback.MaxCacheAge.Value.TotalSeconds);
 
         }
@@ -85,7 +85,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
                             new G20Key { Base64Key = "b64Key2", Expiration = new DateTime(2013, 1, 30), Identifier = "id2" },
                         },
 
-                        Ipv4Whitelist = new List<Ipv4>
+                        IPv4AllowList = new List<Ipv4>
                         {
                             new Ipv4 { Name = "testName1", IP = "1.1.1.1" },
                             new Ipv4 { Name = "testName2", IP = "1.1.1.2" },
@@ -102,7 +102,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
 	                    ""MaxCacheAge"":null,
 	                    ""Security"":
 	                    {
-		                    ""Ipv4Whitelist"": [{""Name"":""testName1"",""IP"":""1.1.1.1""},{""Name"":""testName2"",""IP"":""1.1.1.2""}],	
+		                    ""IPv4AllowList"": [{""Name"":""testName1"",""IP"":""1.1.1.1""},{""Name"":""testName2"",""IP"":""1.1.1.2""}],	
 		                    ""AkamaiG20Authentication"":
 		                    [
 			                    {""Expiration"":""\/Date(1359532800000)\/"",""Identifier"":""id1"",""Base64Key"":""b64Key1""},
