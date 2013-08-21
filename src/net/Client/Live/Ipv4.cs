@@ -15,7 +15,7 @@
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
-    /// IP v. 4 element of white list.
+    /// IP v. 4 element of allow list.
     /// </summary>
     public class Ipv4
     {
