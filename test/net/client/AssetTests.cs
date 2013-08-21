@@ -53,11 +53,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestMethod]
         [Priority(1)]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [TestCategory("PullRequestValidation")]
         public void ShouldCreateAssetFile()
         {
             IAsset asset = _dataContext.Assets.Create("Empty", AssetCreationOptions.StorageEncrypted);
             IAssetFile file = asset.AssetFiles.CreateAsync(Path.GetFileName(_smallWmv), CancellationToken.None).Result;
-            Assert.AreEqual("video/x-ms-wmv", file.MimeType, "Asset file's MimeType is wrong");
             IAccessPolicy policy = _dataContext.AccessPolicies.Create("temp", TimeSpan.FromMinutes(10), AccessPermissions.Write);
             ILocator locator = _dataContext.Locators.CreateSasLocator(asset, policy);
             BlobTransferClient blobTransferClient = new BlobTransferClient();
@@ -85,6 +85,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(0)]
+        [TestCategory("PullRequestValidation")]
         [ExpectedException(typeof (ArgumentException))]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldThrowArgumentExceptionOnAssetUploadWhenLocalFileNameNotMatchingAssetFileName()
@@ -124,6 +125,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(1)]
+        [TestCategory("PullRequestValidation")]
         public void ShouldCreateAssetFileInfoWithoutUploadingFile()
         {
             IAsset asset = _dataContext.Assets.Create("Empty", AssetCreationOptions.StorageEncrypted);
@@ -140,6 +142,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(1)]
+        [TestCategory("PullRequestValidation")]
         public void ShouldNotHaveLocatorsAfterAssetCreation()
         {
             IAsset asset = _dataContext.Assets.Create("Test", AssetCreationOptions.StorageEncrypted);
@@ -149,6 +152,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestMethod]
         [Priority(1)]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [TestCategory("PullRequestValidation")]
         public void ShouldCreateEncryptedInitilizedAsset()
         {
             IAsset asset = _dataContext.Assets.Create("Test", AssetCreationOptions.StorageEncrypted);
@@ -187,6 +191,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestMethod]
         [Priority(1)]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [TestCategory("PullRequestValidation")]
         public void ShouldCreateEmptyNoneEncryptedAssetUploadFileAndDownloadIt()
         {
             IAsset asset = _dataContext.Assets.Create("Test", AssetCreationOptions.None);
@@ -207,6 +212,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [DeploymentItem(@"Media\SmallWmv2.wmv", "Media")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         [Priority(1)]
+        [TestCategory("PullRequestValidation")]
         public void ShouldCreateEmptyAssetUploadTwoFilesSetPrimaryAndDownloadFile()
         {
             IAsset asset = _dataContext.Assets.Create("Test", AssetCreationOptions.None);
@@ -337,6 +343,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv2.wmv", "Media")]
+        [TestCategory("PullRequestValidation")]
         public void CreateAssetWithUniqueAlternateIdAndFilterByIt()
         {
             CreateAsset(_dataContext, _smallWmv, AssetCreationOptions.StorageEncrypted);
@@ -352,6 +359,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestMethod]
         [ExpectedException(typeof (DataServiceQueryException))]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [TestCategory("PullRequestValidation")]
         public void ShouldNotReturnAssetsForEmptyId()
         {
             IAsset createdAsset = CreateAsset(_dataContext, _smallWmv, AssetCreationOptions.StorageEncrypted);
@@ -360,6 +368,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("PullRequestValidation")]
         public void ShouldQueryAssetsByNameWithContains()
         {
             IAsset createdAsset = CreateAsset(_dataContext, _smallWmv, AssetCreationOptions.StorageEncrypted);
@@ -370,6 +379,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [TestCategory("PullRequestValidation")]
         public void ShouldModifyAssetFile()
         {
             string assetId;
@@ -393,6 +403,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestMethod]
         [Priority(1)]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [TestCategory("PullRequestValidation")]
         public void ShouldDownloadAssetFile()
         {
             IAsset asset = CreateAsset(_dataContext, _smallWmv, AssetCreationOptions.None);
@@ -436,6 +447,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestMethod]
         [Priority(0)]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [TestCategory("PullRequestValidation")]
         public void ShouldDownloadCommonEncryptionProtectedAssetFile()
         {
             IAsset asset = CreateAsset(_dataContext, _smallWmv, AssetCreationOptions.CommonEncryptionProtected);
@@ -445,6 +457,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestMethod]
         [Priority(1)]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [TestCategory("PullRequestValidation")]
         public void ShouldDownloadEnvelopeEncryptionProtectedAssetFile()
         {
             IAsset asset = _dataContext.Assets.Create(_smallWmv, AssetCreationOptions.EnvelopeEncryptionProtected);
@@ -480,6 +493,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [TestCategory("PullRequestValidation")]
         public void ShouldDeleteParentAssetAndGetParentCount()
         {
             IAsset asset;
@@ -521,6 +535,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@".\Resources\interview.wmv", "Content")]
+        [TestCategory("PullRequestValidation")]
         public void ShouldCreateAssetWithSingleFile()
         {
             string assetFilePath = @"Content\interview.wmv";
@@ -538,6 +553,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@".\Resources\TestFiles", "TestFiles")]
+        [TestCategory("PullRequestValidation")]
         public void ShouldCreateAssetAsyncWithMultipleFiles()
         {
             string[] files = Directory.GetFiles("TestFiles");
@@ -574,6 +590,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestMethod]
         [DeploymentItem(@".\Resources\interview.wmv", "Content")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [TestCategory("PullRequestValidation")]
         public void ShouldReportProgressForFile()
         {
             string fileName = _smallWmv;
@@ -601,6 +618,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@".\Resources\interview.wmv", "Content")]
+        [TestCategory("PullRequestValidation")]
         public void ShouldUpdateAssetNameAndAlternateId()
         {
             string fileName = @"Content\interview.wmv";
@@ -626,6 +644,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [TestCategory("PullRequestValidation")]
         public void ShouldDeleteAsset()
         {
             IAsset asset = CreateAsset(_dataContext, _smallWmv, AssetCreationOptions.None);
