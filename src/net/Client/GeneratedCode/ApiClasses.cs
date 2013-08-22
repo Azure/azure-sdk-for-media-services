@@ -101,7 +101,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
         
         /// <include file='Documentation.xml' path='Documentation/Member[@name="IAssetFile.ContentFileSize"]'/>
-        [Obsolete]
         long ContentFileSize
         {
             get; set;
