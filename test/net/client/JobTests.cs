@@ -103,7 +103,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        public void ShouldSplitMetadataLost()
+        public void ShouldGenerateMetadataFile()
         {
             IAsset asset = AssetTests.CreateAsset(_dataContext, _smallWmv, AssetCreationOptions.None);
             IMediaProcessor mediaProcessor = GetMediaProcessor(_dataContext, WindowsAzureMediaServicesTestConfiguration.MpEncoderName);
@@ -113,7 +113,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             WaitForJob(job.Id, JobState.Finished, VerifyAllTasksFinished);
 
             IJob refreshedJob = _dataContext.Jobs.Where(c => c.Id == job.Id).Single();
-            bool ok = refreshedJob.Tasks.Single().OutputAssets.Single().AssetFiles.AsEnumerable().Select(f => f.Name).Contains("SmallWmv_metadata.xml");
+            bool ok = refreshedJob.Tasks.Single().OutputAssets.Single().AssetFiles.AsEnumerable().Select(f => f.Name).Contains("SmallWmv_manifest.xml");
 
             Assert.IsTrue(ok);
         }
@@ -210,7 +210,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 Assert.IsNotNull(job2.Tasks[0].ErrorDetails);
                 Assert.AreEqual(1, job2.Tasks[0].ErrorDetails.Count);
                 Assert.IsNotNull(job2.Tasks[0].ErrorDetails[0]);
-                Assert.AreEqual("UserInput", job2.Tasks[0].ErrorDetails[0].Code);
+                Assert.AreEqual("ErrorParsingConfiguration", job2.Tasks[0].ErrorDetails[0].Code);
             };
             WaitForJob(job.Id, JobState.Error, verify);
         }
