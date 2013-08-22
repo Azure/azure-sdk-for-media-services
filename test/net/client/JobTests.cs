@@ -113,8 +113,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             WaitForJob(job.Id, JobState.Finished, VerifyAllTasksFinished);
 
             IJob refreshedJob = _dataContext.Jobs.Where(c => c.Id == job.Id).Single();
-            bool ok = refreshedJob.Tasks.Single().OutputAssets.Single().AssetFiles.AsEnumerable().Select(f => f.Name).Contains("SmallWmv_manifest.xml ");
-
+            bool ok = refreshedJob.Tasks.Single().OutputAssets.Single().AssetFiles.AsEnumerable().Select(f => f.Name).Contains("SmallWmv_manifest.xml");
             Assert.IsTrue(ok);
         }
 
