@@ -243,7 +243,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             }
 
             string originalConfiguration = File.ReadAllText(WindowsAzureMediaServicesTestConfiguration.PlayReadyConfig);
-            IMediaProcessor processor = JobTests.GetMediaProcessor(_dataContext, WindowsAzureMediaServicesTestConfiguration.MpEncryptorName, WindowsAzureMediaServicesTestConfiguration.MpEncryptorVersion);
+            IMediaProcessor processor = JobTests.GetMediaProcessor(_dataContext, WindowsAzureMediaServicesTestConfiguration.MpEncryptorName);
 
             IJob job = _dataContext.Jobs.Create("PlayReady protect a smooth streaming asset for GetClearConfigurationFromTask");
             ITask task = job.Tasks.AddNew("SmoothProtectTask", processor, originalConfiguration, TaskOptions.ProtectedConfiguration);

@@ -54,13 +54,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Helpers
         public static string MediaServicesAccessScope = ConfigurationManager.AppSettings["MediaServicesAccessScope"];
 
         public static string MpEncoderName = ConfigurationManager.AppSettings["MPEncoderName"];
-        public static string MpEncoderVersion = ConfigurationManager.AppSettings["MPEncoderVersion"];
         public static string MpEncryptorName = ConfigurationManager.AppSettings["MPEncryptorName"];
-        public static string MpEncryptorVersion = ConfigurationManager.AppSettings["MPEncryptorVersion"];
         public static string MpPackagerName = ConfigurationManager.AppSettings["MPPackagerName"];
-        public static string MpPackagerVersion = ConfigurationManager.AppSettings["MPPackagerVersion"];
         public static string MpStorageDecryptorName = ConfigurationManager.AppSettings["MPStorageDecryptorName"];
-        public static string MpStorageDecryptorVersion = ConfigurationManager.AppSettings["MPStorageDecryptorVersion"];
+        
 
         public static CloudMediaContext CreateCloudMediaContext()
         {
