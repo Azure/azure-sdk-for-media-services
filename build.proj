@@ -89,7 +89,7 @@
 	
   </Target>
   
-   <Target Name="Build" DependsOnTargets="BuildDebug;BuildRelease" />
+   <Target Name="Build" DependsOnTargets="Clean;BuildDebug;BuildRelease" />
   
    <!-- Publish any build artificates to the Publish directory -->
   <Target Name="Publish" DependsOnTargets="Build">
@@ -103,6 +103,7 @@
     <MakeDir
       Directories="$(BuildOutputDirectory)"
       ContinueOnError="false" />
+	  
     <Copy
       SourceFiles="@(DebugFiles)"
       DestinationFiles="@(DebugFiles->'$(BuildOutputDirectory)\Debug\%(RecursiveDir)%(Filename)%(Extension)')"
