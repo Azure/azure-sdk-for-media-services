@@ -665,6 +665,29 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             Assert.IsNull(newContext.Assets.Where(a => a.Id == asset.Id).SingleOrDefault());
         }
 
+        [TestMethod]
+        [Priority(0)]
+        [TestCategory("PullRequestValidation")]
+        public void ShouldSetContentFileSizeOnAssetFileWithoutUpload()
+        {
+            IAsset asset = _dataContext.Assets.Create("test", AssetCreationOptions.None);
+            IAssetFile fileInfo = asset.AssetFiles.Create("test.txt");
+            int expected = 0;
+            Assert.AreEqual(expected, fileInfo.ContentFileSize, "Unexpected ContentFileSize value");
+            expected = 100;
+            fileInfo.ContentFileSize = expected;
+            fileInfo.Update();
+            IAssetFile refreshedFile = _dataContext.Files.Where(c => c.Id == fileInfo.Id).FirstOrDefault();
+            Assert.IsNotNull(refreshedFile);
+            Assert.AreEqual(expected, refreshedFile.ContentFileSize, "ContentFileSize Mismatch after Update");
+
+            //Double check with new context
+            _dataContext = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
+            refreshedFile = _dataContext.Files.Where(c => c.Id == fileInfo.Id).FirstOrDefault();
+            Assert.IsNotNull(refreshedFile);
+            Assert.AreEqual(expected, refreshedFile.ContentFileSize, "ContentFileSize Mismatch after Update");
+        }
+
         #region Helper/utility methods
 
         public static IAsset CreateAsset(CloudMediaContext datacontext, string filePath, AssetCreationOptions options)
@@ -780,7 +803,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         private IAsset RunJobAndGetOutPutAsset(string jobName, out IAsset asset, out IJob job)
         {
             asset = CreateAsset(_dataContext, _smallWmv, AssetCreationOptions.StorageEncrypted);
-            IMediaProcessor mediaProcessor = JobTests.GetMediaProcessor(_dataContext, WindowsAzureMediaServicesTestConfiguration.MpEncoderName, WindowsAzureMediaServicesTestConfiguration.MpEncoderVersion);
+            IMediaProcessor mediaProcessor = JobTests.GetMediaProcessor(_dataContext, WindowsAzureMediaServicesTestConfiguration.MpEncoderName);
             job = JobTests.CreateAndSubmitOneTaskJob(_dataContext, jobName, mediaProcessor, JobTests.GetWamePreset(mediaProcessor), asset, TaskOptions.None);
             JobTests.WaitForJob(job.Id, JobState.Finished, JobTests.VerifyAllTasksFinished);
             Assert.IsTrue(job.OutputMediaAssets.Count > 0);
