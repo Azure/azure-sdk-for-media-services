@@ -45,6 +45,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [TestCategory("PullRequestValidation")]
         public void ShouldCreateAssetFileWithEncryption()
         {
             var filePaths = new[] {WindowsAzureMediaServicesTestConfiguration.SmallWmv};
@@ -66,6 +67,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestMethod]
         [DeploymentItem(@"Media\SmallWMV2.wmv", "Media")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [TestCategory("PullRequestValidation")]
         public void ShouldCreateAssetFileArrayWithEncryption()
         {
             var filePaths = new[] {WindowsAzureMediaServicesTestConfiguration.SmallWmv, WindowsAzureMediaServicesTestConfiguration.SmallWmv2};
@@ -100,6 +102,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [TestCategory("PullRequestValidation")]
         public void ShouldCreateAssetFileWithPlayReadyEncryption()
         {
             // Note that this file is not really PlayReady encrypted.  For the purposes of this test that is okay.
@@ -121,6 +124,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("PullRequestValidation")]
         [DeploymentItem(@"Media\SmallWMV2.wmv", "Media")]
         [Priority(0)]
         public void ShouldCreateAssetFileArrayWithPlayReadyEncryption()
@@ -158,6 +162,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("PullRequestValidation")]
         public void ShouldDeleteContentKey()
         {
             Guid keyId = Guid.NewGuid();
@@ -175,6 +180,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("PullRequestValidation")]
         public void ShouldDeleteContentKeyWithDifferentContexts()
         {
             Guid keyId = Guid.NewGuid();
@@ -191,6 +197,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("PullRequestValidation")]
         public void ShouldCreateTaskUsingStorageEncryptedAsset()
         {
             var filePaths = new[] {WindowsAzureMediaServicesTestConfiguration.SmallWmv};
@@ -236,7 +243,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             }
 
             string originalConfiguration = File.ReadAllText(WindowsAzureMediaServicesTestConfiguration.PlayReadyConfig);
-            IMediaProcessor processor = JobTests.GetMediaProcessor(_dataContext, WindowsAzureMediaServicesTestConfiguration.MpEncryptorName, WindowsAzureMediaServicesTestConfiguration.MpEncryptorVersion);
+            IMediaProcessor processor = JobTests.GetMediaProcessor(_dataContext, WindowsAzureMediaServicesTestConfiguration.MpEncryptorName);
 
             IJob job = _dataContext.Jobs.Create("PlayReady protect a smooth streaming asset for GetClearConfigurationFromTask");
             ITask task = job.Tasks.AddNew("SmoothProtectTask", processor, originalConfiguration, TaskOptions.ProtectedConfiguration);
@@ -266,6 +273,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(1)]
+        [TestCategory("PullRequestValidation")]
         public void ShouldDeleteAssetWithCommonEncryptionContentKey()
         {
             var dataContext2 = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
@@ -296,6 +304,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(1)]
+        [TestCategory("PullRequestValidation")]
         public void ShouldDeleteAssetWithStorageEncryptionContentKey()
         {
             // Use two contexts to cover the case where the content key needs to be internally attached to
