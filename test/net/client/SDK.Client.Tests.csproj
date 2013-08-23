@@ -172,8 +172,7 @@
       <SubType>Designer</SubType>
       <TransformOnBuild>true</TransformOnBuild>
     </None>
-    <!--
-	Uncomment this sectio to have build target specific application settings 
+   
 	<None Include="App.Debug.config">
       <DependentUpon>App.config</DependentUpon>
       <IsTransformFile>True</IsTransformFile>
@@ -182,7 +181,7 @@
       <DependentUpon>App.config</DependentUpon>
       <IsTransformFile>True</IsTransformFile>
     </None>
-	-->
+
     <None Include="Media\small.ism">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

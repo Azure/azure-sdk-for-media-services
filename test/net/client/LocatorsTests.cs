@@ -27,6 +27,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@".\Resources\interview.wmv", "Content")]
+        [TestCategory("PullRequestValidation")]
         public void ShouldReturnSameLocatorCollectionAfterAssetRequery()
         {
             var asset = _dataContext.Assets.Create("interview.wmv", AssetCreationOptions.StorageEncrypted);
@@ -42,6 +43,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@".\Resources\interview.wmv", "Content")]
+        [TestCategory("PullRequestValidation")]
         public void ShouldReturnSameLocatorCollectionAfterAssetRequery2()
         {
             var asset = _dataContext.Assets.Create(Guid.NewGuid().ToString(), AssetCreationOptions.StorageEncrypted);
@@ -64,6 +66,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestMethod]
         [DeploymentItem(@".\Resources\interview.wmv", "Content")]
         [ExpectedException(typeof (InvalidOperationException))]
+        [TestCategory("PullRequestValidation")]
         public void ShouldThrowUpdatingLocatorIfItsTypeIsNotOrigin()
         {
             // Arrange
@@ -80,6 +83,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@".\Resources\interview.wmv", "Content")]
+        [TestCategory("PullRequestValidation")]
         public void ShouldReturnLocatorWhenCreateOriginLocatorCalled()
         {
             // Arrange            
@@ -102,6 +106,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("PullRequestValidation")]
         public void ShouldCreateLocatorWithNameSync()
         {
             var accessPolicy = _dataContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.List | AccessPermissions.Read);
@@ -119,6 +124,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("PullRequestValidation")]
         public void ShouldCreateSASLocatorWithNameSync()
         {
             var accessPolicy = _dataContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.List | AccessPermissions.Read);
@@ -129,6 +135,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("PullRequestValidation")]
         public void ShouldCreateLocatorWithNameASync()
         {
             var accessPolicy = _dataContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.List | AccessPermissions.Read);
@@ -139,6 +146,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("PullRequestValidation")]
         public void ShouldCreateSASLocatorWithNameASync()
         {
             var accessPolicy = _dataContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.List | AccessPermissions.Read);
@@ -176,6 +184,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@".\Resources\interview.wmv", "Content")]
+        [TestCategory("PullRequestValidation")]
         public void ShouldCreateLocatorWhenCreateOriginLocatorAsyncCalled()
         {
             // Arrange         
@@ -205,6 +214,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@".\Resources\interview.wmv", "Content")]
+        [TestCategory("PullRequestValidation")]
         public void ShouldReturnLocatorWhenCreateOriginLocatorWithStartDateCalled()
         {
             // Arrange            
@@ -233,6 +243,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@".\Resources\interview.wmv", "Content")]
+        [TestCategory("PullRequestValidation")]
         public void ShouldReturnLocatorWhenCreateSasLocatorCalled()
         {
             // Arrange            
@@ -280,6 +291,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
 
         [TestMethod]
+        [TestCategory("PullRequestValidation")]
         [DeploymentItem(@".\Resources\interview.wmv", "Content")]
         public void ExpirationTimeOfCreatedLocatorShouldMatchLocatorStartTimePlusPolicyDuration()
         {
@@ -342,6 +354,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@".\Resources\interview.wmv", "Content")]
+        [TestCategory("PullRequestValidation")]
         public void ShouldDeleteLocatorWhenDeleteLocatorCalled()
         {
             // Arrange            
@@ -362,6 +375,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@".\Resources\interview.wmv", "Content")]
+        [TestCategory("PullRequestValidation")]
         public void ShouldDeleteLocatorWhenDeleteLocatorAsyncCalled()
         {
             // Arrange            
@@ -407,6 +421,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@".\Resources\interview.wmv", "Content")]
+        [TestCategory("PullRequestValidation")]
         public void ShouldUpdateExpiryTimeWhenUpdateLocatorAsyncCalledWithExpiryTime()
         {
             // Arrange            
@@ -433,6 +448,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@".\Resources\interview.wmv", "Content")]
+        [TestCategory("PullRequestValidation")]
         public void ShouldUpdateExpiryTimeWhenUpdateLocatorCalledWithStartAndExpiryTime()
         {
             // Arrange            
@@ -462,6 +478,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@".\Resources\interview.wmv", "Content")]
+        [TestCategory("PullRequestValidation")]
         public void ShouldUpdateExpiryTimeWhenUpdateLocatorAsyncCalledWithStartAndExpiryTime()
         {
             // Arrange          
@@ -489,6 +506,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@".\Resources\interview.wmv", "Content")]
+        [TestCategory("PullRequestValidation")]
         public void ShouldDeleteLocatorAfterSyncUpload()
         {
             var asset = _dataContext.Assets.Create("interview.wmv", AssetCreationOptions.None);
@@ -500,6 +518,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@".\Resources\interview.wmv", "Content")]
+        [TestCategory("PullRequestValidation")]
         public void ShouldNotDeleteLocatorAfterASyncUpload()
         {
             var asset = _dataContext.Assets.Create("interview.wmv", AssetCreationOptions.None);

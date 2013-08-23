@@ -311,7 +311,7 @@
     <OverwriteReadOnlyOutputFiles>true</OverwriteReadOnlyOutputFiles>
   </PropertyGroup>
   <PropertyGroup>
-    <PreBuildEvent>"$(SolutionDir)build\NuGet\NuGet.exe" install "$(ProjectDir)packages.config" -OutputDirectory  "$([System.IO.Path]::GetFullPath('$(ProjectDir)..\packages'))"</PreBuildEvent>
+    <PreBuildEvent>$([System.IO.Path]::GetFullPath('$(ProjectDir)\..\..\..\build\NuGet\NuGet.exe')) install "$(ProjectDir)packages.config" -OutputDirectory  "$([System.IO.Path]::GetFullPath('$(ProjectDir)..\packages'))"</PreBuildEvent>
   </PropertyGroup>
   <Target Name="BeforeBuild">
   </Target>
