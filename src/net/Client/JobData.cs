@@ -22,7 +22,6 @@ using System.Data.Services.Common;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
@@ -49,14 +48,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private const string AssetCreationOptionsAttributeName = "assetCreationOptions";
         private const string OutputAssetNameAttributeName = "assetName";
         private const string TaskTemplateIdAttributeName = "taskTemplateId";
-        private const string JobNotificationSubscriptionsPropertyName = "JobNotificationSubscriptions";
         private const string StorageAttributeName = "storageAccountName";
 
 
         private CloudMediaContext _cloudMediaContext;
         private ReadOnlyCollection<IAsset> _inputMediaAssets;
         private ReadOnlyCollection<IAsset> _outputMediaAssets;
-        private JobNotificationSubscriptionCollection _jobNotificationSubscriptions;
+        private readonly JobNotificationSubscriptionCollection _jobNotificationSubscriptions;
         private TaskCollection _tasks;
 
         /// <summary>
@@ -260,6 +258,46 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
         }
 
+
+        /// <summary>
+        /// Asynchronously updates this job instance.
+        /// </summary>
+        /// <returns></returns>
+        public Task UpdateAsync()
+        {
+            if (string.IsNullOrWhiteSpace(this.Id))
+            {
+                // The job has not been submitted yet
+                throw new InvalidOperationException(StringTable.InvalidOperationUpdateForNotSubmittedJob);
+            }
+
+            DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            dataContext.AttachTo(JobBaseCollection.JobSet, this);
+            dataContext.UpdateObject(this);
+            return dataContext.SaveChangesAsync(this).ContinueWith<IJob>(
+                   t =>
+                   {
+                       t.ThrowIfFaulted();
+                       JobData data = (JobData)t.AsyncState;
+                       return data;
+                   });
+        }
+
+        /// <summary>
+        /// Updates this job instance.
+        /// </summary>
+        public void Update()
+        {
+            try
+            {
+                this.UpdateAsync().Wait();
+            }
+            catch (AggregateException exception)
+            {
+                throw exception.InnerException;
+            }
+        }
+
         /// <summary>
         /// Submits asynchronously.
         /// </summary>
@@ -282,7 +320,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     t =>
                     {
                         t.ThrowIfFaulted();
-
                         JobData data = (JobData)t.AsyncState;
                         data.JobEntityRefresh(dataContext);
                     });

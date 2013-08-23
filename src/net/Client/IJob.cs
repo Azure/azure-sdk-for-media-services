@@ -71,6 +71,19 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         void Delete();
 
+
+        /// <summary>
+        /// Asynchronously updates this job instance.
+        /// </summary>
+        /// <returns></returns>
+        Task UpdateAsync();
+
+        /// <summary>
+        /// Updates this job instance.
+        /// </summary>
+        void Update();
+
+
         /// <summary>
         /// Asynchronously submits this job instance.
         /// </summary>

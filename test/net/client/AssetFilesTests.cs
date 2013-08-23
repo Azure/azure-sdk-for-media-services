@@ -43,6 +43,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [TestCategory("PullRequestValidation")]
         public void ShouldNotThrowWhenSavingFileInfoIfTheAssetIsInPublishedState()
         {
             IAsset asset = AssetTests.CreateAsset(_dataContext, _smallWmv, AssetCreationOptions.None);
@@ -59,6 +60,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestMethod]
         [ExpectedException(typeof (ArgumentException))]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [TestCategory("PullRequestValidation")]
         public void ShouldThrowArgumentExceptionWhenUploadSyncFileNameNotEqualToAssetFileName()
         {
             IAsset asset = _dataContext.Assets.Create("test", AssetCreationOptions.None);
@@ -75,30 +77,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             }
         }
 
-        [TestMethod]
-        public void ShouldSetContentFileSizeOnAssetFileWithoutUpload()
-        {
-            IAsset asset = _dataContext.Assets.Create("test", AssetCreationOptions.None);
-            IAssetFile fileInfo = asset.AssetFiles.Create("test.txt");
-            int expected = 0;
-            Assert.AreEqual(expected, fileInfo.ContentFileSize, "Unexpected ContentFileSize value");
-            expected = 100;
-            fileInfo.ContentFileSize = expected;
-            fileInfo.Update();
-            IAssetFile refreshedFile = _dataContext.Files.Where(c => c.Id == fileInfo.Id).FirstOrDefault();
-            Assert.IsNotNull(refreshedFile);
-            Assert.AreEqual(expected, refreshedFile.ContentFileSize, "ContentFileSize Mismatch after Update");
-
-            //Double check with new context
-            _dataContext = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
-            refreshedFile = _dataContext.Files.Where(c => c.Id == fileInfo.Id).FirstOrDefault();
-            Assert.IsNotNull(refreshedFile);
-            Assert.AreEqual(expected, refreshedFile.ContentFileSize, "ContentFileSize Mismatch after Update");
-        }
+       
 
         [TestMethod]
         [ExpectedException(typeof (ArgumentException))]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [TestCategory("PullRequestValidation")]
         public void ShouldThrowArgumentExceptionWhenUploadAsyncFileNameNotEqualToAssetFileName()
         {
             IAsset asset = _dataContext.Assets.Create("test", AssetCreationOptions.None);
@@ -127,6 +111,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestMethod]
         [Priority(0)]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [TestCategory("PullRequestValidation")]
         public void When_Uploading_Multiple_Files_The_Progress_Event_Should_Only_Be_For_The_Bound_AssetFile()
         {
             IAsset asset = _dataContext.Assets.Create("test", AssetCreationOptions.None);
@@ -172,6 +157,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [TestCategory("PullRequestValidation")]
         public void ShouldDownloadToFileFromAsset()
         {
             string fileUploaded = _smallWmv;
@@ -220,6 +206,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [TestCategory("PullRequestValidation")]
         public void ShouldDownloadToFileFromCommonEncryptionProtectedAsset()
         {
             string fileUploaded = _smallWmv;
@@ -268,6 +255,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [TestCategory("PullRequestValidation")]
         public void ShouldDownloadToFileFromStorageEncryptedAsset()
         {
             string fileUploaded = _smallWmv;
@@ -317,6 +305,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestMethod]
         [Timeout(60000)]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [TestCategory("PullRequestValidation")]
         public void ShouldCancelDownloadToFileAsyncTaskAfter50Milliseconds()
         {
             string fileUploaded = _smallWmv;

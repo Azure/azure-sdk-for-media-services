@@ -298,7 +298,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
                 //Updating Name based on file name to avoid exceptions trying to download file.Mapping to storage account is through file name
                 this.Name = fileInfo.Name;
-                
+
                 // Set the ContentFileSize base on the local file size
                 this.ContentFileSize = fileInfo.Length;
 
