@@ -77,7 +77,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
             {
                 Playback = new PlaybackEndpointSettings
                 {
-                    Security = new SecuritySettings
+                    Security = new PlaybackEndpointSecuritySettings
                     {
                         AkamaiG20Authentication = new List<G20Key> 
                         { 
@@ -151,7 +151,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
 
             target.Settings = settings;
 
-            target.Settings.Ingest.Security = new SecuritySettings();
+            target.Settings.Ingest.Security = new IngestEndpointSecuritySettings();
 
             Assert.IsNotNull(target.Settings.Ingest.Security);
         }
