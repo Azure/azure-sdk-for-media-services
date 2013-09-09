@@ -93,6 +93,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Rest
         /// Gets or sets security settings.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public SecuritySettings Security { get; set; }
+        public PlaybackEndpointSecuritySettings Security { get; set; }
     }
 }
