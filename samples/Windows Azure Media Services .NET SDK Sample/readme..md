@@ -11,7 +11,6 @@
 <li>Downloading Media Assets to a local computer</li>
 <li>Creating a SAS locator</li>
 <li>Creating an streaming origin locator for Smooth Streaming or HLS content</li>
-<li>Creating services for Live Streaming</li>
 </ul>
 
 <p>For more information, see the following topics 
