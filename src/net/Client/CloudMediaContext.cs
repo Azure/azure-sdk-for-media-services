@@ -55,12 +55,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private readonly IngestManifestFileCollection _ingestManifestFiles;
         private readonly StorageAccountBaseCollection _storageAccounts;
 
-        // Live collections.
-        private ChannelBaseCollection _channels;
-        private ProgramBaseCollection _programs;
-        private OriginBaseCollection _origins;
-        private OperationBaseCollection _operations;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="CloudMediaContext"/> class.
         /// </summary>
@@ -114,11 +108,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             this._ingestManifestAssets = new IngestManifestAssetCollection(this,null);
             this._ingestManifestFiles = new IngestManifestFileCollection(this, null);
             this._storageAccounts = new StorageAccountBaseCollection(this);
-
-            this._channels = new ChannelBaseCollection(this);
-            this._programs = new ProgramBaseCollection(this);
-            this._origins = new OriginBaseCollection(this);
-            this._operations = new OperationBaseCollection(this);
         }
 
         /// <summary>
@@ -256,38 +245,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public IngestManifestAssetCollection IngestManifestAssets
         {
             get { return this._ingestManifestAssets; }
-        }
-
-        /// <summary>
-        /// Gets the collection of channels in the system.
-        /// </summary>
-        public ChannelBaseCollection Channels
-        {
-            get { return this._channels; }
-        }
-
-        /// <summary>
-        /// Gets the collection of programs in the system.
-        /// </summary>
-        public ProgramBaseCollection Programs
-        {
-            get { return this._programs; }
-        }
-
-        /// <summary>
-        /// Gets the collection of origins in the system.
-        /// </summary>
-        public OriginBaseCollection Origins
-        {
-            get { return this._origins; }
-        }
-
-        /// <summary>
-        /// Gets the collection of operation in the system.
-        /// </summary>
-        public OperationBaseCollection Operations
-        {
-            get { return this._operations; }
         }
     }
 }

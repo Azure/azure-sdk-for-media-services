@@ -140,7 +140,6 @@
     <Compile Include="CollectionBase.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Common\AsyncHelper.cs" />
     <Compile Include="ConfigurationEncryptionHelper.cs" />
     <Compile Include="ContentKeyBaseCollection.cs">
       <SubType>Code</SubType>
@@ -197,32 +196,6 @@
     <Compile Include="IJobTemplate.cs" />
     <Compile Include="InputAssetCollection.cs" />
     <Compile Include="JobTemplateData.cs" />
-    <Compile Include="Live\ChannelBaseCollection.cs" />
-    <Compile Include="Live\ChannelData.cs" />
-    <Compile Include="Live\ChannelSettings.cs" />
-    <Compile Include="Live\ChannelSize.cs" />
-    <Compile Include="Live\ChannelState.cs" />
-    <Compile Include="Live\G20Key.cs" />
-    <Compile Include="Live\IChannel.cs" />
-    <Compile Include="Live\IOperation.cs" />
-    <Compile Include="Live\IOrigin.cs" />
-    <Compile Include="Live\IProgram.cs" />
-    <Compile Include="Live\Ipv4.cs" />
-    <Compile Include="Live\OperationBaseCollection.cs" />
-    <Compile Include="Live\OperationData.cs" />
-    <Compile Include="Live\OperationState.cs" />
-    <Compile Include="Live\OriginBaseCollection.cs" />
-    <Compile Include="Live\OriginData.cs" />
-    <Compile Include="Live\OriginServiceSettings.cs" />
-    <Compile Include="Live\OriginSettings.cs" />
-    <Compile Include="Live\OriginState.cs" />
-    <Compile Include="Live\ProgramBaseCollection.cs" />
-    <Compile Include="Live\ProgramData.cs" />
-    <Compile Include="Live\ProgramState.cs" />
-    <Compile Include="Live\RestEntity.cs" />
-    <Compile Include="Live\SecuritySettings.cs" />
-    <Compile Include="Live\Serializer.cs" />
-    <Compile Include="Live\StreamingConstants.cs" />
     <Compile Include="LocatorBaseCollection.cs">
       <SubType>Code</SubType>
     </Compile>
