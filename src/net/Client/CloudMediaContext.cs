@@ -18,6 +18,7 @@ using System;
 using System.Linq;
 using Microsoft.WindowsAzure.MediaServices.Client.OAuth;
 using Microsoft.WindowsAzure.MediaServices.Client.Versioning;
+using Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -54,6 +55,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private readonly IngestManifestAssetCollection _ingestManifestAssets;
         private readonly IngestManifestFileCollection _ingestManifestFiles;
         private readonly StorageAccountBaseCollection _storageAccounts;
+        private readonly ContentKeyAuthorizationPolicyOptionCollection _contentKeyAuthorizationPolicyOptions;
 
         // Live collections.
         private ChannelBaseCollection _channels;
@@ -114,6 +116,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             this._ingestManifestAssets = new IngestManifestAssetCollection(this,null);
             this._ingestManifestFiles = new IngestManifestFileCollection(this, null);
             this._storageAccounts = new StorageAccountBaseCollection(this);
+            this._contentKeyAuthorizationPolicyOptions = new ContentKeyAuthorizationPolicyOptionCollection(this);
 
             this._channels = new ChannelBaseCollection(this);
             this._programs = new ProgramBaseCollection(this);
@@ -256,6 +259,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public IngestManifestAssetCollection IngestManifestAssets
         {
             get { return this._ingestManifestAssets; }
+        }
+
+        /// <summary>
+        /// Gets the collection of content key authorization policy options.
+        /// </summary>
+        public ContentKeyAuthorizationPolicyOptionCollection ContentKeyAuthorizationPolicyOptions
+        {
+            get { return this._contentKeyAuthorizationPolicyOptions; }
         }
 
         /// <summary>

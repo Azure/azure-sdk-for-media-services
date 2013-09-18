@@ -142,6 +142,12 @@
     </Compile>
     <Compile Include="Common\AsyncHelper.cs" />
     <Compile Include="ConfigurationEncryptionHelper.cs" />
+    <Compile Include="ContentKeyAuthorization\ContentKeyAuthorizationPolicyOptionCollection.cs" />
+    <Compile Include="ContentKeyAuthorization\ContentKeyAuthorizationPolicyOptionData.cs" />
+    <Compile Include="ContentKeyAuthorization\ContentKeyAuthorizationPolicyRestriction.cs" />
+    <Compile Include="ContentKeyAuthorization\ContentKeyDeliveryType.cs" />
+    <Compile Include="ContentKeyAuthorization\ContentKeyRestrictionType.cs" />
+    <Compile Include="ContentKeyAuthorization\IContentKeyAuthorizationPolicyOption.cs" />
     <Compile Include="ContentKeyBaseCollection.cs">
       <SubType>Code</SubType>
     </Compile>

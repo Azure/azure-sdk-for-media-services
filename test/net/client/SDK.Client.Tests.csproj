@@ -86,6 +86,7 @@
   <ItemGroup>
     <Compile Include="AccessPoliciesTests.cs" />
     <Compile Include="AssetFilesTests.cs" />
+    <Compile Include="ContentKeyAuthorizationPolicyOptionTests.cs" />
     <Compile Include="ContentKeyTests.cs" />
     <Compile Include="Live\LiveE2ETests.cs" />
     <Compile Include="IngestManifestTests.cs" />
@@ -172,8 +173,7 @@
       <SubType>Designer</SubType>
       <TransformOnBuild>true</TransformOnBuild>
     </None>
-   
-	<None Include="App.Debug.config">
+    <None Include="App.Debug.config">
       <DependentUpon>App.config</DependentUpon>
       <IsTransformFile>True</IsTransformFile>
     </None>
@@ -181,7 +181,6 @@
       <DependentUpon>App.config</DependentUpon>
       <IsTransformFile>True</IsTransformFile>
     </None>
-
     <None Include="Media\small.ism">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

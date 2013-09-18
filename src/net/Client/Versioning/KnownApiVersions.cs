@@ -31,6 +31,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Versioning
         public static readonly Version Version2 = new Version(major: 2, minor: 0);
         public static readonly Version Version2_1 = new Version(major: 2, minor: 1);
         public static readonly Version Version2_2 = new Version(major: 2, minor: 2);
+        public static readonly Version Version2_3 = new Version(major: 2, minor: 3);
 
 
         /// <summary>
@@ -38,7 +39,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Versioning
         /// </summary>
         public static Version Current
         {
-            get { return Version2_2; }
+            get { return Version2_3; }
         }
     }
 }
