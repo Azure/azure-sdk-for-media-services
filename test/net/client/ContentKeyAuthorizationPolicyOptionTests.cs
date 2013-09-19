@@ -42,21 +42,19 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             _testOption = CreateOption(optionName, requirements, configuration, restrictionType);
         }
 
-        [TestCleanup]
+        /*[TestCleanup] enable when rest layer bug is fixed
         public void CleanupTest()
         {
             _testOption.Delete();
             var policyOptions = _dataContext.ContentKeyAuthorizationPolicyOptions;
             var deleted = !policyOptions.Where(o => o.Id == _testOption.Id).Any();
             Assert.IsTrue(deleted, "ContentKeyAuthorizationPolicyOption was not deleted");
-        }
+        }*/
 
         [TestMethod]
-        [Ignore] // enable when REST layer is ready
         public void ContentKeyAuthorizationPolicyOptionTestUpdate()
         {
-            var policyOptions = _dataContext.ContentKeyAuthorizationPolicyOptions;
-            var createdOption = policyOptions.Where(o => o.Id == _testOption.Id).Single();
+            var createdOption = GetOption(_testOption.Id);
 
             Assert.AreEqual(_testOption.Name, createdOption.Name);
             Assert.AreEqual(_testOption.Restrictions[0].Requirements, createdOption.Restrictions[0].Requirements);
@@ -66,12 +64,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             _testOption.Name = newName;
             _testOption.Update();
 
-            var updated = policyOptions.Where(o => o.Id == _testOption.Id).Single().Name == newName;
-            Assert.IsTrue(updated, "ContentKeyAuthorizationPolicyOption was not updated");
+            var updated = GetOption(_testOption.Id);
+            Assert.AreEqual(newName, updated.Name);
         }
 
         [TestMethod]
-        [Ignore] // enable when REST layer is ready
+        [Ignore] //enable when rest layer bug is fixed
         public void ContentKeyAuthorizationPolicyOptionTestEnumQuery()
         {
             var policyOptions = _dataContext.ContentKeyAuthorizationPolicyOptions;
@@ -92,7 +90,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         {
             var restrictions = new List<ContentKeyAuthorizationPolicyRestriction>
                 {
-                    new ContentKeyAuthorizationPolicyRestriction { Requirements = requirements }
+                    new ContentKeyAuthorizationPolicyRestriction { Requirements = requirements, Name = "somename" }
                 };
 
             restrictions[0].SetKeyRestrictionTypeValue(restrictionType);
@@ -103,6 +101,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 restrictions,
                 configuration);
             return option;
+        }
+
+        private IContentKeyAuthorizationPolicyOption GetOption(string id)
+        {
+            return _dataContext.ContentKeyAuthorizationPolicyOptions.Where(o => o.Id == id).AsEnumerable().SingleOrDefault();
         }
 
         private IContentKey CreateTestKey()

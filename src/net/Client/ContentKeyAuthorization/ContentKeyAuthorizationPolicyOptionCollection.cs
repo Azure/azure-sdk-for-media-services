@@ -48,6 +48,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
             this._cloudMediaContext = cloudMediaContext;
 
             this.DataContextFactory = this._cloudMediaContext.DataContextFactory;
+            this.Queryable = this.DataContextFactory.CreateDataServiceContext().CreateQuery<ContentKeyAuthorizationPolicyOptionData>(ContentKeyAuthorizationPolicyOptionSet);
         }
  
         /// <summary>
