@@ -18,6 +18,7 @@ using System;
 using System.Linq;
 using Microsoft.WindowsAzure.MediaServices.Client.OAuth;
 using Microsoft.WindowsAzure.MediaServices.Client.Versioning;
+using Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -54,6 +55,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private readonly IngestManifestAssetCollection _ingestManifestAssets;
         private readonly IngestManifestFileCollection _ingestManifestFiles;
         private readonly StorageAccountBaseCollection _storageAccounts;
+        private readonly ContentKeyAuthorizationPolicyOptionCollection _contentKeyAuthorizationPolicyOptions;
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CloudMediaContext"/> class.
@@ -105,9 +108,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             this._mediaProcessors = new MediaProcessorBaseCollection(this);
             this._locators = new LocatorBaseCollection(this);
             this._ingestManifests = new IngestManifestCollection(this);
-            this._ingestManifestAssets = new IngestManifestAssetCollection(this,null);
+            this._ingestManifestAssets = new IngestManifestAssetCollection(this, null);
             this._ingestManifestFiles = new IngestManifestFileCollection(this, null);
             this._storageAccounts = new StorageAccountBaseCollection(this);
+            this._contentKeyAuthorizationPolicyOptions = new ContentKeyAuthorizationPolicyOptionCollection(this);
         }
 
         /// <summary>
@@ -193,9 +197,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         public override IStorageAccount DefaultStorageAccount
         {
-            get 
-            { 
-                return this.StorageAccounts.Where(c=>c.IsDefault == true).FirstOrDefault(); 
+            get
+            {
+                return this.StorageAccounts.Where(c => c.IsDefault == true).FirstOrDefault();
             }
         }
 
@@ -234,7 +238,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets the collection of manifest asset files in the system
         /// </summary>
-        public  IngestManifestFileCollection IngestManifestFiles
+        public IngestManifestFileCollection IngestManifestFiles
         {
             get { return this._ingestManifestFiles; }
         }
@@ -245,6 +249,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public IngestManifestAssetCollection IngestManifestAssets
         {
             get { return this._ingestManifestAssets; }
+        }
+
+
+        /// <summary>
+        /// Gets the collection of content key authorization policy options.
+        /// </summary>
+        public ContentKeyAuthorizationPolicyOptionCollection ContentKeyAuthorizationPolicyOptions
+        {
+            get { return this._contentKeyAuthorizationPolicyOptions; }
         }
     }
 }

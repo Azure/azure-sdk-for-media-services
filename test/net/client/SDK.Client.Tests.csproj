@@ -86,6 +86,7 @@
   <ItemGroup>
     <Compile Include="AccessPoliciesTests.cs" />
     <Compile Include="AssetFilesTests.cs" />
+    <Compile Include="ContentKeyAuthorizationPolicyOptionTests.cs" />
     <Compile Include="ContentKeyTests.cs" />
     <Compile Include="IngestManifestTests.cs" />
     <Compile Include="JobTests.cs" />
