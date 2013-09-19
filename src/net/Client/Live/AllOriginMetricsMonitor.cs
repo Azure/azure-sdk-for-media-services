@@ -22,7 +22,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// <summary>
     /// Origin Metrics Monitor for all origin services
     /// </summary>
-    public class AllOriginMetricsMonitor : OriginMetricsMonitor
+    public sealed class AllOriginMetricsMonitor : OriginMetricsMonitor
     {
         private readonly IQueryable<IOriginMetric> _metricsQueryable;
 
@@ -30,7 +30,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Construct an AllOriginMetricsMonitor object
         /// </summary>
         /// <param name="metricsQueryable"></param>
-        public AllOriginMetricsMonitor(IQueryable<IOriginMetric> metricsQueryable)
+        internal AllOriginMetricsMonitor(IQueryable<IOriginMetric> metricsQueryable)
         {
             _metricsQueryable = metricsQueryable;
         }

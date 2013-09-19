@@ -24,7 +24,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// <summary>
     /// Origin Metrics Monitor for a signle origin service
     /// </summary>
-    public class SingleOriginMetricsMonitor : OriginMetricsMonitor
+    public sealed class SingleOriginMetricsMonitor : OriginMetricsMonitor
     {
         private readonly IOrigin _origin;
 
@@ -32,7 +32,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Create a SingleOriginMetricsMonitor object with the origin ID
         /// </summary>
         /// <param name="origin">The origin object hosting the monitor</param>
-        public SingleOriginMetricsMonitor(IOrigin origin)
+        internal SingleOriginMetricsMonitor(IOrigin origin)
         {
             _origin = origin;
         }

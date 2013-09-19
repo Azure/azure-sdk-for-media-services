@@ -22,6 +22,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     internal class OriginMetricData : RestEntity<OriginMetricData>, IOriginMetric, ICloudMediaContextInit
     {
         /// <summary>
+        /// Gets Unique identifier of the owner origin service
+        /// </summary>
+        public string OriginId { get; set; }
+
+        /// <summary>
         /// Gets metric last modification timestamp.
         /// </summary>
         public DateTime LastModified { get; set; }

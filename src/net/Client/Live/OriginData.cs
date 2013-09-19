@@ -27,6 +27,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     [DataServiceKey("Id")]
     internal class OriginData : RestEntity<OriginData>, IOrigin, ICloudMediaContextInit
     {
+        private SingleOriginMetricsMonitor _metricsMonitor;
+
         /// <summary>
         /// Gets or sets the name of the origin.
         /// </summary>
@@ -105,7 +107,18 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             } 
         }
 
-        public SingleOriginMetricsMonitor MetricsMonitor { get; set; }
+        public SingleOriginMetricsMonitor MetricsMonitor
+        {
+            get
+            {
+                if (_metricsMonitor == null)
+                {
+                    _metricsMonitor = new SingleOriginMetricsMonitor(this);
+                }
+
+                return _metricsMonitor;
+            }
+        }
 
         /// <summary>
         /// Gets or sets origin settings.

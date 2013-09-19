@@ -12,10 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Globalization;
-using System.Linq;
-
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
@@ -24,7 +20,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     public sealed class OriginMetricBaseCollection : CloudBaseCollection<IOriginMetric>
     {
         internal const string OriginMetricSet = "OriginMetrics";
-        private readonly CloudMediaContext _cloudMediaContext;
+        private AllOriginMetricsMonitor _monitor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OriginMetricBaseCollection"/> class.
@@ -33,34 +29,24 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Justification = "By design")]
         internal OriginMetricBaseCollection(CloudMediaContext cloudMediaContext)
         {
-            _cloudMediaContext = cloudMediaContext;
-
-            DataContextFactory = _cloudMediaContext.DataContextFactory;
+            DataContextFactory = cloudMediaContext.DataContextFactory;
             Queryable = DataContextFactory.CreateDataServiceContext().CreateQuery<OriginMetricData>(OriginMetricSet);
-
-            Monitor = new AllOriginMetricsMonitor(Queryable);
         }
 
         /// <summary>
         /// Get the metrics monitor for all origin services
         /// </summary>
-        public AllOriginMetricsMonitor Monitor { get; private set; }
-
-        /// <summary>
-        /// Get the metrics of a specific origin service
-        /// i.e. context.OriginMetrics.GetMetric(id)
-        /// 
-        /// an alternative way (maybe more efficent) is:
-        ///      context.OriginMetrics.Where(m => m.Id = id).Single() 
-        /// </summary>
-        /// <param name="originId"></param>
-        /// <returns></returns>
-        public IOriginMetric GetMetric(string originId)
+        public AllOriginMetricsMonitor Monitor
         {
-            var uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/{0}('{1}')", OriginMetricSet, originId), UriKind.Relative);
-            var dataContext = _cloudMediaContext.DataContextFactory.CreateDataServiceContext();
-            var metric = dataContext.Execute<OriginMetricData>(uri).SingleOrDefault();
-            return metric;
+            get
+            {
+                if (_monitor == null)
+                {
+                    _monitor = new AllOriginMetricsMonitor(Queryable);
+                }
+
+                return _monitor;
+            }
         }
     }
 }

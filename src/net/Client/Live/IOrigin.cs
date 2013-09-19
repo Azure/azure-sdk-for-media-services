@@ -70,7 +70,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets or sets origin metrics monitor object
         /// </summary>
-        SingleOriginMetricsMonitor MetricsMonitor { get; set; }
+        SingleOriginMetricsMonitor MetricsMonitor { get; }
 
         /// <summary>
         /// Deletes the origin.

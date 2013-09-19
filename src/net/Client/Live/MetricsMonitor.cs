@@ -49,7 +49,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Start to monitor metrics and trigger events
         /// </summary>
-        public void StartMonitoring()
+        public void Start()
         {
             if (_timer != null)
             {
@@ -73,17 +73,17 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Start to monitor metrics with specified frequency
         /// </summary>
         /// <param name="frequency">moniotring frequency</param>
-        public void StartMonitoring(TimeSpan frequency)
+        public void Start(TimeSpan frequency)
         {
             SetFrequency(frequency);
 
-            StartMonitoring();
+            Start();
         }
 
         /// <summary>
         /// Stop to monitor metrics and release the timer
         /// </summary>
-        public void StopMonitoring()
+        public void Stop()
         {
             var timer = _timer;
             _timer = null;
