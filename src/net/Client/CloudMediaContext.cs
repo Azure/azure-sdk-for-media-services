@@ -60,6 +60,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private ProgramBaseCollection _programs;
         private OriginBaseCollection _origins;
         private OperationBaseCollection _operations;
+        private OriginMetricBaseCollection _originMetrics;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CloudMediaContext"/> class.
@@ -119,6 +120,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             this._programs = new ProgramBaseCollection(this);
             this._origins = new OriginBaseCollection(this);
             this._operations = new OperationBaseCollection(this);
+            this._originMetrics = new OriginMetricBaseCollection(this);
         }
 
         /// <summary>
@@ -288,6 +290,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public OperationBaseCollection Operations
         {
             get { return this._operations; }
+        }
+
+        /// <summary>
+        /// Gets the collection of origin metrics in the system.
+        /// </summary>
+        public OriginMetricBaseCollection OriginMetrics
+        {
+            get { return this._originMetrics; }
         }
     }
 }

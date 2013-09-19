@@ -105,6 +105,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             } 
         }
 
+        public SingleOriginMetricsMonitor MetricsMonitor { get; set; }
+
         /// <summary>
         /// Gets or sets origin settings.
         /// </summary>
@@ -324,6 +326,24 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public Task<IOperation> SendDeleteOperationAsync()
         {
             return Task.Factory.StartNew(() => SendDeleteOperation());
+        }
+
+        public IOriginMetric GetMetric()
+        {
+            var uri = new Uri(
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    "/{0}('{1}')/{2}",
+                    OriginMetricBaseCollection.OriginMetricSet,
+                    Id,
+                    Metric.MetricSet
+                    ),
+                UriKind.Relative);
+
+            var dataContext = _cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            var metric = dataContext.Execute<OriginMetricData>(uri).SingleOrDefault();
+
+            return metric;
         }
 
         protected override string EntitySetName { get { return OriginBaseCollection.OriginSet; } }
