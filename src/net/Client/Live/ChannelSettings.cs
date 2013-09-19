@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.Generic;
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
@@ -38,17 +39,41 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets or sets security settings.
         /// </summary>
-        public SecuritySettings Security { get; set; }
+        public PreviewEndpointSecuritySettings Security { get; set; }
     }
 
     /// <summary>
-    /// Describes Preview endpoint settings.
+    /// Describes Preview endpoint security settings.
+    /// </summary>
+    public class PreviewEndpointSecuritySettings
+    {
+        /// <summary>
+        /// Gets or sets the list of IP-s allowed.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public IList<Ipv4> IPv4AllowList { get; set; }
+    }
+
+    /// <summary>
+    /// Describes Ingest endpoint settings.
     /// </summary>
     public class IngestEndpointSettings
     {
         /// <summary>
         /// Gets or sets security settings.
         /// </summary>
-        public SecuritySettings Security { get; set; }
+        public IngestEndpointSecuritySettings Security { get; set; }
+    }
+
+    /// <summary>
+    /// Describes Ingest endpoint security settings.
+    /// </summary>
+    public class IngestEndpointSecuritySettings
+    {
+        /// <summary>
+        /// Gets or sets the list of IP-s allowed.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public IList<Ipv4> IPv4AllowList { get; set; }
     }
 }

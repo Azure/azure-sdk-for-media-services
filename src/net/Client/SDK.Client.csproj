@@ -220,7 +220,6 @@
     <Compile Include="Live\ProgramData.cs" />
     <Compile Include="Live\ProgramState.cs" />
     <Compile Include="Live\RestEntity.cs" />
-    <Compile Include="Live\SecuritySettings.cs" />
     <Compile Include="Live\Serializer.cs" />
     <Compile Include="Live\StreamingConstants.cs" />
     <Compile Include="LocatorBaseCollection.cs">

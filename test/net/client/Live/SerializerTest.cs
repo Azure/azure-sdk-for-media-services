@@ -61,7 +61,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
                 Playback = new PlaybackEndpointSettings
                 {
                     MaxCacheAge = TimeSpan.FromMinutes(1),
-                    Security = new SecuritySettings
+                    Security = new PlaybackEndpointSecuritySettings
                     {
                         AkamaiG20Authentication = new List<G20Key> 
                         { 
