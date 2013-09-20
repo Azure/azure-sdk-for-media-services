@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Data.Services.Client;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
 {
@@ -57,7 +58,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
         /// Asynchronously updates this instance.
         /// </summary>
         /// <returns>Task to wait on for operation completion.</returns>
-        Task UpdateAsync();
+        Task<IContentKeyAuthorizationPolicyOption> UpdateAsync();
 
         /// <summary>
         /// Updates this instance.
@@ -73,6 +74,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
         /// Deletes the ContentKeyAuthorizationPolicyOption asynchronously.
         /// </summary>
         /// <returns>Task to wait on for operation completion.</returns>
-        Task DeleteAsync();
+        Task<DataServiceResponse> DeleteAsync();
     }
 }
