@@ -14,40 +14,35 @@
 // limitations under the License.
 // </license>
 
-using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
-    /// Describes a single channelsink or origin metric
+    /// Channel Metrics Monitor for all channel services
     /// </summary>
-    public class Metric
+    public sealed class AllChannelMetricsMonitor : ChannelMetricsMonitor
     {
-        internal const string MetricProperty = "MetricsData";
+        private readonly IQueryable<IChannelMetric> _metricsQueryable;
 
         /// <summary>
-        /// Gets or sets the metric name
+        /// Construct an AllChannelMetricsMonitor object
         /// </summary>
-        public string Name { get; set; }
+        /// <param name="metricsQueryable"></param>
+        internal AllChannelMetricsMonitor(IQueryable<IChannelMetric> metricsQueryable)
+        {
+            _metricsQueryable = metricsQueryable;
+        }
 
         /// <summary>
-        /// Gets or sets the metric display name
+        /// Get the list of Channel Metrics 
+        /// There is only one element in the list if monitoring a single channel
         /// </summary>
-        public string DisplayName { get; set; }
-
-        /// <summary>
-        /// Gets or sets the metric value
-        /// </summary>
-        public Int64 Value { get; set; }
-
-        /// <summary>
-        /// Gets or sets the metric value type
-        /// </summary>
-        public string Type { get; set; }
-
-        /// <summary>
-        /// Gets or sets the metric value unit
-        /// </summary>
-        public string Unit { get; set; }
+        /// <returns>The list of metrics</returns>
+        protected override IList<IChannelMetric> GetChannelMetrics()
+        {
+            return _metricsQueryable.ToList();
+        }
     }
 }

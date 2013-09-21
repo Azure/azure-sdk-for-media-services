@@ -15,39 +15,19 @@
 // </license>
 
 using System;
+using System.Collections.Generic;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
-    /// Describes a single channelsink or origin metric
+    /// Channel Metrics EventArgs returned to listeners.
     /// </summary>
-    public class Metric
+    public class ChannelMetricsEventArgs : EventArgs
     {
-        internal const string MetricProperty = "MetricsData";
-
         /// <summary>
-        /// Gets or sets the metric name
+        /// The list of channel metrics data for Channel(s)
+        /// There is only one element if monitoring a single channel
         /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// Gets or sets the metric display name
-        /// </summary>
-        public string DisplayName { get; set; }
-
-        /// <summary>
-        /// Gets or sets the metric value
-        /// </summary>
-        public Int64 Value { get; set; }
-
-        /// <summary>
-        /// Gets or sets the metric value type
-        /// </summary>
-        public string Type { get; set; }
-
-        /// <summary>
-        /// Gets or sets the metric value unit
-        /// </summary>
-        public string Unit { get; set; }
+        public IList<IChannelMetric> ChannelMetrics { get; internal set; }
     }
 }

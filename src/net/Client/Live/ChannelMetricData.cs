@@ -13,28 +13,32 @@
 // limitations under the License.
 
 using System;
-using System.Collections.ObjectModel;
 using System.Data.Services.Common;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     [DataServiceKey("Id")]
-    internal class OriginMetricData : RestEntity<OriginMetricData>, IOriginMetric, ICloudMediaContextInit
+    internal class ChannelMetricData : RestEntity<ChannelMetricData>, IChannelMetric, ICloudMediaContextInit
     {
+        /// <summary>
+        /// Gets service name of the channel metric
+        /// </summary>
+        public string ServiceName { get; set; }
+
         /// <summary>
         /// Gets metric last modification timestamp.
         /// </summary>
         public DateTime LastModified { get; set; }
 
         /// <summary>
-        /// Gets service name of the origin metric
+        /// Gets the <see cref="IngestMetrics"/> object containing the ingest metrics of the channel.
         /// </summary>
-        public string ServiceName { get; set; }
+        public IngestMetrics Ingest { get; set; }
 
         /// <summary>
-        /// Gets a collection of <see cref="Metric"/> objects containing the egress metrics of the origin.
+        /// Gets the <see cref="ProgramMetrics"/> object containing the program metrics of the channel.
         /// </summary>
-        public ReadOnlyCollection<Metric> EgressMetrics { get; set; }
+        public ProgramMetrics Program { get; set; }
 
         #region ICloudMediaContextInit Members
 
@@ -51,7 +55,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
         protected override string EntitySetName
         {
-            get { return OriginMetricBaseCollection.OriginMetricSet; }
+            get { return ChannelMetricBaseCollection.ChannelMetricSet; }
         }
     }
 }

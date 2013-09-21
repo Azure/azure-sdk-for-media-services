@@ -347,9 +347,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 string.Format(
                     CultureInfo.InvariantCulture,
                     "/{0}('{1}')/{2}",
-                    OriginMetricBaseCollection.OriginMetricSet,
+                    OriginBaseCollection.OriginSet,
                     Id,
-                    Metric.MetricSet
+                    Metric.MetricProperty
                     ),
                 UriKind.Relative);
 

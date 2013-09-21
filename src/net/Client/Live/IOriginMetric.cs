@@ -28,11 +28,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         string Id { get; }
 
         /// <summary>
-        /// Gets Unique identifier of the owner origin service
-        /// </summary>
-        string OriginId { get; }
-
-        /// <summary>
         /// Gets service name of the origin metric
         /// </summary>
         string ServiceName { get; }

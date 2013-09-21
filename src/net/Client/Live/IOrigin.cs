@@ -68,7 +68,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         OriginState State { get; }
 
         /// <summary>
-        /// Gets or sets origin metrics monitor object
+        /// Gets origin metrics monitor object
         /// </summary>
         SingleOriginMetricsMonitor MetricsMonitor { get; }
 

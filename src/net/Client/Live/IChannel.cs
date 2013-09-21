@@ -100,6 +100,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         ProgramBaseCollection Programs { get; }
 
         /// <summary>
+        /// Gets channel metrics monitor object
+        /// </summary>
+        SingleChannelMetricsMonitor MetricsMonitor { get; }
+
+        /// <summary>
         /// Starts the channel.
         /// </summary>
         void Start();
@@ -167,5 +172,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <returns>Task to wait on for operation sending completion.</returns>
         Task<IOperation> SendUpdateOperationAsync();
+
+        /// <summary>
+        /// Get the latest channel metric.
+        /// </summary>
+        /// <returns>The latest ChannelMetrics entity of this channel service</returns>
+        IChannelMetric GetMetric();
     }
 }

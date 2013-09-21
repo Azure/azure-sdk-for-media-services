@@ -20,36 +20,36 @@ using System.Collections.Generic;
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
-    /// Origin metrics monitor class
+    /// Channel metrics monitor class
     /// </summary>
-    public abstract class OriginMetricsMonitor : MetricsMonitor
+    public abstract class ChannelMetricsMonitor : MetricsMonitor
     {
         /// <summary>
-        /// EventHandler for the origin metric received
+        /// EventHandler for the channel metric received
         /// </summary>
-        public EventHandler<OriginMetricsEventArgs> MetricReceived { get; set; }
-        
+        public EventHandler<ChannelMetricsEventArgs> MetricReceived { get; set; }
+
         /// <summary>
-        /// Get the list of Origin Metrics 
-        /// There is only one element in the list if monitoring a single origin
+        /// Get the list of Channel Metrics 
+        /// There is only one element in the list if monitoring a single channel
         /// </summary>
         /// <returns>The list of metrics</returns>
-        protected abstract IList<IOriginMetric> GetOriginMetrics();
+        protected abstract IList<IChannelMetric> GetChannelMetrics();
 
         protected override void GetMetrics()
         {
             if (MetricReceived == null) return;
 
-            var metrics = GetOriginMetrics();
+            var metrics = GetChannelMetrics();
 
             var metricReceivedHandlers = MetricReceived;
             if (metricReceivedHandlers != null)
             {
                 metricReceivedHandlers.BeginInvoke(
                     this,
-                    new OriginMetricsEventArgs
+                    new ChannelMetricsEventArgs
                     {
-                        OriginMetrics = metrics
+                        ChannelMetrics = metrics
                     },
                     null,
                     null);

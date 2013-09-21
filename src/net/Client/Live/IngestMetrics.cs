@@ -1,6 +1,5 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="ErrorDetail.cs" company="Microsoft">Copyright 2012 Microsoft Corporation</copyright>
-// <license>
+﻿// Copyright 2012 Microsoft Corporation
+// 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -12,42 +11,36 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-// </license>
 
-using System;
+using System.Collections.ObjectModel;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
-    /// Describes a single channelsink or origin metric
+    /// Describes the IngestMetrics complex type
     /// </summary>
-    public class Metric
+    public class IngestMetrics
     {
-        internal const string MetricProperty = "MetricsData";
+        /// <summary>
+        /// IP address of different encoders for the same stream
+        /// e.g. 127.0.0.1
+        /// </summary>
+        public string SourceId { get; set; }
 
         /// <summary>
-        /// Gets or sets the metric name
+        /// ID of different streams (qualities)
         /// </summary>
-        public string Name { get; set; }
+        public string StreamId { get; set; }
 
         /// <summary>
-        /// Gets or sets the metric display name
+        /// Stream track ID, audio or video
+        /// e.g. 1
         /// </summary>
-        public string DisplayName { get; set; }
+        public string TrackId { get; set; }
 
         /// <summary>
-        /// Gets or sets the metric value
+        /// a collection of stream metrics
         /// </summary>
-        public Int64 Value { get; set; }
-
-        /// <summary>
-        /// Gets or sets the metric value type
-        /// </summary>
-        public string Type { get; set; }
-
-        /// <summary>
-        /// Gets or sets the metric value unit
-        /// </summary>
-        public string Unit { get; set; }
+        public ReadOnlyCollection<Metric> StreamMetrics { get; set; }
     }
 }
