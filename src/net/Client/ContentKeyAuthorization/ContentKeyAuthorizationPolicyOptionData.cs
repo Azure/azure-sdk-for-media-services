@@ -94,7 +94,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
         /// Asynchronously updates this instance.
         /// </summary>
         /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
-        public Task UpdateAsync()
+        public Task<IContentKeyAuthorizationPolicyOption> UpdateAsync()
         {
             DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
             dataContext.AttachTo(ContentKeyAuthorizationPolicyOptionCollection.ContentKeyAuthorizationPolicyOptionSet, this);
@@ -128,7 +128,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
         /// Asynchronously deletes this instance.
         /// </summary>
         /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
-        public Task DeleteAsync()
+        public Task<DataServiceResponse> DeleteAsync()
         {
             DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
             dataContext.AttachTo(ContentKeyAuthorizationPolicyOptionCollection.ContentKeyAuthorizationPolicyOptionSet, this);
