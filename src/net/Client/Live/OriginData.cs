@@ -27,6 +27,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     [DataServiceKey("Id")]
     internal class OriginData : RestEntity<OriginData>, IOrigin, ICloudMediaContextInit
     {
+        private SingleOriginMetricsMonitor _metricsMonitor;
+
         /// <summary>
         /// Gets or sets the name of the origin.
         /// </summary>
@@ -103,6 +105,19 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             {
                 return (OriginState)Enum.Parse(typeof(OriginState), State, true);
             } 
+        }
+
+        public SingleOriginMetricsMonitor MetricsMonitor
+        {
+            get
+            {
+                if (_metricsMonitor == null)
+                {
+                    _metricsMonitor = new SingleOriginMetricsMonitor(this);
+                }
+
+                return _metricsMonitor;
+            }
         }
 
         /// <summary>
@@ -324,6 +339,24 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public Task<IOperation> SendDeleteOperationAsync()
         {
             return Task.Factory.StartNew(() => SendDeleteOperation());
+        }
+
+        public IOriginMetric GetMetric()
+        {
+            var uri = new Uri(
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    "/{0}('{1}')/{2}",
+                    OriginBaseCollection.OriginSet,
+                    Id,
+                    Metric.MetricProperty
+                    ),
+                UriKind.Relative);
+
+            var dataContext = _cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            var metric = dataContext.Execute<OriginMetricData>(uri).SingleOrDefault();
+
+            return metric;
         }
 
         protected override string EntitySetName { get { return OriginBaseCollection.OriginSet; } }
