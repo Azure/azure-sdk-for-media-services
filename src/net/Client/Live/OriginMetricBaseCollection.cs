@@ -12,10 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Globalization;
-using System.Linq;
-
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
@@ -24,7 +20,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     public sealed class OriginMetricBaseCollection : CloudBaseCollection<IOriginMetric>
     {
         internal const string OriginMetricSet = "OriginMetrics";
-        private readonly CloudMediaContext _cloudMediaContext;
         private AllOriginMetricsMonitor _monitor;
 
         /// <summary>
@@ -33,9 +28,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="cloudMediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
         internal OriginMetricBaseCollection(CloudMediaContext cloudMediaContext)
         {
-            _cloudMediaContext = cloudMediaContext;
-
-            DataContextFactory = _cloudMediaContext.DataContextFactory;
+            DataContextFactory = cloudMediaContext.DataContextFactory;
             Queryable = DataContextFactory.CreateDataServiceContext().CreateQuery<OriginMetricData>(OriginMetricSet);
         }
 
@@ -47,6 +40,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             get { return _monitor ?? (_monitor = new AllOriginMetricsMonitor(Queryable)); }
         }
 
+        /**********************************************************************************************************
         /// <summary>
         /// Get the metrics of a specific origin service
         /// i.e. context.OriginMetrics.GetMetric(id). If you know the metric Id, 
@@ -61,5 +55,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             var metric = dataContext.Execute<OriginMetricData>(uri).SingleOrDefault();
             return metric;
         }
+        ***********************************************************************************************************/
     }
 }

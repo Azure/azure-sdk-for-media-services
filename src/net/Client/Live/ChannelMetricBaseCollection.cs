@@ -12,10 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Globalization;
-using System.Linq;
-
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
@@ -24,7 +20,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     public sealed class ChannelMetricBaseCollection : CloudBaseCollection<IChannelMetric>
     {
         internal const string ChannelMetricSet = "ChannelMetrics";
-        private readonly CloudMediaContext _cloudMediaContext;
         private AllChannelMetricsMonitor _monitor;
 
         /// <summary>
@@ -33,9 +28,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="cloudMediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
         internal ChannelMetricBaseCollection(CloudMediaContext cloudMediaContext)
         {
-            _cloudMediaContext = cloudMediaContext;
-
-            DataContextFactory = _cloudMediaContext.DataContextFactory;
+            DataContextFactory = cloudMediaContext.DataContextFactory;
             Queryable = DataContextFactory.CreateDataServiceContext().CreateQuery<ChannelMetricData>(ChannelMetricSet);
         }
 
@@ -47,6 +40,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             get { return _monitor ?? (_monitor = new AllChannelMetricsMonitor(Queryable)); }
         }
 
+        /**********************************************************************************************************
         /// <summary>
         /// Get the metrics of a specific channel service
         /// i.e. context.ChannelMetrics.GetMetric(id). 
@@ -62,5 +56,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             var metric = dataContext.Execute<ChannelMetricData>(uri).SingleOrDefault();
             return metric;
         }
+        ***********************************************************************************************************/
     }
 }
