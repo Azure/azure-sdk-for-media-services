@@ -68,6 +68,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         OriginState State { get; }
 
         /// <summary>
+        /// Gets origin metrics monitor object
+        /// </summary>
+        SingleOriginMetricsMonitor MetricsMonitor { get; }
+
+        /// <summary>
         /// Deletes the origin.
         /// </summary>
         void Delete();
@@ -183,5 +188,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <returns>Task to wait on for operation sending completion.</returns>
         Task<IOperation> SendScaleOperationAsync(int reservedUnits);
+
+        /// <summary>
+        /// Get the latest origin metric.
+        /// </summary>
+        /// <returns>The latest OriginMetrics entity of this origin service</returns>
+        IOriginMetric GetMetric();
     }
 }

@@ -77,7 +77,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Gets or sets channel settings.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public string Settings 
+        public string Settings
         {
             get
             {
@@ -105,20 +105,20 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets state of the channel.
         /// </summary>
-        ChannelState IChannel.State 
-        { 
-            get 
+        ChannelState IChannel.State
+        {
+            get
             {
                 return (ChannelState)Enum.Parse(typeof(ChannelState), State, true);
-            } 
+            }
         }
 
         /// <summary>
         /// Gets size of the channel.
         /// </summary>
         ChannelSize IChannel.Size
-        { 
-            get 
+        {
+            get
             {
                 return (ChannelSize)Enum.Parse(typeof(ChannelSize), Size, true);
             }
@@ -160,6 +160,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 return _programCollection;
             }
         }
+
+        /// <summary>
+        /// Gets channel metrics monitor object
+        /// </summary>
+        public SingleChannelMetricsMonitor MetricsMonitor { get; set; }
 
         /// <summary>
         /// Gets Url of the preview.
@@ -344,6 +349,28 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public Task<IOperation> SendDeleteOperationAsync()
         {
             return Task.Factory.StartNew(() => SendDeleteOperation());
+        }
+
+        /// <summary>
+        /// Get the latest channel metric.
+        /// </summary>
+        /// <returns>The latest ChannelMetrics entity of this channel service</returns>
+        public IChannelMetric GetMetric()
+        {
+            var uri = new Uri(
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    "/{0}('{1}')/{2}",
+                    ChannelBaseCollection.ChannelSet,
+                    Id,
+                    Metric.MetricProperty
+                    ),
+                UriKind.Relative);
+
+            var dataContext = _cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            var metric = dataContext.Execute<ChannelMetricData>(uri).SingleOrDefault();
+
+            return metric;
         }
 
         protected override string EntitySetName { get { return ChannelBaseCollection.ChannelSet; } }

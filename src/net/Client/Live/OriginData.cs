@@ -27,6 +27,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     [DataServiceKey("Id")]
     internal class OriginData : RestEntity<OriginData>, IOrigin, ICloudMediaContextInit
     {
+        private SingleOriginMetricsMonitor _metricsMonitor;
+
         /// <summary>
         /// Gets or sets the name of the origin.
         /// </summary>
@@ -70,7 +72,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Gets or sets origin settings.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public string Settings 
+        public string Settings
         {
             get
             {
@@ -97,28 +99,41 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets state of the origin.
         /// </summary>
-        OriginState IOrigin.State 
-        { 
-            get 
+        OriginState IOrigin.State
+        {
+            get
             {
                 return (OriginState)Enum.Parse(typeof(OriginState), State, true);
-            } 
+            }
+        }
+
+        public SingleOriginMetricsMonitor MetricsMonitor
+        {
+            get
+            {
+                if (_metricsMonitor == null)
+                {
+                    _metricsMonitor = new SingleOriginMetricsMonitor(this);
+                }
+
+                return _metricsMonitor;
+            }
         }
 
         /// <summary>
         /// Gets or sets origin settings.
         /// </summary>
-        OriginSettings IOrigin.Settings 
-        { 
-            get 
+        OriginSettings IOrigin.Settings
+        {
+            get
             {
-                return _settings; 
+                return _settings;
             }
 
             set
             {
-                _settings = value; 
-            } 
+                _settings = value;
+            }
         }
 
         /// <summary>
@@ -268,7 +283,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 IOperation operation = AsyncHelper.WaitOperationCompletion(
                     this._cloudMediaContext,
                     operationId,
-                    StreamingConstants.DeleteOriginPollInterval); 
+                    StreamingConstants.DeleteOriginPollInterval);
 
                 string messageFormat = Resources.ErrorDeleteOriginFailedFormat;
                 string message;
@@ -324,6 +339,24 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public Task<IOperation> SendDeleteOperationAsync()
         {
             return Task.Factory.StartNew(() => SendDeleteOperation());
+        }
+
+        public IOriginMetric GetMetric()
+        {
+            var uri = new Uri(
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    "/{0}('{1}')/{2}",
+                    OriginBaseCollection.OriginSet,
+                    Id,
+                    Metric.MetricProperty
+                    ),
+                UriKind.Relative);
+
+            var dataContext = _cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            var metric = dataContext.Execute<OriginMetricData>(uri).SingleOrDefault();
+
+            return metric;
         }
 
         protected override string EntitySetName { get { return OriginBaseCollection.OriginSet; } }
