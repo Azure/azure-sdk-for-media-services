@@ -162,7 +162,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             // Encrypt it for delivery to Nimbus.
             X509Certificate2 certToUse = ContentKeyCollection.GetCertificateToEncryptContentKey(dataContext, ContentKeyType.StorageEncryption);
-            ContentKeyData contentKeyData = ContentKeyBaseCollection.CreateStorageContentKey(fileEncryption.FileEncryption, certToUse);
+            ContentKeyData contentKeyData = ContentKeyBaseCollection.InitializeStorageContentKey(fileEncryption.FileEncryption, certToUse);
 
             dataContext.AddObject(ContentKeyCollection.ContentKeySet, contentKeyData);
             dataContext.SaveChanges();

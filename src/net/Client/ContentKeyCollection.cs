@@ -56,7 +56,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
         /// <summary>
-        /// Asynchronously creates a content key with the specifies key identifier and value.
+        /// Asynchronously creates a content key with the specified key identifier and value.
         /// </summary>
         /// <param name="keyId">The key identifier.</param>
         /// <param name="contentKey">The value of the content key.</param>
@@ -66,6 +66,26 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </returns>
         public override Task<IContentKey> CreateAsync(Guid keyId, byte[] contentKey, string name)
         {
+             return CreateAsync(keyId, contentKey, name, ContentKeyType.CommonEncryption);
+        }
+
+        /// <summary>
+        /// Asynchronously creates a content key with the specifies key identifier and value.
+        /// </summary>
+        /// <param name="keyId">The key identifier.</param>
+        /// <param name="contentKey">The value of the content key.</param>
+        /// <param name="name">A friendly name for the content key.</param>
+        /// <param name="contentKeyType">Type of content key to create.</param>
+        /// <returns>
+        /// A function delegate that returns the future result to be available through the Task&lt;IContentKey&gt;.
+        /// </returns>
+        public override Task<IContentKey> CreateAsync(Guid keyId, byte[] contentKey, string name, ContentKeyType contentKeyType)
+        {
+            if ((contentKeyType != ContentKeyType.CommonEncryption) && (contentKeyType != ContentKeyType.EnvelopeEncryption))
+            {
+                throw new ArgumentException(StringTable.ErrorUnsupportedContentKeyType, "contentKey");
+            }
+
             if (keyId == Guid.Empty)
             {
                 throw new ArgumentException(StringTable.ErrorCreateKey_EmptyGuidNotAllowed, "keyId");
@@ -82,8 +102,18 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
 
             DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
-            X509Certificate2 certToUse = ContentKeyBaseCollection.GetCertificateToEncryptContentKey(dataContext, ContentKeyType.CommonEncryption);
-            ContentKeyData contentKeyData = CreateCommonContentKey(keyId, contentKey, name, certToUse);
+            X509Certificate2 certToUse = ContentKeyBaseCollection.GetCertificateToEncryptContentKey(dataContext, contentKeyType);
+
+            ContentKeyData contentKeyData = null;
+            if (contentKeyType == ContentKeyType.CommonEncryption)
+            {
+                contentKeyData = InitializeCommonContentKey(keyId, contentKey, name, certToUse);
+            }
+            else if (contentKeyType == ContentKeyType.EnvelopeEncryption)
+            {
+                contentKeyData = InitializeEnvelopeContentKey(keyId, contentKey, name, certToUse);
+            }
+
             contentKeyData.InitCloudMediaContext(this._cloudMediaContext);
 
             dataContext.AddObject(ContentKeySet, contentKeyData);
@@ -111,7 +141,30 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             try
             {
-                Task<IContentKey> task = this.CreateAsync(keyId, contentKey, name);
+                Task<IContentKey> task = this.CreateAsync(keyId, contentKey, name, ContentKeyType.CommonEncryption);
+                task.Wait();
+
+                return task.Result;
+            }
+            catch (AggregateException exception)
+            {
+                throw exception.InnerException;
+            }
+        }
+
+        /// <summary>
+        /// Creates a content key with the specified key identifier and value.
+        /// </summary>
+        /// <param name="keyId">The key identifier.</param>
+        /// <param name="contentKey">The value of the content key.</param>
+        /// <param name="name">A friendly name for the content key.</param>
+        /// <param name="contentKeyType">Type of content key to create.</param>
+        /// <returns>A <see cref="IContentKey"/> that can be associated with an <see cref="IAsset"/>.</returns>
+        public override IContentKey Create(Guid keyId, byte[] contentKey, string name, ContentKeyType contentKeyType)
+        {
+            try
+            {
+                Task<IContentKey> task = this.CreateAsync(keyId, contentKey, name, contentKeyType);
                 task.Wait();
 
                 return task.Result;

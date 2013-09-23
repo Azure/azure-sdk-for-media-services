@@ -338,7 +338,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client {
                 return ResourceManager.GetString("ErrorInvalidContentKeyType", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to ContentKeyType must be CommonEncryption or EnvelopeEncryption..
+        /// </summary>
+        internal static string ErrorUnsupportedContentKeyType {
+            get {
+                return ResourceManager.GetString("ErrorUnsupportedContentKeyType", resourceCulture);
+            }
+        }       
+
         /// <summary>
         ///   Looks up a localized string similar to File must be returned from a call to IAsset.Files..
         /// </summary>
