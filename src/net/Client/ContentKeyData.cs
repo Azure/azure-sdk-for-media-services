@@ -172,6 +172,41 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
         }
 
+        /// <summary>
+        /// Updates this instance asyncroniously.
+        /// </summary>
+        /// <returns></returns>
+        public Task<IContentKey> UpdateAsync()
+        {
+            DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            dataContext.AttachTo(ContentKeyCollection.ContentKeySet, this);
+            dataContext.UpdateObject(this);
+
+            return dataContext.SaveChangesAsync(this).ContinueWith<IContentKey>(
+                    t =>
+                    {
+                        //Will throw if faulted
+                        var response = t.Result;
+                        var data = (ContentKeyData)t.AsyncState;
+                        return data;
+                    });
+        }
+
+        /// <summary>
+        /// Updates this instance.
+        /// </summary>
+        public void Update()
+        {
+            try
+            {
+                var asset = UpdateAsync().Result;
+            }
+            catch (AggregateException exception)
+            {
+                throw exception.Flatten().InnerException;
+            }
+        }
+
         private static ContentKeyType GetExposedContentKeyType(int contentKeyType)
         {
             return (ContentKeyType)contentKeyType;

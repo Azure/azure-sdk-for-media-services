@@ -38,8 +38,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
         /// </summary>
         private readonly CloudMediaContext _cloudMediaContext;
 
+        private readonly Lazy<DataServiceQuery<ContentKeyAuthorizationPolicyOptionData>> _query;
+
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="PolicyOptionBaseCollection"/> class.
+        /// Initializes a new instance of the <see cref="ContentKeyAuthorizationPolicyOptionCollection"/> class.
         /// </summary>
         /// <param name="cloudMediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Justification = "By design")]
@@ -48,9 +51,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
             this._cloudMediaContext = cloudMediaContext;
 
             this.DataContextFactory = this._cloudMediaContext.DataContextFactory;
-            this.Queryable = this.DataContextFactory.CreateDataServiceContext().CreateQuery<ContentKeyAuthorizationPolicyOptionData>(ContentKeyAuthorizationPolicyOptionSet);
+            _query = new Lazy<DataServiceQuery<ContentKeyAuthorizationPolicyOptionData>>(()=> this.DataContextFactory.CreateDataServiceContext().CreateQuery<ContentKeyAuthorizationPolicyOptionData>(ContentKeyAuthorizationPolicyOptionSet));
         }
- 
+
+
         /// <summary>
         /// Asynchronously creates an <see cref="IContentKeyAuthorizationPolicyOption"/> with the provided name and permissions, valid for the provided duration.
         /// </summary>
@@ -113,8 +117,20 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
             }
             catch (AggregateException exception)
             {
-                throw exception.InnerException;
+                throw exception.Flatten().InnerException;
             }
+        }
+
+            /// <summary>
+        /// Gets the queryable collection of file information items.
+        /// </summary>
+        protected override IQueryable<IContentKeyAuthorizationPolicyOption> Queryable
+        {
+                get
+                {
+                    return this._query.Value;
+                }
+                set { throw new NotSupportedException(); }
         }
     }
 }

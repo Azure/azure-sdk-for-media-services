@@ -87,6 +87,7 @@
     <Compile Include="AccessPoliciesTests.cs" />
     <Compile Include="AssetFilesTests.cs" />
     <Compile Include="ContentKeyAuthorizationPolicyOptionTests.cs" />
+    <Compile Include="ContentKeyAuthorizationPolicyTests.cs" />
     <Compile Include="ContentKeyTests.cs" />
     <Compile Include="IngestManifestTests.cs" />
     <Compile Include="JobTests.cs" />
@@ -173,6 +174,7 @@
     <None Include="App.Debug.config">
       <DependentUpon>App.config</DependentUpon>
       <IsTransformFile>True</IsTransformFile>
+      <SubType>Designer</SubType>
     </None>
     <None Include="App.Release.config">
       <DependentUpon>App.config</DependentUpon>

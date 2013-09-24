@@ -14,6 +14,8 @@
 // limitations under the License.
 // </license>
 
+using Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization;
+
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
@@ -86,5 +88,21 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Gets the collection of notification endpoints avaiable in the system.
         /// </summary>
         public abstract NotificationEndPointCollection NotificationEndPoints { get; }
+
+        /// <summary>
+        /// Gets the content key authorization policy options.
+        /// </summary>
+        /// <value>
+        /// The content key authorization policy options.
+        /// </value>
+        public abstract ContentKeyAuthorizationPolicyOptionCollection ContentKeyAuthorizationPolicyOptions { get; }
+
+        /// <summary>
+        /// Gets the content key authorization policies.
+        /// </summary>
+        /// <value>
+        /// The content key authorization policies.
+        /// </value>
+        public abstract ContentKeyAuthorizationPolicyCollection ContentKeyAuthorizationPolicies { get; }
     }
 }

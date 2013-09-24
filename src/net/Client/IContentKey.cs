@@ -14,6 +14,7 @@
 // limitations under the License.
 // </license>
 
+using System.Data.Services.Client;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
@@ -60,5 +61,18 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Deletes the content key.
         /// </summary>
         void Delete();
+
+        /// <summary>
+        /// Asynchronously updates the content key.
+        /// </summary>
+        /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
+        Task<IContentKey> UpdateAsync();
+
+        /// <summary>
+        /// Updates the content key.
+        /// </summary>
+        void Update();
+
+
     }
 }
