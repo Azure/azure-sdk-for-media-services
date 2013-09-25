@@ -26,16 +26,19 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Live
         private CloudMediaContext _dataContext;
         private int _notificationCount;
 
-        private const string ApiServerAddress = "https://shelirest.cloudapp.net/api";
+        private const string ApiServerAddress = "https://huichrest01.cloudapp.net/api";
         private const string AccountName = "streamingdev";
         private const string AccountKey = "vUeuvDU3MIgHuFZCU3cX+24wWg6r4qho594cRcEr5fU=";
         private const string AccountAcsScope = "urn:Nimbus";
         private const string AcsBaseAddress = "https://nimbustestaccounts.accesscontrol.windows.net";
-        private const string ChannelServiceName = "channel1";
+        private const string ChannelServiceName = "Channel02";
 
         [TestInitialize]
         public void SetupTest()
         {
+            System.Net.ServicePointManager.ServerCertificateValidationCallback =
+                (sender, certificate, chain, sslPolicyErrors) => true;
+
             _dataContext = CreateCloudMediaContext();
             _notificationCount = 0;
         }

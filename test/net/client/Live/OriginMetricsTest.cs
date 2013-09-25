@@ -44,6 +44,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Live
         /// Get all origin metrics
         /// </summary>
         [TestMethod]
+        [Ignore]
         public void GetAllMetricsTest()
         {
             var metrics = _dataContext.OriginMetrics;
@@ -56,6 +57,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Live
         /// Get single origin metrics
         /// </summary>
         [TestMethod]
+        [Ignore]
         public void GetSingleMetricTest()
         {
             var metric = _dataContext.OriginMetrics.Where(m => m.ServiceName.Contains(OriginServiceName)).SingleOrDefault();
@@ -71,6 +73,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Live
         /// Subscribe to all origin metrics monitor
         /// </summary>
         [TestMethod]
+        [Ignore]
         public void SubscribeAllMetricsMonitorTest()
         {
             var monitor = _dataContext.OriginMetrics.Monitor;
@@ -89,6 +92,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Live
         /// Subscribe to a signle origin metric monitor
         /// </summary>
         [TestMethod]
+        [Ignore]
         public void SubscribeSingleMetricMonitorTest()
         {
             var origin = _dataContext.Origins.Where(o => o.HostName.Contains(OriginServiceName)).SingleOrDefault();

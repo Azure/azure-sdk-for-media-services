@@ -36,7 +36,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Stream track ID, audio or video
         /// e.g. 1
         /// </summary>
-        public string TrackId { get; set; }
+        public Int32 TrackId { get; set; }
 
         /// <summary>
         /// Incoming fragment track name

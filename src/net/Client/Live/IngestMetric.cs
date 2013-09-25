@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Collections.Generic;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
@@ -30,7 +31,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Stream track ID, audio or video
         /// e.g. 1
         /// </summary>
-        public string TrackId { get; set; }
+        public Int32 TrackId { get; set; }
 
         /// <summary>
         /// Incoming fragment track name
