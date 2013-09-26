@@ -146,8 +146,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     {
                         t.ThrowIfFaulted();
                         AssetFileData data = (AssetFileData)t.AsyncState;
-                        IAssetFile file = this._cloudMediaContext.Files.Where(c => c.Id == data.Id).First();
-                        return file;
+                        return data;
                     });
         }
     }
