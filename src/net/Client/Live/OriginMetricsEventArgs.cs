@@ -15,7 +15,7 @@
 // </license>
 
 using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -28,6 +28,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// The list of origin metrics data for Origin(s)
         /// There is only one element if monitoring a single origin
         /// </summary>
-        public IList<IOriginMetric> OriginMetrics { get; internal set; }
+        public ReadOnlyCollection<IOriginMetric> OriginMetrics { get; internal set; }
     }
 }

@@ -17,6 +17,7 @@
 using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.WindowsAzure.MediaServices.Client.Tests.Helpers;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Live
 {
@@ -26,17 +27,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Live
         private CloudMediaContext _dataContext;
         private int _notificationCount;
 
-        private const string ApiServerAddress = "https://shelirest.cloudapp.net/api";
-        private const string AccountName = "streamingdev";
-        private const string AccountKey = "vUeuvDU3MIgHuFZCU3cX+24wWg6r4qho594cRcEr5fU=";
-        private const string AccountAcsScope = "urn:Nimbus";
-        private const string AcsBaseAddress = "https://nimbustestaccounts.accesscontrol.windows.net";
-        private const string OriginServiceName = "shelitest1";
-
         [TestInitialize]
         public void SetupTest()
         {
-            _dataContext = CreateCloudMediaContext();
+            System.Net.ServicePointManager.ServerCertificateValidationCallback =
+                (sender, certificate, chain, sslPolicyErrors) => true;
+
+            _dataContext = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
             _notificationCount = 0;
         }
 
@@ -44,36 +41,50 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Live
         /// Get all origin metrics
         /// </summary>
         [TestMethod]
-        [Ignore]
         public void GetAllMetricsTest()
         {
             var metrics = _dataContext.OriginMetrics;
+            var origins = _dataContext.Origins;
 
             Assert.IsNotNull(metrics);
-            Assert.IsTrue(metrics.Count() > 0);
+
+            if (origins.Count() > 0)
+            {
+                Assert.IsTrue(metrics.Count() > 0);
+            }
         }
 
         /// <summary>
         /// Get single origin metrics
         /// </summary>
         [TestMethod]
-        [Ignore]
         public void GetSingleMetricTest()
         {
-            var metric = _dataContext.OriginMetrics.Where(m => m.ServiceName.Contains(OriginServiceName)).SingleOrDefault();
-            var origin = _dataContext.Origins.Where(o => o.HostName.Contains(OriginServiceName)).SingleOrDefault();
-            var metric2 = origin.GetMetric();
+            var metrics = _dataContext.OriginMetrics.ToDictionary(m => ChannelMetricsTest.GetGuid(m.Id), m => m);
 
-            Assert.IsNotNull(metric);
-            Assert.IsNotNull(metric2);
-            Assert.AreEqual(metric.EgressMetrics.Count, metric2.EgressMetrics.Count);
+            foreach (var origin in _dataContext.Origins)
+            {
+                var id = ChannelMetricsTest.GetGuid(origin.Id);
+
+                IOriginMetric metric1 = null;
+                if (metrics.ContainsKey(id))
+                {
+                    metric1 = metrics[id];
+                }
+
+                if (metric1 == null) continue;
+
+                var metric2 = origin.GetMetric();
+
+                Assert.IsNotNull(metric2);
+                Assert.AreEqual(metric1.EgressMetrics.Count, metric2.EgressMetrics.Count);
+            }          
         }
 
         /// <summary>
         /// Subscribe to all origin metrics monitor
         /// </summary>
         [TestMethod]
-        [Ignore]
         public void SubscribeAllMetricsMonitorTest()
         {
             var monitor = _dataContext.OriginMetrics.Monitor;
@@ -92,10 +103,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Live
         /// Subscribe to a signle origin metric monitor
         /// </summary>
         [TestMethod]
-        [Ignore]
         public void SubscribeSingleMetricMonitorTest()
         {
-            var origin = _dataContext.Origins.Where(o => o.HostName.Contains(OriginServiceName)).SingleOrDefault();
+            var origins = _dataContext.Origins.ToList();
+            if (origins.Count < 1) return;
+            
+            var origin = origins[origins.Count-1];
+
             var monitor = origin.MetricsMonitor;
 
             monitor.MetricReceived += OnMetricsReceived;
@@ -106,16 +120,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Live
             monitor.Stop();
 
             Assert.AreEqual(_notificationCount, 2);
-        }
-
-        private CloudMediaContext CreateCloudMediaContext()
-        {
-            return new CloudMediaContext(
-                new Uri(ApiServerAddress),
-                AccountName,
-                AccountKey,
-                AccountAcsScope,
-                AcsBaseAddress);
         }
 
         private void OnMetricsReceived(object sender, OriginMetricsEventArgs eventArgs)

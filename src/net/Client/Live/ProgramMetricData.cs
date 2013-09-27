@@ -13,38 +13,51 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
-    /// Describes the channel Metrics Entity
+    /// Describes the IngestMetrics complex type
     /// </summary>
-    public interface IChannelMetric
+    public class ProgramMetricData : IProgramMetric
     {
         /// <summary>
-        /// Gets Unique identifier of the channel Metric.
+        /// The program Id of the metrics
         /// </summary>
-        string Id { get; }
+        public Guid ProgramId { get; set; }
 
         /// <summary>
-        /// Gets service name of the channel metric
+        /// ID of different streams (qualities)
         /// </summary>
-        string ServiceName { get; }
+        public string StreamId { get; set; }
 
         /// <summary>
-        /// Gets metric last modification timestamp.
+        /// Stream track ID, audio or video
+        /// e.g. 1
         /// </summary>
-        DateTime LastModified { get; }
+        public Int32 TrackId { get; set; }
 
         /// <summary>
-        /// Gets the <see cref="IngestMetrics"/> object containing the ingest metrics of the channel.
+        /// Stream track name, as set by the encoder
         /// </summary>
-        ReadOnlyCollection<IIngestMetric> IngestMetrics { get; }
+        public string TrackName { get; set; }
 
         /// <summary>
-        /// Gets the <see cref="ProgramMetrics"/> object containing the program metrics of the channel.
+        /// a collection of archieve metrics
         /// </summary>
-        ReadOnlyCollection<IProgramMetric> ProgramMetrics { get; }
+        public List<Metric> ArchiveMetrics { get; set; }
+
+        /// <summary>
+        /// a collection of archieve metrics
+        /// </summary>
+        ReadOnlyCollection<Metric> IProgramMetric.ArchiveMetrics
+        {
+            get
+            {
+                return ArchiveMetrics.AsReadOnly();
+            }
+        }
     }
 }

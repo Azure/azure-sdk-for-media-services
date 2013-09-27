@@ -13,38 +13,46 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
-    /// Describes the channel Metrics Entity
+    /// Describes the IngestMetrics complex type
     /// </summary>
-    public interface IChannelMetric
+    public class IngestMetricData : IIngestMetric
     {
         /// <summary>
-        /// Gets Unique identifier of the channel Metric.
+        /// ID of different streams (qualities)
         /// </summary>
-        string Id { get; }
+        public string StreamId { get; set; }
 
         /// <summary>
-        /// Gets service name of the channel metric
+        /// Stream track ID, audio or video
+        /// e.g. 1
         /// </summary>
-        string ServiceName { get; }
+        public Int32 TrackId { get; set; }
 
         /// <summary>
-        /// Gets metric last modification timestamp.
+        /// Stream track name
         /// </summary>
-        DateTime LastModified { get; }
+        public string TrackName { get; set; }
 
         /// <summary>
-        /// Gets the <see cref="IngestMetrics"/> object containing the ingest metrics of the channel.
+        /// a collection of stream metrics
         /// </summary>
-        ReadOnlyCollection<IIngestMetric> IngestMetrics { get; }
+        public List<Metric> StreamMetrics { get; set; }
 
         /// <summary>
-        /// Gets the <see cref="ProgramMetrics"/> object containing the program metrics of the channel.
+        /// a collection of stream metrics (Interface readonly property)
         /// </summary>
-        ReadOnlyCollection<IProgramMetric> ProgramMetrics { get; }
+        ReadOnlyCollection<Metric> IIngestMetric.StreamMetrics
+        {
+            get
+            {
+                return StreamMetrics.AsReadOnly();
+            }
+        }
     }
 }

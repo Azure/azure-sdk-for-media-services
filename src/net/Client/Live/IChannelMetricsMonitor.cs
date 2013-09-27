@@ -14,35 +14,18 @@
 // limitations under the License.
 // </license>
 
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
-    /// Origin Metrics Monitor for a signle origin service
+    /// Interface for channel metrics monitor
     /// </summary>
-    public sealed class SingleOriginMetricsMonitor : OriginMetricsMonitor
+    public interface IChannelMetricsMonitor : IMetricsMonitor
     {
-        private readonly IOrigin _origin;
-
         /// <summary>
-        /// Create a SingleOriginMetricsMonitor object with the origin ID
+        /// EventHandler for the channel metric received
         /// </summary>
-        /// <param name="origin">The origin object hosting the monitor</param>
-        internal SingleOriginMetricsMonitor(IOrigin origin)
-        {
-            _origin = origin;
-        }
-
-        /// <summary>
-        /// Get the list of Origin Metrics 
-        /// There is only one element in the list if monitoring a single origin
-        /// </summary>
-        /// <returns>The list of metrics</returns>
-        protected override ReadOnlyCollection<IOriginMetric> GetOriginMetrics()
-        {
-            return new List<IOriginMetric> {_origin.GetMetric()}.AsReadOnly();
-        }
+        EventHandler<ChannelMetricsEventArgs> MetricReceived { get; set; }
     }
 }

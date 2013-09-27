@@ -23,27 +23,28 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// <summary>
     /// MetricMonitor base class for both origin and live
     /// </summary>
-    public abstract class MetricsMonitor
+    public abstract class MetricsMonitor : IMetricsMonitor
     {
         private Timer _timer;
-        private TimeSpan _timerFrequency;
+        private TimeSpan _timerInterval;
+        private static readonly TimeSpan DefaultTimerInterval = TimeSpan.FromSeconds(30);
 
         /// <summary>
-        /// Set the metric retrieval frequency
+        /// Set the metric retrieval timer interval
         /// </summary>
-        public void SetFrequency(TimeSpan frequency)
+        public void SetInterval(TimeSpan interval)
         {
-            if (frequency < TimeSpan.FromSeconds(30))
+            if (interval < DefaultTimerInterval)
             {
                 throw new ArgumentOutOfRangeException(
-                    "frequency",
+                    "interval",
                     string.Format(
                         CultureInfo.InvariantCulture,
-                        StringTable.MetricMonitoringFrequencyOutOfRange,
+                        StringTable.MetricMonitoringIntervalOutOfRange,
                         30));
             }
 
-            _timerFrequency = frequency;
+            _timerInterval = interval;
         }
 
         /// <summary>
@@ -56,26 +57,24 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new InvalidOperationException(StringTable.MetricMonitoringAlreadyStartedError);
             }
 
-            var defaultFrequency = TimeSpan.FromSeconds(30);
-
-            if (_timerFrequency < defaultFrequency)
+            if (_timerInterval < DefaultTimerInterval)
             {
-                _timerFrequency = defaultFrequency;
+                _timerInterval = DefaultTimerInterval;
             }
 
-            _timer = new Timer {Interval = _timerFrequency.TotalMilliseconds};
+            _timer = new Timer { Interval = _timerInterval.TotalMilliseconds };
             _timer.Elapsed += OnTimerElapsed;
             _timer.AutoReset = false;
             _timer.Start();
         }
 
         /// <summary>
-        /// Start to monitor metrics with specified frequency
+        /// Start to monitor metrics with specified timer interval
         /// </summary>
-        /// <param name="frequency">moniotring frequency</param>
-        public void Start(TimeSpan frequency)
+        /// <param name="interval">monioter timer interval</param>
+        public void Start(TimeSpan interval)
         {
-            SetFrequency(frequency);
+            SetInterval(interval);
 
             Start();
         }
@@ -85,27 +84,20 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         public void Stop()
         {
-            var timer = _timer;
-            _timer = null;
-
-            if (timer != null)
-            {
-                timer.Stop();
-                timer.Dispose();
-            }
+            Dispose();
         }
 
         /// <summary>
-        /// Get the list of Metrics and
+        /// Get the list of Metrics and publish them
         /// </summary>
         /// <returns></returns>
-        protected abstract void GetMetrics();
+        protected abstract void RetrieveAndPublishMetrics();
 
         private void OnTimerElapsed(object sender, ElapsedEventArgs e)
         {
             try
             {
-                GetMetrics();
+                RetrieveAndPublishMetrics();
             }
             catch (Exception ex)
             {
@@ -113,8 +105,29 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
             finally
             {
-                _timer.Interval = _timerFrequency.TotalMilliseconds;
+                // Determine the next timer interval compensating for the elapsed execution time.
+                // elapsedTime = DateTime.Now - e.SignalTime;
+                var interval = (_timerInterval - (DateTime.Now - e.SignalTime)).TotalMilliseconds;
+
+                if (interval < DefaultTimerInterval.TotalMilliseconds/2)
+                {
+                    interval = DefaultTimerInterval.TotalMilliseconds/2;
+                }
+
+                _timer.Interval = interval;
                 _timer.Start();
+            }
+        }
+
+        public void Dispose()
+        {
+            var timer = _timer;
+            _timer = null;
+
+            if (timer != null)
+            {
+                timer.Stop();
+                timer.Dispose();
             }
         }
     }

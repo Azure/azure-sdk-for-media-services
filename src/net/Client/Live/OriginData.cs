@@ -20,14 +20,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.MediaServices.Client.Properties;
 using Microsoft.WindowsAzure.MediaServices.Client.Rest;
-using System.Net;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     [DataServiceKey("Id")]
     internal class OriginData : RestEntity<OriginData>, IOrigin, ICloudMediaContextInit
     {
-        private SingleOriginMetricsMonitor _metricsMonitor;
+        private IOriginMetricsMonitor _metricsMonitor;
 
         /// <summary>
         /// Gets or sets the name of the origin.
@@ -91,7 +90,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="context">The context.</param>
         public void InitCloudMediaContext(CloudMediaContext context)
         {
-            this._cloudMediaContext = (CloudMediaContext)context;
+            _cloudMediaContext = context;
         }
 
         #endregion
@@ -107,17 +106,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
         }
 
-        public SingleOriginMetricsMonitor MetricsMonitor
+        public IOriginMetricsMonitor MetricsMonitor
         {
-            get
-            {
-                if (_metricsMonitor == null)
-                {
-                    _metricsMonitor = new SingleOriginMetricsMonitor(this);
-                }
-
-                return _metricsMonitor;
-            }
+            get { return _metricsMonitor ?? (_metricsMonitor = new SingleOriginMetricsMonitor(this)); }
         }
 
         /// <summary>
@@ -150,7 +141,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>Task to wait on for operation completion.</returns>
         public Task StartAsync()
         {
-            Uri uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Origins('{0}')/Start", this.Id), UriKind.Relative);
+            var uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Origins('{0}')/Start", Id), UriKind.Relative);
 
             return ExecuteActionAsync(uri, StreamingConstants.StartOriginPollInterval);
         }
@@ -161,7 +152,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>Operation info that can be used to track the operation.</returns>
         public IOperation SendStartOperation()
         {
-            Uri uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Origins('{0}')/Start", this.Id), UriKind.Relative);
+            var uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Origins('{0}')/Start", Id), UriKind.Relative);
 
             return SendOperation(uri);
         }
@@ -189,7 +180,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>Task to wait on for operation completion.</returns>
         public Task StopAsync()
         {
-            Uri uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Origins('{0}')/Stop", this.Id), UriKind.Relative);
+            var uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Origins('{0}')/Stop", Id), UriKind.Relative);
 
             return ExecuteActionAsync(uri, StreamingConstants.StopOriginPollInterval);
         }
@@ -200,7 +191,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>Operation info that can be used to track the operation.</returns>
         public IOperation SendStopOperation()
         {
-            Uri uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Origins('{0}')/Stop", this.Id), UriKind.Relative);
+            var uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Origins('{0}')/Stop", Id), UriKind.Relative);
 
             return SendOperation(uri);
         }
@@ -229,9 +220,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>Operation info that can be used to track the operation.</returns>
         public IOperation SendScaleOperation(int reservedUnits)
         {
-            Uri uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Origins('{0}')/Scale", this.Id), UriKind.Relative);
+            var uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Origins('{0}')/Scale", Id), UriKind.Relative);
 
-            BodyOperationParameter ruParameter = new BodyOperationParameter("ReservedUnits", reservedUnits);
+            var ruParameter = new BodyOperationParameter("ReservedUnits", reservedUnits);
 
             return SendOperation(uri, ruParameter);
         }
@@ -252,9 +243,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>Task to wait on for operation completion.</returns>
         public Task ScaleAsync(int reservedUnits)
         {
-            Uri uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Origins('{0}')/Scale", this.Id), UriKind.Relative);
+            var uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Origins('{0}')/Scale", Id), UriKind.Relative);
 
-            BodyOperationParameter ruParameter = new BodyOperationParameter("ReservedUnits", reservedUnits);
+            var ruParameter = new BodyOperationParameter("ReservedUnits", reservedUnits);
 
             return ExecuteActionAsync(uri, StreamingConstants.ScaleOriginPollInterval, ruParameter);
         }
@@ -265,12 +256,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>Task to wait on for operation completion.</returns>
         public override Task DeleteAsync()
         {
-            if (string.IsNullOrWhiteSpace(this.Id))
+            if (string.IsNullOrWhiteSpace(Id))
             {
                 throw new InvalidOperationException(Resources.ErrorEntityWithoutId);
             }
 
-            DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            DataServiceContext dataContext = _cloudMediaContext.DataContextFactory.CreateDataServiceContext();
             dataContext.AttachTo(EntitySetName, this);
             dataContext.DeleteObject(this);
 
@@ -278,14 +269,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             {
                 t.ThrowIfFaulted();
 
-                string operationId = t.Result.Single().Headers[StreamingConstants.OperationIdHeader];
+                var operationId = t.Result.Single().Headers[StreamingConstants.OperationIdHeader];
 
-                IOperation operation = AsyncHelper.WaitOperationCompletion(
-                    this._cloudMediaContext,
+                var operation = AsyncHelper.WaitOperationCompletion(
+                    _cloudMediaContext,
                     operationId,
                     StreamingConstants.DeleteOriginPollInterval);
 
-                string messageFormat = Resources.ErrorDeleteOriginFailedFormat;
+                var messageFormat = Resources.ErrorDeleteOriginFailedFormat;
                 string message;
 
                 switch (operation.State)
@@ -308,20 +299,20 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>Operation info that can be used to track the operation.</returns>
         public IOperation SendDeleteOperation()
         {
-            if (string.IsNullOrWhiteSpace(this.Id))
+            if (string.IsNullOrWhiteSpace(Id))
             {
                 throw new InvalidOperationException(Resources.ErrorEntityWithoutId);
             }
 
-            DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            var dataContext = _cloudMediaContext.DataContextFactory.CreateDataServiceContext();
             dataContext.AttachTo(EntitySetName, this);
             dataContext.DeleteObject(this);
 
             var response = dataContext.SaveChanges();
 
-            string operationId = response.Single().Headers[StreamingConstants.OperationIdHeader];
+            var operationId = response.Single().Headers[StreamingConstants.OperationIdHeader];
 
-            var result = new OperationData()
+            var result = new OperationData
             {
                 ErrorCode = null,
                 ErrorMessage = null,
@@ -341,6 +332,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             return Task.Factory.StartNew(() => SendDeleteOperation());
         }
 
+        /// <summary>
+        /// Get the metrics data of this origin service
+        /// </summary>
+        /// <returns></returns>
         public IOriginMetric GetMetric()
         {
             var uri = new Uri(

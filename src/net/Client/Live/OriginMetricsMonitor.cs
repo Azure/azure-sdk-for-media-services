@@ -15,14 +15,14 @@
 // </license>
 
 using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
     /// Origin metrics monitor class
     /// </summary>
-    public abstract class OriginMetricsMonitor : MetricsMonitor
+    public abstract class OriginMetricsMonitor : MetricsMonitor, IOriginMetricsMonitor
     {
         /// <summary>
         /// EventHandler for the origin metric received
@@ -34,9 +34,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// There is only one element in the list if monitoring a single origin
         /// </summary>
         /// <returns>The list of metrics</returns>
-        protected abstract IList<IOriginMetric> GetOriginMetrics();
+        protected abstract ReadOnlyCollection<IOriginMetric> GetOriginMetrics();
 
-        protected override void GetMetrics()
+        protected override void RetrieveAndPublishMetrics()
         {
             if (MetricReceived == null) return;
 

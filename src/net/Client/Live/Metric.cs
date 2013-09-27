@@ -19,7 +19,7 @@ using System;
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
-    /// Describes a single channelsink or origin metric
+    /// Describes a single channel or origin metric
     /// </summary>
     public class Metric
     {

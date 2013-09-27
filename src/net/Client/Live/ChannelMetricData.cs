@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data.Services.Common;
+using System.Linq;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -35,32 +36,32 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets the <see cref="IngestMetrics"/> object containing the ingest metrics of the channel.
         /// </summary>
-        public List<IngestMetric> IngestMetrics { get; set; }
+        public List<IngestMetricData> IngestMetrics { get; set; }
 
         /// <summary>
         /// Gets the <see cref="ProgramMetrics"/> object containing the program metrics of the channel.
         /// </summary>
-        public List<ProgramMetric> ProgramMetrics { get; set; }
+        public List<ProgramMetricData> ProgramMetrics { get; set; }
 
         /// <summary>
-        /// Gets the <see cref="IngestMetrics"/> object containing the ingest metrics of the channelsink.
+        /// Gets the <see cref="IngestMetrics"/> object containing the ingest metrics of the channel.
         /// </summary>
-        ReadOnlyCollection<IngestMetric> IChannelMetric.IngestMetrics
+        ReadOnlyCollection<IIngestMetric> IChannelMetric.IngestMetrics
         {
             get
             {
-                return IngestMetrics.AsReadOnly();
+                return IngestMetrics.ToList<IIngestMetric>().AsReadOnly();
             }
         }
 
         /// <summary>
-        /// Gets the <see cref="ProgramMetrics"/> object containing the program metrics of the channelsink.
+        /// Gets the <see cref="ProgramMetrics"/> object containing the program metrics of the channel.
         /// </summary>
-        ReadOnlyCollection<ProgramMetric> IChannelMetric.ProgramMetrics
+        ReadOnlyCollection<IProgramMetric> IChannelMetric.ProgramMetrics
         {
             get
             {
-                return ProgramMetrics.AsReadOnly();
+                return ProgramMetrics.ToList<IProgramMetric>().AsReadOnly();
             }
         }
 

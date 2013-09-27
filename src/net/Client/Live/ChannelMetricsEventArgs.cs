@@ -15,7 +15,7 @@
 // </license>
 
 using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -28,6 +28,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// The list of channel metrics data for Channel(s)
         /// There is only one element if monitoring a single channel
         /// </summary>
-        public IList<IChannelMetric> ChannelMetrics { get; internal set; }
+        public ReadOnlyCollection<IChannelMetric> ChannelMetrics { get; internal set; }
     }
 }

@@ -15,14 +15,14 @@
 // </license>
 
 using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
     /// Channel metrics monitor class
     /// </summary>
-    public abstract class ChannelMetricsMonitor : MetricsMonitor
+    public abstract class ChannelMetricsMonitor : MetricsMonitor, IChannelMetricsMonitor
     {
         /// <summary>
         /// EventHandler for the channel metric received
@@ -34,9 +34,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// There is only one element in the list if monitoring a single channel
         /// </summary>
         /// <returns>The list of metrics</returns>
-        protected abstract IList<IChannelMetric> GetChannelMetrics();
+        protected abstract ReadOnlyCollection<IChannelMetric> GetChannelMetrics();
 
-        protected override void GetMetrics()
+        protected override void RetrieveAndPublishMetrics()
         {
             if (MetricReceived == null) return;
 

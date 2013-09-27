@@ -17,6 +17,7 @@
 using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.WindowsAzure.MediaServices.Client.Tests.Helpers;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Live
 {
@@ -26,58 +27,73 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Live
         private CloudMediaContext _dataContext;
         private int _notificationCount;
 
-        private const string ApiServerAddress = "https://huichrest01.cloudapp.net/api";
-        private const string AccountName = "streamingdev";
-        private const string AccountKey = "vUeuvDU3MIgHuFZCU3cX+24wWg6r4qho594cRcEr5fU=";
-        private const string AccountAcsScope = "urn:Nimbus";
-        private const string AcsBaseAddress = "https://nimbustestaccounts.accesscontrol.windows.net";
-        private const string ChannelServiceName = "Channel02";
-
         [TestInitialize]
         public void SetupTest()
         {
             System.Net.ServicePointManager.ServerCertificateValidationCallback =
                 (sender, certificate, chain, sslPolicyErrors) => true;
 
-            _dataContext = CreateCloudMediaContext();
+            _dataContext = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
             _notificationCount = 0;
         }
 
         /// <summary>
-        /// Get all channel sink metrics
+        /// Get all channel metrics
         /// </summary>
         [TestMethod]
-        [Ignore]
         public void GetAllMetricsTest()
         {
             var metrics = _dataContext.ChannelMetrics;
-
             Assert.IsNotNull(metrics);
-            Assert.IsTrue(metrics.Count() > 0);
+
+            var channels = _dataContext.Channels;
+
+            if (channels.Count() > 0)
+            {
+                Assert.IsTrue(metrics.Count() > 0);
+            }
         }
 
         /// <summary>
-        /// Get single channel sink metrics
+        /// Get single channel metrics
         /// </summary>
         [TestMethod]
-        [Ignore]
         public void GetSingleMetricTest()
         {
-            var metric = _dataContext.ChannelMetrics.Where(m => m.ServiceName.Contains(ChannelServiceName)).SingleOrDefault();
-            var channel = _dataContext.Channels.Where(c => c.Name.Contains(ChannelServiceName)).SingleOrDefault();
-            var metric2 = channel.GetMetric();
+            var metrics = _dataContext.ChannelMetrics.ToDictionary(m => GetGuid(m.Id), m => m);
+            foreach (var channel in _dataContext.Channels)
+            {
+                var id = GetGuid(channel.Id);
 
-            Assert.IsNotNull(metric);
-            Assert.IsNotNull(metric2);
-            Assert.AreEqual(metric.IngestMetrics.Count, metric2.IngestMetrics.Count);
-            Assert.AreEqual(metric.ProgramMetrics.Count, metric2.ProgramMetrics.Count);
+                IChannelMetric metric1 = null;
+                if (metrics.ContainsKey(id))
+                {
+                    metric1 = metrics[id];
+                }
+
+                if (metric1 == null) continue;
+
+                var metric2 = channel.GetMetric();
+
+                Assert.IsNotNull(metric2);
+                if (metric1.IngestMetrics != null)
+                {
+                    Assert.IsNotNull(metric2.IngestMetrics);
+                    Assert.AreEqual(metric1.IngestMetrics.Count, metric2.IngestMetrics.Count);
+                }
+
+                if (metric1.ProgramMetrics != null)
+                {
+                    Assert.IsNotNull(metric2.ProgramMetrics);
+                    Assert.AreEqual(metric1.ProgramMetrics.Count, metric2.ProgramMetrics.Count);
+                }
+            }          
         }
 
         /// <summary>
-        /// Subscribe to all channel sink metrics monitor
+        /// Subscribe to all channel metrics monitor
         /// </summary>
         [TestMethod]
-        [Ignore]
         public void SubscribeAllMetricsMonitorTest()
         {
             var monitor = _dataContext.ChannelMetrics.Monitor;
@@ -93,13 +109,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Live
         }
 
         /// <summary>
-        /// Subscribe to a signle channel sink metric monitor
+        /// Subscribe to a signle channel metric monitor
         /// </summary>
         [TestMethod]
-        [Ignore]
         public void SubscribeSingleMetricMonitorTest()
         {
-            var channel = _dataContext.Channels.Where(c => c.Name.Contains(ChannelServiceName)).SingleOrDefault();
+            var channels = _dataContext.Channels.ToList();
+            if (channels.Count < 1) return;
+
+            var channel = channels[channels.Count - 1];
+
             var monitor = channel.MetricsMonitor;
 
             monitor.MetricReceived += OnMetricsReceived;
@@ -112,21 +131,21 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Live
             Assert.AreEqual(_notificationCount, 2);
         }
 
-        private CloudMediaContext CreateCloudMediaContext()
-        {
-            return new CloudMediaContext(
-                new Uri(ApiServerAddress),
-                AccountName,
-                AccountKey,
-                AccountAcsScope,
-                AcsBaseAddress);
-        }
-
         private void OnMetricsReceived(object sender, ChannelMetricsEventArgs eventArgs)
         {
             Assert.IsNotNull(eventArgs.ChannelMetrics);
             Assert.IsTrue(eventArgs.ChannelMetrics.Count > 0);
             _notificationCount++;
+        }
+
+        public static Guid GetGuid(string oid)
+        {
+            if (string.IsNullOrEmpty(oid))
+            {
+                throw new ArgumentNullException(oid);
+            }
+            var pieces = oid.Split(':');
+            return new Guid(pieces[pieces.Length - 1]);
         }
     }
 }

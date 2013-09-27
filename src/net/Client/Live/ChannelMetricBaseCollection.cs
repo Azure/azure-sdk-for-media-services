@@ -20,7 +20,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     public sealed class ChannelMetricBaseCollection : CloudBaseCollection<IChannelMetric>
     {
         internal const string ChannelMetricSet = "ChannelMetrics";
-        private AllChannelMetricsMonitor _monitor;
+        private IChannelMetricsMonitor _monitor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ChannelMetricBaseCollection"/> class.
@@ -35,7 +35,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Get the metrics monitor for all channel services
         /// </summary>
-        public AllChannelMetricsMonitor Monitor
+        public IChannelMetricsMonitor Monitor
         {
             get { return _monitor ?? (_monitor = new AllChannelMetricsMonitor(Queryable)); }
         }

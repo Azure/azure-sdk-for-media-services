@@ -102,7 +102,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets channel metrics monitor object
         /// </summary>
-        SingleChannelMetricsMonitor MetricsMonitor { get; }
+        IChannelMetricsMonitor MetricsMonitor { get; }
 
         /// <summary>
         /// Starts the channel.

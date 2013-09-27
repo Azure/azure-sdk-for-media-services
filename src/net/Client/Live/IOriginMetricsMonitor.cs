@@ -1,5 +1,6 @@
-﻿// Copyright 2012 Microsoft Corporation
-// 
+﻿//-----------------------------------------------------------------------
+// <copyright file="ErrorDetail.cs" company="Microsoft">Copyright 2012 Microsoft Corporation</copyright>
+// <license>
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -11,36 +12,20 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+// </license>
 
 using System;
-using System.Collections.Generic;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
-    /// Describes the IngestMetrics complex type
+    /// Interface for origin metrics monitor
     /// </summary>
-    public class IngestMetric
+    public interface IOriginMetricsMonitor : IMetricsMonitor
     {
         /// <summary>
-        /// ID of different streams (qualities)
+        /// EventHandler for the origin metric received
         /// </summary>
-        public string StreamId { get; set; }
-
-        /// <summary>
-        /// Stream track ID, audio or video
-        /// e.g. 1
-        /// </summary>
-        public Int32 TrackId { get; set; }
-
-        /// <summary>
-        /// Incoming fragment track name
-        /// </summary>
-        public string TrackName { get; set; }
-
-        /// <summary>
-        /// a collection of stream metrics
-        /// </summary>
-        public List<Metric> StreamMetrics { get; set; }
+        EventHandler<OriginMetricsEventArgs> MetricReceived { get; set; }
     }
 }

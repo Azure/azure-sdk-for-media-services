@@ -14,7 +14,7 @@
 // limitations under the License.
 // </license>
 
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
@@ -40,9 +40,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// There is only one element in the list if monitoring a single channel
         /// </summary>
         /// <returns>The list of metrics</returns>
-        protected override IList<IChannelMetric> GetChannelMetrics()
+        protected override ReadOnlyCollection<IChannelMetric> GetChannelMetrics()
         {
-            return _metricsQueryable.ToList();
+            return _metricsQueryable.ToList().AsReadOnly();
         }
     }
 }

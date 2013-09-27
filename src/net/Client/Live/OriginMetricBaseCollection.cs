@@ -20,7 +20,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     public sealed class OriginMetricBaseCollection : CloudBaseCollection<IOriginMetric>
     {
         internal const string OriginMetricSet = "OriginMetrics";
-        private AllOriginMetricsMonitor _monitor;
+        private IOriginMetricsMonitor _monitor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OriginMetricBaseCollection"/> class.
@@ -35,7 +35,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Get the metrics monitor for all origin services
         /// </summary>
-        public AllOriginMetricsMonitor Monitor
+        public IOriginMetricsMonitor Monitor
         {
             get { return _monitor ?? (_monitor = new AllOriginMetricsMonitor(Queryable)); }
         }

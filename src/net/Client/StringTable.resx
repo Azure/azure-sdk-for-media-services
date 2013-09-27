@@ -328,7 +328,7 @@
   <data name="MetricMonitoringAlreadyStartedError" xml:space="preserve">
     <value>The monitoring is already started.</value>
   </data>
-  <data name="MetricMonitoringFrequencyOutOfRange" xml:space="preserve">
-    <value>The frequency must be more than {0}s.</value>
+  <data name="MetricMonitoringIntervalOutOfRange" xml:space="preserve">
+    <value>The interval must be greater than {0}s.</value>
   </data>
 </root>

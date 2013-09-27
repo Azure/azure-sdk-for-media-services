@@ -1,5 +1,6 @@
-﻿// Copyright 2012 Microsoft Corporation
-// 
+﻿//-----------------------------------------------------------------------
+// <copyright file="ErrorDetail.cs" company="Microsoft">Copyright 2012 Microsoft Corporation</copyright>
+// <license>
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -11,41 +12,33 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+// </license>
 
 using System;
-using System.Collections.Generic;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
-    /// <summary>
-    /// Describes the IngestMetrics complex type
-    /// </summary>
-    public class ProgramMetric
+    public interface IMetricsMonitor : IDisposable
     {
         /// <summary>
-        /// The program Id of the metrics
+        /// Set the metric retrieval timer interval
         /// </summary>
-        public Guid ProgramId { get; set; }
+        void SetInterval(TimeSpan interval);
 
         /// <summary>
-        /// ID of different streams (qualities)
+        /// Start to monitor metrics and trigger events
         /// </summary>
-        public string StreamId { get; set; }
+        void Start();
 
         /// <summary>
-        /// Stream track ID, audio or video
-        /// e.g. 1
+        /// Start to monitor metrics with specified timer interval
         /// </summary>
-        public Int32 TrackId { get; set; }
+        /// <param name="interval">monioter timer interval</param>
+        void Start(TimeSpan interval);
 
         /// <summary>
-        /// Incoming fragment track name
+        /// Stop to monitor metrics and release the timer
         /// </summary>
-        public string TrackName { get; set; }
-
-        /// <summary>
-        /// a collection of archieve metrics
-        /// </summary>
-        public List<Metric> ArchiveMetrics { get; set; }
+        void Stop();
     }
 }

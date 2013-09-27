@@ -17,34 +17,27 @@ using System.Collections.ObjectModel;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
-    /// <summary>
-    /// Describes the channel Metrics Entity
-    /// </summary>
-    public interface IChannelMetric
+    public interface IIngestMetric
     {
         /// <summary>
-        /// Gets Unique identifier of the channel Metric.
+        /// ID of different streams (qualities)
         /// </summary>
-        string Id { get; }
+        string StreamId { get; }
 
         /// <summary>
-        /// Gets service name of the channel metric
+        /// Stream track ID, audio or video
+        /// e.g. 1
         /// </summary>
-        string ServiceName { get; }
+        Int32 TrackId { get; }
 
         /// <summary>
-        /// Gets metric last modification timestamp.
+        /// Stream track name
         /// </summary>
-        DateTime LastModified { get; }
+        string TrackName { get; }
 
         /// <summary>
-        /// Gets the <see cref="IngestMetrics"/> object containing the ingest metrics of the channel.
+        /// a collection of stream metrics
         /// </summary>
-        ReadOnlyCollection<IIngestMetric> IngestMetrics { get; }
-
-        /// <summary>
-        /// Gets the <see cref="ProgramMetrics"/> object containing the program metrics of the channel.
-        /// </summary>
-        ReadOnlyCollection<IProgramMetric> ProgramMetrics { get; }
+        ReadOnlyCollection<Metric> StreamMetrics { get; }
     }
 }

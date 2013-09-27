@@ -619,11 +619,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The frequency must be more than {0}s..
+        ///   Looks up a localized string similar to The interval must be greater than {0}s..
         /// </summary>
-        internal static string MetricMonitoringFrequencyOutOfRange {
+        internal static string MetricMonitoringIntervalOutOfRange {
             get {
-                return ResourceManager.GetString("MetricMonitoringFrequencyOutOfRange", resourceCulture);
+                return ResourceManager.GetString("MetricMonitoringIntervalOutOfRange", resourceCulture);
             }
         }
         
