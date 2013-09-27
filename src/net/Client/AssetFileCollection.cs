@@ -129,7 +129,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             // Set a MIME type based on the extension of the file name
             string mimeType = AssetFileData.GetMimeType(name);
-            var assetFile = new AssetFileData
+            var assetFile = new AssetFileData(_parentAsset)
                                 {
                                     Name = name,
                                     IsEncrypted = isEncrypted,

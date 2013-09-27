@@ -183,20 +183,18 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                         t.ThrowIfFaulted();
                        
                         LocatorData data = (LocatorData)t.AsyncState;
-                        
-                        if (cloudContext != null)
+
+                        if (data.Asset != null)
+                        {
+                            data.Asset.InvalidateLocatorsCollection();
+                        }
+                        else if (cloudContext != null)
                         {
                             var cloudContextAsset = (AssetData) cloudContext.Assets.Where(c => c.Id == data.AssetId).FirstOrDefault();
                             if (cloudContextAsset != null)
                             {
                                 cloudContextAsset.InvalidateLocatorsCollection();
                             }
-                        }
-                        
-
-                        if (data.Asset != null)
-                        {
-                            data.Asset.InvalidateLocatorsCollection();
                         }
                     },
                     TaskContinuationOptions.ExecuteSynchronously);
