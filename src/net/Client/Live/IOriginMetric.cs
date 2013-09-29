@@ -28,9 +28,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         string Id { get; }
 
         /// <summary>
-        /// Gets service name of the origin metric
+        /// Gets the origin name of the metric
         /// </summary>
-        string ServiceName { get; }
+        string OriginName { get; }
 
         /// <summary>
         /// Gets metric last modification timestamp.

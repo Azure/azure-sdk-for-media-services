@@ -100,9 +100,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         ProgramBaseCollection Programs { get; }
 
         /// <summary>
-        /// Gets channel metrics monitor object
+        /// Adds or removes channel metrics recevied event handler
         /// </summary>
-        IChannelMetricsMonitor MetricsMonitor { get; }
+        event EventHandler<MetricsEventArgs<IChannelMetric>> MetricsReceived;
 
         /// <summary>
         /// Starts the channel.

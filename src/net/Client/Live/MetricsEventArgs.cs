@@ -15,17 +15,19 @@
 // </license>
 
 using System;
+using System.Collections.ObjectModel;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
-    /// Interface for origin metrics monitor
+    /// Channel Metrics EventArgs returned to listeners.
     /// </summary>
-    public interface IOriginMetricsMonitor : IMetricsMonitor
+    public class MetricsEventArgs<T> : EventArgs
     {
         /// <summary>
-        /// EventHandler for the origin metric received
+        /// The list of metrics data for Channel(s) or Origins(s)
+        /// There is only one element if monitoring a single channel or origin
         /// </summary>
-        EventHandler<OriginMetricsEventArgs> MetricReceived { get; set; }
+        public ReadOnlyCollection<T> Metrics { get; internal set; }
     }
 }

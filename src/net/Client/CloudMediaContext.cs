@@ -60,8 +60,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private ProgramBaseCollection _programs;
         private OriginBaseCollection _origins;
         private OperationBaseCollection _operations;
-        private OriginMetricBaseCollection _originMetrics;
-        private ChannelMetricBaseCollection _channelMetrics;
+        private MetricBaseCollection<IOriginMetric> _originMetrics;
+        private MetricBaseCollection<IChannelMetric> _channelMetrics;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CloudMediaContext"/> class.
@@ -121,8 +121,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             this._programs = new ProgramBaseCollection(this);
             this._origins = new OriginBaseCollection(this);
             this._operations = new OperationBaseCollection(this);
-            this._originMetrics = new OriginMetricBaseCollection(this);
-            this._channelMetrics = new ChannelMetricBaseCollection(this);
+            this._originMetrics = new MetricBaseCollection<IOriginMetric>(this);
+            this._channelMetrics = new MetricBaseCollection<IChannelMetric>(this);
         }
 
         /// <summary>
@@ -297,7 +297,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets the collection of origin metrics in the system.
         /// </summary>
-        public OriginMetricBaseCollection OriginMetrics
+        public MetricBaseCollection<IOriginMetric> OriginMetrics
         {
             get { return this._originMetrics; }
         }
@@ -305,7 +305,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets the collection of channel metrics in the system.
         /// </summary>
-        public ChannelMetricBaseCollection ChannelMetrics
+        public MetricBaseCollection<IChannelMetric> ChannelMetrics
         {
             get { return this._channelMetrics; }
         }

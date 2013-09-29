@@ -15,19 +15,14 @@
 // </license>
 
 using System;
-using System.Collections.ObjectModel;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
-    /// <summary>
-    /// Channel Metrics EventArgs returned to listeners.
-    /// </summary>
-    public class ChannelMetricsEventArgs : EventArgs
+    public interface ILiveMonitor : IDisposable
     {
         /// <summary>
-        /// The list of channel metrics data for Channel(s)
-        /// There is only one element if monitoring a single channel
+        /// Set the metric retrieval timer interval
         /// </summary>
-        public ReadOnlyCollection<IChannelMetric> ChannelMetrics { get; internal set; }
+        void SetInterval(TimeSpan interval);
     }
 }

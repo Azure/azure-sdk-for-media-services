@@ -33,6 +33,17 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public string ServiceName { get; set; }
 
         /// <summary>
+        /// Return the origin name (temporary solution)
+        /// </summary>
+        string IOriginMetric.OriginName
+        {
+            get
+            {
+                return ServiceName;
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the Egress Metrics.
         /// </summary>
         public List<Metric> EgressMetrics { get; set; }
@@ -63,7 +74,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
         protected override string EntitySetName
         {
-            get { return OriginMetricBaseCollection.OriginMetricSet; }
+            get { return MetricBaseCollection<IOriginMetric>.OriginMetricSet; }
         }
     }
 }

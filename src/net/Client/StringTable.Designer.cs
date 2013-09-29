@@ -610,15 +610,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The monitoring is already started..
-        /// </summary>
-        internal static string MetricMonitoringAlreadyStartedError {
-            get {
-                return ResourceManager.GetString("MetricMonitoringAlreadyStartedError", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The interval must be greater than {0}s..
         /// </summary>
         internal static string MetricMonitoringIntervalOutOfRange {

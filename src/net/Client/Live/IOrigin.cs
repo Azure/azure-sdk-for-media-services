@@ -68,9 +68,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         OriginState State { get; }
 
         /// <summary>
-        /// Gets origin metrics monitor object
+        /// Adds or removes origin metrics recevied event handler
         /// </summary>
-        IOriginMetricsMonitor MetricsMonitor { get; }
+        event EventHandler<MetricsEventArgs<IOriginMetric>> MetricsReceived;
 
         /// <summary>
         /// Deletes the origin.

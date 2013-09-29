@@ -27,8 +27,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     [DataServiceKey("Id")]
     internal class ChannelData : RestEntity<ChannelData>, IChannel, ICloudMediaContextInit
     {
-        private IChannelMetricsMonitor _metricsMonitor;
-
         /// <summary>
         /// Gets or sets the name of the channel.
         /// </summary>
@@ -162,11 +160,18 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
         /// <summary>
-        /// Gets channel metrics monitor object
+        /// Adds or removes channel metrics recevied event handler
         /// </summary>
-        public IChannelMetricsMonitor MetricsMonitor
+        event EventHandler<MetricsEventArgs<IChannelMetric>> IChannel.MetricsReceived
         {
-            get { return _metricsMonitor ?? (_metricsMonitor = new SingleChannelMetricsMonitor(this)); }
+            add
+            {
+                _cloudMediaContext.ChannelMetrics.Monitor.Subscribe(Id, value);
+            }
+            remove
+            {
+                _cloudMediaContext.ChannelMetrics.Monitor.Unsubscribe(Id, value);
+            }
         }
 
         /// <summary>

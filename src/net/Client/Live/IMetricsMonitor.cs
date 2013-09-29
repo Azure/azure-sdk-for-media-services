@@ -18,27 +18,28 @@ using System;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
-    public interface IMetricsMonitor : IDisposable
+    /// <summary>
+    /// Interface for channel or origin metrics monitor
+    /// </summary>
+    public interface IMetricsMonitor<T> : ILiveMonitor
     {
         /// <summary>
-        /// Set the metric retrieval timer interval
+        /// EventHandler for the all channel metrics received
         /// </summary>
-        void SetInterval(TimeSpan interval);
+        event EventHandler<MetricsEventArgs<T>> MetricsReceived;
 
         /// <summary>
-        /// Start to monitor metrics and trigger events
+        /// Subscribe an event handler to the monitor for a specific channel or origin 
         /// </summary>
-        void Start();
+        /// <param name="id">Channel or Origin ID</param>
+        /// <param name="metricsReceived">Metric received event handler</param>
+        void Subscribe(string id, EventHandler<MetricsEventArgs<T>> metricsReceived);
 
         /// <summary>
-        /// Start to monitor metrics with specified timer interval
+        /// Unsubscribe an event handler to the monitor for a specific channel or origin
         /// </summary>
-        /// <param name="interval">monioter timer interval</param>
-        void Start(TimeSpan interval);
-
-        /// <summary>
-        /// Stop to monitor metrics and release the timer
-        /// </summary>
-        void Stop();
+        /// <param name="id">Channel or Origin ID</param>
+        /// <param name="metricsReceived">Metric received event handler</param>
+        void Unsubscribe(string id, EventHandler<MetricsEventArgs<T>> metricsReceived);
     }
 }

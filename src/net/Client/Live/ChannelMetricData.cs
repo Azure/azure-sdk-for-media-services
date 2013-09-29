@@ -29,6 +29,17 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public string ServiceName { get; set; }
 
         /// <summary>
+        /// Return the channel name (temporary solution)
+        /// </summary>
+        string IChannelMetric.ChannelName
+        {
+            get
+            {
+                return ServiceName;
+            }
+        }
+
+        /// <summary>
         /// Gets metric last modification timestamp.
         /// </summary>
         public DateTime LastModified { get; set; }
@@ -80,7 +91,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
         protected override string EntitySetName
         {
-            get { return ChannelMetricBaseCollection.ChannelMetricSet; }
+            get { return MetricBaseCollection<IChannelMetric>.ChannelMetricSet; }
         }
     }
 }

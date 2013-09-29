@@ -26,8 +26,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     [DataServiceKey("Id")]
     internal class OriginData : RestEntity<OriginData>, IOrigin, ICloudMediaContextInit
     {
-        private IOriginMetricsMonitor _metricsMonitor;
-
         /// <summary>
         /// Gets or sets the name of the origin.
         /// </summary>
@@ -106,9 +104,19 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
         }
 
-        public IOriginMetricsMonitor MetricsMonitor
+        /// <summary>
+        /// Adds or removes origin metrics recevied event handler
+        /// </summary>
+        event EventHandler<MetricsEventArgs<IOriginMetric>> IOrigin.MetricsReceived
         {
-            get { return _metricsMonitor ?? (_metricsMonitor = new SingleOriginMetricsMonitor(this)); }
+            add 
+            {
+                _cloudMediaContext.OriginMetrics.Monitor.Subscribe(Id, value);
+            }
+            remove
+            {
+                _cloudMediaContext.OriginMetrics.Monitor.Unsubscribe(Id, value);
+            }
         }
 
         /// <summary>

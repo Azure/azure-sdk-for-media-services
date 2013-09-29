@@ -46,11 +46,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Live
             var metrics = _dataContext.ChannelMetrics;
             Assert.IsNotNull(metrics);
 
-            var channels = _dataContext.Channels;
+            var metricCount = metrics.Count();
+            var channelCount = _dataContext.Channels.Count();
 
-            if (channels.Count() > 0)
+            if (channelCount > 0)
             {
-                Assert.IsTrue(metrics.Count() > 0);
+                Assert.IsTrue(metricCount > 0);
+                Assert.AreEqual(metricCount, channelCount);
             }
         }
 
@@ -60,10 +62,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Live
         [TestMethod]
         public void GetSingleMetricTest()
         {
-            var metrics = _dataContext.ChannelMetrics.ToDictionary(m => GetGuid(m.Id), m => m);
+            var metrics = _dataContext.ChannelMetrics.ToDictionary(MetricsMonitor<IChannelMetric>.GetGuidString, m => m);
+
             foreach (var channel in _dataContext.Channels)
             {
-                var id = GetGuid(channel.Id);
+                var id = MetricsMonitor<IChannelMetric>.GetGuidString(channel.Id);
 
                 IChannelMetric metric1 = null;
                 if (metrics.ContainsKey(id))
@@ -96,14 +99,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Live
         [TestMethod]
         public void SubscribeAllMetricsMonitorTest()
         {
-            var monitor = _dataContext.ChannelMetrics.Monitor;
-
-            monitor.MetricReceived += OnMetricsReceived;
-            monitor.Start();
-
+            _dataContext.ChannelMetrics.MetricsReceived += OnMetricsReceived;
+            
             System.Threading.Thread.Sleep(TimeSpan.FromSeconds(61));
 
-            monitor.Stop();
+            _dataContext.ChannelMetrics.MetricsReceived -= OnMetricsReceived;
+
+            Assert.AreEqual(_notificationCount, 2);
+
+            System.Threading.Thread.Sleep(TimeSpan.FromSeconds(61));
 
             Assert.AreEqual(_notificationCount, 2);
         }
@@ -119,33 +123,25 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Live
 
             var channel = channels[channels.Count - 1];
 
-            var monitor = channel.MetricsMonitor;
-
-            monitor.MetricReceived += OnMetricsReceived;
-            monitor.Start();
-
+            channel.MetricsReceived += OnMetricsReceived;
+            
             System.Threading.Thread.Sleep(TimeSpan.FromSeconds(61));
 
-            monitor.Stop();
+            channel.MetricsReceived -= OnMetricsReceived;
+
+            Assert.AreEqual(_notificationCount, 2);
+
+            System.Threading.Thread.Sleep(TimeSpan.FromSeconds(61));
 
             Assert.AreEqual(_notificationCount, 2);
         }
 
-        private void OnMetricsReceived(object sender, ChannelMetricsEventArgs eventArgs)
+        private void OnMetricsReceived(object sender, MetricsEventArgs<IChannelMetric> eventArgs)
         {
-            Assert.IsNotNull(eventArgs.ChannelMetrics);
-            Assert.IsTrue(eventArgs.ChannelMetrics.Count > 0);
-            _notificationCount++;
-        }
+            Assert.IsNotNull(eventArgs.Metrics);
+            Assert.IsTrue(eventArgs.Metrics.Count > 0);
 
-        public static Guid GetGuid(string oid)
-        {
-            if (string.IsNullOrEmpty(oid))
-            {
-                throw new ArgumentNullException(oid);
-            }
-            var pieces = oid.Split(':');
-            return new Guid(pieces[pieces.Length - 1]);
+            _notificationCount++;
         }
     }
 }

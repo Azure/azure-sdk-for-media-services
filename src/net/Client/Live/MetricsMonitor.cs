@@ -15,120 +15,187 @@
 // </license>
 
 using System;
-using System.Globalization;
-using System.Timers;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
-    /// MetricMonitor base class for both origin and live
+    /// Channel metrics monitor class
     /// </summary>
-    public abstract class MetricsMonitor : IMetricsMonitor
+    public sealed class MetricsMonitor<T> : LiveMonitor, IMetricsMonitor<T>
     {
-        private Timer _timer;
-        private TimeSpan _timerInterval;
-        private static readonly TimeSpan DefaultTimerInterval = TimeSpan.FromSeconds(30);
+        private const string AllMetricsEventHandlerKey = "00000000";
+
+        private readonly IQueryable<T> _metricsQueryable;
+        private readonly Dictionary<string, EventHandler<MetricsEventArgs<T>>> _eventHandlers;
+        private readonly object _objectLock = new Object();
 
         /// <summary>
-        /// Set the metric retrieval timer interval
+        /// Construct a MetricsMonitor object for origin or channel
         /// </summary>
-        public void SetInterval(TimeSpan interval)
+        /// <param name="metricsQueryable">all metrics queryable</param>
+        internal MetricsMonitor(IQueryable<T> metricsQueryable)
         {
-            if (interval < DefaultTimerInterval)
-            {
-                throw new ArgumentOutOfRangeException(
-                    "interval",
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        StringTable.MetricMonitoringIntervalOutOfRange,
-                        30));
-            }
-
-            _timerInterval = interval;
+            _metricsQueryable = metricsQueryable;
+            _eventHandlers = new Dictionary<string, EventHandler<MetricsEventArgs<T>>>();
         }
 
         /// <summary>
-        /// Start to monitor metrics and trigger events
+        /// Set the default timer interval
         /// </summary>
-        public void Start()
+        protected override TimeSpan DefaultTimerInterval
         {
-            if (_timer != null)
+            get
             {
-                throw new InvalidOperationException(StringTable.MetricMonitoringAlreadyStartedError);
+                return TimeSpan.FromSeconds(30);
             }
-
-            if (_timerInterval < DefaultTimerInterval)
-            {
-                _timerInterval = DefaultTimerInterval;
-            }
-
-            _timer = new Timer { Interval = _timerInterval.TotalMilliseconds };
-            _timer.Elapsed += OnTimerElapsed;
-            _timer.AutoReset = false;
-            _timer.Start();
         }
 
         /// <summary>
-        /// Start to monitor metrics with specified timer interval
+        /// EventHandler for all channel or origin metrics received
         /// </summary>
-        /// <param name="interval">monioter timer interval</param>
-        public void Start(TimeSpan interval)
+        public event EventHandler<MetricsEventArgs<T>> MetricsReceived
         {
-            SetInterval(interval);
-
-            Start();
+            add
+            {
+                Subscribe(AllMetricsEventHandlerKey, value);
+            }
+            remove
+            {
+                Unsubscribe(AllMetricsEventHandlerKey, value);
+            }
         }
 
         /// <summary>
-        /// Stop to monitor metrics and release the timer
+        /// Subscribe an event handler to the monitor for a specific channel or origin 
         /// </summary>
-        public void Stop()
+        /// <param name="id">Channel or Origin ID</param>
+        /// <param name="metricsReceived">Metric received event handler</param>
+        public void Subscribe(string id, EventHandler<MetricsEventArgs<T>> metricsReceived)
         {
-            Dispose();
-        }
+            var internalId = GetGuidString(id);
 
-        /// <summary>
-        /// Get the list of Metrics and publish them
-        /// </summary>
-        /// <returns></returns>
-        protected abstract void RetrieveAndPublishMetrics();
-
-        private void OnTimerElapsed(object sender, ElapsedEventArgs e)
-        {
-            try
+            lock (_objectLock)
             {
-                RetrieveAndPublishMetrics();
-            }
-            catch (Exception ex)
-            {
-                if (ex is OutOfMemoryException) throw;
-            }
-            finally
-            {
-                // Determine the next timer interval compensating for the elapsed execution time.
-                // elapsedTime = DateTime.Now - e.SignalTime;
-                var interval = (_timerInterval - (DateTime.Now - e.SignalTime)).TotalMilliseconds;
-
-                if (interval < DefaultTimerInterval.TotalMilliseconds/2)
+                if (_eventHandlers.ContainsKey(internalId))
                 {
-                    interval = DefaultTimerInterval.TotalMilliseconds/2;
+                    _eventHandlers[internalId] += metricsReceived;
+                }
+                else
+                {
+                    _eventHandlers.Add(internalId, metricsReceived);
                 }
 
-                _timer.Interval = interval;
-                _timer.Start();
+                // start the timer
+                Start();
             }
         }
 
-        public void Dispose()
+        /// <summary>
+        /// Unsubscribe an event handler to the monitor for a specific channel or origin
+        /// </summary>
+        /// <param name="id">Channel or Origin ID</param>
+        /// <param name="metricsReceived">Metric received event handler</param>
+        public void Unsubscribe(string id, EventHandler<MetricsEventArgs<T>> metricsReceived)
         {
-            var timer = _timer;
-            _timer = null;
+            var internalId = GetGuidString(id);
 
-            if (timer != null)
+            lock (_objectLock)
             {
-                timer.Stop();
-                timer.Dispose();
+                if (_eventHandlers.ContainsKey(internalId))
+                {
+                    // ReSharper disable once DelegateSubtraction
+                    _eventHandlers[internalId] -= metricsReceived;
+                    if (_eventHandlers[internalId] == null)
+                    {
+                        _eventHandlers.Remove(internalId);
+                    }
+                }
+
+                if (_eventHandlers.Count == 0)
+                {
+                    // if there is no subscriber, stop
+                    Stop();
+                }
             }
+        }
+
+        /// <summary>
+        /// Override the timer elapsed event: Retrieve and publish events
+        /// </summary>
+        protected override void DoMonitor()
+        {
+            lock (_objectLock)
+            {
+                if (_eventHandlers.Count <= 0) return;
+                
+                var metrics = GetMetrics();
+
+                //notify single channel or origin metric subscriber
+                foreach (var handler in _eventHandlers)
+                {
+                    handler.Value.BeginInvoke(
+                        this,
+                        new MetricsEventArgs<T>
+                        {
+                            Metrics =
+                                handler.Key == AllMetricsEventHandlerKey
+                                    ? metrics.Values.ToList().AsReadOnly()
+                                    : new List<T> {metrics[handler.Key]}.AsReadOnly()
+                        },
+                        null,
+                        null);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get the list of Metrics 
+        /// There is only one element in the list if monitoring a single channel or origin
+        /// </summary>
+        /// <returns>The list of metrics</returns>
+        private IDictionary<string, T> GetMetrics()
+        {
+            return _metricsQueryable.ToDictionary(GetGuidString, m => m);
+        }
+
+        /// <summary>
+        /// Get the Guid part of an metric Id
+        /// </summary>
+        /// <param name="metric">a channel or origin metric object</param>
+        /// <returns>Metric Guid in string</returns>
+        public static string GetGuidString(T metric)
+        {
+            var originMetric = metric as IOriginMetric;
+            if (originMetric != null)
+            {
+                return GetGuidString(originMetric.Id);
+            }
+
+            var channelMetric = metric as IChannelMetric;
+            if (channelMetric != null)
+            {
+                return GetGuidString(channelMetric.Id);
+            }
+
+            throw new ArgumentException("metric");
+        }
+
+        /// <summary>
+        /// Remove the Id prefix and return the Guid part
+        /// </summary>
+        /// <param name="oid">Channel ID, Origin ID, or Metric ID</param>
+        /// <returns>Guid in string</returns>
+        public static string GetGuidString(string oid)
+        {
+            if (string.IsNullOrEmpty(oid))
+            {
+                throw new ArgumentNullException(oid);
+            }
+            var pieces = oid.Split(':');
+            return pieces[pieces.Length - 1];
         }
     }
 }
