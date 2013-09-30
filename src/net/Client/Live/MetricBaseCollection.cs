@@ -18,38 +18,23 @@ using System.Linq;
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
-    /// Represents a collection of <see cref="IChannelMetric"/>.
+    /// Represents a collection of metrics.
     /// </summary>
-    public sealed class MetricBaseCollection<T> : CloudBaseCollection<T>
+    public class MetricBaseCollection<T> : CloudBaseCollection<T> where T : IMetric
     {
-        internal const string ChannelMetricSet = "ChannelMetrics";
-        internal const string OriginMetricSet = "OriginMetrics";
-
-        private readonly IMetricsMonitor<T> _monitor;
+        /// <summary>
+        /// Return the monitor instances
+        /// </summary>
+        internal IMetricsMonitor<T> Monitor { get; private set; }
 
         /// <summary>
-        /// Initializes a new instance of the MetricBaseCollection class.
+        /// Initialize the MetricBaseCollection object
         /// </summary>
-        /// <param name="cloudMediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
-        internal MetricBaseCollection(CloudMediaContext cloudMediaContext)
+        /// <param name="queryable"></param>
+        public void Initialize(IQueryable<T> queryable)
         {
-            DataContextFactory = cloudMediaContext.DataContextFactory;
-
-            var type = typeof (T);
-            if (type == typeof (IOriginMetric))
-            {
-                Queryable =
-                    DataContextFactory.CreateDataServiceContext().CreateQuery<OriginMetricData>(OriginMetricSet)
-                        as IQueryable<T>;
-            }
-            else if (type == typeof (IChannelMetric))
-            {
-                Queryable =
-                    DataContextFactory.CreateDataServiceContext().CreateQuery<ChannelMetricData>(ChannelMetricSet)
-                        as IQueryable<T>;
-            }
-
-            _monitor = new MetricsMonitor<T>(Queryable);
+            Queryable = queryable;
+            Monitor = new MetricsMonitor<T>(queryable);
         }
 
         /// <summary>
@@ -62,12 +47,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             add
             {
-                _monitor.MetricsReceived += value;
+                Monitor.MetricsReceived += value;
             }
             remove
             {
                 // ReSharper disable once DelegateSubtraction
-                _monitor.MetricsReceived -= value;
+                Monitor.MetricsReceived -= value;
             }
         }
 
@@ -76,36 +61,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         public void SetInterval(TimeSpan interval)
         {
-            _monitor.SetInterval(interval);
+            Monitor.SetInterval(interval);
         }
-
-        /// <summary>
-        /// Return the monitor instances
-        /// </summary>
-        internal IMetricsMonitor<T> Monitor
-        {
-            get
-            {
-                return _monitor;
-            }
-        }
-
-        /**********************************************************************************************************
-        /// <summary>
-        /// Get the metrics of a specific channel or origin
-        /// i.e. context.ChannelMetrics.GetMetric(id). 
-        /// If you know the metric Id, 
-        /// this is more efficient than context.ChannelMetrics.Where(m => m.Id = metricId).Single() 
-        /// </summary>
-        /// <param name="metricId"></param>
-        /// <returns></returns>
-        public T GetMetric(string metricId)
-        {
-            var uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/{0}('{1}')", ChannelMetricSet, metricId), UriKind.Relative);
-            var dataContext = _cloudMediaContext.DataContextFactory.CreateDataServiceContext();
-            var metric = dataContext.Execute<ChannelMetricData>(uri).SingleOrDefault();
-            return metric;
-        }
-        ***********************************************************************************************************/
     }
 }

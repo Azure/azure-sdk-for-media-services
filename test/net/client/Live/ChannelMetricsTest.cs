@@ -62,7 +62,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Live
         [TestMethod]
         public void GetSingleMetricTest()
         {
-            var metrics = _dataContext.ChannelMetrics.ToDictionary(MetricsMonitor<IChannelMetric>.GetGuidString, m => m);
+            var metrics = _dataContext.ChannelMetrics.ToDictionary(
+                m => MetricsMonitor<IChannelMetric>.GetGuidString(m.Id),
+                m => m);
 
             foreach (var channel in _dataContext.Channels)
             {

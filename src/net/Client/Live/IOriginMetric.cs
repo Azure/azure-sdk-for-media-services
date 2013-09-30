@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.Collections.ObjectModel;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
@@ -20,22 +19,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// <summary>
     /// Describes the Origin Metrics Entity
     /// </summary>
-    public interface IOriginMetric
+    public interface IOriginMetric : IMetric
     {
-        /// <summary>
-        /// Gets Unique identifier of the Origin Metric.
-        /// </summary>
-        string Id { get; }
-
         /// <summary>
         /// Gets the origin name of the metric
         /// </summary>
         string OriginName { get; }
-
-        /// <summary>
-        /// Gets metric last modification timestamp.
-        /// </summary>
-        DateTime LastModified { get; }
 
         /// <summary>
         /// Gets a collection of <see cref="Metric"/> objects containing the egress metrics of the origin.

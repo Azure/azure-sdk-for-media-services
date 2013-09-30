@@ -23,7 +23,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// <summary>
     /// A generic monitor class for doing something periodically
     /// </summary>
-    public abstract class LiveMonitor : ILiveMonitor
+    public abstract class StreamingMonitor : IStreamingMonitor
     {
         private Timer _timer;
         private TimeSpan _timerInterval;

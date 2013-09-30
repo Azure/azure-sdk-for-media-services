@@ -21,7 +21,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// <summary>
     /// Interface for channel or origin metrics monitor
     /// </summary>
-    public interface IMetricsMonitor<T> : ILiveMonitor
+    public interface IMetricsMonitor<T> : IStreamingMonitor
     {
         /// <summary>
         /// EventHandler for the all channel metrics received

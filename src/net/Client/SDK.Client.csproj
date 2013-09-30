@@ -184,6 +184,8 @@
     <Compile Include="JobTemplateData.cs" />
     <Compile Include="Live\ChannelBaseCollection.cs" />
     <Compile Include="Live\ChannelData.cs" />
+    <Compile Include="Live\ChannelMetricBaseCollection.cs" />
+    <Compile Include="Live\IMetric.cs" />
     <Compile Include="Live\MetricBaseCollection.cs" />
     <Compile Include="Live\ChannelMetricData.cs" />
     <Compile Include="Live\MetricsMonitor.cs" />
@@ -195,7 +197,7 @@
     <Compile Include="Live\IChannelMetric.cs" />
     <Compile Include="Live\IMetricsMonitor.cs" />
     <Compile Include="Live\IIngestMetric.cs" />
-    <Compile Include="Live\ILiveMonitor.cs" />
+    <Compile Include="Live\IStreamingMonitor.cs" />
     <Compile Include="Live\IngestMetricData.cs" />
     <Compile Include="Live\IOperation.cs" />
     <Compile Include="Live\IOrigin.cs" />
@@ -205,12 +207,13 @@
     <Compile Include="Live\Ipv4.cs" />
     <Compile Include="Live\Metric.cs" />
     <Compile Include="Live\MetricsEventArgs.cs" />
-    <Compile Include="Live\LiveMonitor.cs" />
+    <Compile Include="Live\StreamingMonitor.cs" />
     <Compile Include="Live\OperationBaseCollection.cs" />
     <Compile Include="Live\OperationData.cs" />
     <Compile Include="Live\OperationState.cs" />
     <Compile Include="Live\OriginBaseCollection.cs" />
     <Compile Include="Live\OriginData.cs" />
+    <Compile Include="Live\OriginMetricBaseCollection.cs" />
     <Compile Include="Live\OriginMetricData.cs" />
     <Compile Include="Live\OriginServiceSettings.cs" />
     <Compile Include="Live\OriginSettings.cs" />

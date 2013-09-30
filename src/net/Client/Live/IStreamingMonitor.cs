@@ -18,7 +18,7 @@ using System;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
-    public interface ILiveMonitor : IDisposable
+    public interface IStreamingMonitor : IDisposable
     {
         /// <summary>
         /// Set the metric retrieval timer interval

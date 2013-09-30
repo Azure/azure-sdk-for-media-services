@@ -20,8 +20,13 @@ using System.Data.Services.Common;
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     [DataServiceKey("Id")]
-    internal class OriginMetricData : RestEntity<OriginMetricData>, IOriginMetric, ICloudMediaContextInit
+    internal class OriginMetricData : IOriginMetric, ICloudMediaContextInit
     {
+        /// <summary>
+        /// Gets and sets Unique identifier of the origin Metric.
+        /// </summary>
+        public string Id { get; set; }
+
         /// <summary>
         /// Gets metric last modification timestamp.
         /// </summary>
@@ -67,14 +72,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="context">The context.</param>
         public void InitCloudMediaContext(CloudMediaContext context)
         {
-            _cloudMediaContext = context;
         }
 
         #endregion
-
-        protected override string EntitySetName
-        {
-            get { return MetricBaseCollection<IOriginMetric>.OriginMetricSet; }
-        }
     }
 }

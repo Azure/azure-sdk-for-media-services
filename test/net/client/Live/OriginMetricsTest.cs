@@ -62,7 +62,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Live
         [TestMethod]
         public void GetSingleMetricTest()
         {
-            var metrics = _dataContext.OriginMetrics.ToDictionary(MetricsMonitor<IOriginMetric>.GetGuidString, m => m);
+            var metrics = _dataContext.OriginMetrics.ToDictionary(
+                m => MetricsMonitor<IOriginMetric>.GetGuidString(m.Id), 
+                m => m);
 
             foreach (var origin in _dataContext.Origins)
             {

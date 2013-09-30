@@ -16,15 +16,14 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
-    /// Channel metrics monitor class
+    /// metrics monitor class
     /// </summary>
-    public sealed class MetricsMonitor<T> : LiveMonitor, IMetricsMonitor<T>
+    public sealed class MetricsMonitor<T> : StreamingMonitor, IMetricsMonitor<T> where T : IMetric
     {
         private const string AllMetricsEventHandlerKey = "00000000";
 
@@ -158,29 +157,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>The list of metrics</returns>
         private IDictionary<string, T> GetMetrics()
         {
-            return _metricsQueryable.ToDictionary(GetGuidString, m => m);
-        }
-
-        /// <summary>
-        /// Get the Guid part of an metric Id
-        /// </summary>
-        /// <param name="metric">a channel or origin metric object</param>
-        /// <returns>Metric Guid in string</returns>
-        public static string GetGuidString(T metric)
-        {
-            var originMetric = metric as IOriginMetric;
-            if (originMetric != null)
-            {
-                return GetGuidString(originMetric.Id);
-            }
-
-            var channelMetric = metric as IChannelMetric;
-            if (channelMetric != null)
-            {
-                return GetGuidString(channelMetric.Id);
-            }
-
-            throw new ArgumentException("metric");
+            return _metricsQueryable.ToDictionary(m => GetGuidString(m.Id), m => m);
         }
 
         /// <summary>
@@ -188,7 +165,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <param name="oid">Channel ID, Origin ID, or Metric ID</param>
         /// <returns>Guid in string</returns>
-        public static string GetGuidString(string oid)
+        internal static string GetGuidString(string oid)
         {
             if (string.IsNullOrEmpty(oid))
             {

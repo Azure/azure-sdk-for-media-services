@@ -12,28 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.ObjectModel;
-
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
-    /// Describes the channel Metrics Entity
+    /// Represents a collection of <see cref="IOriginMetric"/>.
     /// </summary>
-    public interface IChannelMetric : IMetric
+    public sealed class OriginMetricBaseCollection : MetricBaseCollection<IOriginMetric>
     {
-        /// <summary>
-        /// Gets channel name of the metric
-        /// </summary>
-        string ChannelName { get; }
+        internal const string OriginMetricSet = "OriginMetrics";
 
         /// <summary>
-        /// Gets the <see cref="IngestMetrics"/> object containing the ingest metrics of the channel.
+        /// Initializes a new instance of the <see cref="OriginMetricBaseCollection"/> class.
         /// </summary>
-        ReadOnlyCollection<IIngestMetric> IngestMetrics { get; }
+        /// <param name="cloudMediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
+        internal OriginMetricBaseCollection(CloudMediaContext cloudMediaContext) 
+        {
+            DataContextFactory = cloudMediaContext.DataContextFactory;
+            Queryable = DataContextFactory.CreateDataServiceContext().CreateQuery<OriginMetricData>(OriginMetricSet);
 
-        /// <summary>
-        /// Gets the <see cref="ProgramMetrics"/> object containing the program metrics of the channel.
-        /// </summary>
-        ReadOnlyCollection<IProgramMetric> ProgramMetrics { get; }
+            Initialize(Queryable);
+        }
     }
 }

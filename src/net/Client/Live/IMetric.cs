@@ -1,5 +1,6 @@
-﻿// Copyright 2012 Microsoft Corporation
-// 
+﻿//-----------------------------------------------------------------------
+// <copyright file="ErrorDetail.cs" company="Microsoft">Copyright 2012 Microsoft Corporation</copyright>
+// <license>
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -11,29 +12,25 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+// </license>
 
-using System.Collections.ObjectModel;
+using System;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
-    /// Describes the channel Metrics Entity
+    /// Interface for all metrics
     /// </summary>
-    public interface IChannelMetric : IMetric
+    public interface IMetric
     {
         /// <summary>
-        /// Gets channel name of the metric
+        /// Gets Unique identifier of the Metric.
         /// </summary>
-        string ChannelName { get; }
+        string Id { get; }
 
         /// <summary>
-        /// Gets the <see cref="IngestMetrics"/> object containing the ingest metrics of the channel.
+        /// Gets metric last modification timestamp.
         /// </summary>
-        ReadOnlyCollection<IIngestMetric> IngestMetrics { get; }
-
-        /// <summary>
-        /// Gets the <see cref="ProgramMetrics"/> object containing the program metrics of the channel.
-        /// </summary>
-        ReadOnlyCollection<IProgramMetric> ProgramMetrics { get; }
+        DateTime LastModified { get; }
     }
 }

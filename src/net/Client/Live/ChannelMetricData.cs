@@ -21,8 +21,13 @@ using System.Linq;
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     [DataServiceKey("Id")]
-    internal class ChannelMetricData : RestEntity<ChannelMetricData>, IChannelMetric, ICloudMediaContextInit
+    internal class ChannelMetricData : IChannelMetric, ICloudMediaContextInit
     {
+        /// <summary>
+        /// Gets and sets Unique identifier of the Metric.
+        /// </summary>
+        public string Id { get; set; }
+
         /// <summary>
         /// Gets service name of the channel metric
         /// </summary>
@@ -84,14 +89,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="context">The context.</param>
         public void InitCloudMediaContext(CloudMediaContext context)
         {
-            _cloudMediaContext = context;
         }
 
         #endregion
-
-        protected override string EntitySetName
-        {
-            get { return MetricBaseCollection<IChannelMetric>.ChannelMetricSet; }
-        }
     }
 }
