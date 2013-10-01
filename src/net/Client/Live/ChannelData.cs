@@ -13,13 +13,11 @@
 // limitations under the License.
 
 using System;
-using System.Data.Services.Client;
 using System.Data.Services.Common;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.MediaServices.Client.Properties;
-using System.Net;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -77,7 +75,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Gets or sets channel settings.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public string Settings 
+        public string Settings
         {
             get
             {
@@ -97,7 +95,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public void InitCloudMediaContext(CloudMediaContext context)
         {
             InvalidateCollections();
-            this._cloudMediaContext = (CloudMediaContext)context;
+            _cloudMediaContext = context;
         }
 
         #endregion
@@ -105,20 +103,20 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets state of the channel.
         /// </summary>
-        ChannelState IChannel.State 
-        { 
-            get 
+        ChannelState IChannel.State
+        {
+            get
             {
                 return (ChannelState)Enum.Parse(typeof(ChannelState), State, true);
-            } 
+            }
         }
 
         /// <summary>
         /// Gets size of the channel.
         /// </summary>
         ChannelSize IChannel.Size
-        { 
-            get 
+        {
+            get
             {
                 return (ChannelSize)Enum.Parse(typeof(ChannelSize), Size, true);
             }
@@ -154,10 +152,25 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             {
                 if (_programCollection == null && _cloudMediaContext != null)
                 {
-                    this._programCollection = new ProgramBaseCollection(_cloudMediaContext, this);
+                    _programCollection = new ProgramBaseCollection(_cloudMediaContext, this);
                 }
 
                 return _programCollection;
+            }
+        }
+
+        /// <summary>
+        /// Adds or removes channel metrics recevied event handler
+        /// </summary>
+        event EventHandler<MetricsEventArgs<IChannelMetric>> IChannel.MetricsReceived
+        {
+            add
+            {
+                _cloudMediaContext.ChannelMetrics.Monitor.Subscribe(Id, value);
+            }
+            remove
+            {
+                _cloudMediaContext.ChannelMetrics.Monitor.Unsubscribe(Id, value);
             }
         }
 
@@ -198,7 +211,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>Task to wait on for operation completion.</returns>
         public Task StartAsync()
         {
-            Uri uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Channels('{0}')/Start", this.Id), UriKind.Relative);
+            var uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Channels('{0}')/Start", Id), UriKind.Relative);
 
             return ExecuteActionAsync(uri, StreamingConstants.StartChannelPollInterval);
         }
@@ -209,7 +222,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>Operation info that can be used to track the operation.</returns>
         public IOperation SendStartOperation()
         {
-            Uri uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Channels('{0}')/Start", this.Id), UriKind.Relative);
+            var uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Channels('{0}')/Start", Id), UriKind.Relative);
 
             return SendOperation(uri);
         }
@@ -237,7 +250,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>Task to wait on for operation completion.</returns>
         public Task StopAsync()
         {
-            Uri uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Channels('{0}')/Stop", this.Id), UriKind.Relative);
+            var uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Channels('{0}')/Stop", Id), UriKind.Relative);
 
             return ExecuteActionAsync(uri, StreamingConstants.StopChannelPollInterval);
         }
@@ -248,7 +261,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>Operation info that can be used to track the operation.</returns>
         public IOperation SendStopOperation()
         {
-            Uri uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Channels('{0}')/Stop", this.Id), UriKind.Relative);
+            var uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Channels('{0}')/Stop", Id), UriKind.Relative);
 
             return SendOperation(uri);
         }
@@ -269,12 +282,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>Task to wait on for operation completion.</returns>
         public override Task DeleteAsync()
         {
-            if (string.IsNullOrWhiteSpace(this.Id))
+            if (string.IsNullOrWhiteSpace(Id))
             {
                 throw new InvalidOperationException(Resources.ErrorEntityWithoutId);
             }
 
-            DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            var dataContext = _cloudMediaContext.DataContextFactory.CreateDataServiceContext();
             dataContext.AttachTo(EntitySetName, this);
             dataContext.DeleteObject(this);
 
@@ -282,14 +295,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             {
                 t.ThrowIfFaulted();
 
-                string operationId = t.Result.Single().Headers[StreamingConstants.OperationIdHeader];
+                var operationId = t.Result.Single().Headers[StreamingConstants.OperationIdHeader];
 
-                IOperation operation = AsyncHelper.WaitOperationCompletion(
-                    this._cloudMediaContext,
+                var operation = AsyncHelper.WaitOperationCompletion(
+                    _cloudMediaContext,
                     operationId,
                     StreamingConstants.DeleteChannelPollInterval);
 
-                string messageFormat = Resources.ErrorDeleteChannelFailedFormat;
+                var messageFormat = Resources.ErrorDeleteChannelFailedFormat;
                 string message;
 
                 switch (operation.State)
@@ -313,20 +326,20 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>Operation info that can be used to track the operation.</returns>
         public IOperation SendDeleteOperation()
         {
-            if (string.IsNullOrWhiteSpace(this.Id))
+            if (string.IsNullOrWhiteSpace(Id))
             {
                 throw new InvalidOperationException(Resources.ErrorEntityWithoutId);
             }
 
-            DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            var dataContext = _cloudMediaContext.DataContextFactory.CreateDataServiceContext();
             dataContext.AttachTo(EntitySetName, this);
             dataContext.DeleteObject(this);
 
             var response = dataContext.SaveChanges();
 
-            string operationId = response.Single().Headers[StreamingConstants.OperationIdHeader];
+            var operationId = response.Single().Headers[StreamingConstants.OperationIdHeader];
 
-            var result = new OperationData()
+            var result = new OperationData
             {
                 ErrorCode = null,
                 ErrorMessage = null,
@@ -346,6 +359,28 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             return Task.Factory.StartNew(() => SendDeleteOperation());
         }
 
+        /// <summary>
+        /// Get the latest channel metric.
+        /// </summary>
+        /// <returns>The latest ChannelMetrics entity of this channel service</returns>
+        public IChannelMetric GetMetric()
+        {
+            var uri = new Uri(
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    "/{0}('{1}')/{2}",
+                    ChannelBaseCollection.ChannelSet,
+                    Id,
+                    Metric.MetricProperty
+                    ),
+                UriKind.Relative);
+
+            var dataContext = _cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            var metric = dataContext.Execute<ChannelMetricData>(uri).SingleOrDefault();
+
+            return metric;
+        }
+
         protected override string EntitySetName { get { return ChannelBaseCollection.ChannelSet; } }
 
         /// <summary>
@@ -353,7 +388,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         private void InvalidateCollections()
         {
-            this._programCollection = null;
+            _programCollection = null;
         }
 
         private ProgramBaseCollection _programCollection;
