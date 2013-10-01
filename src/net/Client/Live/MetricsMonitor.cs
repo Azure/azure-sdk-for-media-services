@@ -99,7 +99,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="metricsReceived">Metric received event handler</param>
         public void Unsubscribe(string id, EventHandler<MetricsEventArgs<T>> metricsReceived)
         {
-            var internalId = GetGuidString(id);
+            string internalId = GetGuidString(id);
 
             lock (_objectLock)
             {
