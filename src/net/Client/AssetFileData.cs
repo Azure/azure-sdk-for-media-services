@@ -45,6 +45,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private IAsset _asset;
         private CloudMediaContext _cloudMediaContext;
 
+        public AssetFileData() { }
+
+        public AssetFileData(IAsset parent)
+        {
+            _asset = parent;
+        }
+
         #region IAssetFile Members
 
         /// <summary>
