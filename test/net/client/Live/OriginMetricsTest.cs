@@ -89,6 +89,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Live
         /// Subscribe to all origin metrics monitor
         /// </summary>
         [TestMethod]
+        [Ignore]
         public void SubscribeAllMetricsMonitorTest()
         {
             _dataContext.OriginMetrics.MetricsReceived += OnMetricsReceived;
@@ -108,6 +109,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Live
         /// Subscribe to a signle origin metric monitor
         /// </summary>
         [TestMethod]
+        [Ignore]
         public void SubscribeSingleMetricMonitorTest()
         {
             var origins = _dataContext.Origins.ToList();

@@ -58,6 +58,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         string AssetId { get; set; }
 
         /// <summary>
+        /// Gets or sets the program manifest field Id
+        /// </summary>
+        Guid ManifestFileId { get; set; }
+
+        /// <summary>
         /// Gets or sets the length of the DVR window.
         /// </summary>
         TimeSpan? DvrWindowLength { get; set; }

@@ -99,6 +99,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Live
         /// Subscribe to all channel metrics monitor
         /// </summary>
         [TestMethod]
+        [Ignore]
         public void SubscribeAllMetricsMonitorTest()
         {
             _dataContext.ChannelMetrics.MetricsReceived += OnMetricsReceived;
@@ -118,6 +119,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Live
         /// Subscribe to a signle channel metric monitor
         /// </summary>
         [TestMethod]
+        [Ignore]
         public void SubscribeSingleMetricMonitorTest()
         {
             var channels = _dataContext.Channels.ToList();
