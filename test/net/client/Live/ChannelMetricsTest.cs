@@ -43,17 +43,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Live
         [TestMethod]
         public void GetAllMetricsTest()
         {
-            var metrics = _dataContext.ChannelMetrics;
-            Assert.IsNotNull(metrics);
-
-            var metricCount = metrics.Count();
             var channelCount = _dataContext.Channels.Count();
+            var metricCount = _dataContext.ChannelMetrics.Count();
 
-            if (channelCount > 0)
-            {
-                Assert.IsTrue(metricCount > 0);
-                Assert.AreEqual(metricCount, channelCount);
-            }
+            Assert.AreEqual(metricCount, channelCount);
         }
 
         /// <summary>
