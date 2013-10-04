@@ -83,13 +83,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             TimeSpan estimatedDuration,
             string assetId)
         {
-            return AsyncHelper.Wait(this.CreateAsync(
+            return Create(
                 name,
                 description,
                 enableArchive,
                 dvrWindowLength,
                 estimatedDuration,
-                assetId));
+                assetId,
+                default(Guid));
         }
 
         /// <summary>
@@ -115,7 +116,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 enableArchive,
                 dvrWindowLength,
                 estimatedDuration,
-                assetId);
+                assetId,
+                default(Guid));
         }
 
         /// <summary>
@@ -139,7 +141,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             string assetId,
             Guid manifestFileId)
         {
-            return AsyncHelper.Wait(this.CreateAsync(
+            return AsyncHelper.Wait(CreateAsync(
                 name,
                 description,
                 enableArchive,
