@@ -16,6 +16,7 @@ using System;
 using System.Data.Services.Client;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web.Security;
 using Microsoft.WindowsAzure.MediaServices.Client.Properties;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
@@ -121,90 +122,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Creates new Program.
         /// </summary>
         /// <param name="name">Name of the program.</param>
-        /// <param name="enableArchive">True if the program must be archived.</param>
-        /// <param name="dvrWindowLength">Length of the DVR window. 
-        /// Set to StreamingConstants.InfiniteDvrLenth for infinite DVR.</param>
-        /// <param name="estimatedDuration">Estimated duration of the program.</param>
-        /// <param name="assetId">Id of the asset where program content will be stored.</param>
-        /// <returns>The created program.</returns>
-        public Task<IProgram> CreateAsync(
-            string name,
-            bool enableArchive,
-            TimeSpan? dvrWindowLength,
-            TimeSpan estimatedDuration,
-            string assetId)
-        {
-            return CreateAsync(
-                name,
-                null,
-                enableArchive,
-                dvrWindowLength,
-                estimatedDuration,
-                assetId);
-        }
-
-        /// <summary>
-        /// Asynchronously creates new Program.
-        /// </summary>
-        /// <param name="name">Name of the program.</param>
-        /// <param name="description">Program description.</param>
-        /// <param name="enableArchive">True if the program must be archived.</param>
-        /// <param name="dvrWindowLength">Length of the DVR window. 
-        /// Set to StreamingConstants.InfiniteDvrLenth for infinite DVR.</param>
-        /// <param name="estimatedDuration">Estimated duration of the program.</param>
-        /// <param name="assetId">Id of the asset where program content will be stored.</param>
-        /// <returns>The created program.</returns>
-        public Task<IProgram> CreateAsync(
-            string name,
-            string description,
-            bool enableArchive,
-            TimeSpan? dvrWindowLength, 
-            TimeSpan estimatedDuration,
-            string assetId)
-        {
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ArgumentException(Resources.ErrorEmptyProgramName);
-            }
-
-            if (_parentChannel == null)
-            {
-                throw new InvalidOperationException(Resources.ErrorOrphanProgram);
-            }
-
-            var program = new ProgramData
-            {
-                ChannelId = _parentChannel.Id,
-                AssetId = assetId,
-                Description = description,
-                EstimatedDurationSeconds = (int)estimatedDuration.TotalSeconds,
-                EnableArchive = enableArchive,
-                Name = name
-            };
-
-            if (dvrWindowLength.HasValue)
-            {
-                program.DvrWindowLengthSeconds = (int)dvrWindowLength.Value.TotalSeconds;
-            }
-
-            program.InitCloudMediaContext(this._cloudMediaContext);
-
-            DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
-            dataContext.AddObject(ProgramSet, program);
-
-            return dataContext
-                .SaveChangesAsync(program)
-                .ContinueWith<IProgram>(t =>
-                    {
-                        t.ThrowIfFaulted();
-                        return (ProgramData)t.AsyncState;
-                    });
-        }
-
-        /// <summary>
-        /// Creates new Program.
-        /// </summary>
-        /// <param name="name">Name of the program.</param>
         /// <param name="description">Program description.</param>
         /// <param name="enableArchive">True if the program must be archived.</param>
         /// <param name="dvrWindowLength">Length of the DVR window. 
@@ -230,6 +147,62 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 estimatedDuration,
                 assetId,
                 manifestFileId));
+        }
+
+        /// <summary>
+        /// Creates new Program.
+        /// </summary>
+        /// <param name="name">Name of the program.</param>
+        /// <param name="enableArchive">True if the program must be archived.</param>
+        /// <param name="dvrWindowLength">Length of the DVR window. 
+        /// Set to StreamingConstants.InfiniteDvrLenth for infinite DVR.</param>
+        /// <param name="estimatedDuration">Estimated duration of the program.</param>
+        /// <param name="assetId">Id of the asset where program content will be stored.</param>
+        /// <returns>The created program.</returns>
+        public Task<IProgram> CreateAsync(
+            string name,
+            bool enableArchive,
+            TimeSpan? dvrWindowLength,
+            TimeSpan estimatedDuration,
+            string assetId)
+        {
+            return CreateAsync(
+                name,
+                null,
+                enableArchive,
+                dvrWindowLength,
+                estimatedDuration,
+                assetId,
+                default(Guid));
+        }
+
+        /// <summary>
+        /// Asynchronously creates new Program.
+        /// </summary>
+        /// <param name="name">Name of the program.</param>
+        /// <param name="description">Program description.</param>
+        /// <param name="enableArchive">True if the program must be archived.</param>
+        /// <param name="dvrWindowLength">Length of the DVR window. 
+        /// Set to StreamingConstants.InfiniteDvrLenth for infinite DVR.</param>
+        /// <param name="estimatedDuration">Estimated duration of the program.</param>
+        /// <param name="assetId">Id of the asset where program content will be stored.</param>
+        /// <returns>The created program.</returns>
+        public Task<IProgram> CreateAsync(
+            string name,
+            string description,
+            bool enableArchive,
+            TimeSpan? dvrWindowLength, 
+            TimeSpan estimatedDuration,
+            string assetId)
+        {
+            return CreateAsync(
+                name,
+                description,
+                enableArchive,
+                dvrWindowLength,
+                estimatedDuration,
+                assetId,
+                default(Guid));
         }
 
         /// <summary>
