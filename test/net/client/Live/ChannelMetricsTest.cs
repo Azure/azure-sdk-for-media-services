@@ -43,17 +43,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Live
         [TestMethod]
         public void GetAllMetricsTest()
         {
-            var metrics = _dataContext.ChannelMetrics;
-            Assert.IsNotNull(metrics);
-
-            var metricCount = metrics.Count();
             var channelCount = _dataContext.Channels.Count();
+            var metricCount = _dataContext.ChannelMetrics.Count();
 
-            if (channelCount > 0)
-            {
-                Assert.IsTrue(metricCount > 0);
-                Assert.AreEqual(metricCount, channelCount);
-            }
+            Assert.AreEqual(metricCount, channelCount);
         }
 
         /// <summary>
@@ -99,6 +92,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Live
         /// Subscribe to all channel metrics monitor
         /// </summary>
         [TestMethod]
+        [Ignore]
         public void SubscribeAllMetricsMonitorTest()
         {
             _dataContext.ChannelMetrics.MetricsReceived += OnMetricsReceived;
@@ -118,6 +112,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Live
         /// Subscribe to a signle channel metric monitor
         /// </summary>
         [TestMethod]
+        [Ignore]
         public void SubscribeSingleMetricMonitorTest()
         {
             var channels = _dataContext.Channels.ToList();

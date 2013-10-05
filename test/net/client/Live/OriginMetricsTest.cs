@@ -43,17 +43,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Live
         [TestMethod]
         public void GetAllMetricsTest()
         {
-            var metrics = _dataContext.OriginMetrics;
-            Assert.IsNotNull(metrics);
-
-            var metricCount = metrics.Count();
+            var metricCount = _dataContext.OriginMetrics.Count();
             var originCount = _dataContext.Origins.Count();
 
-            if (metricCount > 0)
-            {
-                Assert.IsTrue(metricCount > 0);
-                Assert.AreEqual(metricCount, originCount);
-            }
+            Assert.AreEqual(metricCount, originCount);
         }
 
         /// <summary>
@@ -89,6 +82,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Live
         /// Subscribe to all origin metrics monitor
         /// </summary>
         [TestMethod]
+        [Ignore]
         public void SubscribeAllMetricsMonitorTest()
         {
             _dataContext.OriginMetrics.MetricsReceived += OnMetricsReceived;
@@ -108,6 +102,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Live
         /// Subscribe to a signle origin metric monitor
         /// </summary>
         [TestMethod]
+        [Ignore]
         public void SubscribeSingleMetricMonitorTest()
         {
             var origins = _dataContext.Origins.ToList();
