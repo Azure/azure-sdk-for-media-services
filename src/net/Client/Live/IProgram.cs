@@ -58,10 +58,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         string AssetId { get; set; }
 
         /// <summary>
-        /// Gets or sets the streaming manifest file Id. 
-        /// If specified, this will be used for the name of the streaming manifest file.
+        /// Gets or sets the streaming manifest name. 
         /// </summary>
-        Guid ManifestFileId { get; set; }
+        string ManifestName { get; set; }
 
         /// <summary>
         /// Gets or sets the length of the DVR window.
