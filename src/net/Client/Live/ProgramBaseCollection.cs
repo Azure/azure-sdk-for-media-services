@@ -90,7 +90,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 dvrWindowLength,
                 estimatedDuration,
                 assetId,
-                default(Guid));
+                null);
         }
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 dvrWindowLength,
                 estimatedDuration,
                 assetId,
-                default(Guid));
+                null);
         }
 
         /// <summary>
@@ -130,7 +130,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Set to StreamingConstants.InfiniteDvrLenth for infinite DVR.</param>
         /// <param name="estimatedDuration">Estimated duration of the program.</param>
         /// <param name="assetId">Id of the asset where program content will be stored.</param>
-        /// <param name="manifestFileId">Used for the name of the streaming manifest file.</param>
+        /// <param name="manifestName">Name of the streaming manifest file.</param>
         /// <returns>The created program.</returns>
         public IProgram Create(
             string name,
@@ -139,7 +139,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             TimeSpan? dvrWindowLength,
             TimeSpan estimatedDuration,
             string assetId,
-            Guid manifestFileId)
+            string manifestName)
         {
             return AsyncHelper.Wait(CreateAsync(
                 name,
@@ -148,7 +148,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 dvrWindowLength,
                 estimatedDuration,
                 assetId,
-                manifestFileId));
+                manifestName));
         }
 
         /// <summary>
@@ -175,7 +175,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 dvrWindowLength,
                 estimatedDuration,
                 assetId,
-                default(Guid));
+                null);
         }
 
         /// <summary>
@@ -204,7 +204,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 dvrWindowLength,
                 estimatedDuration,
                 assetId,
-                default(Guid));
+                null);
         }
 
         /// <summary>
@@ -217,7 +217,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Set to StreamingConstants.InfiniteDvrLenth for infinite DVR.</param>
         /// <param name="estimatedDuration">Estimated duration of the program.</param>
         /// <param name="assetId">Id of the asset where program content will be stored.</param>
-        /// <param name="manifestFileId">Used for the name of the streaming manifest file.</param>
+        /// <param name="manifestName">Name of the streaming manifest file.</param>
         /// <returns>The created program.</returns>
         public Task<IProgram> CreateAsync(
             string name,
@@ -226,7 +226,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             TimeSpan? dvrWindowLength,
             TimeSpan estimatedDuration,
             string assetId,
-            Guid manifestFileId)
+            string manifestName)
         {
             if (string.IsNullOrEmpty(name))
             {
@@ -246,7 +246,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 EstimatedDurationSeconds = (int)estimatedDuration.TotalSeconds,
                 EnableArchive = enableArchive,
                 Name = name,
-                ManifestFileId = manifestFileId
+                ManifestName = manifestName
             };
 
             if (dvrWindowLength.HasValue)
