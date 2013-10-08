@@ -54,7 +54,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             };
 
             notificationEndPoint.InitCloudMediaContext(_cloudMediaContext);
-            DataServiceContext dataContext = DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = DataContextFactory.CreateDataServiceContext();
             dataContext.AddObject(NotificationEndPoints, notificationEndPoint);
 
             return dataContext

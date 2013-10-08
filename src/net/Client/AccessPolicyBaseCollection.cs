@@ -57,7 +57,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>A function delegate that returns the future result to be available through the Task&lt;IAccessPolicy&gt;.</returns>
         public Task<IAccessPolicy> CreateAsync(string name, TimeSpan duration, AccessPermissions permissions)
         {
-            DataServiceContext dataContext = this.DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this.DataContextFactory.CreateDataServiceContext();
             AccessPolicyData accessPolicy = new AccessPolicyData
             {
                 Name = name,

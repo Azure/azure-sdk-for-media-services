@@ -68,7 +68,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 {
                     if (!string.IsNullOrWhiteSpace(this.Id))
                     {
-                        DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+                        IMediaDataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
                         dataContext.AttachTo(JobTemplateBaseCollection.JobTemplateSet, this);
                         dataContext.LoadProperty(this, TaskTemplatesPropertyName);
 
@@ -135,7 +135,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new InvalidOperationException(StringTable.InvalidOperationSaveForSavedJobTemplate);
             }
 
-            DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
 
             this.InnerSave(dataContext);
 
@@ -180,7 +180,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new InvalidOperationException(StringTable.InvalidOperationDeleteForNotSavedJobTemplate);
             }
 
-            DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
             dataContext.AttachTo(JobTemplateBaseCollection.JobTemplateSet, this);
             dataContext.DeleteObject(this);
 
@@ -212,7 +212,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             return (int)type;
         }
 
-        private static void ProtectTaskConfiguration(TaskTemplateData taskTemplate, ref X509Certificate2 certToUse, DataServiceContext dataContext)
+        private static void ProtectTaskConfiguration(TaskTemplateData taskTemplate, ref X509Certificate2 certToUse, IMediaDataServiceContext dataContext)
         {
             using (ConfigurationEncryption configEncryption = new ConfigurationEncryption())
             {
@@ -235,7 +235,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
         }
 
-        private void InnerSave(DataServiceContext dataContext)
+        private void InnerSave(IMediaDataServiceContext dataContext)
         {
             X509Certificate2 certToUse = null;
 

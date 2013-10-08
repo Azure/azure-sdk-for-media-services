@@ -69,7 +69,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
             List<ContentKeyAuthorizationPolicyRestriction> restrictions,
             string keyDeliveryConfiguration)
         {
-            DataServiceContext dataContext = this.DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this.DataContextFactory.CreateDataServiceContext();
             var policyOption = new ContentKeyAuthorizationPolicyOptionData
             {
                 Name = name,

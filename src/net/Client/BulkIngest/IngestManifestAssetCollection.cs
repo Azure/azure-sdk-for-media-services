@@ -31,7 +31,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     {
         internal const string EntitySet = "IngestManifestAssets";
         private readonly CloudMediaContext _cloudMediaContext;
-        private readonly DataServiceContext _dataContext;
+        private readonly IMediaDataServiceContext _dataContext;
         private readonly IIngestManifest _parentIngestManifest;
         private readonly Lazy<IQueryable<IIngestManifestAsset>> _query;
 
@@ -200,7 +200,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             IngestManifestCollection.VerifyManifest(ingestManifest);
 
-            DataServiceContext dataContext = _cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = _cloudMediaContext.DataContextFactory.CreateDataServiceContext();
             var data = new IngestManifestAssetData
                            {
                                ParentIngestManifestId = ingestManifest.Id

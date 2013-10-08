@@ -88,7 +88,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
 
             ingestManifestData.InitCloudMediaContext(this._cloudMediaContext);
-            DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
             dataContext.AddObject(EntitySet, ingestManifestData);
 
             return dataContext

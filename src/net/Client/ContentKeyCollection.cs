@@ -101,7 +101,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new ArgumentException(StringTable.ErrorCommonEncryptionKeySize, "contentKey");
             }
 
-            DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
             X509Certificate2 certToUse = ContentKeyBaseCollection.GetCertificateToEncryptContentKey(dataContext, contentKeyType);
 
             ContentKeyData contentKeyData = null;

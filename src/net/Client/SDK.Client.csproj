@@ -171,6 +171,7 @@
     <Compile Include="IAssetFile.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="IMediaDataServiceContext.cs" />
     <Compile Include="INotificationEndpoint.cs" />
     <Compile Include="IStorageAccount.cs" />
     <Compile Include="ITaskHistoricalEvent.cs" />
@@ -208,6 +209,7 @@
     <Compile Include="LocatorBaseCollection.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="MediaDataServiceContext.cs" />
     <Compile Include="MediaProcessorBaseCollection.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -34,7 +34,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         internal const string FileSet = "Files";
 
         private readonly Lazy<IQueryable<IAssetFile>> _assetFileQuery;
-        private readonly DataServiceContext _dataContext;
+        private readonly IMediaDataServiceContext _dataContext;
         private readonly IAsset _parentAsset;
         private CloudMediaContext _cloudMediaContext;
 

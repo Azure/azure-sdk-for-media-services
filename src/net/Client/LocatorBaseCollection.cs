@@ -171,7 +171,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             locator.InitCloudMediaContext(this._cloudMediaContext);
 
-            DataServiceContext dataContext = this.DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this.DataContextFactory.CreateDataServiceContext();
             dataContext.AttachTo(AssetCollection.AssetSet, asset);
             dataContext.AttachTo(AccessPolicyBaseCollection.AccessPolicySet, accessPolicy);
             dataContext.AddObject(LocatorSet, locator);

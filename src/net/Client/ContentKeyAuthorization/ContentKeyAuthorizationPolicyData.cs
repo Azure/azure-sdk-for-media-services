@@ -79,7 +79,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
         /// </returns>
         public Task<IContentKeyAuthorizationPolicy> UpdateAsync()
         {
-            DataServiceContext dataContext = _cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = _cloudMediaContext.DataContextFactory.CreateDataServiceContext();
             dataContext.AttachTo(ContentKeyAuthorizationPolicyCollection.ContentKeyAuthorizationPolicySet, this);
             dataContext.UpdateObject(this);
 
@@ -130,7 +130,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
         /// </returns>
         public Task<DataServiceResponse> DeleteAsync()
         {
-            DataServiceContext dataContext = _cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = _cloudMediaContext.DataContextFactory.CreateDataServiceContext();
             dataContext.AttachTo(ContentKeyAuthorizationPolicyCollection.ContentKeyAuthorizationPolicySet, this);
             dataContext.DeleteObject(this);
             return dataContext.SaveChangesAsync(this);
@@ -152,7 +152,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
                 {
                     if ((_optionsCollection == null) && !string.IsNullOrWhiteSpace(Id))
                     {
-                        DataServiceContext dataContext = _cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+                        IMediaDataServiceContext dataContext = _cloudMediaContext.DataContextFactory.CreateDataServiceContext();
                         dataContext.AttachTo(ContentKeyAuthorizationPolicyCollection.ContentKeyAuthorizationPolicySet, this);
                         dataContext.LoadProperty(this, OptionsPropertyName);
                         _optionsCollection = new LinkCollection<IContentKeyAuthorizationPolicyOption, ContentKeyAuthorizationPolicyOptionData>(dataContext, this, OptionsPropertyName, Options);
