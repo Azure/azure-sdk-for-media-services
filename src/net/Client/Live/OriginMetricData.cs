@@ -33,20 +33,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public DateTime LastModified { get; set; }
 
         /// <summary>
-        /// Gets service name of the origin metric
+        /// Gets origin name of the metric
         /// </summary>
-        public string ServiceName { get; set; }
-
-        /// <summary>
-        /// Return the origin name (temporary solution)
-        /// </summary>
-        string IOriginMetric.OriginName
-        {
-            get
-            {
-                return ServiceName;
-            }
-        }
+        public string OriginName { get; set; }
 
         /// <summary>
         /// Gets or sets the Egress Metrics.
