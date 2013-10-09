@@ -52,8 +52,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
         /// <returns></returns>
         public virtual Task<IContentKeyAuthorizationPolicy> CreateAsync(string name)
         {
-           
-            DataServiceContext dataContext = this.DataContextFactory.CreateDataServiceContext();
+
+            IMediaDataServiceContext dataContext = this.DataContextFactory.CreateDataServiceContext();
             var authorizationPolicyData = new ContentKeyAuthorizationPolicyData
             {
                 Name = name

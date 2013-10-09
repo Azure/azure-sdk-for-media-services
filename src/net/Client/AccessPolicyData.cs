@@ -66,7 +66,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             AccessPolicyBaseCollection.VerifyAccessPolicy(this);
 
-            DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
             dataContext.AttachTo(AccessPolicyBaseCollection.AccessPolicySet, this);
             dataContext.DeleteObject(this);
 

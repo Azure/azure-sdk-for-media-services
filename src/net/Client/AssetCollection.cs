@@ -35,7 +35,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         internal const string AssetSet = "Assets";
 
-        private readonly DataServiceContext _dataContext;
+        private readonly IMediaDataServiceContext _dataContext;
         private readonly CloudMediaContext _cloudMediaContext;
         private readonly Lazy<IQueryable<IAsset>> _assetQuery;
 
@@ -107,7 +107,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             emptyAsset.InitCloudMediaContext(this._cloudMediaContext);
 
             cancellationToken.ThrowIfCancellationRequested();
-            DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
             dataContext.AddObject(AssetSet, emptyAsset);
 
             return dataContext
@@ -155,7 +155,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
 
-        private static ContentKeyData CreateStorageContentKey(AssetData tempAsset, NullableFileEncryption fileEncryption, DataServiceContext dataContext)
+        private static ContentKeyData CreateStorageContentKey(AssetData tempAsset, NullableFileEncryption fileEncryption, IMediaDataServiceContext dataContext)
         {
             // Create the content key.
             fileEncryption.Init();

@@ -54,7 +54,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Creates a data service context.
         /// </summary>
         /// <returns>The new DataServiceContext instance.</returns>
-        public DataServiceContext CreateDataServiceContext()
+        public IMediaDataServiceContext CreateDataServiceContext()
         {
             DataServiceContext dataContext = new DataServiceContext(_azureMediaServicesEndpoint, DataServiceProtocolVersion.V3)
             {
@@ -68,7 +68,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             dataContext.ReadingEntity += this.OnReadingEntity;
 
-            return dataContext;
+            return new MediaDataServiceContext(dataContext);
         }
 
         private static Uri GetAccountApiEndpoint(OAuthDataServiceAdapter dataServiceAdapter, ServiceVersionAdapter versionAdapter, Uri apiServer)
