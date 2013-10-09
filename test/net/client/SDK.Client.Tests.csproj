@@ -89,6 +89,7 @@
     <Compile Include="ContentKeyAuthorizationPolicyOptionTests.cs" />
     <Compile Include="ContentKeyAuthorizationPolicyTests.cs" />
     <Compile Include="ContentKeyTests.cs" />
+    <Compile Include="Helpers\TestMediaServicesClassFactory.cs" />
     <Compile Include="IngestManifestTests.cs" />
     <Compile Include="JobTests.cs" />
     <Compile Include="JobTests.StorageAccounts.cs" />
@@ -210,6 +211,9 @@
     <Reference Include="Microsoft.WindowsAzure.Configuration, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.WindowsAzure.Storage">
       <HintPath>..\packages\WindowsAzure.Storage.2.0.5.1\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
+    </Reference>
+    <Reference Include="Moq">
+      <HintPath>..\..\..\packages\Moq.4.1.1309.1617\lib\net40\Moq.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />

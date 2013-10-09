@@ -33,7 +33,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Justification = "By design")]
         internal JobTemplateBaseCollection(CloudMediaContext cloudMediaContext)
         {
-            this.DataContextFactory = cloudMediaContext.DataContextFactory;
+            this.DataContextFactory = cloudMediaContext.MediaServicesClassFactory;
             this.Queryable = this.DataContextFactory.CreateDataServiceContext().CreateQuery<JobTemplateData>(JobTemplateSet);
         }
     }

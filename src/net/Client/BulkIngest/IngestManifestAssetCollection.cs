@@ -43,7 +43,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         internal IngestManifestAssetCollection(CloudMediaContext cloudMediaContext, IIngestManifest parentIngestManifest)
         {
             _cloudMediaContext = cloudMediaContext;
-            _dataContext = _cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            _dataContext = _cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             _parentIngestManifest = parentIngestManifest;
             _query = new Lazy<IQueryable<IIngestManifestAsset>>(() => _dataContext.CreateQuery<IngestManifestAssetData>(EntitySet));
         }
@@ -200,7 +200,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             IngestManifestCollection.VerifyManifest(ingestManifest);
 
-            IMediaDataServiceContext dataContext = _cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = _cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             var data = new IngestManifestAssetData
                            {
                                ParentIngestManifestId = ingestManifest.Id
@@ -216,7 +216,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                                                                                                             {
                                                                                                                 t.ThrowIfFaulted();
                                                                                                                 token.ThrowIfCancellationRequested();
-                                                                                                                IngestManifestAssetData ingestManifestAsset = (IngestManifestAssetData)t.AsyncState;
+                                                                                                                IngestManifestAssetData ingestManifestAsset = (IngestManifestAssetData)t.Result.AsyncState;
                                                                                                                 continueWith(ingestManifestAsset);
                                                                                                                 return ingestManifestAsset;
                                                                                                             }, TaskContinuationOptions.ExecuteSynchronously);

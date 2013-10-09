@@ -74,6 +74,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
         /// Deletes the ContentKeyAuthorizationPolicyOption asynchronously.
         /// </summary>
         /// <returns>Task to wait on for operation completion.</returns>
-        Task<DataServiceResponse> DeleteAsync();
+        Task<IMediaDataServiceResponse> DeleteAsync();
     }
 }

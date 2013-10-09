@@ -60,7 +60,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             {
                 if ((this._accessPolicy == null) && !string.IsNullOrWhiteSpace(this.Id))
                 {
-                    IMediaDataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+                    IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
                     dataContext.AttachTo(LocatorBaseCollection.LocatorSet, this);
                     dataContext.LoadProperty(this, LocatorBaseCollection.AccessPolicyPropertyName);
                 }
@@ -78,7 +78,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             {
                 if ((this._asset == null) && !string.IsNullOrWhiteSpace(this.Id))
                 {
-                    IMediaDataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+                    IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
                     dataContext.AttachTo(LocatorBaseCollection.LocatorSet, this);
                     dataContext.LoadProperty(this, LocatorBaseCollection.AssetPropertyName);
                 }
@@ -133,7 +133,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new InvalidOperationException(StringTable.InvalidOperationUpdateForNotOriginLocator);
             }
 
-            IMediaDataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(LocatorBaseCollection.LocatorSet, this);
 
             this.StartTime = startTime;
@@ -170,7 +170,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             LocatorBaseCollection.VerifyLocator(this);
 
-            IMediaDataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(LocatorBaseCollection.LocatorSet, this);
             dataContext.DeleteObject(this);
             var cloudContext = this._cloudMediaContext;
@@ -182,7 +182,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     {
                         t.ThrowIfFaulted();
                        
-                        LocatorData data = (LocatorData)t.AsyncState;
+                        LocatorData data = (LocatorData)t.Result.AsyncState;
                         
                         if (cloudContext != null)
                         {

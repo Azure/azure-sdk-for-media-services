@@ -41,7 +41,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private static readonly Uri _mediaServicesUri = new Uri("https://media.windows.net/");
         private static readonly Uri _mediaServicesAcsBaseAddress = new Uri("https://wamsprodglobal001acs.accesscontrol.windows.net");
 
-        private readonly AzureMediaServicesDataServiceContextFactory _dataContextFactory;
         private readonly AssetCollection _assets;
         private readonly AssetFileCollection _files;
         private readonly AccessPolicyBaseCollection _accessPolicies;
@@ -97,7 +96,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 new OAuthDataServiceAdapter(accountName, accountKey, scope, acsBaseAddress, NimbusRestApiCertificateThumbprint, NimbusRestApiCertificateSubject);
             ServiceVersionAdapter versionAdapter = new ServiceVersionAdapter(KnownApiVersions.Current);
 
-            this._dataContextFactory = new AzureMediaServicesDataServiceContextFactory(apiServer, dataServiceAdapter, versionAdapter, this);
+            this.MediaServicesClassFactory = new AzureMediaServicesClassFactory(apiServer, dataServiceAdapter, versionAdapter, this);
 
             this._jobs = new JobBaseCollection(this);
             this._jobTemplates = new JobTemplateBaseCollection(this);
@@ -206,7 +205,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
         /// <summary>
-        /// Gets the collection of notification endpoints avaiable in the system.
+        /// Gets the collection of notification endpoints available in the system.
         /// </summary>
         public override NotificationEndPointCollection NotificationEndPoints
         {
@@ -222,12 +221,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
         /// <summary>
-        /// Gets a factory for creating data service context instances prepared for Windows Azure Media Services.
+        /// Gets or sets a factory for creating data service context instances prepared for Windows Azure Media Services.
         /// </summary>
-        public AzureMediaServicesDataServiceContextFactory DataContextFactory
-        {
-            get { return this._dataContextFactory; }
-        }
+        public MediaServicesClassFactory MediaServicesClassFactory { get; set; }
 
         /// <summary>
         /// Gets the collection of bulk ingest manifests in the system.

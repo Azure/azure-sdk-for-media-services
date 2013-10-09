@@ -30,7 +30,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="cloudMediaContext">The cloud media context.</param>
         internal StorageAccountBaseCollection(CloudMediaContext cloudMediaContext)
         {
-            this.DataContextFactory = cloudMediaContext.DataContextFactory;
+            this.DataContextFactory = cloudMediaContext.MediaServicesClassFactory;
             this.Queryable = this.DataContextFactory.CreateDataServiceContext().CreateQuery<StorageAccountData>(EntitySet);
         }
          

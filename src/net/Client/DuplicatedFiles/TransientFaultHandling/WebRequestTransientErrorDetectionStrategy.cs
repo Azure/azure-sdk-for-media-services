@@ -19,7 +19,7 @@ using System.Collections.ObjectModel;
 using System.Net;
 using Microsoft.Practices.TransientFaultHandling;
 
-namespace Microsoft.WindowsAzure.MediaServices.Client
+namespace Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling
 {
     public class WebRequestTransientErrorDetectionStrategy : ITransientErrorDetectionStrategy
     {

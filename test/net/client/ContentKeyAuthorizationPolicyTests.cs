@@ -56,7 +56,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             Assert.IsNotNull(policy.Id);
             Assert.IsNotNull(policy.Name);
             Assert.IsNotNull(policy.Options);
-            DataServiceResponse response = policy.DeleteAsync().Result;
+            IMediaDataServiceResponse response = policy.DeleteAsync().Result;
         }
 
 

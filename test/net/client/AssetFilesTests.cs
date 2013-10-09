@@ -144,9 +144,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             Task uploadTask = fileInfo.UploadAsync(fileUploaded, btc, locator, CancellationToken.None);
 
             string competingFile = WindowsAzureMediaServicesTestConfiguration.GetVideoSampleFilePath(TestContext, WindowsAzureMediaServicesTestConfiguration.SmallMp41);
-            ;
 
-            btc.UploadBlob(CreateUrl(locator, Path.GetFileName(competingFile)), competingFile, null,null, CancellationToken.None, AzureStorageClientRetryPolicyFactory.DefaultPolicy.AsAzureStorageClientRetryPolicy()).Wait();
+            var retryPolicy = _dataContext.MediaServicesClassFactory.GetBlobStorageClientRetryPolicy().AsAzureStorageClientRetryPolicy();
+
+            btc.UploadBlob(CreateUrl(locator, Path.GetFileName(competingFile)), competingFile, null, null, CancellationToken.None, retryPolicy).Wait();
 
             uploadTask.Wait();
 

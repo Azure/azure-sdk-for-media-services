@@ -96,7 +96,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
         /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
         public Task<IContentKeyAuthorizationPolicyOption> UpdateAsync()
         {
-            IMediaDataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(ContentKeyAuthorizationPolicyOptionCollection.ContentKeyAuthorizationPolicyOptionSet, this);
             dataContext.UpdateObject(this);
 
@@ -104,7 +104,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
                     t =>
                     {
                         t.ThrowIfFaulted();
-                        var data = (ContentKeyAuthorizationPolicyOptionData)t.AsyncState;
+                        var data = (ContentKeyAuthorizationPolicyOptionData)t.Result.AsyncState;
                         return data;
                     });
         }
@@ -128,9 +128,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
         /// Asynchronously deletes this instance.
         /// </summary>
         /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
-        public Task<DataServiceResponse> DeleteAsync()
+        public Task<IMediaDataServiceResponse> DeleteAsync()
         {
-            IMediaDataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(ContentKeyAuthorizationPolicyOptionCollection.ContentKeyAuthorizationPolicyOptionSet, this);
             dataContext.DeleteObject(this);
 
