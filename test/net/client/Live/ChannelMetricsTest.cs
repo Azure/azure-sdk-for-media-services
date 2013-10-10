@@ -89,6 +89,36 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Live
         }
 
         /// <summary>
+        /// Get single channel metric using channel name
+        /// </summary>
+        [TestMethod]
+        public void QueryMetricUsingChannelNameTest()
+        {
+            foreach (var channel in _dataContext.Channels)
+            {
+                var channelName = channel.Name.Split('.')[0];
+                var metric1 =
+                    _dataContext.ChannelMetrics.Where(m => m.ChannelName.Contains(channelName)).SingleOrDefault();
+
+                if (metric1 == null) continue;
+                var metric2 = channel.GetMetric();
+
+                Assert.IsNotNull(metric2);
+                if (metric1.IngestMetrics != null)
+                {
+                    Assert.IsNotNull(metric2.IngestMetrics);
+                    Assert.AreEqual(metric1.IngestMetrics.Count, metric2.IngestMetrics.Count);
+                }
+
+                if (metric1.ProgramMetrics != null)
+                {
+                    Assert.IsNotNull(metric2.ProgramMetrics);
+                    Assert.AreEqual(metric1.ProgramMetrics.Count, metric2.ProgramMetrics.Count);
+                }
+            }
+        }
+
+        /// <summary>
         /// Subscribe to all channel metrics monitor
         /// </summary>
         [TestMethod]

@@ -79,6 +79,25 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Live
         }
 
         /// <summary>
+        /// Get single origin metric using origin name
+        /// </summary>
+        [TestMethod]
+        public void QueryMetricUsingOriginNameTest()
+        {
+            foreach (var origin in _dataContext.Origins)
+            {
+                var originName = origin.Name.Split('.')[0];
+                var metric1 = _dataContext.OriginMetrics.Where(m => m.OriginName.Contains(originName)).SingleOrDefault();
+
+                if (metric1 == null) continue;
+                var metric2 = origin.GetMetric();
+
+                Assert.IsNotNull(metric2);
+                Assert.AreEqual(metric1.EgressMetrics.Count, metric2.EgressMetrics.Count);
+            }
+        }
+
+        /// <summary>
         /// Subscribe to all origin metrics monitor
         /// </summary>
         [TestMethod]

@@ -29,20 +29,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public string Id { get; set; }
 
         /// <summary>
-        /// Gets service name of the channel metric
+        /// Gets channel name of the metric
         /// </summary>
-        public string ServiceName { get; set; }
-
-        /// <summary>
-        /// Return the channel name (temporary solution)
-        /// </summary>
-        string IChannelMetric.ChannelName
-        {
-            get
-            {
-                return ServiceName;
-            }
-        }
+        public string ChannelName { get; set; }
 
         /// <summary>
         /// Gets metric last modification timestamp.
