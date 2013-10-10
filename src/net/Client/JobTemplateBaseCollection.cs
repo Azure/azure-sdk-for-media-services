@@ -31,10 +31,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <param name="cloudMediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Justification = "By design")]
-        internal JobTemplateBaseCollection(CloudMediaContext cloudMediaContext)
+        internal JobTemplateBaseCollection(MediaContextBase cloudMediaContext)
+            : base(cloudMediaContext)
         {
-            this.DataContextFactory = cloudMediaContext.DataContextFactory;
-            this.Queryable = this.DataContextFactory.CreateDataServiceContext().CreateQuery<JobTemplateData>(JobTemplateSet);
+            this.Queryable = cloudMediaContext.DataContextFactory.CreateDataServiceContext().CreateQuery<JobTemplateData>(JobTemplateSet);
         }
     }
 }

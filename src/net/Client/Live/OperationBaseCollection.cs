@@ -11,7 +11,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     public class OperationBaseCollection
     {
         internal const string OperationSet = "Operations";
-        private readonly CloudMediaContext _cloudMediaContext;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OperationBaseCollection"/> class.
@@ -20,7 +19,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")] // todo: remove
         internal OperationBaseCollection(CloudMediaContext cloudMediaContext)
         {
-            this._cloudMediaContext = cloudMediaContext;
+            this.MediaContext = cloudMediaContext;
         }
 
         /// <summary>
@@ -31,9 +30,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public IOperation GetOperation(string id)
         {
             Uri uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/{0}('{1}')", OperationSet, id), UriKind.Relative);
-            DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            DataServiceContext dataContext = this.MediaContext.DataContextFactory.CreateDataServiceContext();
             IOperation operation = dataContext.Execute<OperationData>(uri).SingleOrDefault();
             return operation;
         }
+
+        public MediaContextBase MediaContext { get; set; }
     }
 }

@@ -33,11 +33,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// </summary>
     /// <seealso cref="IJob.SaveAsTemplate(string)"/>
     [DataServiceKey("Id")]
-    internal partial class JobTemplateData : IJobTemplate, ICloudMediaContextInit
+    internal partial class JobTemplateData : BaseEntity<IJobTemplate>, IJobTemplate
     {
         private const string TaskTemplatesPropertyName = "TaskTemplates";
 
-        private CloudMediaContext _cloudMediaContext;
+       
         private ReadOnlyCollection<ITaskTemplate> _taskTemplates;
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 {
                     if (!string.IsNullOrWhiteSpace(this.Id))
                     {
-                        DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+                        DataServiceContext dataContext = this.GetMediaContext().DataContextFactory.CreateDataServiceContext();
                         dataContext.AttachTo(JobTemplateBaseCollection.JobTemplateSet, this);
                         dataContext.LoadProperty(this, TaskTemplatesPropertyName);
 
@@ -91,15 +91,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         internal string JobTemplateBodyCopied { get; set; }
 
         /// <summary>
-        /// Initializes the cloud media context.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        public void InitCloudMediaContext(CloudMediaContext context)
-        {
-            this._cloudMediaContext = context;
-        }
-
-        /// <summary>
         /// Creates an in-memory copy of this <see cref="IJobTemplate"/>.
         /// </summary>
         /// <returns>A copy of this <see cref="IJobTemplate"/>.</returns>
@@ -113,7 +104,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 JobTemplateBodyCopied = this.JobTemplateBody
             };
 
-            jobTemplateCopy.InitCloudMediaContext(this._cloudMediaContext);
+            jobTemplateCopy.SetMediaContext(this.GetMediaContext());
 
             foreach (TaskTemplateData taskTemplate in ((IJobTemplate)this).TaskTemplates.OfType<TaskTemplateData>())
             {
@@ -135,7 +126,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new InvalidOperationException(StringTable.InvalidOperationSaveForSavedJobTemplate);
             }
 
-            DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            DataServiceContext dataContext = this.GetMediaContext().DataContextFactory.CreateDataServiceContext();
 
             this.InnerSave(dataContext);
 
@@ -180,7 +171,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new InvalidOperationException(StringTable.InvalidOperationDeleteForNotSavedJobTemplate);
             }
 
-            DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            DataServiceContext dataContext = this.GetMediaContext().DataContextFactory.CreateDataServiceContext();
             dataContext.AttachTo(JobTemplateBaseCollection.JobTemplateSet, this);
             dataContext.DeleteObject(this);
 

@@ -30,22 +30,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         internal const string AccessPolicySet = "AccessPolicies";
 
-        /// <summary>
-        /// The media context used to communicate to the server.
-        /// </summary>
-        private readonly CloudMediaContext _cloudMediaContext;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AccessPolicyBaseCollection"/> class.
         /// </summary>
         /// <param name="cloudMediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Justification = "By design")]
-        internal AccessPolicyBaseCollection(CloudMediaContext cloudMediaContext)
+        internal AccessPolicyBaseCollection(MediaContextBase cloudMediaContext)
+            : base(cloudMediaContext)
         {
-            this._cloudMediaContext = cloudMediaContext;
-
-            this.DataContextFactory = this._cloudMediaContext.DataContextFactory;
-            this.Queryable = this.DataContextFactory.CreateDataServiceContext().CreateQuery<AccessPolicyData>(AccessPolicySet);
+            this.Queryable = this.MediaContext.DataContextFactory.CreateDataServiceContext().CreateQuery<AccessPolicyData>(AccessPolicySet);
         }
 
         /// <summary>
@@ -57,7 +51,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>A function delegate that returns the future result to be available through the Task&lt;IAccessPolicy&gt;.</returns>
         public Task<IAccessPolicy> CreateAsync(string name, TimeSpan duration, AccessPermissions permissions)
         {
-            DataServiceContext dataContext = this.DataContextFactory.CreateDataServiceContext();
+            DataServiceContext dataContext = this.MediaContext.DataContextFactory.CreateDataServiceContext();
             AccessPolicyData accessPolicy = new AccessPolicyData
             {
                 Name = name,
@@ -65,7 +59,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 Permissions = AccessPolicyData.GetInternalPermissions(permissions)
             };
 
-            accessPolicy.InitCloudMediaContext(this._cloudMediaContext);
             dataContext.AddObject(AccessPolicySet, accessPolicy);
 
             return dataContext

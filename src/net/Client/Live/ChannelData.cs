@@ -19,7 +19,6 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.MediaServices.Client.Properties;
-using System.Net;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -27,7 +26,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// Describes a Channel and executes actions on it.
     /// </summary>
     [DataServiceKey("Id")]
-    internal class ChannelData : RestEntity<ChannelData>, IChannel, ICloudMediaContextInit
+    internal class ChannelData : RestEntity<ChannelData>, IChannel
     {
         /// <summary>
         /// Gets or sets the name of the channel.
@@ -89,18 +88,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
         }
 
-        #region ICloudMediaContextInit Members
-        /// <summary>
-        /// Initializes the cloud media context.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        public void InitCloudMediaContext(CloudMediaContext context)
-        {
-            InvalidateCollections();
-            this._cloudMediaContext = (CloudMediaContext)context;
-        }
-
-        #endregion
+       
 
         /// <summary>
         /// Gets state of the channel.
@@ -152,9 +140,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             get
             {
-                if (_programCollection == null && _cloudMediaContext != null)
+                if (_programCollection == null && MediaContext != null)
                 {
-                    this._programCollection = new ProgramBaseCollection(_cloudMediaContext, this);
+                    this._programCollection = new ProgramBaseCollection(MediaContext, this);
                 }
 
                 return _programCollection;
@@ -274,7 +262,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new InvalidOperationException(Resources.ErrorEntityWithoutId);
             }
 
-            DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            DataServiceContext dataContext = this.MediaContext.DataContextFactory.CreateDataServiceContext();
             dataContext.AttachTo(EntitySetName, this);
             dataContext.DeleteObject(this);
 
@@ -285,7 +273,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 string operationId = t.Result.Single().Headers[StreamingConstants.OperationIdHeader];
 
                 IOperation operation = AsyncHelper.WaitOperationCompletion(
-                    this._cloudMediaContext,
+                    this.MediaContext,
                     operationId,
                     StreamingConstants.DeleteChannelPollInterval);
 
@@ -318,7 +306,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new InvalidOperationException(Resources.ErrorEntityWithoutId);
             }
 
-            DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            DataServiceContext dataContext = this.MediaContext.DataContextFactory.CreateDataServiceContext();
             dataContext.AttachTo(EntitySetName, this);
             dataContext.DeleteObject(this);
 
@@ -359,5 +347,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private ProgramBaseCollection _programCollection;
 
         private ChannelSettings _settings;
+       
     }
 }

@@ -28,6 +28,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// <typeparam name="T">The item type of the collection.</typeparam>
     public abstract class BaseCollection<T> : IQueryable<T>
     {
+        protected BaseCollection(MediaContextBase context)
+        {
+            MediaContext = context;
+        }
+
+        public MediaContextBase MediaContext { get; set; }
+
         /// <summary>
         /// Gets the type of the element(s) that are returned when the expression tree associated with this instance of <see cref="T:System.Linq.IQueryable"/> is executed.
         /// </summary>

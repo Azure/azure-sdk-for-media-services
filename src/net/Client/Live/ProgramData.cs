@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     [DataServiceKey("Id")]
-    internal class ProgramData : RestEntity<ProgramData>, IProgram, ICloudMediaContextInit
+    internal class ProgramData : RestEntity<ProgramData>, IProgram
     {
         /// <summary>
         /// Gets or sets name of the program.
@@ -73,19 +73,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         public string State { get; set; }
 
-        #region ICloudMediaContextInit Members
-
-        /// <summary>
-        /// Initializes the cloud media context.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        public void InitCloudMediaContext(CloudMediaContext context)
-        {
-            this._cloudMediaContext = (CloudMediaContext)context;
-        }
-
-        #endregion
-
         /// <summary>
         /// Gets program state.
         /// </summary>
@@ -106,7 +93,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             {
                 if ((this._channel == null) && !String.IsNullOrWhiteSpace(this.ChannelId))
                 {
-                    this._channel = this._cloudMediaContext.Channels.Where(c => c.Id == this.ChannelId).Single();
+                    this._channel = this.MediaContext.Channels.Where(c => c.Id == this.ChannelId).Single();
                 }
 
                 return this._channel;

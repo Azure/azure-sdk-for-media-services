@@ -122,18 +122,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
         /// <summary>
-        /// Gets or sets the number of threads to use to for each blob transfer.
-        /// </summary>
-        /// <remarks>The default value is 10.</remarks>
-        public int ParallelTransferThreadCount { get; set; }
-
-        /// <summary>
-        /// Gets or sets the number of concurrent blob transfers allowed.
-        /// </summary>
-        /// <remarks>The default value is 2.</remarks>
-        public int NumberOfConcurrentTransfers { get; set; }
-
-        /// <summary>
         /// Gets the collection of assets in the system.
         /// </summary>
         public override AssetBaseCollection Assets
@@ -218,26 +206,23 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             get { return this._notificationEndPoints; }
         }
 
-        /// <summary>
-        /// Gets the collection of locators in the system.
-        /// </summary>
-        public LocatorBaseCollection Locators
-        {
-            get { return this._locators; }
-        }
-
-        /// <summary>
-        /// Gets a factory for creating data service context instances prepared for Windows Azure Media Services.
-        /// </summary>
-        public AzureMediaServicesDataServiceContextFactory DataContextFactory
+        public override AzureMediaServicesDataServiceContextFactory DataContextFactory
         {
             get { return this._dataContextFactory; }
         }
 
         /// <summary>
+        /// Gets the collection of locators in the system.
+        /// </summary>
+        public override LocatorBaseCollection Locators
+        {
+            get { return this._locators; }
+        }
+
+        /// <summary>
         /// Gets the collection of bulk ingest manifests in the system.
         /// </summary>
-        public IngestManifestCollection IngestManifests
+        public override IngestManifestCollection IngestManifests
         {
             get { return this._ingestManifests; }
         }
@@ -245,7 +230,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets the collection of manifest asset files in the system
         /// </summary>
-        public  IngestManifestFileCollection IngestManifestFiles
+        public  override IngestManifestFileCollection IngestManifestFiles
         {
             get { return this._ingestManifestFiles; }
         }
@@ -253,7 +238,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets the collection of manifest assets in the system
         /// </summary>
-        public IngestManifestAssetCollection IngestManifestAssets
+        public override IngestManifestAssetCollection IngestManifestAssets
         {
             get { return this._ingestManifestAssets; }
         }
@@ -261,7 +246,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets the collection of channels in the system.
         /// </summary>
-        public ChannelBaseCollection Channels
+        public override ChannelBaseCollection Channels
         {
             get { return this._channels; }
         }
@@ -269,7 +254,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets the collection of programs in the system.
         /// </summary>
-        public ProgramBaseCollection Programs
+        public override ProgramBaseCollection Programs
         {
             get { return this._programs; }
         }
@@ -277,7 +262,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets the collection of origins in the system.
         /// </summary>
-        public OriginBaseCollection Origins
+        public override OriginBaseCollection Origins
         {
             get { return this._origins; }
         }
@@ -285,7 +270,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets the collection of operation in the system.
         /// </summary>
-        public OperationBaseCollection Operations
+        public override OperationBaseCollection Operations
         {
             get { return this._operations; }
         }

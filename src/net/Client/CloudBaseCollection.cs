@@ -25,18 +25,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// <typeparam name="T">Specifies the collections entity type.</typeparam>
     public abstract class CloudBaseCollection<T> : BaseCollection<T>
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CloudBaseCollection{T}"/> class.
-        /// </summary>
-        public CloudBaseCollection()
+        protected CloudBaseCollection(MediaContextBase context) : base(context)
         {
+
         }
-
-        /// <summary>
-        /// Gets or sets the data context factory instance.
-        /// </summary>
-        public AzureMediaServicesDataServiceContextFactory DataContextFactory { get; set; }
-
         /// <summary>
         /// Gets the queryable collection of items.
         /// </summary>

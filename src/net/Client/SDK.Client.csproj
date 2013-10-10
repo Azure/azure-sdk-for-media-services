@@ -115,6 +115,7 @@
     <Compile Include="AssetPlaceholderToInstanceResolver.cs" />
     <Compile Include="AssetState.cs" />
     <Compile Include="AzureMediaServicesDataServiceContextFactory.cs" />
+    <Compile Include="BaseEntity.cs" />
     <Compile Include="BlobTransferClient.cs" />
     <Compile Include="BlobTransferCompleteEventArgs.cs" />
     <Compile Include="BlobTransferProgressChangedEventArgs.cs" />
@@ -238,7 +239,7 @@
     <Compile Include="DownloadProgressEventArgs.cs" />
     <Compile Include="IAsset.cs" />
     <Compile Include="AssetData.cs" />
-    <Compile Include="ICloudMediaContextInit.cs" />
+    <Compile Include="IMediaContextContainer.cs" />
     <Compile Include="IContentKey.cs" />
     <Compile Include="IJob.cs" />
     <Compile Include="ILocator.cs" />

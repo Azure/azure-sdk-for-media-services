@@ -20,9 +20,7 @@ using System.Collections.ObjectModel;
 using System.Data.Services.Client;
 using System.Data.Services.Common;
 using System.Linq;
-using System.Runtime.Serialization;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -30,7 +28,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// Represents an asset that can be an input to jobs or tasks.
     /// </summary>
     [DataServiceKey("Id")]
-    internal partial class AssetData : IAsset, ICloudMediaContextInit
+    internal partial class AssetData : BaseEntity<IAsset>,IAsset
     {
         private const string ContentKeysPropertyName = "ContentKeys";
         private const string LocatorsPropertyName = "Locators";
@@ -40,7 +38,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private ReadOnlyCollection<ILocator> _locatorCollection;
         private IList<IContentKey> _contentKeyCollection;
         private ReadOnlyCollection<IAsset> _parentAssetCollection;
-        private CloudMediaContext _cloudMediaContext;
+        private MediaContextBase _mediaContextBase;
 
         private readonly object _contentKeyLocker = new object();
 
@@ -79,9 +77,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             get
             {
-                if (_fileCollection == null && _cloudMediaContext != null)
+                if (_fileCollection == null && _mediaContextBase != null)
                 {
-                    this._fileCollection = new AssetFileCollection(_cloudMediaContext, this);
+                    this._fileCollection = new AssetFileCollection(_mediaContextBase, this);
                 }
                 return _fileCollection;
 
@@ -112,7 +110,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 {
                     if ((this._contentKeyCollection == null) && !string.IsNullOrWhiteSpace(this.Id))
                     {
-                        DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+                        DataServiceContext dataContext = this._mediaContextBase.DataContextFactory.CreateDataServiceContext();
                         dataContext.AttachTo(AssetCollection.AssetSet, this);
                         dataContext.LoadProperty(this, ContentKeysPropertyName);
 
@@ -136,7 +134,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 if (((this._locatorCollection == null) || (this.Locators == null)) && !string.IsNullOrWhiteSpace(this.Id))
                 {
 
-                    DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+                    DataServiceContext dataContext = this._mediaContextBase.DataContextFactory.CreateDataServiceContext();
                     dataContext.AttachTo(AssetCollection.AssetSet, this);
                     dataContext.LoadProperty(this, LocatorsPropertyName);
                     if (this.Locators != null)
@@ -163,7 +161,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             {
                 if ((this._parentAssetCollection == null) && !string.IsNullOrWhiteSpace(this.Id))
                 {
-                    DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+                    DataServiceContext dataContext = this._mediaContextBase.DataContextFactory.CreateDataServiceContext();
                     dataContext.AttachTo(AssetCollection.AssetSet, this);
                     dataContext.LoadProperty(this, ParentAssetsPropertyName);
 
@@ -180,13 +178,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Inits the cloud media context.
         /// </summary>
         /// <param name="context">The context.</param>
-        public void InitCloudMediaContext(CloudMediaContext context)
+        private void InitCloudMediaContext(MediaContextBase context)
         {
-            this._cloudMediaContext = context;
+            this._mediaContextBase = context;
             InvalidateLocatorsCollection();
             InvalidateContentKeysCollection();
             InvalidateFilesCollection();
-            this._fileCollection = new AssetFileCollection(context,this);
+            if (context != null)
+            {
+                this._fileCollection = new AssetFileCollection(context, this);
+            }
         }
 
         /// <summary>
@@ -196,7 +197,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             get
             {
-                return this._cloudMediaContext.StorageAccounts.Where(c => c.Name == this.StorageAccountName).FirstOrDefault();
+                return this._mediaContextBase.StorageAccounts.Where(c => c.Name == this.StorageAccountName).FirstOrDefault();
             }
         }
 
@@ -231,17 +232,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             AssetCollection.VerifyAsset(this);
 
-            DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            DataServiceContext dataContext = this._mediaContextBase.DataContextFactory.CreateDataServiceContext();
             dataContext.AttachTo(AssetCollection.AssetSet, this);
             dataContext.UpdateObject(this);
-
-            return dataContext.SaveChangesAsync(this).ContinueWith<IAsset>(
-                    t =>
-                        {
-                            t.ThrowIfFaulted();
-                            AssetData data = (AssetData) t.AsyncState;
-                            return data;
-                        });
+            return dataContext.SaveChangesAsync(this);
         }
 
         /// <summary>
@@ -266,8 +260,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public Task DeleteAsync()
         {
             AssetCollection.VerifyAsset(this);
+          
 
-            DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            DataServiceContext dataContext = this._mediaContextBase.DataContextFactory.CreateDataServiceContext();
             dataContext.AttachTo(AssetCollection.AssetSet, this);
             this.InvalidateContentKeysCollection();
             dataContext.DeleteObject(this);
@@ -322,6 +317,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             this.Files.Clear();
             this._fileCollection = null;
+        }
+
+        public override void SetMediaContext(MediaContextBase value)
+        {
+            InitCloudMediaContext(value);
+        }
+        
+        public override MediaContextBase GetMediaContext()
+        {
+            return _mediaContextBase;
         }
     }
 }
