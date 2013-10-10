@@ -46,7 +46,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Live
             var channelCount = _dataContext.Channels.Count();
             var metricCount = _dataContext.ChannelMetrics.Count();
 
-            Assert.AreEqual(metricCount, channelCount);
+            Assert.IsTrue(metricCount >= channelCount);
         }
 
         /// <summary>
