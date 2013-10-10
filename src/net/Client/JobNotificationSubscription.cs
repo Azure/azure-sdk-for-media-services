@@ -96,7 +96,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         #endregion
 
 
-        [DoNotSerializeAttribute]
-        public MediaContextBase MediaContext { get; set; }
+       public MediaContextBase MediaContext { get; set; }
     }
 }
