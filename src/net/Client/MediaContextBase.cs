@@ -86,5 +86,47 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Gets the collection of notification endpoints avaiable in the system.
         /// </summary>
         public abstract NotificationEndPointCollection NotificationEndPoints { get; }
+
+        /// <summary>
+        /// Gets a factory for creating data service context instances prepared for Windows Azure Media Services.
+        /// </summary>
+        public abstract AzureMediaServicesDataServiceContextFactory DataContextFactory { get; }
+
+        /// <summary>
+        /// Gets the collection of channels in the system.
+        /// </summary>
+        public abstract ChannelBaseCollection Channels { get; }
+
+        /// <summary>
+        /// Gets the collection of programs in the system.
+        /// </summary>
+        public abstract ProgramBaseCollection Programs { get; }
+
+        /// <summary>
+        /// Gets the collection of origins in the system.
+        /// </summary>
+        public abstract OriginBaseCollection Origins { get; }
+
+        /// <summary>
+        /// Gets the collection of operation in the system.
+        /// </summary>
+        public abstract OperationBaseCollection Operations { get; }
+
+        public abstract IngestManifestFileCollection IngestManifestFiles { get; }
+        public abstract IngestManifestCollection IngestManifests { get; }
+        public abstract IngestManifestAssetCollection IngestManifestAssets { get; }
+        public abstract LocatorBaseCollection Locators { get; }
+
+        /// <summary>
+        /// Gets or sets the number of threads to use to for each blob transfer.
+        /// </summary>
+        /// <remarks>The default value is 10.</remarks>
+        public int ParallelTransferThreadCount { get; set; }
+
+        /// <summary>
+        /// Gets or sets the number of concurrent blob transfers allowed.
+        /// </summary>
+        /// <remarks>The default value is 2.</remarks>
+        public int NumberOfConcurrentTransfers { get; set; }
     }
 }

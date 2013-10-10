@@ -34,21 +34,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// The set name for assets.
         /// </summary>
         internal const string AssetSet = "Assets";
-
-        private readonly DataServiceContext _dataContext;
-        private readonly CloudMediaContext _cloudMediaContext;
         private readonly Lazy<IQueryable<IAsset>> _assetQuery;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AssetCollection"/> class.
         /// </summary>
         /// <param name="cloudMediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
-        internal AssetCollection(CloudMediaContext cloudMediaContext)
+        internal AssetCollection(MediaContextBase cloudMediaContext)
+            : base(cloudMediaContext)
         {
-            this._cloudMediaContext = cloudMediaContext;
-            this._dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
-            this._assetQuery = new Lazy<IQueryable<IAsset>>(() => this._dataContext.CreateQuery<AssetData>(AssetSet));
-            
+            this._assetQuery = new Lazy<IQueryable<IAsset>>(() => this.MediaContext.DataContextFactory.CreateDataServiceContext().CreateQuery<AssetData>(AssetSet));
         }
 
         /// <summary>
@@ -71,7 +66,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </returns>
         public override Task<IAsset> CreateAsync(string assetName, AssetCreationOptions options,CancellationToken cancellationToken)
         {
-            return this.CreateAsync(assetName, this._cloudMediaContext.DefaultStorageAccount.Name, options, cancellationToken);
+            return this.CreateAsync(assetName, this.MediaContext.DefaultStorageAccount.Name, options, cancellationToken);
         }
 
         /// <summary>
@@ -82,7 +77,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>The created asset.</returns>
         public override IAsset Create(string assetName, AssetCreationOptions options)
         {
-            return this.Create(assetName, this._cloudMediaContext.DefaultStorageAccount.Name, options);
+            return this.Create(assetName, this.MediaContext.DefaultStorageAccount.Name, options);
         }
 
         /// <summary>
@@ -104,18 +99,17 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 StorageAccountName = storageAccountName
             };
 
-            emptyAsset.InitCloudMediaContext(this._cloudMediaContext);
-
+           
             cancellationToken.ThrowIfCancellationRequested();
-            DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
-            dataContext.AddObject(AssetSet, emptyAsset);
+            DataServiceContext dataContext = this.MediaContext.DataContextFactory.CreateDataServiceContext();
+            dataContext.AddObject(AssetSet, (IAsset)emptyAsset);
 
             return dataContext
                 .SaveChangesAsync(emptyAsset)
                 .ContinueWith<IAsset>(
                     t =>
                     {
-                        t.ThrowIfFaulted();
+                        t.ThrowIfFaulted(); 
                         cancellationToken.ThrowIfCancellationRequested();
 
                         AssetData data = (AssetData)t.AsyncState;
@@ -123,7 +117,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                         {
                             using (var fileEncryption = new NullableFileEncryption())
                             {
-                                CreateStorageContentKey(data, fileEncryption, dataContext);
+                                CreateStorageContentKey(data, fileEncryption, MediaContext.DataContextFactory.CreateDataServiceContext());
                             }
                         }
 

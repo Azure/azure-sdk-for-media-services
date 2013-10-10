@@ -67,7 +67,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="operationId">Id of the operation.</param>
         /// <param name="pollInterval">Poll interval.</param>
         /// <returns>Operation.</returns>
-        public static IOperation WaitOperationCompletion(CloudMediaContext context, string operationId, TimeSpan pollInterval)
+        public static IOperation WaitOperationCompletion(MediaContextBase context, string operationId, TimeSpan pollInterval)
         {
             IOperation operation;
 

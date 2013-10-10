@@ -22,11 +22,10 @@ using System.Threading.Tasks;
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     [DataServiceKey("Id")]
-    internal partial class IngestManifestAssetData : IIngestManifestAsset, ICloudMediaContextInit
+    internal partial class IngestManifestAssetData : BaseEntity<IIngestManifestAsset>, IIngestManifestAsset
     {
         private AssetData _asset;
         private IngestManifestFileCollection _filesCollection;
-        private CloudMediaContext _cloudMediaContext;
         
 
 
@@ -34,15 +33,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             Id = String.Empty;
         }
-
-        #region ICloudMediaContextInit Members
-
-        public void InitCloudMediaContext(CloudMediaContext context)
-        {
-            _cloudMediaContext = context;
-        }
-
-        #endregion
+       
 
         #region IManifestAsset Members
 
@@ -52,7 +43,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             {
                 if ((_filesCollection == null) && !string.IsNullOrWhiteSpace(Id))
                 {
-                    _filesCollection = new IngestManifestFileCollection(_cloudMediaContext, this);
+                    _filesCollection = new IngestManifestFileCollection(GetMediaContext(), this);
                 }
 
                 return _filesCollection;
@@ -67,7 +58,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns><see cref="Task"/></returns>
         public Task DeleteAsync()
         {
-            DataServiceContext dataContext = _cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            DataServiceContext dataContext = GetMediaContext().DataContextFactory.CreateDataServiceContext();
             dataContext.AttachTo(IngestManifestAssetCollection.EntitySet, this);
             dataContext.DeleteObject(this);
             return dataContext.SaveChangesAsync(this);
@@ -98,7 +89,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             {
                 if ((_asset == null) && !string.IsNullOrWhiteSpace(Id))
                 {
-                    DataServiceContext dataContext = _cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+                    DataServiceContext dataContext = GetMediaContext().DataContextFactory.CreateDataServiceContext();
                     dataContext.AttachTo(IngestManifestAssetCollection.EntitySet, this);
                     dataContext.LoadProperty(this, "Asset");
                 }

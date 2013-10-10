@@ -24,6 +24,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// </summary>
     public abstract class AssetFileBaseCollection : BaseCollection<IAssetFile>
     {
+        protected AssetFileBaseCollection(MediaContextBase context) : base(context)
+        {
+        }
+
         /// <summary>
         /// Creates the <see cref="IAssetFile"/>
         /// </summary>

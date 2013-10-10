@@ -44,7 +44,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new InvalidOperationException(Resources.ErrorEntityWithoutId);
             }
 
-            DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            DataServiceContext dataContext = this.MediaContext.DataContextFactory.CreateDataServiceContext();
             dataContext.AttachTo(EntitySetName, this);
             dataContext.DeleteObject(this);
 
@@ -57,7 +57,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>Operation info that can be used to track the operation.</returns>
         public IOperation SendUpdateOperation()
         {
-            DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            DataServiceContext dataContext = this.MediaContext.DataContextFactory.CreateDataServiceContext();
             dataContext.AttachTo(this.EntitySetName, this);
             dataContext.UpdateObject(this);
             var response = dataContext.SaveChanges().Single();
@@ -128,7 +128,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     while (operation.State == OperationState.InProgress)
                     {
                         operation = AsyncHelper.WaitOperationCompletion(
-                            this._cloudMediaContext,
+                            this.MediaContext,
                             operation.Id,
                             StreamingConstants.CreateChannelPollInterval);
                     }
@@ -154,9 +154,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             return System.Threading.Tasks.Task.Factory.StartNew(() =>
             {
-                if (this._cloudMediaContext != null)
+                if (this.MediaContext != null)
                 {
-                    DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+                    DataServiceContext dataContext = this.MediaContext.DataContextFactory.CreateDataServiceContext();
 
                     var response = dataContext.Execute(uri, "POST", operationParameters);
 
@@ -178,7 +178,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     string operationId = response.Headers[StreamingConstants.OperationIdHeader];
 
                     var operation = AsyncHelper.WaitOperationCompletion(
-                        this._cloudMediaContext,
+                        MediaContext,
                         operationId,
                         pollInterval);
 
@@ -203,7 +203,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
         protected IOperation SendOperation(Uri uri, params OperationParameter[] operationParameters)
         {
-            DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            DataServiceContext dataContext = this.MediaContext.DataContextFactory.CreateDataServiceContext();
 
             var response = dataContext.Execute(uri, "POST", operationParameters);
 
@@ -242,13 +242,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         internal void Refresh()
         {
             Uri uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/{0}('{1}')", EntitySetName, Id), UriKind.Relative);
-            DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            DataServiceContext dataContext = this.MediaContext.DataContextFactory.CreateDataServiceContext();
             dataContext.AttachTo(EntitySetName, this, Guid.NewGuid().ToString());
             dataContext.Execute<T>(uri).Single();
         }
 
         protected abstract string EntitySetName { get; }
 
-        protected CloudMediaContext _cloudMediaContext;
+        public MediaContextBase MediaContext { get; set; }
     }
 }

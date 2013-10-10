@@ -26,30 +26,28 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     public class ProgramBaseCollection : CloudBaseCollection<IProgram>
     {
         internal const string ProgramSet = "Programs";
-        private readonly CloudMediaContext _cloudMediaContext;
         private readonly Lazy<IQueryable<IProgram>> _programQuery;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProgramBaseCollection"/> class.
         /// </summary>
-        /// <param name="cloudMediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
+        /// <param name="mediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Justification = "By design")]
-        internal ProgramBaseCollection(CloudMediaContext cloudMediaContext)
+        internal ProgramBaseCollection(MediaContextBase mediaContext)
+            : base(mediaContext)
         {
-            this._cloudMediaContext = cloudMediaContext;
-
-            this.DataContextFactory = this._cloudMediaContext.DataContextFactory;
-            var dataContext = cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            MediaContext = mediaContext;
+            var dataContext = mediaContext.DataContextFactory.CreateDataServiceContext();
             this._programQuery = new Lazy<IQueryable<IProgram>>(() => dataContext.CreateQuery<ProgramData>(ProgramSet));
         }
  
         /// <summary>
         /// Initializes a new instance of the <see cref="ProgramBaseCollection"/> class.
         /// </summary>
-        /// <param name="cloudMediaContext">The cloud media context.</param>
+        /// <param name="mediaContext">The cloud media context.</param>
         /// <param name="parentChannel">The parent <see cref="IChannel"/>.</param>
-        internal ProgramBaseCollection(CloudMediaContext cloudMediaContext, IChannel parentChannel)
-            : this(cloudMediaContext)
+        internal ProgramBaseCollection(MediaContextBase mediaContext, IChannel parentChannel)
+            : this(mediaContext)
         {
             _parentChannel = parentChannel;
         }
@@ -187,9 +185,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 program.DvrWindowLengthSeconds = (int)dvrWindowLength.Value.TotalSeconds;
             }
 
-            program.InitCloudMediaContext(this._cloudMediaContext);
+            program.MediaContext = MediaContext;
 
-            DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            DataServiceContext dataContext = this.MediaContext.DataContextFactory.CreateDataServiceContext();
             dataContext.AddObject(ProgramSet, program);
 
             return dataContext

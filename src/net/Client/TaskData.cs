@@ -19,7 +19,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data.Services.Client;
 using System.Data.Services.Common;
-using System.Threading;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -28,7 +27,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// </summary>
     /// <seealso cref="IJob"/>
     [DataServiceKey("Id")]
-    internal partial class TaskData : ITask, ICloudMediaContextInit
+    internal partial class TaskData : BaseEntity<ITask>, ITask
     {
         /// <summary>
         /// The set name for tasks.
@@ -36,9 +35,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         internal const string TaskSet = "Tasks";
 
         private const string InputMediaAssetsPropertyName = "InputMediaAssets";
-        private const string OutputMediaAssetsPropertyName = "OutputMediaAssets"; 
-
-        private CloudMediaContext _cloudMediaContext;
+        private const string OutputMediaAssetsPropertyName = "OutputMediaAssets";
+       
         private InputAssetCollection<IAsset> _inputMediaAssets;
         private OutputAssetCollection _outputMediaAssets;
        
@@ -144,7 +142,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 {
                     if (!string.IsNullOrWhiteSpace(this.Id))
                     {
-                        DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+                        DataServiceContext dataContext = this.GetMediaContext().DataContextFactory.CreateDataServiceContext();
                         dataContext.AttachTo(TaskSet, this);
                         dataContext.LoadProperty(this, InputMediaAssetsPropertyName);
                     }
@@ -167,12 +165,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 {
                     if (!string.IsNullOrWhiteSpace(this.Id))
                     {
-                        DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+                        DataServiceContext dataContext = this.GetMediaContext().DataContextFactory.CreateDataServiceContext();
                         dataContext.AttachTo(TaskSet, this);
                         dataContext.LoadProperty(this, OutputMediaAssetsPropertyName);
                     }
 
-                    this._outputMediaAssets = new OutputAssetCollection(this, this.OutputMediaAssets, this._cloudMediaContext);
+                    this._outputMediaAssets = new OutputAssetCollection(this, this.OutputMediaAssets, this.GetMediaContext());
                 }
 
                 return this._outputMediaAssets;
@@ -187,9 +185,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             TaskOptions options = (TaskOptions)this.Options;
 
-            if (options.HasFlag(TaskOptions.ProtectedConfiguration) && (!string.IsNullOrEmpty(this.EncryptionKeyId)) && (this._cloudMediaContext != null))
+            if (options.HasFlag(TaskOptions.ProtectedConfiguration) && (!string.IsNullOrEmpty(this.EncryptionKeyId)) && (this.GetMediaContext() != null))
             {
-                return ConfigurationEncryptionHelper.DecryptConfigurationString(this._cloudMediaContext, this.EncryptionKeyId, this.InitializationVector, this.Configuration);
+                return ConfigurationEncryptionHelper.DecryptConfigurationString(this.GetMediaContext(), this.EncryptionKeyId, this.InitializationVector, this.Configuration);
             }
 
             return this.Configuration;
@@ -197,18 +195,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
         #endregion
 
-        #region ICloudMediaContextInit Members
-
-        /// <summary>
-        /// Initializes the cloud media context.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        public void InitCloudMediaContext(CloudMediaContext context)
-        {
-            this._cloudMediaContext = context;
-        }
-
-        #endregion
+       
 
         private static JobState GetExposedState(int state)
         {

@@ -27,19 +27,17 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     public class OriginBaseCollection : CloudBaseCollection<IOrigin>
     {
         internal const string OriginSet = "Origins";
-        private readonly CloudMediaContext _cloudMediaContext;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OriginBaseCollection"/> class.
         /// </summary>
         /// <param name="cloudMediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Justification = "By design")]
-        internal OriginBaseCollection(CloudMediaContext cloudMediaContext)
+        internal OriginBaseCollection(MediaContextBase cloudMediaContext)
+            : base(cloudMediaContext)
         {
-            this._cloudMediaContext = cloudMediaContext;
-
-            this.DataContextFactory = this._cloudMediaContext.DataContextFactory;
-            this.Queryable = this.DataContextFactory.CreateDataServiceContext().CreateQuery<OriginData>(OriginSet);
+            this.MediaContext = cloudMediaContext;
+            this.Queryable = this.MediaContext.DataContextFactory.CreateDataServiceContext().CreateQuery<OriginData>(OriginSet);
         }
 
         /// <summary>
@@ -189,9 +187,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             ((IOrigin)origin).Settings = settings;
 
-            origin.InitCloudMediaContext(this._cloudMediaContext);
+            origin.MediaContext =this.MediaContext;
 
-            DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            DataServiceContext dataContext = this.MediaContext.DataContextFactory.CreateDataServiceContext();
             dataContext.AddObject(OriginSet, origin);
 
             return dataContext
@@ -203,7 +201,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     string operationId = t.Result.Single().Headers[StreamingConstants.OperationIdHeader];
 
                     IOperation operation = AsyncHelper.WaitOperationCompletion(
-                        this._cloudMediaContext,
+                        this.MediaContext,
                         operationId,
                         StreamingConstants.CreateOriginPollInterval);
 
@@ -299,9 +297,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             ((IOrigin)origin).Settings = settings;
 
-            origin.InitCloudMediaContext(this._cloudMediaContext);
+            origin.MediaContext = this.MediaContext;
 
-            DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            DataServiceContext dataContext = this.MediaContext.DataContextFactory.CreateDataServiceContext();
             dataContext.AddObject(OriginSet, origin);
             var response = dataContext.SaveChanges();
 

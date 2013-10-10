@@ -23,9 +23,8 @@ using System.Threading.Tasks;
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     [DataServiceKey("Id")]
-    internal class NotificationEndPoint : INotificationEndPoint, ICloudMediaContextInit
+    internal class NotificationEndPoint : BaseEntity<INotificationEndPoint>, INotificationEndPoint
     {
-        private CloudMediaContext _cloudMediaContext;
         private string _id;
         private string _name;
         private NotificationEndPointType _endPointType;
@@ -54,14 +53,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             EndPointAddress = endPointAddress;
         }
 
-        /// <summary>
-        /// Initializes the cloud media context.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        public void InitCloudMediaContext(CloudMediaContext context)
-        {
-            _cloudMediaContext = context;
-        }
+       
 
         /// <summary>
         /// Unique identifier of notification endpoint
@@ -166,7 +158,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>Task of updating the notification endpoint.</returns>
         public Task UpdateAsync()
         {
-            DataServiceContext dataContext = _cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            DataServiceContext dataContext = GetMediaContext().DataContextFactory.CreateDataServiceContext();
             dataContext.AttachTo(NotificationEndPointCollection.NotificationEndPoints, this);
             dataContext.UpdateObject(this);
 
@@ -194,7 +186,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>Task of deleting the notification endpoint.</returns>
         public Task DeleteAsync()
         {
-            DataServiceContext dataContext = _cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            DataServiceContext dataContext = GetMediaContext().DataContextFactory.CreateDataServiceContext();
             dataContext.AttachTo(NotificationEndPointCollection.NotificationEndPoints, this);
             dataContext.DeleteObject(this);
 

@@ -27,19 +27,17 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     public class ChannelBaseCollection : CloudBaseCollection<IChannel>
     {
         internal const string ChannelSet = "Channels";
-        private readonly CloudMediaContext _cloudMediaContext;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ChannelBaseCollection"/> class.
         /// </summary>
         /// <param name="cloudMediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Justification = "By design")]
-        internal ChannelBaseCollection(CloudMediaContext cloudMediaContext)
+        internal ChannelBaseCollection(MediaContextBase cloudMediaContext)
+            : base(cloudMediaContext)
         {
-            this._cloudMediaContext = cloudMediaContext;
 
-            this.DataContextFactory = this._cloudMediaContext.DataContextFactory;
-            this.Queryable = this.DataContextFactory.CreateDataServiceContext().CreateQuery<ChannelData>(ChannelSet);
+            this.Queryable = this.MediaContext.DataContextFactory.CreateDataServiceContext().CreateQuery<ChannelData>(ChannelSet);
         }
 
         /// <summary>
@@ -91,9 +89,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             ((IChannel)channel).Settings = settings;
 
-            channel.InitCloudMediaContext(this._cloudMediaContext);
+            channel.MediaContext = this.MediaContext;
 
-            DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            DataServiceContext dataContext = this.MediaContext.DataContextFactory.CreateDataServiceContext();
             dataContext.AddObject(ChannelSet, channel);
 
             return dataContext
@@ -104,7 +102,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     string operationId = t.Result.Single().Headers[StreamingConstants.OperationIdHeader];
 
                     IOperation operation = AsyncHelper.WaitOperationCompletion(
-                        this._cloudMediaContext,
+                        this.MediaContext,
                         operationId,
                         StreamingConstants.CreateChannelPollInterval);
 
@@ -116,7 +114,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                         case OperationState.Succeeded:
                             channel = (ChannelData)t.AsyncState;
                             Uri uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Channels('{0}')", channel.Id), UriKind.Relative);
-                            return (ChannelData)dataContext.Execute<ChannelData>(uri).SingleOrDefault();;
+                            return (ChannelData)dataContext.Execute<ChannelData>(uri).SingleOrDefault();
                         case OperationState.Failed:
                             message = string.Format(CultureInfo.CurrentCulture, messageFormat, Resources.Failed, operationId, operation.ErrorMessage);
                             throw new InvalidOperationException(message);
@@ -184,9 +182,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             ((IChannel)channel).Settings = settings;
 
-            channel.InitCloudMediaContext(this._cloudMediaContext);
+            channel.MediaContext =this.MediaContext;
 
-            DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            DataServiceContext dataContext = this.MediaContext.DataContextFactory.CreateDataServiceContext();
             dataContext.AddObject(ChannelSet, channel);
             var response = dataContext.SaveChanges();
 
