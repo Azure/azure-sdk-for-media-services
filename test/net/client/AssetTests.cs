@@ -690,6 +690,71 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             Assert.AreEqual(expected, refreshedFile.ContentFileSize, "ContentFileSize Mismatch after Update");
         }
 
+        [TestMethod]
+        [Priority(0)]
+        public void TestAssetCreateRetry()
+        {
+            var dataContextMock = new Mock<IMediaDataServiceContext>();
+
+            dataContextMock.Setup((ctxt) => ctxt.AddObject("Assets", It.IsAny<object>()));
+
+            int exceptionCount = 2;
+
+            var expected = new AssetData { Name = "testData" };
+            var fakeResponse = new TestMediaDataServiceResponse { AsyncState = expected };
+            var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
+
+            dataContextMock.Setup((ctxt) => ctxt
+                .SaveChangesAsync(It.IsAny<object>()))
+                .Returns(() => Task.Factory.StartNew<IMediaDataServiceResponse>(() =>
+                {
+                    if (--exceptionCount > 0) throw fakeException;
+                    return fakeResponse;
+                }));
+
+            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
+
+            IAsset asset = _mediaContext.Assets.Create("Empty", AssetCreationOptions.None);
+            Assert.AreEqual(expected.Name, asset.Name);
+        }
+
+        [TestMethod]
+        [Priority(0)]
+        [ExpectedException(typeof(WebException))]
+        public void TestAssetCreateFailedRetry()
+        {
+            var dataContextMock = new Mock<IMediaDataServiceContext>();
+
+            dataContextMock.Setup((ctxt) => ctxt.AddObject("Assets", It.IsAny<object>()));
+
+            int exceptionCount = 10;
+
+            var expected = new AssetData { Name = "testData" };
+            var fakeResponse = new TestMediaDataServiceResponse { AsyncState = expected };
+            var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
+
+            dataContextMock.Setup((ctxt) => ctxt
+                .SaveChangesAsync(It.IsAny<object>()))
+                .Returns(() => Task.Factory.StartNew<IMediaDataServiceResponse>(() =>
+                {
+                    if (--exceptionCount > 0) throw fakeException;
+                    return fakeResponse;
+                }));
+
+            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
+
+            try
+            {
+                IAsset asset = _mediaContext.Assets.Create("Empty", AssetCreationOptions.None);
+            }
+            catch (WebException x)
+            {
+                Assert.AreEqual(fakeException, x);
+                throw;
+            }
+
+            Assert.Fail("Expected exception");
+        }
         #region Helper/utility methods
 
         public static IAsset CreateAsset(CloudMediaContext datacontext, string filePath, AssetCreationOptions options)

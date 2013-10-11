@@ -27,13 +27,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         internal const string NotificationEndPoints = "NotificationEndPoints";
 
-        private readonly CloudMediaContext _cloudMediaContext;
-
-        internal NotificationEndPointCollection(CloudMediaContext cloudMediaContext)
+        internal NotificationEndPointCollection(MediaContextBase cloudMediaContext)
+            : base(cloudMediaContext)
         {
-            _cloudMediaContext = cloudMediaContext;
-            DataContextFactory = _cloudMediaContext.MediaServicesClassFactory;
-            Queryable = DataContextFactory.CreateDataServiceContext().CreateQuery<NotificationEndPoint>(NotificationEndPoints);
+            MediaContext = cloudMediaContext;
+            Queryable = MediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<NotificationEndPoint>(NotificationEndPoints);
         }
 
         /// <summary>
@@ -53,8 +51,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 EndPointAddress = endPointAddress
             };
 
-            notificationEndPoint.InitCloudMediaContext(_cloudMediaContext);
-            IMediaDataServiceContext dataContext = DataContextFactory.CreateDataServiceContext();
+            notificationEndPoint.SetMediaContext(MediaContext);
+            IMediaDataServiceContext dataContext = MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AddObject(NotificationEndPoints, notificationEndPoint);
 
             return dataContext

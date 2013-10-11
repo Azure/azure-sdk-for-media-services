@@ -30,20 +30,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// Represents a content key that can be used for encryption and decryption.
     /// </summary>
     [DataServiceKey("Id")]
-    internal partial class ContentKeyData : IContentKey, ICloudMediaContextInit
+    internal partial class ContentKeyData : BaseEntity<IContentKey>, IContentKey
     {
-        private CloudMediaContext _cloudMediaContext;
-
-        /// <summary>
-        /// Initializes the cloud media context.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        public void InitCloudMediaContext(CloudMediaContext context)
-        {
-            this._cloudMediaContext = context;
-        }
-
-        /// <summary>
+       /// <summary>
         /// Gets the clear key value.
         /// </summary>
         /// <returns>A function delegate that returns the future result to be available through the Task&lt;byte[]&gt;.</returns>
@@ -53,10 +42,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             return System.Threading.Tasks.Task.Factory.StartNew<byte[]>(() =>
             {
                 byte[] returnValue = null;
-                if (this._cloudMediaContext != null)
+                if (this.GetMediaContext() != null)
                 {
                     Uri uriRebindContentKey = new Uri(string.Format(CultureInfo.InvariantCulture, "/RebindContentKey?id='{0}'&x509Certificate=''", this.Id), UriKind.Relative);
-                    IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
+                    IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
 
                     IEnumerable<string> results = dataContext.Execute<string>(uriRebindContentKey);
                     string reboundContentKey = results.Single();
@@ -104,13 +93,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 {
                     byte[] returnValue = null;
 
-                    if (this._cloudMediaContext != null)
+                    if (this.GetMediaContext() != null)
                     {
                         string certToSend = Convert.ToBase64String(certToEncryptTo.Export(X509ContentType.Cert));
                         certToSend = HttpUtility.UrlEncode(certToSend);
 
                         Uri uriRebindContentKey = new Uri(string.Format(CultureInfo.InvariantCulture, "/RebindContentKey?id='{0}'&x509Certificate='{1}'", this.Id, certToSend), UriKind.Relative);
-                        IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
+                        IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
 
                         IEnumerable<string> results = dataContext.Execute<string>(uriRebindContentKey);
                         string reboundContentKey = results.Single();
@@ -150,7 +139,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             ContentKeyBaseCollection.VerifyContentKey(this);
 
-            IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(ContentKeyCollection.ContentKeySet, this);
             dataContext.DeleteObject(this);
 

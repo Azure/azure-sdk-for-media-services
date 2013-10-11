@@ -30,6 +30,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// </summary>
     public abstract class ContentKeyBaseCollection : BaseCollection<IContentKey>
     {
+        protected ContentKeyBaseCollection(MediaContextBase context) : base(context)
+        {
+        }
+
         /// <summary>
         /// Gets or sets the queryable collection of content keys.
         /// </summary>

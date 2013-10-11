@@ -33,16 +33,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         internal const string ContentKeySet = "ContentKeys";
 
-        private readonly CloudMediaContext _cloudMediaContext;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ContentKeyCollection"/> class.
         /// </summary>
         /// <param name="cloudMediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
-        internal ContentKeyCollection(CloudMediaContext cloudMediaContext)
+        internal ContentKeyCollection(MediaContextBase cloudMediaContext)
+            : base(cloudMediaContext)
         {
-            this._cloudMediaContext = cloudMediaContext;
-            this.ContentKeyQueryable = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<ContentKeyData>(ContentKeySet);
+            
+            this.ContentKeyQueryable = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<ContentKeyData>(ContentKeySet);
         }
 
         /// <summary>
@@ -81,10 +80,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new ArgumentException(StringTable.ErrorCommonEncryptionKeySize, "contentKey");
             }
 
-            IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             X509Certificate2 certToUse = ContentKeyBaseCollection.GetCertificateToEncryptContentKey(dataContext, ContentKeyType.CommonEncryption);
             ContentKeyData contentKeyData = CreateCommonContentKey(keyId, contentKey, name, certToUse);
-            contentKeyData.InitCloudMediaContext(this._cloudMediaContext);
+            
 
             dataContext.AddObject(ContentKeySet, contentKeyData);
 
@@ -121,5 +120,5 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw exception.InnerException;
             }
         }
-            }
+    }
 }

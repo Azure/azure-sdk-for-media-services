@@ -14,8 +14,6 @@
 // limitations under the License.
 // </license>
 
-using System;
-using Microsoft.Practices.TransientFaultHandling;
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client

@@ -19,10 +19,10 @@ using System.Data.Services.Client;
 using System.Data.Services.Common;
 using System.Net;
 using Microsoft.Practices.TransientFaultHandling;
-using Microsoft.WindowsAzure.MediaServices.Client.AzureStorageClientTransientFaultHandling;
 using Microsoft.WindowsAzure.MediaServices.Client.OAuth;
-using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 using Microsoft.WindowsAzure.MediaServices.Client.Versioning;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
+using Microsoft.WindowsAzure.MediaServices.Client.AzureStorageClientTransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -34,8 +34,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private readonly Uri _azureMediaServicesEndpoint;
         private readonly OAuthDataServiceAdapter _dataServiceAdapter;
         private readonly ServiceVersionAdapter _serviceVersionAdapter;
-        private readonly CloudMediaContext _cloudMediaContext;
-
+        private readonly MediaContextBase _mediaContext;
+        
         private const int ConnectionRetryMaxAttempts = 4;
         private const int ConnectionRetrySleepQuantum = 100;
 
@@ -50,12 +50,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="azureMediaServicesEndpoint">The Windows Azure Media Services endpoint to use.</param>
         /// <param name="dataServiceAdapter">The data service adapter.</param>
         /// <param name="serviceVersionAdapter">The service version adapter.</param>
-        /// <param name="cloudMediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
-        public AzureMediaServicesClassFactory(Uri azureMediaServicesEndpoint, OAuthDataServiceAdapter dataServiceAdapter, ServiceVersionAdapter serviceVersionAdapter, CloudMediaContext cloudMediaContext)
+        /// <param name="mediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
+        public AzureMediaServicesClassFactory(Uri azureMediaServicesEndpoint, OAuthDataServiceAdapter dataServiceAdapter, ServiceVersionAdapter serviceVersionAdapter, MediaContextBase mediaContext)
         {
             this._dataServiceAdapter = dataServiceAdapter;
             this._serviceVersionAdapter = serviceVersionAdapter;
-            this._cloudMediaContext = cloudMediaContext;
+            this._mediaContext = mediaContext;
 
             this._azureMediaServicesEndpoint = GetAccountApiEndpoint(this._dataServiceAdapter, this._serviceVersionAdapter, azureMediaServicesEndpoint);
         }
@@ -173,10 +173,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         
         private void OnReadingEntity(object sender, ReadingWritingEntityEventArgs args)
         {
-            ICloudMediaContextInit init = args.Entity as ICloudMediaContextInit;
-            if (init != null)
+            IMediaContextContainer mediaContextContainer = args.Entity as IMediaContextContainer;
+            if (mediaContextContainer != null)
             {
-                init.InitCloudMediaContext(this._cloudMediaContext);
+                mediaContextContainer.SetMediaContext(this._mediaContext);
             }
         }
     }

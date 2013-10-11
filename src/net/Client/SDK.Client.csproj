@@ -115,6 +115,7 @@
     <Compile Include="AssetPlaceholderToInstanceResolver.cs" />
     <Compile Include="AssetState.cs" />
     <Compile Include="AzureMediaServicesClassFactory.cs" />
+    <Compile Include="BaseEntity.cs" />
     <Compile Include="BlobTransferClient.cs" />
     <Compile Include="BlobTransferCompleteEventArgs.cs" />
     <Compile Include="BlobTransferProgressChangedEventArgs.cs" />
@@ -147,12 +148,12 @@
     <Compile Include="DataServiceAsyncExtensions.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DuplicatedFiles\TransientFaultHandling\QueryErrorDetectionStrategy.cs" />
-    <Compile Include="DuplicatedFiles\TransientFaultHandling\SaveChangesErrorDetectionStrategy.cs" />
     <Compile Include="DuplicatedFiles\AzureStorageClientTransientFaultHandling\RetryPolicyExtensions.cs" />
     <Compile Include="DuplicatedFiles\AzureStorageClientTransientFaultHandling\StorageTransientErrorDetectionStrategy.cs" />
     <Compile Include="DuplicatedFiles\TransientFaultHandling\MediaRetryPolicy.cs" />
+    <Compile Include="DuplicatedFiles\TransientFaultHandling\QueryErrorDetectionStrategy.cs" />
     <Compile Include="DuplicatedFiles\TransientFaultHandling\RetryStrategyFactory.cs" />
+    <Compile Include="DuplicatedFiles\TransientFaultHandling\SaveChangesErrorDetectionStrategy.cs" />
     <Compile Include="DuplicatedFiles\TransientFaultHandling\WebRequestTransientErrorDetectionStrategy.cs" />
     <Compile Include="GeneratedCode\ApiClasses.cs">
       <SubType>Code</SubType>
@@ -217,7 +218,7 @@
     <Compile Include="DownloadProgressEventArgs.cs" />
     <Compile Include="IAsset.cs" />
     <Compile Include="AssetData.cs" />
-    <Compile Include="ICloudMediaContextInit.cs" />
+    <Compile Include="IMediaContextContainer.cs" />
     <Compile Include="IContentKey.cs" />
     <Compile Include="IJob.cs" />
     <Compile Include="ILocator.cs" />

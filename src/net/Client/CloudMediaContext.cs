@@ -104,22 +104,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             this._mediaProcessors = new MediaProcessorBaseCollection(this);
             this._locators = new LocatorBaseCollection(this);
             this._ingestManifests = new IngestManifestCollection(this);
-            this._ingestManifestAssets = new IngestManifestAssetCollection(this, null);
+            this._ingestManifestAssets = new IngestManifestAssetCollection(this,null);
             this._ingestManifestFiles = new IngestManifestFileCollection(this, null);
             this._storageAccounts = new StorageAccountBaseCollection(this);
         }
-
-        /// <summary>
-        /// Gets or sets the number of threads to use to for each blob transfer.
-        /// </summary>
-        /// <remarks>The default value is 10.</remarks>
-        public int ParallelTransferThreadCount { get; set; }
-
-        /// <summary>
-        /// Gets or sets the number of concurrent blob transfers allowed.
-        /// </summary>
-        /// <remarks>The default value is 2.</remarks>
-        public int NumberOfConcurrentTransfers { get; set; }
 
         /// <summary>
         /// Gets the collection of assets in the system.
@@ -192,9 +180,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         public override IStorageAccount DefaultStorageAccount
         {
-            get
-            {
-                return this.StorageAccounts.Where(c => c.IsDefault == true).FirstOrDefault();
+            get 
+            { 
+                return this.StorageAccounts.Where(c=>c.IsDefault == true).FirstOrDefault(); 
             }
         }
 
@@ -209,20 +197,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets the collection of locators in the system.
         /// </summary>
-        public LocatorBaseCollection Locators
+        public override LocatorBaseCollection Locators
         {
             get { return this._locators; }
         }
 
         /// <summary>
-        /// Gets or sets a factory for creating data service context instances prepared for Windows Azure Media Services.
-        /// </summary>
-        public MediaServicesClassFactory MediaServicesClassFactory { get; set; }
-
-        /// <summary>
         /// Gets the collection of bulk ingest manifests in the system.
         /// </summary>
-        public IngestManifestCollection IngestManifests
+        public override IngestManifestCollection IngestManifests
         {
             get { return this._ingestManifests; }
         }
@@ -230,7 +213,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets the collection of manifest asset files in the system
         /// </summary>
-        public IngestManifestFileCollection IngestManifestFiles
+        public  override IngestManifestFileCollection IngestManifestFiles
         {
             get { return this._ingestManifestFiles; }
         }
@@ -238,10 +221,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets the collection of manifest assets in the system
         /// </summary>
-        public IngestManifestAssetCollection IngestManifestAssets
+        public override IngestManifestAssetCollection IngestManifestAssets
         {
             get { return this._ingestManifestAssets; }
         }
-
     }
 }

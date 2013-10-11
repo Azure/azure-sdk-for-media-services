@@ -20,11 +20,10 @@ using System.Linq;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
-    public class JobNotificationSubscriptionCollection : IEnumerable<IJobNotificationSubscription>, ICloudMediaContextInit
+    public class JobNotificationSubscriptionCollection : IEnumerable<IJobNotificationSubscription>
     {
-        private List<JobNotificationSubscription> _jobNotificationSubscriptionList; 
-        private CloudMediaContext _cloudMediaContext;
-
+        private List<JobNotificationSubscription> _jobNotificationSubscriptionList;
+       
         public JobNotificationSubscriptionCollection()
         {
             _jobNotificationSubscriptionList = new List<JobNotificationSubscription>();
@@ -39,9 +38,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             JobNotificationSubscription subscription = new JobNotificationSubscription(targetJobState, notificationEndPoint);
 
-            if (_cloudMediaContext != null)
+            if (MediaContext != null)
             {
-                subscription.InitCloudMediaContext(_cloudMediaContext);
+                subscription.MediaContext = MediaContext;
             }
 
             _jobNotificationSubscriptionList.Add(subscription);
@@ -73,18 +72,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             _jobNotificationSubscriptionList.Clear();
         }
 
-        #region ICloudMediaContextInit Members
-
-        /// <summary>
-        /// Inits the cloud media context.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        public void InitCloudMediaContext(CloudMediaContext context)
-        {
-            _cloudMediaContext = context;
-        }
-
-        #endregion
+       
 
         #region IEnumerable<IJobNotificationSubscription> Members
 
@@ -96,11 +84,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </returns>
         public IEnumerator<IJobNotificationSubscription> GetEnumerator()
         {
-            if (_cloudMediaContext != null)
+            if (MediaContext != null)
             {
                 foreach (var jobNotificationSubscription in _jobNotificationSubscriptionList)
                 {
-                    jobNotificationSubscription.InitCloudMediaContext(_cloudMediaContext);
+                    jobNotificationSubscription.MediaContext = MediaContext;
                 }
             }
 
@@ -119,5 +107,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
         #endregion
+       
+        public MediaContextBase MediaContext { get; set; }
     }
 }

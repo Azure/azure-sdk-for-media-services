@@ -23,10 +23,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// Represents a TaskTemplate.
     /// </summary>
     [DataServiceKey("Id")]
-    internal partial class TaskTemplateData : ITaskTemplate, ICloudMediaContextInit
+    internal partial class TaskTemplateData : BaseEntity<ITaskTemplate>, ITaskTemplate
     {
-        private CloudMediaContext _cloudMediaContext;
-
         /// <summary>
         /// Gets or sets the task inputs.
         /// </summary>
@@ -83,15 +81,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </value>
         internal string ConfigurationCopied { get; set; }
 
-        /// <summary>
-        /// Initializes the cloud media context.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        public void InitCloudMediaContext(CloudMediaContext context)
-        {
-            this._cloudMediaContext = context;
-        }
-
+        
         /// <summary>
         /// Decrypts an encrypted task configuration.
         /// </summary>
@@ -101,9 +91,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             TaskOptions options = (TaskOptions)Options;
 
-            if (options.HasFlag(TaskOptions.ProtectedConfiguration) && (!string.IsNullOrEmpty(this.EncryptionKeyId)) && (this._cloudMediaContext != null))
+            if (options.HasFlag(TaskOptions.ProtectedConfiguration) && (!string.IsNullOrEmpty(this.EncryptionKeyId)) && (GetMediaContext() != null))
             {
-                return ConfigurationEncryptionHelper.DecryptConfigurationString(this._cloudMediaContext, this.EncryptionKeyId, this.InitializationVector, this.Configuration);
+                return ConfigurationEncryptionHelper.DecryptConfigurationString(GetMediaContext(), this.EncryptionKeyId, this.InitializationVector, this.Configuration);
             }
 
             return this.Configuration;
@@ -133,7 +123,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 TaskTemplateBody = this.TaskTemplateBody
             };
 
-            templateData.InitCloudMediaContext(this._cloudMediaContext);
+            templateData.SetMediaContext(GetMediaContext());
 
             return templateData;
         }

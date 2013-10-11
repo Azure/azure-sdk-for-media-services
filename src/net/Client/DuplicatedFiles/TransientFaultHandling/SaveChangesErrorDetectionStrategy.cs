@@ -51,6 +51,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling
 
         private static bool CheckIsTransient(Exception ex)
         {
+            var webException = ex.FindInnerException<WebException>();
+
+            if (webException != null)
+            {
+                return CommonRetryableWebExceptions.Contains((int)webException.Status);
+            }
+
             var dataServiceException = ex.FindInnerException<DataServiceRequestException>();
             if (dataServiceException.Response.IsBatchResponse && CommonRetryableWebExceptions.Contains(dataServiceException.Response.BatchStatusCode))
             {
