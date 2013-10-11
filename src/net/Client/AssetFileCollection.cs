@@ -42,7 +42,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         internal AssetFileCollection(MediaContextBase cloudMediaContext)
             : base(cloudMediaContext)
         {
-            this._assetFileQuery = new Lazy<IQueryable<IAssetFile>>(() => cloudMediaContext.DataContextFactory.CreateDataServiceContext().CreateQuery<AssetFileData>(FileSet));
+            this._assetFileQuery = new Lazy<IQueryable<IAssetFile>>(() => cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<AssetFileData>(FileSet));
         }
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new ArgumentException(String.Format(CultureInfo.InvariantCulture, StringTable.ErrorCreatingAssetFileEmptyFileName));
             }
             cancelation.ThrowIfCancellationRequested();
-            var dataContext = MediaContext.DataContextFactory.CreateDataServiceContext();
+            var dataContext = MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
 
             bool isEncrypted = _parentAsset.Options.HasFlag(AssetCreationOptions.CommonEncryptionProtected) || 
                                _parentAsset.Options.HasFlag(AssetCreationOptions.StorageEncrypted) || 
@@ -142,7 +142,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             return dataContext.SaveChangesAsync(assetFile).ContinueWith<IAssetFile>(t =>
                     {
                         t.ThrowIfFaulted();
-                        AssetFileData data = (AssetFileData)t.AsyncState;
+                        AssetFileData data = (AssetFileData)t.Result.AsyncState;
                         return data;
                     });
         }

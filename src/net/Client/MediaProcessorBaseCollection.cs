@@ -34,7 +34,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         internal MediaProcessorBaseCollection(MediaContextBase cloudMediaContext)
             : base(cloudMediaContext)
         {
-           this.Queryable = cloudMediaContext.DataContextFactory.CreateDataServiceContext().CreateQuery<MediaProcessorData>(MediaProcessorSet);
+           this.Queryable = cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<MediaProcessorData>(MediaProcessorSet);
         }
     }
 }

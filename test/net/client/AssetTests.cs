@@ -26,13 +26,15 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Helpers;
 using Microsoft.WindowsAzure.Storage;
+using Moq;
+using System.Net;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 {
     [TestClass]
     public class AssetTests
     {
-        private CloudMediaContext _dataContext;
+        private CloudMediaContext _mediaContext;
         private double _downloadProgress;
         private string _smallWmv;
 
@@ -41,7 +43,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestInitialize]
         public void SetupTest()
         {
-            _dataContext = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
+            _mediaContext = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
             _smallWmv = WindowsAzureMediaServicesTestConfiguration.GetVideoSampleFilePath(TestContext, WindowsAzureMediaServicesTestConfiguration.SmallWmv);
             _downloadProgress = 0;
         }
@@ -56,10 +58,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestCategory("PullRequestValidation")]
         public void ShouldCreateAssetFile()
         {
-            IAsset asset = _dataContext.Assets.Create("Empty", AssetCreationOptions.StorageEncrypted);
+            IAsset asset = _mediaContext.Assets.Create("Empty", AssetCreationOptions.StorageEncrypted);
             IAssetFile file = asset.AssetFiles.CreateAsync(Path.GetFileName(_smallWmv), CancellationToken.None).Result;
-            IAccessPolicy policy = _dataContext.AccessPolicies.Create("temp", TimeSpan.FromMinutes(10), AccessPermissions.Write);
-            ILocator locator = _dataContext.Locators.CreateSasLocator(asset, policy);
+            IAccessPolicy policy = _mediaContext.AccessPolicies.Create("temp", TimeSpan.FromMinutes(10), AccessPermissions.Write);
+            ILocator locator = _mediaContext.Locators.CreateSasLocator(asset, policy);
             BlobTransferClient blobTransferClient = new BlobTransferClient();
             bool transferCompletedFired = false;
             blobTransferClient.TransferCompleted += (sender, args) =>
@@ -90,10 +92,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldThrowArgumentExceptionOnAssetUploadWhenLocalFileNameNotMatchingAssetFileName()
         {
-            IAsset asset = _dataContext.Assets.Create("Empty", AssetCreationOptions.StorageEncrypted);
+            IAsset asset = _mediaContext.Assets.Create("Empty", AssetCreationOptions.StorageEncrypted);
             IAssetFile file = asset.AssetFiles.CreateAsync(Guid.NewGuid().ToString(), CancellationToken.None).Result;
-            IAccessPolicy policy = _dataContext.AccessPolicies.Create("temp", TimeSpan.FromMinutes(10), AccessPermissions.Write);
-            ILocator locator = _dataContext.Locators.CreateSasLocator(asset, policy);
+            IAccessPolicy policy = _mediaContext.AccessPolicies.Create("temp", TimeSpan.FromMinutes(10), AccessPermissions.Write);
+            ILocator locator = _mediaContext.Locators.CreateSasLocator(asset, policy);
             try
             {
                 file.UploadAsync(_smallWmv, new BlobTransferClient(), locator, CancellationToken.None).Wait();
@@ -113,7 +115,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldCreateSingleFileAssetWithNoLocatorUsingOveloadSync()
         {
-            IAsset asset = _dataContext.Assets.Create("Empty", AssetCreationOptions.StorageEncrypted);
+            IAsset asset = _mediaContext.Assets.Create("Empty", AssetCreationOptions.StorageEncrypted);
             IAssetFile file = asset.AssetFiles.Create(Path.GetFileName(_smallWmv));
             file.Upload(_smallWmv);
 
@@ -128,7 +130,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestCategory("PullRequestValidation")]
         public void ShouldCreateAssetFileInfoWithoutUploadingFile()
         {
-            IAsset asset = _dataContext.Assets.Create("Empty", AssetCreationOptions.StorageEncrypted);
+            IAsset asset = _mediaContext.Assets.Create("Empty", AssetCreationOptions.StorageEncrypted);
             VerifyAsset(asset);
             const string name = "FileName.txt";
             IAssetFile file = asset.AssetFiles.CreateAsync(name, CancellationToken.None).Result;
@@ -145,7 +147,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestCategory("PullRequestValidation")]
         public void ShouldNotHaveLocatorsAfterAssetCreation()
         {
-            IAsset asset = _dataContext.Assets.Create("Test", AssetCreationOptions.StorageEncrypted);
+            IAsset asset = _mediaContext.Assets.Create("Test", AssetCreationOptions.StorageEncrypted);
             Assert.AreEqual(0, asset.Locators.Count);
         }
 
@@ -155,14 +157,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestCategory("PullRequestValidation")]
         public void ShouldCreateEncryptedInitilizedAsset()
         {
-            IAsset asset = _dataContext.Assets.Create("Test", AssetCreationOptions.StorageEncrypted);
+            IAsset asset = _mediaContext.Assets.Create("Test", AssetCreationOptions.StorageEncrypted);
             Assert.IsNotNull(asset, "Asset should be non null");
             Assert.AreNotEqual(Guid.Empty, asset.Id, "Asset ID shuold not be null");
             Assert.AreEqual(0, asset.AssetFiles.Count(), "Asset has files");
             Assert.AreEqual(AssetState.Initialized, asset.State, "Expecting initilized state");
 
-            IAccessPolicy policy = _dataContext.AccessPolicies.Create("temp", TimeSpan.FromMinutes(10), AccessPermissions.Write);
-            ILocator locator = _dataContext.Locators.CreateSasLocator(asset, policy);
+            IAccessPolicy policy = _mediaContext.AccessPolicies.Create("temp", TimeSpan.FromMinutes(10), AccessPermissions.Write);
+            ILocator locator = _mediaContext.Locators.CreateSasLocator(asset, policy);
 
             IAssetFile file = asset.AssetFiles.Create(Path.GetFileName(_smallWmv));
 
@@ -180,12 +182,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             Assert.IsTrue(!task.IsFaulted);
             locator.Delete();
             policy.Delete();
-            IAsset refreshedAsset = _dataContext.Assets.Where(c => c.Id == asset.Id).FirstOrDefault();
+            IAsset refreshedAsset = _mediaContext.Assets.Where(c => c.Id == asset.Id).FirstOrDefault();
             Assert.AreEqual(asset.Name, refreshedAsset.Name);
             Assert.AreEqual(AssetState.Initialized, refreshedAsset.State);
             Assert.AreEqual(1, refreshedAsset.AssetFiles.Count(), "file count wrong");
             VerifyAndDownloadAsset(refreshedAsset,1,false);
-            ContentKeyTests.VerifyFileAndContentKeyMetadataForStorageEncryption(refreshedAsset, _dataContext);
+            ContentKeyTests.VerifyFileAndContentKeyMetadataForStorageEncryption(refreshedAsset, _mediaContext);
         }
 
         [TestMethod]
@@ -194,12 +196,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestCategory("PullRequestValidation")]
         public void ShouldCreateEmptyNoneEncryptedAssetUploadFileAndDownloadIt()
         {
-            IAsset asset = _dataContext.Assets.Create("Test", AssetCreationOptions.None);
+            IAsset asset = _mediaContext.Assets.Create("Test", AssetCreationOptions.None);
 
             VerifyAsset(asset);
 
-            IAccessPolicy policy = _dataContext.AccessPolicies.Create("temp", TimeSpan.FromMinutes(10), AccessPermissions.Write);
-            ILocator locator = _dataContext.Locators.CreateSasLocator(asset, policy);
+            IAccessPolicy policy = _mediaContext.AccessPolicies.Create("temp", TimeSpan.FromMinutes(10), AccessPermissions.Write);
+            ILocator locator = _mediaContext.Locators.CreateSasLocator(asset, policy);
 
             UploadFile(locator, asset, _smallWmv);
 
@@ -215,12 +217,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestCategory("PullRequestValidation")]
         public void ShouldCreateEmptyAssetUploadTwoFilesSetPrimaryAndDownloadFile()
         {
-            IAsset asset = _dataContext.Assets.Create("Test", AssetCreationOptions.None);
+            IAsset asset = _mediaContext.Assets.Create("Test", AssetCreationOptions.None);
 
             VerifyAsset(asset);
 
-            IAccessPolicy policy = _dataContext.AccessPolicies.Create("temp", TimeSpan.FromMinutes(10), AccessPermissions.Write);
-            ILocator locator = _dataContext.Locators.CreateSasLocator(asset, policy);
+            IAccessPolicy policy = _mediaContext.AccessPolicies.Create("temp", TimeSpan.FromMinutes(10), AccessPermissions.Write);
+            ILocator locator = _mediaContext.Locators.CreateSasLocator(asset, policy);
 
             UploadFile(locator, asset, _smallWmv);
             //asset = _dataContext.Assets.Where(c => c.Id == asset.Id).FirstOrDefault();
@@ -245,7 +247,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         {
             try
             {
-                CreateAsset(_dataContext, WindowsAzureMediaServicesTestConfiguration.BadSmallWmv, AssetCreationOptions.StorageEncrypted);
+                CreateAsset(_mediaContext, WindowsAzureMediaServicesTestConfiguration.BadSmallWmv, AssetCreationOptions.StorageEncrypted);
             }
             catch (AggregateException exception)
             {
@@ -275,7 +277,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         {
             const int expected = 4;
             IAsset asset = CreateAssetAndUploadNFilesUsingAsyncCall(expected);
-            Assert.AreEqual(expected, _dataContext.Files.Where(c => c.ParentAssetId == asset.Id).Count());
+            Assert.AreEqual(expected, _mediaContext.Files.Where(c => c.ParentAssetId == asset.Id).Count());
         }
 
         [TestMethod]
@@ -284,7 +286,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         {
             const int expected = 10;
             IAsset asset = CreateAssetAndUploadNFilesUsingAsyncCall(expected);
-            Assert.AreEqual(expected, _dataContext.Files.Where(c => c.ParentAssetId == asset.Id).Count());
+            Assert.AreEqual(expected, _mediaContext.Files.Where(c => c.ParentAssetId == asset.Id).Count());
         }
 
         [TestMethod]
@@ -293,18 +295,18 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         {
             const int expected = 10;
             IAsset asset = CreateAssetAndUploadNFilesUsingAsyncCall(expected);
-            Assert.AreEqual(expected, _dataContext.Files.Where(c => c.ParentAssetId == asset.Id).Count());
-            IAccessPolicy accessPolicy = _dataContext.AccessPolicies.Create("SdkDownload", TimeSpan.FromHours(12), AccessPermissions.Read);
-            ILocator locator = _dataContext.Locators.CreateSasLocator(asset, accessPolicy);
+            Assert.AreEqual(expected, _mediaContext.Files.Where(c => c.ParentAssetId == asset.Id).Count());
+            IAccessPolicy accessPolicy = _mediaContext.AccessPolicies.Create("SdkDownload", TimeSpan.FromHours(12), AccessPermissions.Read);
+            ILocator locator = _mediaContext.Locators.CreateSasLocator(asset, accessPolicy);
             var blobTransfer = new BlobTransferClient
                 {
-                    NumberOfConcurrentTransfers = _dataContext.NumberOfConcurrentTransfers,
-                    ParallelTransferThreadCount = _dataContext.ParallelTransferThreadCount
+                    NumberOfConcurrentTransfers = _mediaContext.NumberOfConcurrentTransfers,
+                    ParallelTransferThreadCount = _mediaContext.ParallelTransferThreadCount
                 };
 
             var downloads = new List<Task>();
             var paths = new List<string>();
-            foreach (IAssetFile file in _dataContext.Files.Where(c => c.ParentAssetId == asset.Id))
+            foreach (IAssetFile file in _mediaContext.Files.Where(c => c.ParentAssetId == asset.Id))
             {
                 string path = Path.GetTempFileName();
                 paths.Add(path);
@@ -327,7 +329,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [Priority(1)]
         public void ShouldCreateAssetAndCreate100FilesUsingAsyncCall()
         {
-            IAsset asset = _dataContext.Assets.Create("TestWithMultipleFiles", AssetCreationOptions.None);
+            IAsset asset = _mediaContext.Assets.Create("TestWithMultipleFiles", AssetCreationOptions.None);
             VerifyAsset(asset);
             var files = new List<Task>();
             for (int i = 0; i < 100; i++)
@@ -346,12 +348,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestCategory("PullRequestValidation")]
         public void CreateAssetWithUniqueAlternateIdAndFilterByIt()
         {
-            CreateAsset(_dataContext, _smallWmv, AssetCreationOptions.StorageEncrypted);
-            CreateAsset(_dataContext, _smallWmv, AssetCreationOptions.StorageEncrypted);
-            IAsset createdAsset = CreateAsset(_dataContext, WindowsAzureMediaServicesTestConfiguration.SmallWmv2, AssetCreationOptions.StorageEncrypted);
+            CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.StorageEncrypted);
+            CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.StorageEncrypted);
+            IAsset createdAsset = CreateAsset(_mediaContext, WindowsAzureMediaServicesTestConfiguration.SmallWmv2, AssetCreationOptions.StorageEncrypted);
             createdAsset.AlternateId = Guid.NewGuid().ToString();
             createdAsset.Update();
-            int assetCount = Enumerable.Count(_dataContext.Assets.Where(c => c.AlternateId == createdAsset.AlternateId));
+            int assetCount = Enumerable.Count(_mediaContext.Assets.Where(c => c.AlternateId == createdAsset.AlternateId));
 
             Assert.AreEqual(1, assetCount, "Asset Count not right");
         }
@@ -362,8 +364,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestCategory("PullRequestValidation")]
         public void ShouldNotReturnAssetsForEmptyId()
         {
-            IAsset createdAsset = CreateAsset(_dataContext, _smallWmv, AssetCreationOptions.StorageEncrypted);
-            IAsset foundAsset = _dataContext.Assets.Where(c => c.Id == string.Empty).FirstOrDefault();
+            IAsset createdAsset = CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.StorageEncrypted);
+            IAsset foundAsset = _mediaContext.Assets.Where(c => c.Id == string.Empty).FirstOrDefault();
             Assert.IsNull(foundAsset, "should not found asset");
         }
 
@@ -371,8 +373,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestCategory("PullRequestValidation")]
         public void ShouldQueryAssetsByNameWithContains()
         {
-            IAsset createdAsset = CreateAsset(_dataContext, _smallWmv, AssetCreationOptions.StorageEncrypted);
-            IAsset foundAsset = _dataContext.Assets.Where(c => c.Name.Contains(createdAsset.Name)).FirstOrDefault();
+            IAsset createdAsset = CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.StorageEncrypted);
+            IAsset foundAsset = _mediaContext.Assets.Where(c => c.Name.Contains(createdAsset.Name)).FirstOrDefault();
             Assert.IsNotNull(foundAsset);
 
         }
@@ -384,7 +386,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         {
             string assetId;
             {
-                IAsset asset = CreateAsset(_dataContext, _smallWmv, AssetCreationOptions.StorageEncrypted);
+                IAsset asset = CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.StorageEncrypted);
                 Assert.IsNotNull(asset, "Asset should be non null");
                 asset.Name = "New Name";
                 asset.Update();
@@ -406,7 +408,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestCategory("PullRequestValidation")]
         public void ShouldDownloadAssetFile()
         {
-            IAsset asset = CreateAsset(_dataContext, _smallWmv, AssetCreationOptions.None);
+            IAsset asset = CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
 
             
             VerifyAndDownloadAsset(asset, 1);
@@ -418,10 +420,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         public void ShouldDownloadSameAssetFile20TimesIdenticallyAsStorageSDK()
         {
             
-            IAsset asset = _dataContext.Assets.Create("Test", AssetCreationOptions.None);
+            IAsset asset = _mediaContext.Assets.Create("Test", AssetCreationOptions.None);
             VerifyAsset(asset);
-            IAccessPolicy policy = _dataContext.AccessPolicies.Create("temp", TimeSpan.FromMinutes(10), AccessPermissions.Write);
-            ILocator locator = _dataContext.Locators.CreateSasLocator(asset, policy);
+            IAccessPolicy policy = _mediaContext.AccessPolicies.Create("temp", TimeSpan.FromMinutes(10), AccessPermissions.Write);
+            ILocator locator = _mediaContext.Locators.CreateSasLocator(asset, policy);
 
             UploadFile(locator, asset, _smallWmv);
             UploadFile(locator, asset, WindowsAzureMediaServicesTestConfiguration.SmallWmv2);
@@ -450,7 +452,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestCategory("PullRequestValidation")]
         public void ShouldDownloadCommonEncryptionProtectedAssetFile()
         {
-            IAsset asset = CreateAsset(_dataContext, _smallWmv, AssetCreationOptions.CommonEncryptionProtected);
+            IAsset asset = CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.CommonEncryptionProtected);
             VerifyAndDownloadAsset(asset, 1);
         }
 
@@ -460,7 +462,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestCategory("PullRequestValidation")]
         public void ShouldDownloadEnvelopeEncryptionProtectedAssetFile()
         {
-            IAsset asset = _dataContext.Assets.Create(_smallWmv, AssetCreationOptions.EnvelopeEncryptionProtected);
+            IAsset asset = _mediaContext.Assets.Create(_smallWmv, AssetCreationOptions.EnvelopeEncryptionProtected);
             string name = Path.GetFileName(_smallWmv);
             IAssetFile file = asset.AssetFiles.Create(name);
             file.Upload(_smallWmv);
@@ -472,7 +474,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldDownloadIngestEncryptedAssetFile()
         {
-            IAsset asset = CreateAsset(_dataContext, _smallWmv, AssetCreationOptions.StorageEncrypted);
+            IAsset asset = CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.StorageEncrypted);
             VerifyAndDownloadAsset(asset, 1,false);
         }
 
@@ -505,7 +507,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 locator.Delete();
             }
             asset.Delete();
-            outasset = _dataContext.Assets.Where(c => c.Id == outasset.Id).FirstOrDefault();
+            outasset = _mediaContext.Assets.Where(c => c.Id == outasset.Id).FirstOrDefault();
             Assert.AreEqual(1, outasset.ParentAssets.Count, "Unexpected number of parents assets");
             outasset.Delete();
         }
@@ -515,22 +517,22 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldNotThrowTryingToDeleteAssetWithActiveLocators()
         {
-            IAsset asset = CreateAsset(_dataContext, _smallWmv, AssetCreationOptions.None);
-            IAccessPolicy accessPolicy = _dataContext.AccessPolicies.Create("ReadOnly", TimeSpan.FromMinutes(60), AccessPermissions.Read);
-            ILocator sasLocator = _dataContext.Locators.CreateSasLocator(asset, accessPolicy);
-            ILocator originLocator = _dataContext.Locators.CreateLocator(LocatorType.OnDemandOrigin, asset, accessPolicy);
+            IAsset asset = CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
+            IAccessPolicy accessPolicy = _mediaContext.AccessPolicies.Create("ReadOnly", TimeSpan.FromMinutes(60), AccessPermissions.Read);
+            ILocator sasLocator = _mediaContext.Locators.CreateSasLocator(asset, accessPolicy);
+            ILocator originLocator = _mediaContext.Locators.CreateLocator(LocatorType.OnDemandOrigin, asset, accessPolicy);
 
-            Assert.IsNotNull(_dataContext.Locators.Where(l => l.Id == sasLocator.Id).SingleOrDefault());
-            Assert.IsNotNull(_dataContext.Locators.Where(l => l.Id == originLocator.Id).SingleOrDefault());
+            Assert.IsNotNull(_mediaContext.Locators.Where(l => l.Id == sasLocator.Id).SingleOrDefault());
+            Assert.IsNotNull(_mediaContext.Locators.Where(l => l.Id == originLocator.Id).SingleOrDefault());
 
-            asset = _dataContext.Assets.Where(a => a.Id == asset.Id).Single();
+            asset = _mediaContext.Assets.Where(a => a.Id == asset.Id).Single();
             Assert.AreEqual(3, asset.Locators.Count);
             Assert.IsTrue(asset.Locators.Any(l => l.Id == sasLocator.Id));
             Assert.IsTrue(asset.Locators.Any(l => l.Id == originLocator.Id));
 
             asset.Delete();
-            Assert.IsNull(_dataContext.Locators.Where(l => l.Id == sasLocator.Id).SingleOrDefault());
-            Assert.IsNull(_dataContext.Locators.Where(l => l.Id == originLocator.Id).SingleOrDefault());
+            Assert.IsNull(_mediaContext.Locators.Where(l => l.Id == sasLocator.Id).SingleOrDefault());
+            Assert.IsNull(_mediaContext.Locators.Where(l => l.Id == originLocator.Id).SingleOrDefault());
         }
 
         [TestMethod]
@@ -540,7 +542,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         {
             string assetFilePath = @"Content\interview.wmv";
 
-            IAsset asset = CreateAsset(_dataContext, Path.GetFullPath(assetFilePath), AssetCreationOptions.None);
+            IAsset asset = CreateAsset(_mediaContext, Path.GetFullPath(assetFilePath), AssetCreationOptions.None);
 
             Assert.AreEqual(AssetState.Initialized, asset.State);
             Assert.AreEqual(1, asset.AssetFiles.Count());
@@ -558,9 +560,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         {
             string[] files = Directory.GetFiles("TestFiles");
 
-            IAsset asset = _dataContext.Assets.Create(Guid.NewGuid().ToString(), AssetCreationOptions.None);
-            IAccessPolicy policy = _dataContext.AccessPolicies.Create("Write", TimeSpan.FromMinutes(5), AccessPermissions.Write);
-            ILocator locator = _dataContext.Locators.CreateSasLocator(asset, policy);
+            IAsset asset = _mediaContext.Assets.Create(Guid.NewGuid().ToString(), AssetCreationOptions.None);
+            IAccessPolicy policy = _mediaContext.AccessPolicies.Create("Write", TimeSpan.FromMinutes(5), AccessPermissions.Write);
+            ILocator locator = _mediaContext.Locators.CreateSasLocator(asset, policy);
             var blobclient = new BlobTransferClient
                 {
                     NumberOfConcurrentTransfers = 5,
@@ -595,9 +597,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         {
             string fileName = _smallWmv;
             bool reportedProgress = false;
-            IAsset asset = _dataContext.Assets.Create(Guid.NewGuid().ToString(), AssetCreationOptions.StorageEncrypted);
-            IAccessPolicy policy = _dataContext.AccessPolicies.Create("Write", TimeSpan.FromMinutes(5), AccessPermissions.Write);
-            ILocator locator = _dataContext.Locators.CreateSasLocator(asset, policy);
+            IAsset asset = _mediaContext.Assets.Create(Guid.NewGuid().ToString(), AssetCreationOptions.StorageEncrypted);
+            IAccessPolicy policy = _mediaContext.AccessPolicies.Create("Write", TimeSpan.FromMinutes(5), AccessPermissions.Write);
+            ILocator locator = _mediaContext.Locators.CreateSasLocator(asset, policy);
             var info = new FileInfo(fileName);
             IAssetFile file = asset.AssetFiles.Create(info.Name);
             var blobclient = new BlobTransferClient
@@ -623,7 +625,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         {
             string fileName = @"Content\interview.wmv";
 
-            IAsset asset = CreateAsset(_dataContext, Path.GetFullPath(fileName), AssetCreationOptions.CommonEncryptionProtected);
+            IAsset asset = CreateAsset(_mediaContext, Path.GetFullPath(fileName), AssetCreationOptions.CommonEncryptionProtected);
 
             Assert.IsNull(asset.AlternateId);
             string newAssetName = "New Asset Name";
@@ -647,7 +649,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestCategory("PullRequestValidation")]
         public void ShouldDeleteAsset()
         {
-            IAsset asset = CreateAsset(_dataContext, _smallWmv, AssetCreationOptions.None);
+            IAsset asset = CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
 
 
             Assert.AreEqual(AssetState.Initialized, asset.State);
@@ -658,7 +660,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             asset.Delete();
 
-            Assert.IsNull(_dataContext.Assets.Where(a => a.Id == asset.Id).SingleOrDefault());
+            Assert.IsNull(_mediaContext.Assets.Where(a => a.Id == asset.Id).SingleOrDefault());
 
             CloudMediaContext newContext = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
 
@@ -670,24 +672,89 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestCategory("PullRequestValidation")]
         public void ShouldSetContentFileSizeOnAssetFileWithoutUpload()
         {
-            IAsset asset = _dataContext.Assets.Create("test", AssetCreationOptions.None);
+            IAsset asset = _mediaContext.Assets.Create("test", AssetCreationOptions.None);
             IAssetFile fileInfo = asset.AssetFiles.Create("test.txt");
             int expected = 0;
             Assert.AreEqual(expected, fileInfo.ContentFileSize, "Unexpected ContentFileSize value");
             expected = 100;
             fileInfo.ContentFileSize = expected;
             fileInfo.Update();
-            IAssetFile refreshedFile = _dataContext.Files.Where(c => c.Id == fileInfo.Id).FirstOrDefault();
+            IAssetFile refreshedFile = _mediaContext.Files.Where(c => c.Id == fileInfo.Id).FirstOrDefault();
             Assert.IsNotNull(refreshedFile);
             Assert.AreEqual(expected, refreshedFile.ContentFileSize, "ContentFileSize Mismatch after Update");
 
             //Double check with new context
-            _dataContext = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
-            refreshedFile = _dataContext.Files.Where(c => c.Id == fileInfo.Id).FirstOrDefault();
+            _mediaContext = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
+            refreshedFile = _mediaContext.Files.Where(c => c.Id == fileInfo.Id).FirstOrDefault();
             Assert.IsNotNull(refreshedFile);
             Assert.AreEqual(expected, refreshedFile.ContentFileSize, "ContentFileSize Mismatch after Update");
         }
 
+        [TestMethod]
+        [Priority(0)]
+        public void TestAssetCreateRetry()
+        {
+            var dataContextMock = new Mock<IMediaDataServiceContext>();
+
+            dataContextMock.Setup((ctxt) => ctxt.AddObject("Assets", It.IsAny<object>()));
+
+            int exceptionCount = 2;
+
+            var expected = new AssetData { Name = "testData" };
+            var fakeResponse = new TestMediaDataServiceResponse { AsyncState = expected };
+            var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
+
+            dataContextMock.Setup((ctxt) => ctxt
+                .SaveChangesAsync(It.IsAny<object>()))
+                .Returns(() => Task.Factory.StartNew<IMediaDataServiceResponse>(() =>
+                {
+                    if (--exceptionCount > 0) throw fakeException;
+                    return fakeResponse;
+                }));
+
+            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
+
+            IAsset asset = _mediaContext.Assets.Create("Empty", AssetCreationOptions.None);
+            Assert.AreEqual(expected.Name, asset.Name);
+        }
+
+        [TestMethod]
+        [Priority(0)]
+        [ExpectedException(typeof(WebException))]
+        public void TestAssetCreateFailedRetry()
+        {
+            var dataContextMock = new Mock<IMediaDataServiceContext>();
+
+            dataContextMock.Setup((ctxt) => ctxt.AddObject("Assets", It.IsAny<object>()));
+
+            int exceptionCount = 10;
+
+            var expected = new AssetData { Name = "testData" };
+            var fakeResponse = new TestMediaDataServiceResponse { AsyncState = expected };
+            var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
+
+            dataContextMock.Setup((ctxt) => ctxt
+                .SaveChangesAsync(It.IsAny<object>()))
+                .Returns(() => Task.Factory.StartNew<IMediaDataServiceResponse>(() =>
+                {
+                    if (--exceptionCount > 0) throw fakeException;
+                    return fakeResponse;
+                }));
+
+            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
+
+            try
+            {
+                IAsset asset = _mediaContext.Assets.Create("Empty", AssetCreationOptions.None);
+            }
+            catch (WebException x)
+            {
+                Assert.AreEqual(fakeException, x);
+                throw;
+            }
+
+            Assert.Fail("Expected exception");
+        }
         #region Helper/utility methods
 
         public static IAsset CreateAsset(CloudMediaContext datacontext, string filePath, AssetCreationOptions options)
@@ -802,9 +869,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         private IAsset RunJobAndGetOutPutAsset(string jobName, out IAsset asset, out IJob job)
         {
-            asset = CreateAsset(_dataContext, _smallWmv, AssetCreationOptions.StorageEncrypted);
-            IMediaProcessor mediaProcessor = JobTests.GetMediaProcessor(_dataContext, WindowsAzureMediaServicesTestConfiguration.MpEncoderName);
-            job = JobTests.CreateAndSubmitOneTaskJob(_dataContext, jobName, mediaProcessor, JobTests.GetWamePreset(mediaProcessor), asset, TaskOptions.None);
+            asset = CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.StorageEncrypted);
+            IMediaProcessor mediaProcessor = JobTests.GetMediaProcessor(_mediaContext, WindowsAzureMediaServicesTestConfiguration.MpEncoderName);
+            job = JobTests.CreateAndSubmitOneTaskJob(_mediaContext, jobName, mediaProcessor, JobTests.GetWamePreset(mediaProcessor), asset, TaskOptions.None);
             JobTests.WaitForJob(job.Id, JobState.Finished, JobTests.VerifyAllTasksFinished);
             Assert.IsTrue(job.OutputMediaAssets.Count > 0);
             IAsset outasset = job.OutputMediaAssets[0];
@@ -831,7 +898,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         private IAsset RefreshedAsset(IAsset asset)
         {
-            IAsset refreshedAsset = _dataContext.Assets.Where(c => c.Id == asset.Id).FirstOrDefault();
+            IAsset refreshedAsset = _mediaContext.Assets.Where(c => c.Id == asset.Id).FirstOrDefault();
             Assert.AreEqual(asset.Name, refreshedAsset.Name);
             Assert.AreEqual(AssetState.Initialized, refreshedAsset.State);
             return refreshedAsset;
@@ -839,7 +906,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         private void CreateAssetAndUploadNFilesSync(int expected)
         {
-            IAsset asset = _dataContext.Assets.Create("TestWithMultipleFiles", AssetCreationOptions.None);
+            IAsset asset = _mediaContext.Assets.Create("TestWithMultipleFiles", AssetCreationOptions.None);
             VerifyAsset(asset);
             DirectoryInfo info = Directory.CreateDirectory(Guid.NewGuid().ToString());
 
@@ -850,7 +917,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 IAssetFile file = asset.AssetFiles.Create(fileName);
                 file.Upload(fullFilePath);
             }
-            Assert.AreEqual(expected, _dataContext.Files.Where(c => c.ParentAssetId == asset.Id).Count());
+            Assert.AreEqual(expected, _mediaContext.Files.Where(c => c.ParentAssetId == asset.Id).Count());
         }
 
         private  string CreateNewFileFromOriginal(DirectoryInfo info, out string fileName)
@@ -926,14 +993,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         private IAsset CreateAssetAndUploadNFilesUsingAsyncCall(int expected)
         {
-            IAsset asset = _dataContext.Assets.Create("TestWithMultipleFiles", AssetCreationOptions.None);
+            IAsset asset = _mediaContext.Assets.Create("TestWithMultipleFiles", AssetCreationOptions.None);
             VerifyAsset(asset);
             DirectoryInfo info = Directory.CreateDirectory(Guid.NewGuid().ToString());
 
             var files = new List<Task>();
             var client = new BlobTransferClient();
-            IAccessPolicy policy = _dataContext.AccessPolicies.Create("Write", TimeSpan.FromMinutes(20), AccessPermissions.Write);
-            ILocator locator = _dataContext.Locators.CreateSasLocator(asset, policy);
+            IAccessPolicy policy = _mediaContext.AccessPolicies.Create("Write", TimeSpan.FromMinutes(20), AccessPermissions.Write);
+            ILocator locator = _mediaContext.Locators.CreateSasLocator(asset, policy);
 
 
             for (int i = 0; i < expected; i++)

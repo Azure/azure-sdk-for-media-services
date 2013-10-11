@@ -31,7 +31,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             : base(cloudMediaContext)
         {
             MediaContext = cloudMediaContext;
-            Queryable = MediaContext.DataContextFactory.CreateDataServiceContext().CreateQuery<NotificationEndPoint>(NotificationEndPoints);
+            Queryable = MediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<NotificationEndPoint>(NotificationEndPoints);
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             };
 
             notificationEndPoint.SetMediaContext(MediaContext);
-            DataServiceContext dataContext = MediaContext.DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AddObject(NotificationEndPoints, notificationEndPoint);
 
             return dataContext
@@ -62,7 +62,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     {
                         t.ThrowIfFaulted();
 
-                        return (NotificationEndPoint)t.AsyncState;
+                        return (NotificationEndPoint)t.Result.AsyncState;
                     },
                     TaskContinuationOptions.ExecuteSynchronously);
         }
