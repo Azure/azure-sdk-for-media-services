@@ -30,7 +30,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     public class IngestManifestAssetCollection : BaseCollection<IIngestManifestAsset>
     {
         internal const string EntitySet = "IngestManifestAssets";
-        private readonly DataServiceContext _dataContext;
+        private readonly IMediaDataServiceContext _dataContext;
         private readonly IIngestManifest _parentIngestManifest;
         private readonly Lazy<IQueryable<IIngestManifestAsset>> _query;
 
@@ -42,7 +42,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         internal IngestManifestAssetCollection(MediaContextBase cloudMediaContext, IIngestManifest parentIngestManifest):base(cloudMediaContext)
         {
              MediaContext = cloudMediaContext;
-            _dataContext = MediaContext.DataContextFactory.CreateDataServiceContext();
+            _dataContext = MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             _parentIngestManifest = parentIngestManifest;
             _query = new Lazy<IQueryable<IIngestManifestAsset>>(() => _dataContext.CreateQuery<IngestManifestAssetData>(EntitySet));
         }
@@ -199,7 +199,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             IngestManifestCollection.VerifyManifest(ingestManifest);
 
-            DataServiceContext dataContext = MediaContext.DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             var data = new IngestManifestAssetData
                            {
                                ParentIngestManifestId = ingestManifest.Id
@@ -215,7 +215,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                                                                                                             {
                                                                                                                 t.ThrowIfFaulted();
                                                                                                                 token.ThrowIfCancellationRequested();
-                                                                                                                IngestManifestAssetData ingestManifestAsset = (IngestManifestAssetData)t.AsyncState;
+                                                                                                                IngestManifestAssetData ingestManifestAsset = (IngestManifestAssetData)t.Result.AsyncState;
                                                                                                                 continueWith(ingestManifestAsset);
                                                                                                                 return ingestManifestAsset;
                                                                                                             }, TaskContinuationOptions.ExecuteSynchronously);

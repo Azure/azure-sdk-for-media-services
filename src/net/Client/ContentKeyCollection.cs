@@ -41,7 +41,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             : base(cloudMediaContext)
         {
             
-            this.ContentKeyQueryable = this.MediaContext.DataContextFactory.CreateDataServiceContext().CreateQuery<ContentKeyData>(ContentKeySet);
+            this.ContentKeyQueryable = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<ContentKeyData>(ContentKeySet);
         }
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new ArgumentException(StringTable.ErrorCommonEncryptionKeySize, "contentKey");
             }
 
-            DataServiceContext dataContext = this.MediaContext.DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             X509Certificate2 certToUse = ContentKeyBaseCollection.GetCertificateToEncryptContentKey(dataContext, ContentKeyType.CommonEncryption);
             ContentKeyData contentKeyData = CreateCommonContentKey(keyId, contentKey, name, certToUse);
             
@@ -94,7 +94,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     {
                         t.ThrowIfFaulted();
 
-                        return (ContentKeyData)t.AsyncState;
+                        return (ContentKeyData)t.Result.AsyncState;
                     },
                     TaskContinuationOptions.ExecuteSynchronously);
         }

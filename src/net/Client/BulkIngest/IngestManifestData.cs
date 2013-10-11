@@ -78,14 +78,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
         /// <summary>
-        /// Deletes manifest asyncroniously.
+        /// Deletes manifest asynchronously.
         /// </summary>
         /// <returns><see cref="Task"/></returns>
         public Task DeleteAsync()
         {
             IngestManifestCollection.VerifyManifest(this);
 
-            DataServiceContext dataContext = GetMediaContext().DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(IngestManifestCollection.EntitySet, this);
             dataContext.DeleteObject(this);
             return dataContext.SaveChangesAsync(this);
@@ -392,7 +392,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public Task UpdateAsync()
         {
             IngestManifestCollection.VerifyManifest(this);
-            DataServiceContext dataContext = GetMediaContext().DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(IngestManifestCollection.EntitySet, this);
             dataContext.UpdateObject(this);
             return dataContext.SaveChangesAsync(this);

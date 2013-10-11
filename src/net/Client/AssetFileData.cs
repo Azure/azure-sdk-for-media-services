@@ -26,6 +26,7 @@ using System.Threading.Tasks;
 using Microsoft.Win32;
 using Microsoft.WindowsAzure.MediaServices.Client.AzureStorageClientTransientFaultHandling;
 using Microsoft.WindowsAzure.Storage.RetryPolicies;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -93,7 +94,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </returns>
         public Task DownloadAsync(string destinationPath, BlobTransferClient blobTransferClient, ILocator locator, CancellationToken cancellationToken)
         {
-            return this.DownloadToFileAsync(destinationPath, blobTransferClient, locator, AzureStorageClientRetryPolicyFactory.DefaultPolicy.AsAzureStorageClientRetryPolicy(), cancellationToken);
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetBlobStorageClientRetryPolicy();
+            return this.DownloadToFileAsync(destinationPath, blobTransferClient, locator, retryPolicy.AsAzureStorageClientRetryPolicy(), cancellationToken);
         }
 
 
@@ -145,14 +147,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new NotSupportedException(StringTable.NotSupportedFileInfoSave);
             }
 
-            DataServiceContext dataContext = this.GetMediaContext().DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(FileSet, this);
             dataContext.UpdateObject(this);
             return dataContext.SaveChangesAsync(this).ContinueWith<IAssetFile>(
                     t =>
                         {
                             t.ThrowIfFaulted();
-                            AssetFileData data = (AssetFileData)t.AsyncState;
+                            AssetFileData data = (AssetFileData)t.Result.AsyncState;
                             return data;
                         });
         }
@@ -193,7 +195,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
         public Task DeleteAsync()
         {
-            DataServiceContext dataContext = this.GetMediaContext().DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(FileSet, this);
             dataContext.DeleteObject(this);
             return dataContext.SaveChangesAsync(this);
@@ -250,13 +252,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             blobTransferClient.TransferProgressChanged += handler;
 
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetBlobStorageClientRetryPolicy();
+
             return blobTransferClient.UploadBlob(
                 new Uri(locator.Path),
                 path,
                 null,
                 fileEncryption,
                 token,
-                AzureStorageClientRetryPolicyFactory.DefaultPolicy.AsAzureStorageClientRetryPolicy())
+                retryPolicy.AsAzureStorageClientRetryPolicy())
                 .ContinueWith(
                 ts=>
                 {

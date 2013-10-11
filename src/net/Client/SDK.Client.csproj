@@ -114,7 +114,7 @@
     <Compile Include="AssetNamingSchemeResolver.cs" />
     <Compile Include="AssetPlaceholderToInstanceResolver.cs" />
     <Compile Include="AssetState.cs" />
-    <Compile Include="AzureMediaServicesDataServiceContextFactory.cs" />
+    <Compile Include="AzureMediaServicesClassFactory.cs" />
     <Compile Include="BaseEntity.cs" />
     <Compile Include="BlobTransferClient.cs" />
     <Compile Include="BlobTransferCompleteEventArgs.cs" />
@@ -141,7 +141,6 @@
     <Compile Include="CollectionBase.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Common\AsyncHelper.cs" />
     <Compile Include="ConfigurationEncryptionHelper.cs" />
     <Compile Include="ContentKeyBaseCollection.cs">
       <SubType>Code</SubType>
@@ -149,11 +148,12 @@
     <Compile Include="DataServiceAsyncExtensions.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DuplicatedFiles\AzureStorageClientTransientFaultHandling\AzureStorageClientRetryPolicyFactory.cs" />
     <Compile Include="DuplicatedFiles\AzureStorageClientTransientFaultHandling\RetryPolicyExtensions.cs" />
     <Compile Include="DuplicatedFiles\AzureStorageClientTransientFaultHandling\StorageTransientErrorDetectionStrategy.cs" />
     <Compile Include="DuplicatedFiles\TransientFaultHandling\MediaRetryPolicy.cs" />
+    <Compile Include="DuplicatedFiles\TransientFaultHandling\QueryErrorDetectionStrategy.cs" />
     <Compile Include="DuplicatedFiles\TransientFaultHandling\RetryStrategyFactory.cs" />
+    <Compile Include="DuplicatedFiles\TransientFaultHandling\SaveChangesErrorDetectionStrategy.cs" />
     <Compile Include="DuplicatedFiles\TransientFaultHandling\WebRequestTransientErrorDetectionStrategy.cs" />
     <Compile Include="GeneratedCode\ApiClasses.cs">
       <SubType>Code</SubType>
@@ -164,6 +164,8 @@
     <Compile Include="IAssetFile.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="IMediaDataServiceContext.cs" />
+    <Compile Include="IMediaDataServiceResponse.cs" />
     <Compile Include="INotificationEndpoint.cs" />
     <Compile Include="IStorageAccount.cs" />
     <Compile Include="ITaskHistoricalEvent.cs" />
@@ -198,37 +200,15 @@
     <Compile Include="IJobTemplate.cs" />
     <Compile Include="InputAssetCollection.cs" />
     <Compile Include="JobTemplateData.cs" />
-    <Compile Include="Live\ChannelBaseCollection.cs" />
-    <Compile Include="Live\ChannelData.cs" />
-    <Compile Include="Live\ChannelSettings.cs" />
-    <Compile Include="Live\ChannelSize.cs" />
-    <Compile Include="Live\ChannelState.cs" />
-    <Compile Include="Live\G20Key.cs" />
-    <Compile Include="Live\IChannel.cs" />
-    <Compile Include="Live\IOperation.cs" />
-    <Compile Include="Live\IOrigin.cs" />
-    <Compile Include="Live\IProgram.cs" />
-    <Compile Include="Live\Ipv4.cs" />
-    <Compile Include="Live\OperationBaseCollection.cs" />
-    <Compile Include="Live\OperationData.cs" />
-    <Compile Include="Live\OperationState.cs" />
-    <Compile Include="Live\OriginBaseCollection.cs" />
-    <Compile Include="Live\OriginData.cs" />
-    <Compile Include="Live\OriginServiceSettings.cs" />
-    <Compile Include="Live\OriginSettings.cs" />
-    <Compile Include="Live\OriginState.cs" />
-    <Compile Include="Live\ProgramBaseCollection.cs" />
-    <Compile Include="Live\ProgramData.cs" />
-    <Compile Include="Live\ProgramState.cs" />
-    <Compile Include="Live\RestEntity.cs" />
-    <Compile Include="Live\Serializer.cs" />
-    <Compile Include="Live\StreamingConstants.cs" />
     <Compile Include="LocatorBaseCollection.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="MediaDataServiceContext.cs" />
+    <Compile Include="MediaDataServiceResponse.cs" />
     <Compile Include="MediaProcessorBaseCollection.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="MediaServicesClassFactory.cs" />
     <Compile Include="NotificationEndpoint.cs" />
     <Compile Include="NotificationEndpointCollection.cs" />
     <Compile Include="NotificationEndpointType.cs" />

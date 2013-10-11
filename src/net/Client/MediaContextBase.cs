@@ -83,34 +83,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public abstract IStorageAccount DefaultStorageAccount { get; }
 
         /// <summary>
-        /// Gets the collection of notification endpoints avaiable in the system.
+        /// Gets the collection of notification endpoints available in the system.
         /// </summary>
         public abstract NotificationEndPointCollection NotificationEndPoints { get; }
 
         /// <summary>
-        /// Gets a factory for creating data service context instances prepared for Windows Azure Media Services.
+        /// Gets or sets a factory for creating data service context instances prepared for Windows Azure Media Services.
         /// </summary>
-        public abstract AzureMediaServicesDataServiceContextFactory DataContextFactory { get; }
-
-        /// <summary>
-        /// Gets the collection of channels in the system.
-        /// </summary>
-        public abstract ChannelBaseCollection Channels { get; }
-
-        /// <summary>
-        /// Gets the collection of programs in the system.
-        /// </summary>
-        public abstract ProgramBaseCollection Programs { get; }
-
-        /// <summary>
-        /// Gets the collection of origins in the system.
-        /// </summary>
-        public abstract OriginBaseCollection Origins { get; }
-
-        /// <summary>
-        /// Gets the collection of operation in the system.
-        /// </summary>
-        public abstract OperationBaseCollection Operations { get; }
+        public MediaServicesClassFactory MediaServicesClassFactory { get; set; }
 
         public abstract IngestManifestFileCollection IngestManifestFiles { get; }
         public abstract IngestManifestCollection IngestManifests { get; }

@@ -21,6 +21,7 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
     
 namespace Microsoft.WindowsAzure.MediaServices.Client
@@ -43,7 +44,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         internal AssetCollection(MediaContextBase cloudMediaContext)
             : base(cloudMediaContext)
         {
-            this._assetQuery = new Lazy<IQueryable<IAsset>>(() => this.MediaContext.DataContextFactory.CreateDataServiceContext().CreateQuery<AssetData>(AssetSet));
+            this._assetQuery = new Lazy<IQueryable<IAsset>>(() => this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<AssetData>(AssetSet));
         }
 
         /// <summary>
@@ -101,23 +102,24 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
            
             cancellationToken.ThrowIfCancellationRequested();
-            DataServiceContext dataContext = this.MediaContext.DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AddObject(AssetSet, (IAsset)emptyAsset);
 
-            return dataContext
-                .SaveChangesAsync(emptyAsset)
+            MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(emptyAsset))
                 .ContinueWith<IAsset>(
                     t =>
                     {
                         t.ThrowIfFaulted(); 
                         cancellationToken.ThrowIfCancellationRequested();
 
-                        AssetData data = (AssetData)t.AsyncState;
+                        AssetData data = (AssetData)t.Result.AsyncState;
                         if (options.HasFlag(AssetCreationOptions.StorageEncrypted))
                         {
                             using (var fileEncryption = new NullableFileEncryption())
                             {
-                                CreateStorageContentKey(data, fileEncryption, MediaContext.DataContextFactory.CreateDataServiceContext());
+                                CreateStorageContentKey(data, fileEncryption, dataContext);
                             }
                         }
 
@@ -149,7 +151,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
 
-        private static ContentKeyData CreateStorageContentKey(AssetData tempAsset, NullableFileEncryption fileEncryption, DataServiceContext dataContext)
+        private static ContentKeyData CreateStorageContentKey(AssetData tempAsset, NullableFileEncryption fileEncryption, IMediaDataServiceContext dataContext)
         {
             // Create the content key.
             fileEncryption.Init();

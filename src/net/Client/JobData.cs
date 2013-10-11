@@ -119,7 +119,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 {
                     if (!string.IsNullOrWhiteSpace(this.Id))
                     {
-                        DataServiceContext dataContext = this.GetMediaContext().DataContextFactory.CreateDataServiceContext();
+                        IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
                         dataContext.AttachTo(JobBaseCollection.JobSet, this);
                         dataContext.LoadProperty(this, InputMediaAssetsPropertyName);
                     }
@@ -142,7 +142,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 {
                     if (!string.IsNullOrWhiteSpace(this.Id))
                     {
-                        DataServiceContext dataContext = this.GetMediaContext().DataContextFactory.CreateDataServiceContext();
+                        IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
                         dataContext.AttachTo(JobBaseCollection.JobSet, this);
                         dataContext.LoadProperty(this, OutputMediaAssetsPropertyName);
                     }
@@ -165,7 +165,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 {
                     if (!string.IsNullOrWhiteSpace(this.Id))
                     {
-                        DataServiceContext dataContext = this.GetMediaContext().DataContextFactory.CreateDataServiceContext();
+                        IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
                         dataContext.AttachTo(JobBaseCollection.JobSet, this);
                         dataContext.LoadProperty(this, TasksPropertyName);
                     }
@@ -193,7 +193,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 string.Format(CultureInfo.InvariantCulture, "/CancelJob?jobid='{0}'", HttpUtility.UrlEncode(Id)),
                 UriKind.Relative);
 
-            DataServiceContext dataContext = this.GetMediaContext().DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.IgnoreResourceNotFoundException = false;
             dataContext.AttachTo(JobBaseCollection.JobSet, this);
 
@@ -236,7 +236,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new InvalidOperationException(StringTable.InvalidOperationDeleteForNotSubmittedJob);
             }
 
-            DataServiceContext dataContext = this.GetMediaContext().DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(JobBaseCollection.JobSet, this);
             dataContext.DeleteObject(this);
 
@@ -271,14 +271,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new InvalidOperationException(StringTable.InvalidOperationUpdateForNotSubmittedJob);
             }
 
-            DataServiceContext dataContext = this.GetMediaContext().DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(JobBaseCollection.JobSet, this);
             dataContext.UpdateObject(this);
             return dataContext.SaveChangesAsync(this).ContinueWith<IJob>(
                    t =>
                    {
                        t.ThrowIfFaulted();
-                       JobData data = (JobData)t.AsyncState;
+                       JobData data = (JobData)t.Result.AsyncState;
                        return data;
                    });
         }
@@ -310,7 +310,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new InvalidOperationException(StringTable.InvalidOperationSubmitForSubmittedJob);
             }
 
-            DataServiceContext dataContext = this.GetMediaContext().DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
 
             this.InnerSubmit(dataContext);
 
@@ -320,7 +320,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     t =>
                     {
                         t.ThrowIfFaulted();
-                        JobData data = (JobData)t.AsyncState;
+                        JobData data = (JobData)t.Result.AsyncState;
                         data.JobEntityRefresh(dataContext);
                     });
         }
@@ -353,7 +353,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new InvalidOperationException(StringTable.InvalidOperationGetExecutionProgressTaskForNotSubmittedJob);
             }
 
-            DataServiceContext dataContext = this.GetMediaContext().DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(JobBaseCollection.JobSet, this);
 
             return Task.Factory.StartNew(
@@ -679,7 +679,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             return (jobState == JobState.Canceled) || (jobState == JobState.Error) || (jobState == JobState.Finished);
         }
 
-        private static void ProtectTaskConfiguration(TaskData task, ref X509Certificate2 certToUse, DataServiceContext dataContext)
+        private static void ProtectTaskConfiguration(TaskData task, ref X509Certificate2 certToUse, IMediaDataServiceContext dataContext)
         {
             using (ConfigurationEncryption configEncryption = new ConfigurationEncryption())
             {
@@ -702,7 +702,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
         }
 
-        private static void ProtectTaskConfiguration(TaskTemplateData taskTemplate, ref X509Certificate2 certToUse, DataServiceContext dataContext)
+        private static void ProtectTaskConfiguration(TaskTemplateData taskTemplate, ref X509Certificate2 certToUse, IMediaDataServiceContext dataContext)
         {
             using (ConfigurationEncryption configEncryption = new ConfigurationEncryption())
             {
@@ -725,7 +725,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
         }
 
-        private void InnerSubmit(DataServiceContext dataContext)
+        private void InnerSubmit(IMediaDataServiceContext dataContext)
         {
             if (!string.IsNullOrWhiteSpace(this.TemplateId))
             {
@@ -792,7 +792,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private Task<IJobTemplate> CreateJobTemplate(string templateName, JobTemplateType templateType, params ITaskTemplate[] taskTemplates)
         {
             X509Certificate2 certToUse = null;
-            DataServiceContext dataContext = this.GetMediaContext().DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
             JobTemplateData jobTemplateData = new JobTemplateData { Name = templateName, TemplateType = (int)templateType };
 
             jobTemplateData.SetMediaContext(this.GetMediaContext());
@@ -826,7 +826,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     {
                         t.ThrowIfFaulted();
 
-                        JobTemplateData data = (JobTemplateData)t.AsyncState;
+                        JobTemplateData data = (JobTemplateData)t.Result.AsyncState;
                         IJobTemplate jobTemplateToReturn = this.GetMediaContext().JobTemplates.Where(c => c.Id == data.Id).First();
 
                         return jobTemplateToReturn;
@@ -866,7 +866,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
         }
 
-        private void JobEntityRefresh(DataServiceContext dataContext)
+        private void JobEntityRefresh(IMediaDataServiceContext dataContext)
         {
             
             InvalidateCollections();

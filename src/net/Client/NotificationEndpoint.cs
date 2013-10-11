@@ -158,7 +158,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>Task of updating the notification endpoint.</returns>
         public Task UpdateAsync()
         {
-            DataServiceContext dataContext = GetMediaContext().DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(NotificationEndPointCollection.NotificationEndPoints, this);
             dataContext.UpdateObject(this);
 
@@ -186,7 +186,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>Task of deleting the notification endpoint.</returns>
         public Task DeleteAsync()
         {
-            DataServiceContext dataContext = GetMediaContext().DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(NotificationEndPointCollection.NotificationEndPoints, this);
             dataContext.DeleteObject(this);
 

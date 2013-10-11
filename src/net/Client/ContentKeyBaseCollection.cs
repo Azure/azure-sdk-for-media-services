@@ -172,7 +172,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="dataContext">The data context.</param>
         /// <param name="contentKeyType">Type of the content key.</param>
         /// <returns>The content key.</returns>
-        internal static string GetProtectionKeyIdForContentKey(DataServiceContext dataContext, ContentKeyType contentKeyType)
+        internal static string GetProtectionKeyIdForContentKey(IMediaDataServiceContext dataContext, ContentKeyType contentKeyType)
         {
             // First query Nimbus to find out what certificate to encrypt the content key with.
             string uriString = string.Format(CultureInfo.InvariantCulture, "/GetProtectionKeyId?contentKeyType={0}", Convert.ToInt32(contentKeyType, CultureInfo.InvariantCulture));
@@ -188,7 +188,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="dataContext">The data context.</param>
         /// <param name="protectionKeyId">The protection key id.</param>
         /// <returns>The content key.</returns>
-        internal static X509Certificate2 GetCertificateForProtectionKeyId(DataServiceContext dataContext, string protectionKeyId)
+        internal static X509Certificate2 GetCertificateForProtectionKeyId(IMediaDataServiceContext dataContext, string protectionKeyId)
         {
             // First check to see if we have the cert in our store already.
             X509Certificate2 certToUse = EncryptionUtils.GetCertificateFromStore(protectionKeyId);
@@ -216,7 +216,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="dataContext">The data context.</param>
         /// <param name="contentKeyType">Type of the content key.</param>
         /// <returns>The content key.</returns>
-        internal static X509Certificate2 GetCertificateToEncryptContentKey(DataServiceContext dataContext, ContentKeyType contentKeyType)
+        internal static X509Certificate2 GetCertificateToEncryptContentKey(IMediaDataServiceContext dataContext, ContentKeyType contentKeyType)
         {
             string thumbprint = GetProtectionKeyIdForContentKey(dataContext, contentKeyType);
 
