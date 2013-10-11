@@ -81,7 +81,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 {
                     if (!string.IsNullOrWhiteSpace(NotificationEndPointId))
                     {
-                        DataServiceContext dataContext = _cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+                        IMediaDataServiceContext dataContext = _cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
                         var notificationEndPoint = dataContext.CreateQuery<NotificationEndPoint>(NotificationEndPointCollection.NotificationEndPoints).Where(n => n.Id == NotificationEndPointId).Single();
                         if (notificationEndPoint != null)
                         {

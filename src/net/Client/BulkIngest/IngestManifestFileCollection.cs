@@ -33,7 +33,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
         internal const string EntitySet = "IngestManifestFiles";
         private readonly Lazy<IQueryable<IIngestManifestFile>> _query;
-        private readonly DataServiceContext _dataContext;
+        private readonly IMediaDataServiceContext _dataContext;
         private readonly CloudMediaContext _cloudMediaContext;
         private readonly IngestManifestAssetData _parentIngestManifestAsset;
 
@@ -47,7 +47,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
 
             this._cloudMediaContext = cloudMediaContext;
-            this._dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            this._dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             this._query = new Lazy<IQueryable<IIngestManifestFile>>(() => this._dataContext.CreateQuery<IngestManifestFileData>(EntitySet));
             if (parentIngestManifestAsset != null)
             {
@@ -113,7 +113,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 if (!File.Exists(filePath)) { throw new FileNotFoundException(String.Format(CultureInfo.InvariantCulture, StringTable.BulkIngestProvidedFileDoesNotExist, filePath)); }
                 FileInfo info = new FileInfo(filePath);
 
-                DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+                IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
 
                 // Set a MIME type based on the extension of the file name
                 string mimeType = AssetFileData.GetMimeType(filePath);
@@ -135,7 +135,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 {
                     t.ThrowIfFaulted();
                     token.ThrowIfCancellationRequested();
-                    IngestManifestFileData ingestManifestFile = (IngestManifestFileData)t.AsyncState;                   
+                    IngestManifestFileData ingestManifestFile = (IngestManifestFileData)t.Result.AsyncState;                   
                     return ingestManifestFile;
                 });
 

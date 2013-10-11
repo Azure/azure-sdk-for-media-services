@@ -49,7 +49,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns><see cref="Task"/></returns>
         public Task DeleteAsync()
         {
-            DataServiceContext dataContext = _cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = _cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(IngestManifestFileCollection.EntitySet, this);
             dataContext.DeleteObject(this);
             return dataContext.SaveChangesAsync(this);

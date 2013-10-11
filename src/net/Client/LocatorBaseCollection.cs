@@ -55,7 +55,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             this._cloudMediaContext = cloudMediaContext;
 
-            this.DataContextFactory = this._cloudMediaContext.DataContextFactory;
+            this.DataContextFactory = this._cloudMediaContext.MediaServicesClassFactory;
             this.Queryable = this.DataContextFactory.CreateDataServiceContext().CreateQuery<LocatorData>(LocatorSet);
         }
 
@@ -171,7 +171,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             locator.InitCloudMediaContext(this._cloudMediaContext);
 
-            DataServiceContext dataContext = this.DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this.DataContextFactory.CreateDataServiceContext();
             dataContext.AttachTo(AssetCollection.AssetSet, asset);
             dataContext.AttachTo(AccessPolicyBaseCollection.AccessPolicySet, accessPolicy);
             dataContext.AddObject(LocatorSet, locator);
@@ -187,7 +187,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
                         assetData.InvalidateLocatorsCollection();
 
-                        return (LocatorData)t.AsyncState;
+                        return (LocatorData)t.Result.AsyncState;
                     },
                     TaskContinuationOptions.ExecuteSynchronously);
         }

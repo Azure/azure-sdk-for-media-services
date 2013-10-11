@@ -144,7 +144,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 {
                     if (!string.IsNullOrWhiteSpace(this.Id))
                     {
-                        DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+                        IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
                         dataContext.AttachTo(TaskSet, this);
                         dataContext.LoadProperty(this, InputMediaAssetsPropertyName);
                     }
@@ -167,7 +167,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 {
                     if (!string.IsNullOrWhiteSpace(this.Id))
                     {
-                        DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+                        IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
                         dataContext.AttachTo(TaskSet, this);
                         dataContext.LoadProperty(this, OutputMediaAssetsPropertyName);
                     }

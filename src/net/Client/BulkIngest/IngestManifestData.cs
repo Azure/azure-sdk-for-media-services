@@ -86,7 +86,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             IngestManifestCollection.VerifyManifest(this);
 
-            DataServiceContext dataContext = _cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = _cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(IngestManifestCollection.EntitySet, this);
             dataContext.DeleteObject(this);
             return dataContext.SaveChangesAsync(this);
@@ -393,7 +393,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public Task UpdateAsync()
         {
             IngestManifestCollection.VerifyManifest(this);
-            DataServiceContext dataContext = _cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = _cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(IngestManifestCollection.EntitySet, this);
             dataContext.UpdateObject(this);
             return dataContext.SaveChangesAsync(this);

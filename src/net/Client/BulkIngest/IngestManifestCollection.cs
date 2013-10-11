@@ -44,7 +44,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             this._cloudMediaContext = cloudMediaContext;
 
-            this.DataContextFactory = this._cloudMediaContext.DataContextFactory;
+            this.DataContextFactory = this._cloudMediaContext.MediaServicesClassFactory;
             this.Queryable = this.DataContextFactory.CreateDataServiceContext().CreateQuery<IngestManifestData>(EntitySet);
         }
 
@@ -88,7 +88,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
 
             ingestManifestData.InitCloudMediaContext(this._cloudMediaContext);
-            DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AddObject(EntitySet, ingestManifestData);
 
             return dataContext
@@ -97,7 +97,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     t =>
                     {
                         t.ThrowIfFaulted();
-                        IngestManifestData data = (IngestManifestData)t.AsyncState;
+                        IngestManifestData data = (IngestManifestData)t.Result.AsyncState;
                         return data;
 
                     });

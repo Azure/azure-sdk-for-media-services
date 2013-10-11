@@ -101,7 +101,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </returns>
         public Task DownloadAsync(string destinationPath, BlobTransferClient blobTransferClient, ILocator locator, CancellationToken cancellationToken)
         {
-            return this.DownloadToFileAsync(destinationPath, blobTransferClient, locator, AzureStorageClientRetryPolicyFactory.DefaultPolicy.AsAzureStorageClientRetryPolicy(), cancellationToken);
+            var retryPolicy = _cloudMediaContext.MediaServicesClassFactory.GetBlobStorageClientRetryPolicy().AsAzureStorageClientRetryPolicy();
+            return this.DownloadToFileAsync(destinationPath, blobTransferClient, locator, retryPolicy, cancellationToken);
         }
 
 
@@ -153,7 +154,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new NotSupportedException(StringTable.NotSupportedFileInfoSave);
             }
 
-            DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(FileSet, this);
             dataContext.UpdateObject(this);
 
@@ -196,7 +197,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
         public Task DeleteAsync()
         {
-            DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(FileSet, this);
             dataContext.DeleteObject(this);
             return dataContext.SaveChangesAsync(this);
@@ -259,7 +260,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 null,
                 fileEncryption,
                 token,
-                AzureStorageClientRetryPolicyFactory.DefaultPolicy.AsAzureStorageClientRetryPolicy())
+                _cloudMediaContext.MediaServicesClassFactory.GetBlobStorageClientRetryPolicy().AsAzureStorageClientRetryPolicy())
                 .ContinueWith(
                 ts=>
                 {

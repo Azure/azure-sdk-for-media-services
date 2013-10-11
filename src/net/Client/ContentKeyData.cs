@@ -56,7 +56,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 if (this._cloudMediaContext != null)
                 {
                     Uri uriRebindContentKey = new Uri(string.Format(CultureInfo.InvariantCulture, "/RebindContentKey?id='{0}'&x509Certificate=''", this.Id), UriKind.Relative);
-                    DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+                    IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
 
                     IEnumerable<string> results = dataContext.Execute<string>(uriRebindContentKey);
                     string reboundContentKey = results.Single();
@@ -110,7 +110,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                         certToSend = HttpUtility.UrlEncode(certToSend);
 
                         Uri uriRebindContentKey = new Uri(string.Format(CultureInfo.InvariantCulture, "/RebindContentKey?id='{0}'&x509Certificate='{1}'", this.Id, certToSend), UriKind.Relative);
-                        DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+                        IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
 
                         IEnumerable<string> results = dataContext.Execute<string>(uriRebindContentKey);
                         string reboundContentKey = results.Single();
@@ -150,7 +150,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             ContentKeyBaseCollection.VerifyContentKey(this);
 
-            DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(ContentKeyCollection.ContentKeySet, this);
             dataContext.DeleteObject(this);
 

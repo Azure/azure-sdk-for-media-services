@@ -44,7 +44,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             this._cloudMediaContext = cloudMediaContext;
 
-            this.DataContextFactory = this._cloudMediaContext.DataContextFactory;
+            this.DataContextFactory = this._cloudMediaContext.MediaServicesClassFactory;
             this.Queryable = this.DataContextFactory.CreateDataServiceContext().CreateQuery<AccessPolicyData>(AccessPolicySet);
         }
 
@@ -57,7 +57,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>A function delegate that returns the future result to be available through the Task&lt;IAccessPolicy&gt;.</returns>
         public Task<IAccessPolicy> CreateAsync(string name, TimeSpan duration, AccessPermissions permissions)
         {
-            DataServiceContext dataContext = this.DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this.DataContextFactory.CreateDataServiceContext();
             AccessPolicyData accessPolicy = new AccessPolicyData
             {
                 Name = name,
@@ -75,7 +75,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     {
                         t.ThrowIfFaulted();
 
-                        return (AccessPolicyData)t.AsyncState;
+                        return (AccessPolicyData)t.Result.AsyncState;
                     },
                     TaskContinuationOptions.ExecuteSynchronously);
         }
