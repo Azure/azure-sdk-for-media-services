@@ -15,7 +15,6 @@
 // </license>
 
 using System;
-using System.Data.Services.Client;
 using System.Data.Services.Common;
 using System.Linq;
 using System.Threading.Tasks;
