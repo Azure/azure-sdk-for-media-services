@@ -16,13 +16,12 @@
 
 using System;
 using System.ComponentModel;
-using System.Data.Services.Client;
 using System.Linq;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
 
-    internal class JobNotificationSubscription : IJobNotificationSubscription
+    internal class JobNotificationSubscription : BaseEntity<IJobNotificationSubscription>, IJobNotificationSubscription
     {
         private int _targetJobState;
         private INotificationEndPoint _notificationEndPoint;
@@ -76,11 +75,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             get
             {
-                if (_notificationEndPoint == null && MediaContext != null)
+                if (_notificationEndPoint == null && GetMediaContext() != null)
                 {
                     if (!string.IsNullOrWhiteSpace(NotificationEndPointId))
                     {
-                        IMediaDataServiceContext dataContext = MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
+                        IMediaDataServiceContext dataContext = GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
                         var notificationEndPoint = dataContext.CreateQuery<NotificationEndPoint>(NotificationEndPointCollection.NotificationEndPoints).Where(n => n.Id == NotificationEndPointId).Single();
                         if (notificationEndPoint != null)
                         {
@@ -94,8 +93,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
         #endregion
-
-
-       public MediaContextBase MediaContext { get; set; }
+        
     }
 }

@@ -15,7 +15,6 @@
 // </license>
 
 using System;
-using System.Data.Services.Client;
 using System.Threading.Tasks;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
