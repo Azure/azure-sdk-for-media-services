@@ -17,7 +17,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Data.Services.Client;
 using System.Data.Services.Common;
 using System.Globalization;
 using System.IO;

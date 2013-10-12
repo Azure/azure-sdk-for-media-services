@@ -16,7 +16,6 @@
 
 
 using System;
-using System.Data.Services.Client;
 using System.Globalization;
 using System.IO;
 using System.Linq;

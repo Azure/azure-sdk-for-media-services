@@ -17,7 +17,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Data.Services.Client;
 using System.Data.Services.Common;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
