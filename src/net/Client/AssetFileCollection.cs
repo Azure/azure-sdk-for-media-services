@@ -19,6 +19,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -139,7 +140,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             dataContext.AddObject(AssetFileCollection.FileSet, assetFile);
             cancelation.ThrowIfCancellationRequested();
-            return dataContext.SaveChangesAsync(assetFile).ContinueWith<IAssetFile>(t =>
+
+            MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(assetFile))
+                .ContinueWith<IAssetFile>(t =>
                     {
                         t.ThrowIfFaulted();
                         AssetFileData data = (AssetFileData)t.Result.AsyncState;
