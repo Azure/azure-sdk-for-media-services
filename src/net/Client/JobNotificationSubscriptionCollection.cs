@@ -40,7 +40,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             if (MediaContext != null)
             {
-                subscription.MediaContext = MediaContext;
+                subscription.SetMediaContext(MediaContext);
             }
 
             _jobNotificationSubscriptionList.Add(subscription);
@@ -88,7 +88,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             {
                 foreach (var jobNotificationSubscription in _jobNotificationSubscriptionList)
                 {
-                    jobNotificationSubscription.MediaContext = MediaContext;
+                    jobNotificationSubscription.SetMediaContext(MediaContext);
                 }
             }
 
