@@ -419,8 +419,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
 
-            //_mediaContext.Assets
-
             file.SetMediaContext(_mediaContext);
             SetFileAsset(file, asset);
 
