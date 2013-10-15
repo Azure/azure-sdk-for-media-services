@@ -19,6 +19,7 @@ using System;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -81,13 +82,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             IMediaDataServiceContext dataContext = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             X509Certificate2 certToUse = ContentKeyBaseCollection.GetCertificateToEncryptContentKey(dataContext, ContentKeyType.CommonEncryption);
-            ContentKeyData contentKeyData = CreateCommonContentKey(keyId, contentKey, name, certToUse);
-            
+            ContentKeyData contentKeyData = CreateCommonContentKey(keyId, contentKey, name, certToUse);            
 
             dataContext.AddObject(ContentKeySet, contentKeyData);
 
-            return dataContext
-                .SaveChangesAsync(contentKeyData)
+            MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(contentKeyData))
                 .ContinueWith<IContentKey>(
                     t =>
                     {

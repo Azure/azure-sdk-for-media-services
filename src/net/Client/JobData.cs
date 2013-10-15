@@ -28,6 +28,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Xml;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -240,7 +241,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             dataContext.AttachTo(JobBaseCollection.JobSet, this);
             dataContext.DeleteObject(this);
 
-            return dataContext.SaveChangesAsync(this);
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(this));
         }
 
         /// <summary>
@@ -274,7 +277,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(JobBaseCollection.JobSet, this);
             dataContext.UpdateObject(this);
-            return dataContext.SaveChangesAsync(this).ContinueWith<IJob>(
+
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(this))
+                .ContinueWith<IJob>(
                    t =>
                    {
                        t.ThrowIfFaulted();
@@ -314,8 +321,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             this.InnerSubmit(dataContext);
 
-            return dataContext
-                .SaveChangesAsync(SaveChangesOptions.Batch, this)
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(SaveChangesOptions.Batch, this))
                 .ContinueWith(
                     t =>
                     {
@@ -819,8 +827,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 ? assetIdMap.Inputs.Count
                 : ((IJob)this).InputMediaAssets.Count;
 
-            return dataContext
-                .SaveChangesAsync(SaveChangesOptions.Batch, jobTemplateData)
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(SaveChangesOptions.Batch, jobTemplateData))
                 .ContinueWith<IJobTemplate>(
                     t =>
                     {
