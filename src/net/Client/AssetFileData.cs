@@ -23,7 +23,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Win32;
-using Microsoft.WindowsAzure.MediaServices.Client.AzureStorageClientTransientFaultHandling;
 using Microsoft.WindowsAzure.Storage.RetryPolicies;
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 

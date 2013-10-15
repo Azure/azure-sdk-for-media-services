@@ -86,6 +86,7 @@
   <ItemGroup>
     <Compile Include="AccessPoliciesTests.cs" />
     <Compile Include="AssetFilesTests.cs" />
+    <Compile Include="BaseCollectionTest.cs" />
     <Compile Include="ContentKeyTests.cs" />
     <Compile Include="Helpers\TestMediaDataServiceResponse.cs" />
     <Compile Include="Helpers\TestMediaServicesClassFactory.cs" />

@@ -22,7 +22,6 @@ using Microsoft.Practices.TransientFaultHandling;
 using Microsoft.WindowsAzure.MediaServices.Client.OAuth;
 using Microsoft.WindowsAzure.MediaServices.Client.Versioning;
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
-using Microsoft.WindowsAzure.MediaServices.Client.AzureStorageClientTransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -88,7 +87,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public override MediaRetryPolicy GetBlobStorageClientRetryPolicy()
         {
             var retryPolicy = new MediaRetryPolicy(
-                new StorageTransientErrorDetectionStrategy(),
+                GetStorageTransientErrorDetectionStrategy(),
                 retryCount: ConnectionRetryMaxAttempts,
                 minBackoff: TimeSpan.FromMilliseconds(ConnectionRetrySleepQuantum),
                 maxBackoff: TimeSpan.FromMilliseconds(ConnectionRetrySleepQuantum * 16),
@@ -104,7 +103,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public override MediaRetryPolicy GetSaveChangesRetryPolicy()
         {
             var retryPolicy = new MediaRetryPolicy(
-                new SaveChangesErrorDetectionStrategy(),
+                GetSaveChangesErrorDetectionStrategy(),
                 retryCount: ConnectionRetryMaxAttempts,
                 minBackoff: TimeSpan.FromMilliseconds(ConnectionRetrySleepQuantum),
                 maxBackoff: TimeSpan.FromMilliseconds(ConnectionRetrySleepQuantum * 16),
@@ -120,7 +119,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public override MediaRetryPolicy GetQueryRetryPolicy()
         {
             var retryPolicy = new MediaRetryPolicy(
-                new QueryErrorDetectionStrategy(),
+                GetQueryErrorDetectionStrategy(),
                 retryCount: ConnectionRetryMaxAttempts,
                 minBackoff: TimeSpan.FromMilliseconds(ConnectionRetrySleepQuantum),
                 maxBackoff: TimeSpan.FromMilliseconds(ConnectionRetrySleepQuantum * 16),
@@ -129,10 +128,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             return retryPolicy;
         }
 
-        private static Uri GetAccountApiEndpoint(OAuthDataServiceAdapter dataServiceAdapter, ServiceVersionAdapter versionAdapter, Uri apiServer)
+        private Uri GetAccountApiEndpoint(OAuthDataServiceAdapter dataServiceAdapter, ServiceVersionAdapter versionAdapter, Uri apiServer)
         {
             RetryPolicy retryPolicy = new RetryPolicy(
-                new WebRequestTransientErrorDetectionStrategy(),
+                GetWebRequestTransientErrorDetectionStrategy(),
                 RetryStrategyFactory.DefaultStrategy());
 
             Uri apiEndpoint = null;

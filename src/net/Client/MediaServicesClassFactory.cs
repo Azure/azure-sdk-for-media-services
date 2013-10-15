@@ -43,5 +43,25 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <returns>Retry policy.</returns>
         public abstract MediaRetryPolicy GetQueryRetryPolicy();
-   }
+
+        public virtual MediaErrorDetectionStrategy GetWebRequestTransientErrorDetectionStrategy()
+        {
+            return new WebRequestTransientErrorDetectionStrategy();
+        }
+
+        public virtual MediaErrorDetectionStrategy GetQueryErrorDetectionStrategy()
+        {
+            return new QueryErrorDetectionStrategy();
+        }
+
+        public virtual MediaErrorDetectionStrategy GetSaveChangesErrorDetectionStrategy()
+        {
+            return new SaveChangesErrorDetectionStrategy();
+        }
+
+        public virtual MediaErrorDetectionStrategy GetStorageTransientErrorDetectionStrategy()
+        {
+            return new StorageTransientErrorDetectionStrategy();
+        }
+    }
 }

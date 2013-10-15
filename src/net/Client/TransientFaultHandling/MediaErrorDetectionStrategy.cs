@@ -16,26 +16,25 @@
 
 using System;
 using System.Collections.ObjectModel;
-using System.Data.Services.Client;
 using System.Net;
 using Microsoft.Practices.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling
 {
-    class QueryErrorDetectionStrategy : ITransientErrorDetectionStrategy
+    public abstract class MediaErrorDetectionStrategy : ITransientErrorDetectionStrategy
     {
-        private static readonly ReadOnlyCollection<int> CommonRetryableWebExceptions =
-            new ReadOnlyCollection<int>(
+        protected static readonly ReadOnlyCollection<WebExceptionStatus> CommonRetryableWebExceptions =
+            new ReadOnlyCollection<WebExceptionStatus>(
                 new[]
                     {
-                        (int)WebExceptionStatus.Timeout,
-                        (int)WebExceptionStatus.KeepAliveFailure,
-                        (int)WebExceptionStatus.ConnectionClosed,
-                        (int)WebExceptionStatus.ProtocolError,
-                        (int)WebExceptionStatus.PipelineFailure,
-                        (int)WebExceptionStatus.SendFailure,
-                        (int)WebExceptionStatus.ReceiveFailure,
-                        (int)WebExceptionStatus.ConnectFailure,
+                        WebExceptionStatus.Timeout,
+                        WebExceptionStatus.KeepAliveFailure,
+                        WebExceptionStatus.ConnectionClosed,
+                        WebExceptionStatus.ProtocolError,
+                        WebExceptionStatus.PipelineFailure,
+                        WebExceptionStatus.SendFailure,
+                        WebExceptionStatus.ReceiveFailure,
+                        WebExceptionStatus.ConnectFailure,
                     });
 
         protected virtual bool OnIsTransient(Exception ex)
@@ -43,15 +42,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling
             return false;
         }
 
-        public bool IsTransient(Exception ex)
+        public virtual bool IsTransient(Exception ex)
         {
             return ex != null && (CheckIsTransient(ex) || OnIsTransient(ex));
         }
 
-        private static bool CheckIsTransient(Exception ex)
-        {
-            var dataServiceException = ex.FindInnerException<DataServiceQueryException>();
-            return CommonRetryableWebExceptions.Contains(dataServiceException.Response.StatusCode);
-        }
+        protected abstract bool CheckIsTransient(Exception ex);
     }
 }

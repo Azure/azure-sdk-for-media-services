@@ -15,6 +15,7 @@
 // </license>
 
 
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Helpers
 {
     public class TestMediaServicesClassFactory : AzureMediaServicesClassFactory
@@ -27,6 +28,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Helpers
         public override IMediaDataServiceContext CreateDataServiceContext()
         {
             return _dataContext;
+        }
+
+        public override MediaErrorDetectionStrategy GetSaveChangesErrorDetectionStrategy()
+        {
+            return new WebRequestTransientErrorDetectionStrategy();
+        }
+
+        public override MediaErrorDetectionStrategy GetQueryErrorDetectionStrategy()
+        {
+            return new WebRequestTransientErrorDetectionStrategy();
         }
 
         private IMediaDataServiceContext _dataContext;
