@@ -149,8 +149,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
         }
 
-
-        private static ContentKeyData CreateStorageContentKey(AssetData tempAsset, NullableFileEncryption fileEncryption, IMediaDataServiceContext dataContext)
+        private ContentKeyData CreateStorageContentKey(AssetData tempAsset, NullableFileEncryption fileEncryption, IMediaDataServiceContext dataContext)
         {
             // Create the content key.
             fileEncryption.Init();
@@ -160,7 +159,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             ContentKeyData contentKeyData = ContentKeyBaseCollection.CreateStorageContentKey(fileEncryption.FileEncryption, certToUse);
 
             dataContext.AddObject(ContentKeyCollection.ContentKeySet, contentKeyData);
-            dataContext.SaveChanges();
+
+            MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            retryPolicy.ExecuteAction<IMediaDataServiceResponse>(() => dataContext.SaveChanges());
 
             // Associate it with the asset.
             ((IAsset) tempAsset).ContentKeys.Add(contentKeyData);

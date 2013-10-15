@@ -4,13 +4,16 @@ using System;
 using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 {
     [TestClass]
     public class LocatorsTests
     {
-        private CloudMediaContext _dataContext;
+        private CloudMediaContext _mediaContext;
         private string _smallWmv;
 
         /// <summary>
@@ -21,7 +24,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestInitialize]
         public void SetupTest()
         {
-            _dataContext = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
+            _mediaContext = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
             _smallWmv = WindowsAzureMediaServicesTestConfiguration.GetVideoSampleFilePath(TestContext, WindowsAzureMediaServicesTestConfiguration.SmallWmv);
         }
 
@@ -30,13 +33,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestCategory("PullRequestValidation")]
         public void ShouldReturnSameLocatorCollectionAfterAssetRequery()
         {
-            var asset = _dataContext.Assets.Create("interview.wmv", AssetCreationOptions.StorageEncrypted);
+            var asset = _mediaContext.Assets.Create("interview.wmv", AssetCreationOptions.StorageEncrypted);
             Assert.IsNotNull(asset);
             Assert.AreEqual(0, asset.Locators.Count, "Unexpected locator count");
-            var policy = _dataContext.AccessPolicies.Create("Write", TimeSpan.FromMinutes(5), AccessPermissions.Write);
-            var locator = _dataContext.Locators.CreateSasLocator(asset, policy);
+            var policy = _mediaContext.AccessPolicies.Create("Write", TimeSpan.FromMinutes(5), AccessPermissions.Write);
+            var locator = _mediaContext.Locators.CreateSasLocator(asset, policy);
 
-            asset = _dataContext.Assets.Where(c => c.Id == asset.Id).FirstOrDefault();
+            asset = _mediaContext.Assets.Where(c => c.Id == asset.Id).FirstOrDefault();
             Assert.IsNotNull(asset);
             Assert.AreEqual(1, asset.Locators.Count, "Unexpected locator count");
         }
@@ -46,20 +49,20 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestCategory("PullRequestValidation")]
         public void ShouldReturnSameLocatorCollectionAfterAssetRequery2()
         {
-            var asset = _dataContext.Assets.Create(Guid.NewGuid().ToString(), AssetCreationOptions.StorageEncrypted);
+            var asset = _mediaContext.Assets.Create(Guid.NewGuid().ToString(), AssetCreationOptions.StorageEncrypted);
             FileInfo info = new FileInfo(@"Content\interview.wmv");
             var file = asset.AssetFiles.Create(info.Name);
             file.Upload(@"Content\interview.wmv");
 
             Assert.AreEqual(0, asset.Locators.Count, "Unexpected locator count");
 
-            var policy = _dataContext.AccessPolicies.Create("Write2", TimeSpan.FromMinutes(5), AccessPermissions.Write);
-            var locator = _dataContext.Locators.CreateSasLocator(asset, policy);
+            var policy = _mediaContext.AccessPolicies.Create("Write2", TimeSpan.FromMinutes(5), AccessPermissions.Write);
+            var locator = _mediaContext.Locators.CreateSasLocator(asset, policy);
 
             Assert.IsNotNull(asset);
             Assert.AreEqual(1, asset.Locators.Count, "Unexpected locator count");
 
-            asset = _dataContext.Assets.Where(c => c.Id == asset.Id).First();
+            asset = _mediaContext.Assets.Where(c => c.Id == asset.Id).First();
             Assert.AreEqual(1, asset.Locators.Count, "Unexpected locator count");
         }
 
@@ -71,11 +74,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         {
             // Arrange
 
-            var accessPolicy = _dataContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromHours(2), AccessPermissions.List | AccessPermissions.Read);
-            var asset = AssetTests.CreateAsset(_dataContext, _smallWmv, AssetCreationOptions.None);
+            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromHours(2), AccessPermissions.List | AccessPermissions.Read);
+            var asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
 
             // Act
-            var locator = _dataContext.Locators.CreateSasLocator(asset, accessPolicy);
+            var locator = _mediaContext.Locators.CreateSasLocator(asset, accessPolicy);
 
             // Act
             locator.Update(DateTime.Now);
@@ -89,11 +92,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             // Arrange            
 
 
-            var accessPolicy = _dataContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.List | AccessPermissions.Read);
-            var asset = AssetTests.CreateAsset(_dataContext, _smallWmv, AssetCreationOptions.None);
+            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.List | AccessPermissions.Read);
+            var asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
 
             // Act
-            var actual = _dataContext.Locators.CreateLocator(LocatorType.OnDemandOrigin, asset, accessPolicy);
+            var actual = _mediaContext.Locators.CreateLocator(LocatorType.OnDemandOrigin, asset, accessPolicy);
 
             // Assert                        
             Assert.IsNotNull(actual);
@@ -109,9 +112,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestCategory("PullRequestValidation")]
         public void ShouldCreateLocatorWithNameSync()
         {
-            var accessPolicy = _dataContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.List | AccessPermissions.Read);
-            var asset = _dataContext.Assets.Create("ShouldCreateLocatorAndQueryItByName",AssetCreationOptions.None);
-            var locator = _dataContext.Locators.CreateLocator(LocatorType.OnDemandOrigin, asset, accessPolicy,DateTime.Now.AddDays(2),"ShouldCreateLocatorWithoutNameAndUpdateName_" + Guid.NewGuid().ToString());
+            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.List | AccessPermissions.Read);
+            var asset = _mediaContext.Assets.Create("ShouldCreateLocatorAndQueryItByName",AssetCreationOptions.None);
+            var locator = _mediaContext.Locators.CreateLocator(LocatorType.OnDemandOrigin, asset, accessPolicy,DateTime.Now.AddDays(2),"ShouldCreateLocatorWithoutNameAndUpdateName_" + Guid.NewGuid().ToString());
             
             FindLocatorByNameAndVerifyIt(locator.Name,locator.Id);
         }
@@ -127,9 +130,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestCategory("PullRequestValidation")]
         public void ShouldCreateSASLocatorWithNameSync()
         {
-            var accessPolicy = _dataContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.List | AccessPermissions.Read);
-            var asset = _dataContext.Assets.Create("ShouldCreateSASLocatorWithName", AssetCreationOptions.None);
-            var locator = _dataContext.Locators.CreateSasLocator( asset, accessPolicy, DateTime.Now.AddDays(2), "ShouldCreateLocatorWithoutNameAndUpdateName_" + Guid.NewGuid().ToString());
+            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.List | AccessPermissions.Read);
+            var asset = _mediaContext.Assets.Create("ShouldCreateSASLocatorWithName", AssetCreationOptions.None);
+            var locator = _mediaContext.Locators.CreateSasLocator( asset, accessPolicy, DateTime.Now.AddDays(2), "ShouldCreateLocatorWithoutNameAndUpdateName_" + Guid.NewGuid().ToString());
 
             FindLocatorByNameAndVerifyIt(locator.Name,locator.Id);
         }
@@ -138,9 +141,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestCategory("PullRequestValidation")]
         public void ShouldCreateLocatorWithNameASync()
         {
-            var accessPolicy = _dataContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.List | AccessPermissions.Read);
-            var asset = _dataContext.Assets.Create("ShouldCreateLocatorAndQueryItByName", AssetCreationOptions.None);
-            var locator = _dataContext.Locators.CreateLocatorAsync(LocatorType.OnDemandOrigin, asset, accessPolicy, DateTime.Now.AddDays(2), "ShouldCreateLocatorWithoutNameAndUpdateName_" + Guid.NewGuid().ToString()).Result;
+            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.List | AccessPermissions.Read);
+            var asset = _mediaContext.Assets.Create("ShouldCreateLocatorAndQueryItByName", AssetCreationOptions.None);
+            var locator = _mediaContext.Locators.CreateLocatorAsync(LocatorType.OnDemandOrigin, asset, accessPolicy, DateTime.Now.AddDays(2), "ShouldCreateLocatorWithoutNameAndUpdateName_" + Guid.NewGuid().ToString()).Result;
 
             FindLocatorByNameAndVerifyIt(locator.Name,locator.Id);
         }
@@ -149,9 +152,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestCategory("PullRequestValidation")]
         public void ShouldCreateSASLocatorWithNameASync()
         {
-            var accessPolicy = _dataContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.List | AccessPermissions.Read);
-            var asset = _dataContext.Assets.Create("ShouldCreateSASLocatorWithName", AssetCreationOptions.None);
-            var locator = _dataContext.Locators.CreateSasLocatorAsync(asset, accessPolicy, DateTime.Now.AddDays(2), "ShouldCreateLocatorWithoutNameAndUpdateName_" + Guid.NewGuid().ToString()).Result;
+            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.List | AccessPermissions.Read);
+            var asset = _mediaContext.Assets.Create("ShouldCreateSASLocatorWithName", AssetCreationOptions.None);
+            var locator = _mediaContext.Locators.CreateSasLocatorAsync(asset, accessPolicy, DateTime.Now.AddDays(2), "ShouldCreateLocatorWithoutNameAndUpdateName_" + Guid.NewGuid().ToString()).Result;
 
             FindLocatorByNameAndVerifyIt(locator.Name, locator.Id);
         }
@@ -163,11 +166,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             // Arrange            
 
 
-            var accessPolicy = _dataContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.List | AccessPermissions.Read);
-            var asset = AssetTests.CreateAsset(_dataContext, _smallWmv, AssetCreationOptions.None);
+            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.List | AccessPermissions.Read);
+            var asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
 
             // Act
-            var locator = _dataContext.Locators.CreateLocator(LocatorType.OnDemandOrigin, asset, accessPolicy);
+            var locator = _mediaContext.Locators.CreateLocator(LocatorType.OnDemandOrigin, asset, accessPolicy);
 
             var context2 = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
             var actual = context2.Locators.Where(x => x.Id == locator.Id).FirstOrDefault();
@@ -190,11 +193,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             // Arrange         
 
 
-            var accessPolicy = _dataContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.List | AccessPermissions.Read);
-            var asset = AssetTests.CreateAsset(_dataContext, _smallWmv, AssetCreationOptions.None);
+            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.List | AccessPermissions.Read);
+            var asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
 
             // Act
-            var task = _dataContext.Locators.CreateLocatorAsync(LocatorType.OnDemandOrigin, asset, accessPolicy);
+            var task = _mediaContext.Locators.CreateLocatorAsync(LocatorType.OnDemandOrigin, asset, accessPolicy);
             task.Wait();
 
             var locator = task.Result;
@@ -221,13 +224,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
 
             var accessPolicyDuration = TimeSpan.FromMinutes(10);
-            var accessPolicy = _dataContext.AccessPolicies.Create("TestPolicy", accessPolicyDuration, AccessPermissions.List | AccessPermissions.Read);
-            var asset = AssetTests.CreateAsset(_dataContext, _smallWmv, AssetCreationOptions.None);
+            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", accessPolicyDuration, AccessPermissions.List | AccessPermissions.Read);
+            var asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
             var startDateTime = DateTime.UtcNow.AddDays(1);
             var expirationDateTime = startDateTime.Add(accessPolicyDuration);
 
             // Act
-            var actual = _dataContext.Locators.CreateLocator(LocatorType.OnDemandOrigin, asset, accessPolicy, startDateTime);
+            var actual = _mediaContext.Locators.CreateLocator(LocatorType.OnDemandOrigin, asset, accessPolicy, startDateTime);
 
             // Assert                        
             Assert.IsNotNull(actual);
@@ -248,11 +251,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         {
             // Arrange            
 
-            var accessPolicy = _dataContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.List | AccessPermissions.Read);
-            var asset = AssetTests.CreateAsset(_dataContext, _smallWmv, AssetCreationOptions.None);
+            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.List | AccessPermissions.Read);
+            var asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
 
             // Act
-            var actual = _dataContext.Locators.CreateSasLocator(asset, accessPolicy);
+            var actual = _mediaContext.Locators.CreateSasLocator(asset, accessPolicy);
 
             // Assert                        
             Assert.IsNotNull(actual);
@@ -270,11 +273,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         {
             // Arrange            
 
-            var accessPolicy = _dataContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.List | AccessPermissions.Read);
-            var asset = AssetTests.CreateAsset(_dataContext, _smallWmv, AssetCreationOptions.None);
+            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.List | AccessPermissions.Read);
+            var asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
 
             // Act
-            var locator = _dataContext.Locators.CreateSasLocator(asset, accessPolicy);
+            var locator = _mediaContext.Locators.CreateSasLocator(asset, accessPolicy);
 
             var context2 = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
             var actual = context2.Locators.Where(x => x.Id == locator.Id).FirstOrDefault();
@@ -298,13 +301,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             // Arrange            
 
 
-            var accessPolicy = _dataContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.List | AccessPermissions.Read);
-            var asset = AssetTests.CreateAsset(_dataContext, _smallWmv, AssetCreationOptions.None);
+            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.List | AccessPermissions.Read);
+            var asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
 
             DateTime locatorStartTime = DateTime.Now.AddHours(1);
 
             // Act
-            var locatorTask = _dataContext.Locators.CreateLocatorAsync(LocatorType.Sas, asset, accessPolicy, locatorStartTime.ToUniversalTime());
+            var locatorTask = _mediaContext.Locators.CreateLocatorAsync(LocatorType.Sas, asset, accessPolicy, locatorStartTime.ToUniversalTime());
             locatorTask.Wait();
             var locator = locatorTask.Result;
 
@@ -329,11 +332,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             // Arrange            
 
 
-            var accessPolicy = _dataContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.List | AccessPermissions.Read);
-            var asset = AssetTests.CreateAsset(_dataContext, _smallWmv, AssetCreationOptions.None);
+            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.List | AccessPermissions.Read);
+            var asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
 
             // Act
-            var task = _dataContext.Locators.CreateSasLocatorAsync(asset, accessPolicy);
+            var task = _mediaContext.Locators.CreateSasLocatorAsync(asset, accessPolicy);
             task.Wait();
 
             var locator = task.Result;
@@ -359,9 +362,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         {
             // Arrange            
 
-            var accessPolicy = _dataContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.List | AccessPermissions.Read);
-            var asset = AssetTests.CreateAsset(_dataContext, _smallWmv, AssetCreationOptions.None);
-            var locator = _dataContext.Locators.CreateSasLocator(asset, accessPolicy);
+            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.List | AccessPermissions.Read);
+            var asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
+            var locator = _mediaContext.Locators.CreateSasLocator(asset, accessPolicy);
 
             // Act
             locator.Delete();
@@ -381,9 +384,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             // Arrange            
 
 
-            var accessPolicy = _dataContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.List | AccessPermissions.Read);
-            var asset = AssetTests.CreateAsset(_dataContext, _smallWmv, AssetCreationOptions.None);
-            var locator = _dataContext.Locators.CreateSasLocator(asset, accessPolicy);
+            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.List | AccessPermissions.Read);
+            var asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
+            var locator = _mediaContext.Locators.CreateSasLocator(asset, accessPolicy);
 
             // Act
             var task = locator.DeleteAsync();
@@ -404,9 +407,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             var accessPolicyDuration = TimeSpan.FromHours(2);
             var expectedExpiryTime = DateTime.UtcNow.Date.AddDays(2);
 
-            var accessPolicy = _dataContext.AccessPolicies.Create("TestPolicy", accessPolicyDuration, AccessPermissions.List | AccessPermissions.Read);
-            var asset = AssetTests.CreateAsset(_dataContext, _smallWmv, AssetCreationOptions.None);
-            var locator = _dataContext.Locators.CreateLocator(LocatorType.OnDemandOrigin, asset, accessPolicy);
+            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", accessPolicyDuration, AccessPermissions.List | AccessPermissions.Read);
+            var asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
+            var locator = _mediaContext.Locators.CreateLocator(LocatorType.OnDemandOrigin, asset, accessPolicy);
 
             // Act
             locator.Update(expectedExpiryTime);
@@ -430,9 +433,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             var expectedExpiryTime = DateTime.UtcNow.Date.AddDays(1);
 
 
-            var accessPolicy = _dataContext.AccessPolicies.Create("TestPolicy", accessPolicyDuration, AccessPermissions.List | AccessPermissions.Read);
-            var asset = AssetTests.CreateAsset(_dataContext, _smallWmv, AssetCreationOptions.None);
-            var locator = _dataContext.Locators.CreateLocator(LocatorType.OnDemandOrigin, asset, accessPolicy);
+            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", accessPolicyDuration, AccessPermissions.List | AccessPermissions.Read);
+            var asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
+            var locator = _mediaContext.Locators.CreateLocator(LocatorType.OnDemandOrigin, asset, accessPolicy);
 
             // Act
             var task = locator.UpdateAsync(expectedExpiryTime);
@@ -457,9 +460,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             var expectedStartTime = DateTime.UtcNow.Date.AddDays(1);
 
 
-            var accessPolicy = _dataContext.AccessPolicies.Create("TestPolicy", accessPolicyDuration, AccessPermissions.List | AccessPermissions.Read);
-            var asset = AssetTests.CreateAsset(_dataContext, _smallWmv, AssetCreationOptions.None);
-            var locator = _dataContext.Locators.CreateLocator(LocatorType.OnDemandOrigin, asset, accessPolicy);
+            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", accessPolicyDuration, AccessPermissions.List | AccessPermissions.Read);
+            var asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
+            var locator = _mediaContext.Locators.CreateLocator(LocatorType.OnDemandOrigin, asset, accessPolicy);
 
             // Act
             locator.Update(expectedStartTime, expectedExpiryTime);
@@ -487,9 +490,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             var expectedExpiryTime = DateTime.UtcNow.Date.AddDays(2);
             var expectedStartTime = DateTime.UtcNow.Date.AddDays(1);
 
-            var accessPolicy = _dataContext.AccessPolicies.Create("TestPolicy", accessPolicyDuration, AccessPermissions.List | AccessPermissions.Read);
-            var asset = AssetTests.CreateAsset(_dataContext, _smallWmv, AssetCreationOptions.None);
-            var locator = _dataContext.Locators.CreateLocator(LocatorType.OnDemandOrigin, asset, accessPolicy);
+            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", accessPolicyDuration, AccessPermissions.List | AccessPermissions.Read);
+            var asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
+            var locator = _mediaContext.Locators.CreateLocator(LocatorType.OnDemandOrigin, asset, accessPolicy);
 
             // Act
             var task = locator.UpdateAsync(expectedStartTime, expectedExpiryTime);
@@ -509,11 +512,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestCategory("PullRequestValidation")]
         public void ShouldDeleteLocatorAfterSyncUpload()
         {
-            var asset = _dataContext.Assets.Create("interview.wmv", AssetCreationOptions.None);
+            var asset = _mediaContext.Assets.Create("interview.wmv", AssetCreationOptions.None);
             var file = asset.AssetFiles.Create("interview.wmv");
             file.Upload(@"Content\interview.wmv");
             Assert.AreEqual(0, asset.Locators.Count, "No locators expected in asset locators collection after Upload");
-            Assert.AreEqual(0, _dataContext.Locators.Where(c => c.AssetId == asset.Id).Count(), "No locators expected in context queryable after Upload");
+            Assert.AreEqual(0, _mediaContext.Locators.Where(c => c.AssetId == asset.Id).Count(), "No locators expected in context queryable after Upload");
         }
 
         [TestMethod]
@@ -521,14 +524,120 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestCategory("PullRequestValidation")]
         public void ShouldNotDeleteLocatorAfterASyncUpload()
         {
-            var asset = _dataContext.Assets.Create("interview.wmv", AssetCreationOptions.None);
+            var asset = _mediaContext.Assets.Create("interview.wmv", AssetCreationOptions.None);
             var file = asset.AssetFiles.Create("interview.wmv");
-            var policy = _dataContext.AccessPolicies.Create("Write", TimeSpan.FromMinutes(5), AccessPermissions.Write);
-            var locator = _dataContext.Locators.CreateSasLocator(asset, policy);
+            var policy = _mediaContext.AccessPolicies.Create("Write", TimeSpan.FromMinutes(5), AccessPermissions.Write);
+            var locator = _mediaContext.Locators.CreateSasLocator(asset, policy);
 
             file.UploadAsync(@"Content\interview.wmv", new BlobTransferClient(), locator, CancellationToken.None).Wait();
             Assert.AreEqual(1, asset.Locators.Count, "1 locator expected in asset locators collection after Upload");
-            Assert.AreEqual(1, _dataContext.Locators.Where(c => c.AssetId == asset.Id).Count(), "1 locator expected in context queryable after Upload");
+            Assert.AreEqual(1, _mediaContext.Locators.Where(c => c.AssetId == asset.Id).Count(), "1 locator expected in context queryable after Upload");
+        }
+
+        [TestMethod]
+        [Priority(0)]
+        public void TestLocatorCreateRetry()
+        {
+            var dataContextMock = new Mock<IMediaDataServiceContext>();
+
+            int exceptionCount = 2;
+
+            var expected = new LocatorData { Name = "testData" };
+            var fakeResponse = new TestMediaDataServiceResponse { AsyncState = expected };
+            var fakeException = new WebException("testException", WebExceptionStatus.ConnectionClosed);
+
+            dataContextMock.Setup((ctxt) => ctxt.AddObject("Files", It.IsAny<object>()));
+            dataContextMock.Setup((ctxt) => ctxt
+                .SaveChangesAsync(It.IsAny<object>()))
+                .Returns(() => Task.Factory.StartNew<IMediaDataServiceResponse>(() =>
+                {
+                    if (--exceptionCount > 0) throw fakeException;
+                    return fakeResponse;
+                }));
+
+            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
+
+            var asset = new AssetData { Name = "testAssetData" };
+
+            asset.SetMediaContext(_mediaContext);
+            ILocator locator = _mediaContext.Locators.CreateLocator(LocatorType.None, asset, new AccessPolicyData());
+            Assert.AreEqual(expected.Name, locator.Name);
+            Assert.AreEqual(0, exceptionCount);
+        }
+
+        [TestMethod]
+        [Priority(0)]
+        public void TestLocatorUpdateRetry()
+        {
+            var dataContextMock = new Mock<IMediaDataServiceContext>();
+
+            int exceptionCount = 2;
+
+            var locator = new LocatorData { Name = "testData", Type = (int)LocatorType.OnDemandOrigin };
+            var fakeResponse = new TestMediaDataServiceResponse { AsyncState = locator };
+            var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
+
+            dataContextMock.Setup((ctxt) => ctxt.AttachTo("Locators", locator));
+            dataContextMock.Setup((ctxt) => ctxt.UpdateObject(locator));
+
+            dataContextMock.Setup((ctxt) => ctxt
+                .SaveChangesAsync(locator))
+                .Returns(() => Task.Factory.StartNew<IMediaDataServiceResponse>(() =>
+                {
+                    if (--exceptionCount > 0) throw fakeException;
+                    return fakeResponse;
+                }));
+
+            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
+
+            locator.SetMediaContext(_mediaContext);
+
+            locator.Update(DateTime.Now);
+
+            Assert.AreEqual(0, exceptionCount);
+        }
+
+        [TestMethod]
+        [Priority(0)]
+        public void TestLocatorDeleteRetry()
+        {
+            var dataContextMock = new Mock<IMediaDataServiceContext>();
+
+            int exceptionCount = 2;
+
+            var locator = new LocatorData { Name = "testData", Type = (int)LocatorType.OnDemandOrigin };
+            var fakeResponse = new TestMediaDataServiceResponse { AsyncState = locator };
+            var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
+
+            dataContextMock.Setup((ctxt) => ctxt.AttachTo("Locators", locator));
+            dataContextMock.Setup((ctxt) => ctxt.DeleteObject(locator));
+
+            dataContextMock.Setup((ctxt) => ctxt
+                .SaveChangesAsync(locator))
+                .Returns(() => Task.Factory.StartNew<IMediaDataServiceResponse>(() =>
+                {
+                    if (--exceptionCount > 0) throw fakeException;
+                    return fakeResponse;
+                }));
+
+            // Cannot mock DataServiceQuery. Throw artificial exception to mark pass through saving changes.
+            string artificialExceptionMessage = "artificialException";
+            dataContextMock.Setup((ctxt) => ctxt.CreateQuery<AssetData>("Assets")).Throws(new Exception(artificialExceptionMessage));
+
+            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
+
+            locator.SetMediaContext(_mediaContext);
+
+            try
+            {
+            locator.Delete();
+            }
+            catch (Exception x)
+            {
+                Assert.AreEqual(artificialExceptionMessage, x.Message);
+            }
+
+            Assert.AreEqual(0, exceptionCount);
         }
     }
 }

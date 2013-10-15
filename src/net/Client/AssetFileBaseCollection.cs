@@ -36,7 +36,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public abstract IAssetFile Create(string name);
        
         /// <summary>
-        /// Creates the <see cref="IAssetFile"/> asyncronously
+        /// Creates the <see cref="IAssetFile"/> asynchronously
         /// </summary>
         /// <param name="name">The file name.</param>
         /// <param name="cancellation"><see cref="CancellationToken"/></param>

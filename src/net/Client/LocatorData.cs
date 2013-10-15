@@ -18,6 +18,7 @@ using System;
 using System.Data.Services.Common;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -130,7 +131,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             dataContext.UpdateObject(this);
 
-            return dataContext.SaveChangesAsync(this);
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(this));
         }
 
         /// <summary>
@@ -163,8 +166,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             dataContext.AttachTo(LocatorBaseCollection.LocatorSet, this);
             dataContext.DeleteObject(this);
 
-            return dataContext
-                .SaveChangesAsync(this)
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(this))
                 .ContinueWith(
                     t =>
                     {
