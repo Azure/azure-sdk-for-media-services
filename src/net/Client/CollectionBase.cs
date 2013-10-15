@@ -19,6 +19,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
     
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -85,7 +86,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </returns>
         public IEnumerator<T> GetEnumerator()
         {
-            return this.Queryable.GetEnumerator();
+            MediaRetryPolicy policy = this.MediaContext.MediaServicesClassFactory.GetQueryRetryPolicy();
+            return policy.ExecuteAction(() => this.Queryable.GetEnumerator());
         }
 
         /// <summary>
@@ -96,7 +98,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return ((IEnumerable)this.Queryable).GetEnumerator();
+            return this.GetEnumerator();
         }
     }
 }

@@ -28,24 +28,24 @@ using Microsoft.WindowsAzure.Storage.Shared.Protocol;
 using Microsoft.WindowsAzure.Storage.Table.Protocol;
 
 
-namespace Microsoft.WindowsAzure.MediaServices.Client.AzureStorageClientTransientFaultHandling
+namespace Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling
 {
     /// <summary>
     /// Provides the transient error detection logic that can recognize transient faults when dealing with Windows Azure storage services.
     /// </summary>
-    public class StorageTransientErrorDetectionStrategy : ITransientErrorDetectionStrategy
+    public class StorageTransientErrorDetectionStrategy : MediaErrorDetectionStrategy
     {
         /// <summary>
         /// Determines whether the specified exception represents a transient failure that can be compensated by a retry.
         /// </summary>
         /// <param name="ex">The exception object to be verified.</param>
         /// <returns>True if the specified exception is considered as transient, otherwise false.</returns>
-        public bool IsTransient(Exception ex)
+        public override bool IsTransient(Exception ex)
         {
             return ex != null && (CheckIsTransient(ex) || (ex.InnerException != null && CheckIsTransient(ex.InnerException)));
         }
 
-        private static bool CheckIsTransient(Exception ex)
+        protected override bool CheckIsTransient(Exception ex)
         {
             var webException = ex as WebException;
 
