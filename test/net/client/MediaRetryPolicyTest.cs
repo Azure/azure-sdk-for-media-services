@@ -1,4 +1,20 @@
-﻿using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
+﻿//-----------------------------------------------------------------------
+// <copyright file="MediaRetryPolicyTest.cs" company="Microsoft">Copyright 2012 Microsoft Corporation</copyright>
+// <license>
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// </license>
+
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using Microsoft.Practices.TransientFaultHandling;
@@ -8,8 +24,6 @@ using System.Threading.Tasks;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 {
-    
-    
     /// <summary>
     ///This is a test class for MediaRetryPolicyTest and is intended
     ///to contain all MediaRetryPolicyTest Unit Tests
@@ -24,7 +38,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         public void MediaRetryPolicyTestExecuteActionTrivial()
         {
             MediaRetryPolicy target = new TestMediaServicesClassFactory(null).GetSaveChangesRetryPolicy();
-            int expected = 0;
+            int expected = 10;
             Func<int> func = () => expected;
             int actual = target.ExecuteAction(func);
             Assert.AreEqual(expected, actual);
@@ -39,7 +53,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             MediaRetryPolicy target = new TestMediaServicesClassFactory(null).GetSaveChangesRetryPolicy();
 
             int exceptionCount = 2;
-            int expected = 0;
+            int expected = 10;
             var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
 
             Func<int> func = () => {
@@ -62,7 +76,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             MediaRetryPolicy target = new TestMediaServicesClassFactory(null).GetSaveChangesRetryPolicy();
 
             int exceptionCount = 2;
-            int expected = 0;
+            int expected = 10;
             var fakeException = new WebException("test", WebExceptionStatus.RequestCanceled);
 
             Func<int> func = () =>
@@ -94,7 +108,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             MediaRetryPolicy target = new TestMediaServicesClassFactory(null).GetSaveChangesRetryPolicy();
 
             int exceptionCount = 5;
-            int expected = 0;
+            int expected = 10;
             var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
 
             TimeSpan lastInterval = TimeSpan.Zero;
@@ -123,7 +137,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         public void MediaRetryPolicyTestExecuteAsyncTrivial()
         {
             MediaRetryPolicy target = new TestMediaServicesClassFactory(null).GetSaveChangesRetryPolicy();
-            int expected = 0;
+            int expected = 10;
             var task = target.ExecuteAsync(() => Task.Factory.StartNew<int>(() => expected));
             Assert.AreEqual(expected, task.Result);
         }
@@ -137,7 +151,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             MediaRetryPolicy target = new TestMediaServicesClassFactory(null).GetSaveChangesRetryPolicy();
 
             int exceptionCount = 2;
-            int expected = 0;
+            int expected = 10;
             var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
 
             Func<int> func = () =>
@@ -161,7 +175,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             MediaRetryPolicy target = new TestMediaServicesClassFactory(null).GetSaveChangesRetryPolicy();
 
             int exceptionCount = 2;
-            int expected = 0;
+            int expected = 10;
             var fakeException = new WebException("test", WebExceptionStatus.RequestCanceled);
 
             Func<int> func = () =>
@@ -196,7 +210,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             MediaRetryPolicy target = new TestMediaServicesClassFactory(null).GetSaveChangesRetryPolicy();
 
             int exceptionCount = 5;
-            int expected = 0;
+            int expected = 10;
             var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
 
             TimeSpan lastInterval = TimeSpan.Zero;
