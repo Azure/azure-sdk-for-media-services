@@ -123,6 +123,29 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         Task<IOperation> SendStartOperationAsync();
 
         /// <summary>
+        /// Resets the channel.
+        /// </summary>
+        void Reset();
+
+        /// <summary>
+        /// Resets the channel asynchronously.
+        /// </summary>
+        /// <returns>Task to wait on for operation completion.</returns>
+        Task ResetAsync();
+
+        /// <summary>
+        /// Sends reset operation to the service and returns. Use Operations collection to get operation's status.
+        /// </summary>
+        /// <returns>Operation info that can be used to track the operation.</returns>
+        IOperation SendResetOperation();
+
+        /// <summary>
+        /// Sends reset operation to the service asynchronously. Use Operations collection to get operation's status.
+        /// </summary>
+        /// <returns>Task to wait on for operation sending completion.</returns>
+        Task<IOperation> SendResetOperationAsync();
+
+        /// <summary>
         /// Stops the channel.
         /// </summary>
         void Stop();

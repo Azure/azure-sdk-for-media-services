@@ -224,6 +224,45 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
         /// <summary>
+        /// Resets the channel.
+        /// </summary>
+        public void Reset()
+        {
+            AsyncHelper.Wait(ResetAsync());
+        }
+
+        /// <summary>
+        /// Resets the channel asynchronously.
+        /// </summary>
+        /// <returns>Task to wait on for operation completion.</returns>
+        public Task ResetAsync()
+        {
+            Uri uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Channels('{0}')/Reset", this.Id), UriKind.Relative);
+
+            return ExecuteActionAsync(uri, StreamingConstants.StartChannelPollInterval);
+        }
+
+        /// <summary>
+        /// Sends reset channel operation.
+        /// </summary>
+        /// <returns>Operation info that can be used to track the operation.</returns>
+        public IOperation SendResetOperation()
+        {
+            Uri uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Channels('{0}')/Reset", this.Id), UriKind.Relative);
+
+            return SendOperation(uri);
+        }
+
+        /// <summary>
+        /// Sends reset operation to the service asynchronously. Use Operations collection to get operation's status.
+        /// </summary>
+        /// <returns>Task to wait on for operation sending completion.</returns>
+        public Task<IOperation> SendResetOperationAsync()
+        {
+            return Task.Factory.StartNew(() => SendResetOperation());
+        }
+
+        /// <summary>
         /// Stops the channel.
         /// </summary>
         public void Stop()
