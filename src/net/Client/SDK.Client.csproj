@@ -148,13 +148,15 @@
     <Compile Include="DataServiceAsyncExtensions.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DuplicatedFiles\AzureStorageClientTransientFaultHandling\RetryPolicyExtensions.cs" />
-    <Compile Include="DuplicatedFiles\AzureStorageClientTransientFaultHandling\StorageTransientErrorDetectionStrategy.cs" />
-    <Compile Include="DuplicatedFiles\TransientFaultHandling\MediaRetryPolicy.cs" />
-    <Compile Include="DuplicatedFiles\TransientFaultHandling\QueryErrorDetectionStrategy.cs" />
-    <Compile Include="DuplicatedFiles\TransientFaultHandling\RetryStrategyFactory.cs" />
-    <Compile Include="DuplicatedFiles\TransientFaultHandling\SaveChangesErrorDetectionStrategy.cs" />
-    <Compile Include="DuplicatedFiles\TransientFaultHandling\WebRequestTransientErrorDetectionStrategy.cs" />
+    <Compile Include="TransientFaultHandling\RetryPolicyExtensions.cs" />
+    <Compile Include="TransientFaultHandling\StorageTransientErrorDetectionStrategy.cs" />
+    <Compile Include="TransientFaultHandling\ExceptionExtensions.cs" />
+    <Compile Include="TransientFaultHandling\MediaErrorDetectionStrategy.cs" />
+    <Compile Include="TransientFaultHandling\MediaRetryPolicy.cs" />
+    <Compile Include="TransientFaultHandling\QueryErrorDetectionStrategy.cs" />
+    <Compile Include="TransientFaultHandling\RetryStrategyFactory.cs" />
+    <Compile Include="TransientFaultHandling\SaveChangesErrorDetectionStrategy.cs" />
+    <Compile Include="TransientFaultHandling\WebRequestTransientErrorDetectionStrategy.cs" />
     <Compile Include="GeneratedCode\ApiClasses.cs">
       <SubType>Code</SubType>
     </Compile>

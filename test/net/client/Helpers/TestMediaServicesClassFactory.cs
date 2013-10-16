@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="AssetCollection.cs" company="Microsoft">Copyright 2012 Microsoft Corporation</copyright>
+// <copyright file="TestMediaServicesClassFactory.cs" company="Microsoft">Copyright 2012 Microsoft Corporation</copyright>
 // <license>
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,7 +14,8 @@
 // limitations under the License.
 // </license>
 
-
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
+using System;
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Helpers
 {
     public class TestMediaServicesClassFactory : AzureMediaServicesClassFactory
@@ -27,6 +28,32 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Helpers
         public override IMediaDataServiceContext CreateDataServiceContext()
         {
             return _dataContext;
+        }
+
+        /// <summary>
+        /// Creates retry policy for saving changes in Media Services REST layer.
+        /// </summary>
+        /// <returns>Retry policy.</returns>
+        public override MediaRetryPolicy GetSaveChangesRetryPolicy()
+        {
+            var retryPolicy = new MediaRetryPolicy(
+                GetSaveChangesErrorDetectionStrategy(),
+                retryCount: 5,
+                minBackoff: TimeSpan.FromMilliseconds(10),
+                maxBackoff: TimeSpan.FromMilliseconds(10000),
+                deltaBackoff: TimeSpan.FromMilliseconds(50));
+
+            return retryPolicy;
+        }
+
+        public override MediaErrorDetectionStrategy GetSaveChangesErrorDetectionStrategy()
+        {
+            return new WebRequestTransientErrorDetectionStrategy();
+        }
+
+        public override MediaErrorDetectionStrategy GetQueryErrorDetectionStrategy()
+        {
+            return new WebRequestTransientErrorDetectionStrategy();
         }
 
         private IMediaDataServiceContext _dataContext;

@@ -19,7 +19,7 @@ using System;
 using Microsoft.Practices.TransientFaultHandling;
 using Microsoft.WindowsAzure.Storage.RetryPolicies;
 
-namespace Microsoft.WindowsAzure.MediaServices.Client.AzureStorageClientTransientFaultHandling
+namespace Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling
 {
     /// <summary>
     /// Extends the RetryPolicy to allow using the retry strategies from the Transient Fault Handling Application Block with Windows Azure Store.

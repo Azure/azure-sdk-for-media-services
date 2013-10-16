@@ -43,5 +43,41 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <returns>Retry policy.</returns>
         public abstract MediaRetryPolicy GetQueryRetryPolicy();
-   }
+
+        /// <summary>
+        /// Creates error detection strategy that can be used for detecting transient errors in web request related operations.
+        /// </summary>
+        /// <returns>Error detection strategy.</returns>
+        public virtual MediaErrorDetectionStrategy GetWebRequestTransientErrorDetectionStrategy()
+        {
+            return new WebRequestTransientErrorDetectionStrategy();
+        }
+
+        /// <summary>
+        /// Creates error detection strategy that can be used for detecting transient errors in OData queries.
+        /// </summary>
+        /// <returns>Error detection strategy.</returns>
+        public virtual MediaErrorDetectionStrategy GetQueryErrorDetectionStrategy()
+        {
+            return new QueryErrorDetectionStrategy();
+        }
+
+        /// <summary>
+        /// Creates error detection strategy that can be used for detecting transient errors when SaveChanges() is invoked.
+        /// </summary>
+        /// <returns>Error detection strategy.</returns>
+        public virtual MediaErrorDetectionStrategy GetSaveChangesErrorDetectionStrategy()
+        {
+            return new SaveChangesErrorDetectionStrategy();
+        }
+
+        /// <summary>
+        /// Creates error detection strategy that can be used for detecting transient errors in Azure storage related operations.
+        /// </summary>
+        /// <returns>Error detection strategy.</returns>
+        public virtual MediaErrorDetectionStrategy GetStorageTransientErrorDetectionStrategy()
+        {
+            return new StorageTransientErrorDetectionStrategy();
+        }
+    }
 }
