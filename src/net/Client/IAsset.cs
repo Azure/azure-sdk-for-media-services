@@ -18,6 +18,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -50,6 +51,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <value>A collection of <see cref="IAsset"/> associated with the Asset.</value>
         ReadOnlyCollection<IAsset> ParentAssets { get; }
+
+        /// <summary>
+        /// Gets the delivery policies associated with the asset.
+        /// </summary>
+        /// <value>A collection of <see cref="IAssetDeliveryPolicy"/> associated with the Asset.</value>
+        IList<IAssetDeliveryPolicy> DeliveryPolicies { get; }
 
         /// <summary>
         /// Gets storage account name associated with the Asset

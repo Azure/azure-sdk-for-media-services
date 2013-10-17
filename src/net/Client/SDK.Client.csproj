@@ -163,6 +163,12 @@
     <Compile Include="DuplicatedFiles\TransientFaultHandling\MediaRetryPolicy.cs" />
     <Compile Include="DuplicatedFiles\TransientFaultHandling\RetryStrategyFactory.cs" />
     <Compile Include="DuplicatedFiles\TransientFaultHandling\WebRequestTransientErrorDetectionStrategy.cs" />
+    <Compile Include="DynamicEncryption\AssetDeliveryPolicyCollection.cs" />
+    <Compile Include="DynamicEncryption\AssetDeliveryPolicyConfigurationKeys.cs" />
+    <Compile Include="DynamicEncryption\AssetDeliveryPolicyData.cs" />
+    <Compile Include="DynamicEncryption\AssetDeliveryPolicyType.cs" />
+    <Compile Include="DynamicEncryption\AssetDeliveryProtocol.cs" />
+    <Compile Include="DynamicEncryption\IAssetDeliveryPolicy.cs" />
     <Compile Include="GeneratedCode\ApiClasses.cs">
       <SubType>Code</SubType>
     </Compile>

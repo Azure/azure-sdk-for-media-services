@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data.Services.Client;
 using System.Globalization;
+using Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -129,6 +130,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             if (type == typeof(IContentKey))
             {
                 return ContentKeyCollection.ContentKeySet;
+            }
+
+            if (type == typeof(IAssetDeliveryPolicy))
+            {
+                return AssetDeliveryPolicyCollection.DeliveryPolicySet;
             }
 
             throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, "Not supported type: {0}.", type), "type");

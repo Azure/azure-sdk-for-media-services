@@ -19,6 +19,7 @@ using System.Linq;
 using Microsoft.WindowsAzure.MediaServices.Client.OAuth;
 using Microsoft.WindowsAzure.MediaServices.Client.Versioning;
 using Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization;
+using Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -56,6 +57,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private readonly StorageAccountBaseCollection _storageAccounts;
         private readonly ContentKeyAuthorizationPolicyOptionCollection _contentKeyAuthorizationPolicyOptions;
         private readonly ContentKeyAuthorizationPolicyCollection _contentKeyAuthorizationPolicies;
+        private readonly AssetDeliveryPolicyCollection _assetDeliveryPolicies;
 
 
         /// <summary>
@@ -113,6 +115,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             this._storageAccounts = new StorageAccountBaseCollection(this);
             this._contentKeyAuthorizationPolicyOptions = new ContentKeyAuthorizationPolicyOptionCollection(this);
             this._contentKeyAuthorizationPolicies = new ContentKeyAuthorizationPolicyCollection(this);
+            this._assetDeliveryPolicies = new AssetDeliveryPolicyCollection(this);
         }
 
         /// <summary>
@@ -269,6 +272,20 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             get
             {
                 return this._contentKeyAuthorizationPolicies;
+            }
+        }
+
+        /// <summary>
+        /// Gets the asset delivery policies.
+        /// </summary>
+        /// <value>
+        /// The asset delivery policies.
+        /// </value>
+        public override AssetDeliveryPolicyCollection AssetDeliveryPolicies
+        {
+            get
+            {
+                return this._assetDeliveryPolicies;
             }
         }
     }

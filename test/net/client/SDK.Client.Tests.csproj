@@ -85,10 +85,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccessPoliciesTests.cs" />
+    <Compile Include="AssetDeliveryPolicyCollectionTest.cs" />
     <Compile Include="AssetFilesTests.cs" />
     <Compile Include="ContentKeyAuthorizationPolicyOptionTests.cs" />
     <Compile Include="ContentKeyAuthorizationPolicyTests.cs" />
     <Compile Include="ContentKeyTests.cs" />
+    <Compile Include="Helpers\TestMediaDataServiceResponse.cs" />
     <Compile Include="Helpers\TestMediaServicesClassFactory.cs" />
     <Compile Include="IngestManifestTests.cs" />
     <Compile Include="JobTests.cs" />

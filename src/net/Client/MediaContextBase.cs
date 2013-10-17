@@ -15,6 +15,7 @@
 // </license>
 
 using Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization;
+using Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -104,5 +105,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// The content key authorization policies.
         /// </value>
         public abstract ContentKeyAuthorizationPolicyCollection ContentKeyAuthorizationPolicies { get; }
+
+        /// <summary>
+        /// Gets the asset delivery policies.
+        /// </summary>
+        /// <value>
+        /// The asset delivery policies.
+        /// </value>
+        public abstract AssetDeliveryPolicyCollection AssetDeliveryPolicies { get; }
     }
 }
