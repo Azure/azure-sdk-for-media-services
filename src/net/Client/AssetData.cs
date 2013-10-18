@@ -46,7 +46,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private CloudMediaContext _cloudMediaContext;
 
         private readonly object _contentKeyLocker = new object();
-        private readonly object _deliceryPolicyLocker = new object();
+        private readonly object _deliveryPolicyLocker = new object();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AssetData"/> class.
@@ -139,7 +139,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             get
             {
-                lock (_deliceryPolicyLocker)
+                lock (_deliveryPolicyLocker)
                 {
                     if ((this._deliveryPolicyCollection == null) && !string.IsNullOrWhiteSpace(this.Id))
                     {

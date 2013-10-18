@@ -163,7 +163,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption
                     t =>
                     {
                         t.ThrowIfFaulted();
-                        var data = (AssetDeliveryPolicyData)t.AsyncState;
+                        var data = (AssetDeliveryPolicyData)t.Result.AsyncState;
                         return data;
                     });
         }
