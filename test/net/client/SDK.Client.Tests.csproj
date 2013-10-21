@@ -88,6 +88,7 @@
     <Compile Include="AssetFilesTests.cs" />
     <Compile Include="ContentKeyTests.cs" />
     <Compile Include="Live\ChannelMetricsTest.cs" />
+    <Compile Include="ChannelTests.cs" />
     <Compile Include="Live\LiveE2ETests.cs" />
     <Compile Include="IngestManifestTests.cs" />
     <Compile Include="JobTests.cs" />
