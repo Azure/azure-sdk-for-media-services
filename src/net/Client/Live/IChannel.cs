@@ -36,7 +36,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Gets or sets the description of the channel.
         /// </summary>
         string Description { get; set; }
-        
+
         /// <summary>
         /// Gets channel creation date.
         /// </summary>
@@ -98,6 +98,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Collection of programs associated with the channel.
         /// </summary>
         ProgramBaseCollection Programs { get; }
+
+        /// <summary>
+        /// Adds or removes channel metrics recevied event handler
+        /// </summary>
+        event EventHandler<MetricsEventArgs<IChannelMetric>> MetricsReceived;
 
         /// <summary>
         /// Starts the channel.
@@ -190,5 +195,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <returns>Task to wait on for operation sending completion.</returns>
         Task<IOperation> SendUpdateOperationAsync();
+
+        /// <summary>
+        /// Get the latest channel metric.
+        /// </summary>
+        /// <returns>The latest ChannelMetrics entity of this channel service</returns>
+        IChannelMetric GetMetric();
     }
 }

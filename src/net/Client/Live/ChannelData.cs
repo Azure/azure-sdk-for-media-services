@@ -162,6 +162,21 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
         /// <summary>
+        /// Adds or removes channel metrics recevied event handler
+        /// </summary>
+        event EventHandler<MetricsEventArgs<IChannelMetric>> IChannel.MetricsReceived
+        {
+            add
+            {
+                _cloudMediaContext.ChannelMetrics.Monitor.Subscribe(Id, value);
+            }
+            remove
+            {
+                _cloudMediaContext.ChannelMetrics.Monitor.Unsubscribe(Id, value);
+            }
+        }
+
+        /// <summary>
         /// Gets Url of the preview.
         /// </summary>
         Uri IChannel.PreviewUrl
@@ -383,6 +398,28 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public Task<IOperation> SendDeleteOperationAsync()
         {
             return Task.Factory.StartNew(() => SendDeleteOperation());
+        }
+
+        /// <summary>
+        /// Get the latest channel metric.
+        /// </summary>
+        /// <returns>The latest ChannelMetrics entity of this channel service</returns>
+        public IChannelMetric GetMetric()
+        {
+            var uri = new Uri(
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    "/{0}('{1}')/{2}",
+                    ChannelBaseCollection.ChannelSet,
+                    Id,
+                    Metric.MetricProperty
+                    ),
+                UriKind.Relative);
+
+            var dataContext = _cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            var metric = dataContext.Execute<ChannelMetricData>(uri).SingleOrDefault();
+
+            return metric;
         }
 
         protected override string EntitySetName { get { return ChannelBaseCollection.ChannelSet; } }

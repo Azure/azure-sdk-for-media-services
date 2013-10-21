@@ -60,6 +60,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private ProgramBaseCollection _programs;
         private OriginBaseCollection _origins;
         private OperationBaseCollection _operations;
+        private OriginMetricBaseCollection _originMetrics;
+        private ChannelMetricBaseCollection _channelMetrics;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CloudMediaContext"/> class.
@@ -111,7 +113,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             this._mediaProcessors = new MediaProcessorBaseCollection(this);
             this._locators = new LocatorBaseCollection(this);
             this._ingestManifests = new IngestManifestCollection(this);
-            this._ingestManifestAssets = new IngestManifestAssetCollection(this,null);
+            this._ingestManifestAssets = new IngestManifestAssetCollection(this, null);
             this._ingestManifestFiles = new IngestManifestFileCollection(this, null);
             this._storageAccounts = new StorageAccountBaseCollection(this);
 
@@ -119,6 +121,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             this._programs = new ProgramBaseCollection(this);
             this._origins = new OriginBaseCollection(this);
             this._operations = new OperationBaseCollection(this);
+            this._originMetrics = new OriginMetricBaseCollection(this);
+            this._channelMetrics = new ChannelMetricBaseCollection(this);
         }
 
         /// <summary>
@@ -204,9 +208,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         public override IStorageAccount DefaultStorageAccount
         {
-            get 
-            { 
-                return this.StorageAccounts.Where(c=>c.IsDefault == true).FirstOrDefault(); 
+            get
+            {
+                return this.StorageAccounts.Where(c => c.IsDefault == true).FirstOrDefault();
             }
         }
 
@@ -245,7 +249,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets the collection of manifest asset files in the system
         /// </summary>
-        public  IngestManifestFileCollection IngestManifestFiles
+        public IngestManifestFileCollection IngestManifestFiles
         {
             get { return this._ingestManifestFiles; }
         }
@@ -288,6 +292,22 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public OperationBaseCollection Operations
         {
             get { return this._operations; }
+        }
+
+        /// <summary>
+        /// Gets the collection of origin metrics in the system.
+        /// </summary>
+        public OriginMetricBaseCollection OriginMetrics
+        {
+            get { return this._originMetrics; }
+        }
+
+        /// <summary>
+        /// Gets the collection of channel metrics in the system.
+        /// </summary>
+        public ChannelMetricBaseCollection ChannelMetrics
+        {
+            get { return this._channelMetrics; }
         }
     }
 }

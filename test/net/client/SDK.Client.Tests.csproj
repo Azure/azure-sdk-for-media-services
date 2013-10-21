@@ -87,12 +87,14 @@
     <Compile Include="AccessPoliciesTests.cs" />
     <Compile Include="AssetFilesTests.cs" />
     <Compile Include="ContentKeyTests.cs" />
+    <Compile Include="Live\ChannelMetricsTest.cs" />
     <Compile Include="ChannelTests.cs" />
     <Compile Include="Live\LiveE2ETests.cs" />
     <Compile Include="IngestManifestTests.cs" />
     <Compile Include="JobTests.cs" />
     <Compile Include="JobTests.StorageAccounts.cs" />
     <Compile Include="Live\OriginDataTest.cs" />
+    <Compile Include="Live\OriginMetricsTest.cs" />
     <Compile Include="Live\SerializerTest.cs" />
     <Compile Include="LocatorsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
