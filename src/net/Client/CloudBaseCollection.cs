@@ -35,7 +35,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets or sets the data context factory instance.
         /// </summary>
-        public AzureMediaServicesDataServiceContextFactory DataContextFactory { get; set; }
+        public MediaServicesClassFactory DataContextFactory { get; set; }
 
         /// <summary>
         /// Gets the queryable collection of items.

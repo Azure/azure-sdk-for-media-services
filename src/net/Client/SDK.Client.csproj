@@ -114,7 +114,7 @@
     <Compile Include="AssetNamingSchemeResolver.cs" />
     <Compile Include="AssetPlaceholderToInstanceResolver.cs" />
     <Compile Include="AssetState.cs" />
-    <Compile Include="AzureMediaServicesDataServiceContextFactory.cs" />
+    <Compile Include="AzureMediaServicesClassFactory.cs" />
     <Compile Include="BlobTransferClient.cs" />
     <Compile Include="BlobTransferCompleteEventArgs.cs" />
     <Compile Include="BlobTransferProgressChangedEventArgs.cs" />
@@ -156,12 +156,19 @@
     <Compile Include="DataServiceAsyncExtensions.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DuplicatedFiles\AzureStorageClientTransientFaultHandling\AzureStorageClientRetryPolicyFactory.cs" />
+    <Compile Include="DuplicatedFiles\TransientFaultHandling\QueryErrorDetectionStrategy.cs" />
+    <Compile Include="DuplicatedFiles\TransientFaultHandling\SaveChangesErrorDetectionStrategy.cs" />
     <Compile Include="DuplicatedFiles\AzureStorageClientTransientFaultHandling\RetryPolicyExtensions.cs" />
     <Compile Include="DuplicatedFiles\AzureStorageClientTransientFaultHandling\StorageTransientErrorDetectionStrategy.cs" />
     <Compile Include="DuplicatedFiles\TransientFaultHandling\MediaRetryPolicy.cs" />
     <Compile Include="DuplicatedFiles\TransientFaultHandling\RetryStrategyFactory.cs" />
     <Compile Include="DuplicatedFiles\TransientFaultHandling\WebRequestTransientErrorDetectionStrategy.cs" />
+    <Compile Include="DynamicEncryption\AssetDeliveryPolicyCollection.cs" />
+    <Compile Include="DynamicEncryption\AssetDeliveryPolicyConfigurationKeys.cs" />
+    <Compile Include="DynamicEncryption\AssetDeliveryPolicyData.cs" />
+    <Compile Include="DynamicEncryption\AssetDeliveryPolicyType.cs" />
+    <Compile Include="DynamicEncryption\AssetDeliveryProtocol.cs" />
+    <Compile Include="DynamicEncryption\IAssetDeliveryPolicy.cs" />
     <Compile Include="GeneratedCode\ApiClasses.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -172,6 +179,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="IMediaDataServiceContext.cs" />
+    <Compile Include="IMediaDataServiceResponse.cs" />
     <Compile Include="INotificationEndpoint.cs" />
     <Compile Include="IStorageAccount.cs" />
     <Compile Include="ITaskHistoricalEvent.cs" />
@@ -210,9 +218,11 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="MediaDataServiceContext.cs" />
+    <Compile Include="MediaDataServiceResponse.cs" />
     <Compile Include="MediaProcessorBaseCollection.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="MediaServicesClassFactory.cs" />
     <Compile Include="NotificationEndpoint.cs" />
     <Compile Include="NotificationEndpointCollection.cs" />
     <Compile Include="NotificationEndpointType.cs" />

@@ -21,6 +21,7 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
     
 namespace Microsoft.WindowsAzure.MediaServices.Client
@@ -46,7 +47,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         internal AssetCollection(CloudMediaContext cloudMediaContext)
         {
             this._cloudMediaContext = cloudMediaContext;
-            this._dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            this._dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             this._assetQuery = new Lazy<IQueryable<IAsset>>(() => this._dataContext.CreateQuery<AssetData>(AssetSet));
             
         }
@@ -107,18 +108,19 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             emptyAsset.InitCloudMediaContext(this._cloudMediaContext);
 
             cancellationToken.ThrowIfCancellationRequested();
-            IMediaDataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AddObject(AssetSet, emptyAsset);
 
-            return dataContext
-                .SaveChangesAsync(emptyAsset)
+            MediaRetryPolicy retryPolicy = this._cloudMediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(emptyAsset))
                 .ContinueWith<IAsset>(
                     t =>
                     {
                         t.ThrowIfFaulted();
                         cancellationToken.ThrowIfCancellationRequested();
 
-                        AssetData data = (AssetData)t.AsyncState;
+                        AssetData data = (AssetData)t.Result.AsyncState;
                         if (options.HasFlag(AssetCreationOptions.StorageEncrypted))
                         {
                             using (var fileEncryption = new NullableFileEncryption())

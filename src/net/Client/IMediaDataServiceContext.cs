@@ -141,7 +141,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <returns>A System.Data.Services.Client.DataServiceResponse that contains status, headers,
         /// and errors that result from the call to System.Data.Services.Client.DataServiceContext.SaveChanges.Remarks.</returns>
-        DataServiceResponse SaveChanges();
+        IMediaDataServiceResponse SaveChanges();
 
         /// <summary>
         /// Changes the state of the link to deleted in the list of links being tracked
@@ -256,7 +256,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="context">The context.</param>
         /// <param name="state">The state.</param>
         /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
-        Task<DataServiceResponse> SaveChangesAsync(object state);
+        Task<IMediaDataServiceResponse> SaveChangesAsync(object state);
 
         /// <summary>
         /// Saves the changes asynchronously.
@@ -265,6 +265,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="options">The options.</param>
         /// <param name="state">The state.</param>
         /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
-        Task<DataServiceResponse> SaveChangesAsync(SaveChangesOptions options, object state);
+        Task<IMediaDataServiceResponse> SaveChangesAsync(SaveChangesOptions options, object state);
     }
 }

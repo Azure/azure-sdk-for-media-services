@@ -67,7 +67,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns><see cref="Task"/></returns>
         public Task DeleteAsync()
         {
-            IMediaDataServiceContext dataContext = _cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = _cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(IngestManifestAssetCollection.EntitySet, this);
             dataContext.DeleteObject(this);
             return dataContext.SaveChangesAsync(this);
@@ -98,7 +98,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             {
                 if ((_asset == null) && !string.IsNullOrWhiteSpace(Id))
                 {
-                    IMediaDataServiceContext dataContext = _cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+                    IMediaDataServiceContext dataContext = _cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
                     dataContext.AttachTo(IngestManifestAssetCollection.EntitySet, this);
                     dataContext.LoadProperty(this, "Asset");
                 }

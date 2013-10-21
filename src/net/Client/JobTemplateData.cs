@@ -68,7 +68,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 {
                     if (!string.IsNullOrWhiteSpace(this.Id))
                     {
-                        IMediaDataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+                        IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
                         dataContext.AttachTo(JobTemplateBaseCollection.JobTemplateSet, this);
                         dataContext.LoadProperty(this, TaskTemplatesPropertyName);
 
@@ -135,7 +135,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new InvalidOperationException(StringTable.InvalidOperationSaveForSavedJobTemplate);
             }
 
-            IMediaDataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
 
             this.InnerSave(dataContext);
 
@@ -146,7 +146,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     {
                         t.ThrowIfFaulted();
 
-                        JobTemplateData data = (JobTemplateData)t.AsyncState;
+                        JobTemplateData data = (JobTemplateData)t.Result.AsyncState;
 
                         dataContext.CreateQuery<JobTemplateData>(JobTemplateBaseCollection.JobTemplateSet).Where(jt => jt.Id == data.Id).First();
                         dataContext.LoadProperty(data, TaskTemplatesPropertyName);
@@ -180,7 +180,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new InvalidOperationException(StringTable.InvalidOperationDeleteForNotSavedJobTemplate);
             }
 
-            IMediaDataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(JobTemplateBaseCollection.JobTemplateSet, this);
             dataContext.DeleteObject(this);
 

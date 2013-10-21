@@ -56,7 +56,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 if (this._cloudMediaContext != null)
                 {
                     Uri uriRebindContentKey = new Uri(string.Format(CultureInfo.InvariantCulture, "/RebindContentKey?id='{0}'&x509Certificate=''", this.Id), UriKind.Relative);
-                    IMediaDataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+                    IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
 
                     IEnumerable<string> results = dataContext.Execute<string>(uriRebindContentKey);
                     string reboundContentKey = results.Single();
@@ -110,7 +110,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                         certToSend = HttpUtility.UrlEncode(certToSend);
 
                         Uri uriRebindContentKey = new Uri(string.Format(CultureInfo.InvariantCulture, "/RebindContentKey?id='{0}'&x509Certificate='{1}'", this.Id, certToSend), UriKind.Relative);
-                        IMediaDataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+                        IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
 
                         IEnumerable<string> results = dataContext.Execute<string>(uriRebindContentKey);
                         string reboundContentKey = results.Single();
@@ -150,7 +150,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             ContentKeyBaseCollection.VerifyContentKey(this);
 
-            IMediaDataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(ContentKeyCollection.ContentKeySet, this);
             dataContext.DeleteObject(this);
 
@@ -178,7 +178,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns></returns>
         public Task<IContentKey> UpdateAsync()
         {
-            IMediaDataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(ContentKeyCollection.ContentKeySet, this);
             dataContext.UpdateObject(this);
 
@@ -187,7 +187,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     {
                         //Will throw if faulted
                         var response = t.Result;
-                        var data = (ContentKeyData)t.AsyncState;
+                        var data = (ContentKeyData)t.Result.AsyncState;
                         return data;
                     });
         }

@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="IContentKeyAuthorizationPolicyOption.cs" company="Microsoft">Copyright 2012 Microsoft Corporation</copyright>
+// <copyright file="IDeliveryPolicy.cs" company="Microsoft">Copyright 2012 Microsoft Corporation</copyright>
 // <license>
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,51 +14,48 @@
 // limitations under the License.
 // </license>
 
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Data.Services.Client;
 
-namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
+namespace Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption
 {
     /// <summary>
-    /// A list of different ways a client can be authorized to access the content key.
+    /// Describes the polices applied to assets for delivery.
     /// </summary>
-    public interface IContentKeyAuthorizationPolicyOption
+    public interface IAssetDeliveryPolicy
     {
         /// <summary>
-        /// Gets Unique identifier of the ContentKeyAuthorizationPolicyOption.
+        /// Gets Unique identifier of the policy.
         /// </summary>
         string Id { get; }
 
         /// <summary>
-        /// Gets or sets name of ContentKeyAuthorizationPolicyOption.
+        /// Gets or sets name of the policy.
         /// An optional friendly name for the policy. It can used by the policy 
         /// creator to help remember what the policy represents or is used for. 
         /// </summary>
         string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets the delivery method of the content key to the client.
+        /// Delivery protocol.
         /// </summary>
-        ContentKeyDeliveryType KeyDeliveryType { get; set; }
+        AssetDeliveryProtocol AssetDeliveryProtocol { get; set; }
 
         /// <summary>
-        /// Xml data, specific to the key delivery type that defines how the key is delivered to the client.
+        /// Policy type.
         /// </summary>
-        string KeyDeliveryConfiguration { get; set; }        
+        AssetDeliveryPolicyType AssetDeliveryPolicyType { get; set; }
 
         /// <summary>
-        /// Gets or sets the restrictions.
-        /// The requirements of each  restriction MUST be met in order to deliver the key using the key delivery data. 
+        /// Mapping from the way of obtaining a configuration to the configuration string.
         /// </summary>
-        List<ContentKeyAuthorizationPolicyRestriction> Restrictions { get; set; }
+        IDictionary<AssetDeliveryPolicyConfigurationKey, string> AssetDeliveryConfiguration { get; set; }
 
         /// <summary>
         /// Asynchronously updates this instance.
         /// </summary>
         /// <returns>Task to wait on for operation completion.</returns>
-        Task<IContentKeyAuthorizationPolicyOption> UpdateAsync();
+        Task<IAssetDeliveryPolicy> UpdateAsync();
 
         /// <summary>
         /// Updates this instance.
@@ -66,14 +63,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
         void Update();
 
         /// <summary>
-        /// Deletes the ContentKeyAuthorizationPolicyOption.
+        /// Deletes this instance.
         /// </summary>
         void Delete();
 
         /// <summary>
-        /// Deletes the ContentKeyAuthorizationPolicyOption asynchronously.
+        /// Asynchronously deletes this instance.
         /// </summary>
-        /// <returns>Task to wait on for operation completion.</returns>
+        /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
         Task<IMediaDataServiceResponse> DeleteAsync();
     }
 }

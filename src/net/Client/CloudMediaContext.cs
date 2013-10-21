@@ -19,6 +19,7 @@ using System.Linq;
 using Microsoft.WindowsAzure.MediaServices.Client.OAuth;
 using Microsoft.WindowsAzure.MediaServices.Client.Versioning;
 using Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization;
+using Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -41,7 +42,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private static readonly Uri _mediaServicesUri = new Uri("https://media.windows.net/");
         private static readonly Uri _mediaServicesAcsBaseAddress = new Uri("https://wamsprodglobal001acs.accesscontrol.windows.net");
 
-        private readonly AzureMediaServicesDataServiceContextFactory _dataContextFactory;
         private readonly AssetCollection _assets;
         private readonly AssetFileCollection _files;
         private readonly AccessPolicyBaseCollection _accessPolicies;
@@ -57,6 +57,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private readonly StorageAccountBaseCollection _storageAccounts;
         private readonly ContentKeyAuthorizationPolicyOptionCollection _contentKeyAuthorizationPolicyOptions;
         private readonly ContentKeyAuthorizationPolicyCollection _contentKeyAuthorizationPolicies;
+        private readonly AssetDeliveryPolicyCollection _assetDeliveryPolicies;
 
 
         /// <summary>
@@ -97,7 +98,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 new OAuthDataServiceAdapter(accountName, accountKey, scope, acsBaseAddress, NimbusRestApiCertificateThumbprint, NimbusRestApiCertificateSubject);
             ServiceVersionAdapter versionAdapter = new ServiceVersionAdapter(KnownApiVersions.Current);
 
-            this._dataContextFactory = new AzureMediaServicesDataServiceContextFactory(apiServer, dataServiceAdapter, versionAdapter, this);
+            this.MediaServicesClassFactory = new AzureMediaServicesClassFactory(apiServer, dataServiceAdapter, versionAdapter, this);
 
             this._jobs = new JobBaseCollection(this);
             this._jobTemplates = new JobTemplateBaseCollection(this);
@@ -114,6 +115,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             this._storageAccounts = new StorageAccountBaseCollection(this);
             this._contentKeyAuthorizationPolicyOptions = new ContentKeyAuthorizationPolicyOptionCollection(this);
             this._contentKeyAuthorizationPolicies = new ContentKeyAuthorizationPolicyCollection(this);
+            this._assetDeliveryPolicies = new AssetDeliveryPolicyCollection(this);
         }
 
         /// <summary>
@@ -206,7 +208,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
         /// <summary>
-        /// Gets the collection of notification endpoints avaiable in the system.
+        /// Gets the collection of notification endpoints available in the system.
         /// </summary>
         public override NotificationEndPointCollection NotificationEndPoints
         {
@@ -222,12 +224,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
         /// <summary>
-        /// Gets a factory for creating data service context instances prepared for Windows Azure Media Services.
+        /// Gets or sets a factory for creating data service context instances prepared for Windows Azure Media Services.
         /// </summary>
-        public AzureMediaServicesDataServiceContextFactory DataContextFactory
-        {
-            get { return this._dataContextFactory; }
-        }
+        public MediaServicesClassFactory MediaServicesClassFactory { get; set; }
 
         /// <summary>
         /// Gets the collection of bulk ingest manifests in the system.
@@ -273,6 +272,20 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             get
             {
                 return this._contentKeyAuthorizationPolicies;
+            }
+        }
+
+        /// <summary>
+        /// Gets the asset delivery policies.
+        /// </summary>
+        /// <value>
+        /// The asset delivery policies.
+        /// </value>
+        public override AssetDeliveryPolicyCollection AssetDeliveryPolicies
+        {
+            get
+            {
+                return this._assetDeliveryPolicies;
             }
         }
     }

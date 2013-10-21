@@ -50,7 +50,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
         {
             this._cloudMediaContext = cloudMediaContext;
 
-            this.DataContextFactory = this._cloudMediaContext.DataContextFactory;
+            this.DataContextFactory = this._cloudMediaContext.MediaServicesClassFactory;
             _query = new Lazy<DataServiceQuery<ContentKeyAuthorizationPolicyOptionData>>(()=> this.DataContextFactory.CreateDataServiceContext().CreateQuery<ContentKeyAuthorizationPolicyOptionData>(ContentKeyAuthorizationPolicyOptionSet));
         }
 
@@ -89,7 +89,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
                     {
                         t.ThrowIfFaulted();
 
-                        return (ContentKeyAuthorizationPolicyOptionData)t.AsyncState;
+                        return (ContentKeyAuthorizationPolicyOptionData)t.Result.AsyncState;
                     },
                     TaskContinuationOptions.ExecuteSynchronously);
         }
