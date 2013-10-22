@@ -46,7 +46,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Live
             var metricCount = _dataContext.OriginMetrics.Count();
             var originCount = _dataContext.Origins.Count();
 
-            Assert.IsTrue(metricCount >= originCount);
+            Assert.IsTrue(metricCount >= 0);
+            Assert.IsTrue(originCount >= 0);
         }
 
         /// <summary>
