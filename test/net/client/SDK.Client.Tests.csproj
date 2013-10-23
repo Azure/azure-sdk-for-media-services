@@ -87,6 +87,7 @@
     <Compile Include="AccessPoliciesTests.cs" />
     <Compile Include="AssetDeliveryPolicyCollectionTest.cs" />
     <Compile Include="AssetFilesTests.cs" />
+    <Compile Include="BaseCollectionTest.cs" />
     <Compile Include="ContentKeyAuthorizationPolicyOptionTests.cs" />
     <Compile Include="ContentKeyAuthorizationPolicyTests.cs" />
     <Compile Include="ContentKeyTests.cs" />
@@ -96,6 +97,7 @@
     <Compile Include="JobTests.cs" />
     <Compile Include="JobTests.StorageAccounts.cs" />
     <Compile Include="LocatorsTests.cs" />
+    <Compile Include="MediaRetryPolicyTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AssetTests.cs" />
     <Compile Include="Helpers\SelfSignedCertificateFactory.cs" />
@@ -215,7 +217,7 @@
       <HintPath>..\packages\WindowsAzure.Storage.2.0.5.1\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
     </Reference>
     <Reference Include="Moq">
-      <HintPath>..\..\..\packages\Moq.4.1.1309.1617\lib\net40\Moq.dll</HintPath>
+      <HintPath>..\packages\Moq.4.1.1309.1617\lib\net40\Moq.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />

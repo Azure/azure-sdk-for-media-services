@@ -16,7 +16,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data.Services.Client;
 using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
@@ -30,6 +29,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// </summary>
     public abstract class ContentKeyBaseCollection : BaseCollection<IContentKey>
     {
+        protected ContentKeyBaseCollection(MediaContextBase context) : base(context)
+        {
+        }
+
         /// <summary>
         /// Gets or sets the queryable collection of content keys.
         /// </summary>
@@ -118,7 +121,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="fileEncryption">The file encryption.</param>
         /// <param name="cert">The cert.</param>
         /// <returns>The content key.</returns>
-        internal static ContentKeyData InitializeStorageContentKey(FileEncryption fileEncryption, X509Certificate2 cert)
+        internal static ContentKeyData CreateStorageContentKey(FileEncryption fileEncryption, X509Certificate2 cert)
         {
             byte[] encryptedContentKey = fileEncryption.EncryptContentKeyToCertificate(cert);
 
@@ -208,7 +211,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="configEncryption">The config encryption.</param>
         /// <param name="cert">The cert.</param>
         /// <returns>The content key.</returns>
-        internal static ContentKeyData InitializeConfigurationContentKey(ConfigurationEncryption configEncryption, X509Certificate2 cert)
+        internal static ContentKeyData CreateConfigurationContentKey(ConfigurationEncryption configEncryption, X509Certificate2 cert)
         {
             byte[] encryptedContentKey = configEncryption.EncryptContentKeyToCertificate(cert);
 

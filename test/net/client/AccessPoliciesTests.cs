@@ -19,19 +19,21 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Helpers;
+using Moq;
+using System.Net;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 {
     [TestClass]
     public class AccessPoliciesTests
     {
-        private CloudMediaContext _dataContext;
+        private CloudMediaContext _mediaContext;
         public TestContext TestContext { get; set; }
 
         [TestInitialize]
         public void SetupTest()
         {
-            _dataContext = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
+            _mediaContext = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
         }
 
         [TestMethod]
@@ -43,7 +45,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             AccessPermissions permissions = AccessPermissions.List | AccessPermissions.Read;
 
             // Act
-            IAccessPolicy actual = _dataContext.AccessPolicies.Create(name, duration, permissions);
+            IAccessPolicy actual = _mediaContext.AccessPolicies.Create(name, duration, permissions);
 
             // Assert
             Assert.AreEqual(name, actual.Name);
@@ -61,7 +63,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             AccessPermissions permissions = AccessPermissions.Write | AccessPermissions.Delete;
 
             // Act
-            IAccessPolicy expected = _dataContext.AccessPolicies.Create(name, duration, permissions);
+            IAccessPolicy expected = _mediaContext.AccessPolicies.Create(name, duration, permissions);
 
             CloudMediaContext context2 = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
 
@@ -83,7 +85,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             AccessPermissions permissions = AccessPermissions.List | AccessPermissions.Read;
 
             // Act
-            Task<IAccessPolicy> task = _dataContext.AccessPolicies.CreateAsync(name, duration, permissions);
+            Task<IAccessPolicy> task = _mediaContext.AccessPolicies.CreateAsync(name, duration, permissions);
             task.Wait();
 
             IAccessPolicy actual = task.Result;
@@ -103,12 +105,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             var duration = new TimeSpan(1, 0, 0);
             AccessPermissions permissions = AccessPermissions.List | AccessPermissions.Read;
 
-            IAccessPolicy accessPolicy = _dataContext.AccessPolicies.Create(name, duration, permissions);
+            IAccessPolicy accessPolicy = _mediaContext.AccessPolicies.Create(name, duration, permissions);
 
             // Act
             accessPolicy.Delete();
 
-            IAccessPolicy actual = _dataContext.AccessPolicies.Where(x => x.Name == name).FirstOrDefault();
+            IAccessPolicy actual = _mediaContext.AccessPolicies.Where(x => x.Name == name).FirstOrDefault();
 
             // Assert
             Assert.IsNull(actual);
@@ -123,7 +125,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             var duration = new TimeSpan(1, 0, 0);
             AccessPermissions permissions = AccessPermissions.List | AccessPermissions.Read;
 
-            _dataContext.AccessPolicies.Create(name, duration, permissions);
+            _mediaContext.AccessPolicies.Create(name, duration, permissions);
 
             CloudMediaContext context2 = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
             IAccessPolicy accessPolicy = context2.AccessPolicies.Where(x => x.Name == name).FirstOrDefault();
@@ -147,7 +149,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             var duration = new TimeSpan(1, 0, 0);
             AccessPermissions permissions = AccessPermissions.List | AccessPermissions.Read;
 
-            _dataContext.AccessPolicies.Create(name, duration, permissions);
+            _mediaContext.AccessPolicies.Create(name, duration, permissions);
 
             CloudMediaContext context2 = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
             IAccessPolicy accessPolicy = context2.AccessPolicies.Where(x => x.Name == name).FirstOrDefault();
@@ -161,6 +163,66 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             // Assert
             Assert.IsNull(actual);
+        }
+
+        [TestMethod]
+        [Priority(0)]
+        public void TestAccessPolicyCreateRetry()
+        {
+            var dataContextMock = new Mock<IMediaDataServiceContext>();
+
+            int exceptionCount = 2;
+
+            var expected = new AccessPolicyData { Name = "testData" };
+            var fakeResponse = new TestMediaDataServiceResponse { AsyncState = expected };
+            var fakeException = new WebException("testException", WebExceptionStatus.ConnectionClosed);
+
+            dataContextMock.Setup((ctxt) => ctxt.AddObject("AccessPolicies", It.IsAny<object>()));
+            dataContextMock.Setup((ctxt) => ctxt
+                .SaveChangesAsync(It.IsAny<object>()))
+                .Returns(() => Task.Factory.StartNew<IMediaDataServiceResponse>(() =>
+                {
+                    if (--exceptionCount > 0) throw fakeException;
+                    return fakeResponse;
+                }));
+
+            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
+
+            IAccessPolicy policy = _mediaContext.AccessPolicies.Create("Empty", TimeSpan.FromSeconds(1), AccessPermissions.None);
+            Assert.AreEqual(expected.Name, policy.Name);
+            Assert.AreEqual(0, exceptionCount);
+        }
+
+        [TestMethod]
+        [Priority(0)]
+        public void TestAccessPolicyDeleteRetry()
+        {
+            var dataContextMock = new Mock<IMediaDataServiceContext>();
+
+            int exceptionCount = 2;
+
+            var policy = new AccessPolicyData { Name = "testData" };
+            var fakeResponse = new TestMediaDataServiceResponse { AsyncState = policy };
+            var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
+
+            dataContextMock.Setup((ctxt) => ctxt.AttachTo("Files", policy));
+            dataContextMock.Setup((ctxt) => ctxt.DeleteObject(policy));
+
+            dataContextMock.Setup((ctxt) => ctxt
+                .SaveChangesAsync(policy))
+                .Returns(() => Task.Factory.StartNew<IMediaDataServiceResponse>(() =>
+                {
+                    if (--exceptionCount > 0) throw fakeException;
+                    return fakeResponse;
+                }));
+
+            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
+
+            policy.SetMediaContext(_mediaContext);
+
+            policy.Delete();
+
+            Assert.AreEqual(0, exceptionCount);
         }
     }
 }

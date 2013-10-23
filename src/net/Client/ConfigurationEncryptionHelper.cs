@@ -33,7 +33,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="initializationVector">The initialization vector.</param>
         /// <param name="encryptedConfiguration">The encrypted configuration.</param>
         /// <returns>The decrypted configuration.</returns>
-        internal static string DecryptConfigurationString(CloudMediaContext cloudMediaContext, string encryptionKeyId, string initializationVector, string encryptedConfiguration)
+        internal static string DecryptConfigurationString(MediaContextBase cloudMediaContext, string encryptionKeyId, string initializationVector, string encryptedConfiguration)
         {
             if (cloudMediaContext == null)
             {

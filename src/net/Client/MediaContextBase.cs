@@ -86,7 +86,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public abstract IStorageAccount DefaultStorageAccount { get; }
 
         /// <summary>
-        /// Gets the collection of notification endpoints avaiable in the system.
+        /// Gets the collection of notification endpoints available in the system.
         /// </summary>
         public abstract NotificationEndPointCollection NotificationEndPoints { get; }
 
@@ -105,6 +105,28 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// The content key authorization policies.
         /// </value>
         public abstract ContentKeyAuthorizationPolicyCollection ContentKeyAuthorizationPolicies { get; }
+
+        /// <summary>
+        /// Gets or sets a factory for creating data service context instances prepared for Windows Azure Media Services.
+        /// </summary>
+        public MediaServicesClassFactory MediaServicesClassFactory { get; set; }
+
+        public abstract IngestManifestFileCollection IngestManifestFiles { get; }
+        public abstract IngestManifestCollection IngestManifests { get; }
+        public abstract IngestManifestAssetCollection IngestManifestAssets { get; }
+        public abstract LocatorBaseCollection Locators { get; }
+
+        /// <summary>
+        /// Gets or sets the number of threads to use to for each blob transfer.
+        /// </summary>
+        /// <remarks>The default value is 10.</remarks>
+        public int ParallelTransferThreadCount { get; set; }
+
+        /// <summary>
+        /// Gets or sets the number of concurrent blob transfers allowed.
+        /// </summary>
+        /// <remarks>The default value is 2.</remarks>
+        public int NumberOfConcurrentTransfers { get; set; }
 
         /// <summary>
         /// Gets the asset delivery policies.

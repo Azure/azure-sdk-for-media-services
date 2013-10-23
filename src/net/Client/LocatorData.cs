@@ -15,10 +15,10 @@
 // </license>
 
 using System;
-using System.Data.Services.Client;
 using System.Data.Services.Common;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -27,9 +27,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// </summary>
     /// <remarks>A locator provides access to an asset using the <see cref="Path"/> property.</remarks>
     [DataServiceKey("Id")]
-    internal partial class LocatorData : ILocator, ICloudMediaContextInit
+    internal partial class LocatorData : BaseEntity<ILocator>, ILocator
     {
-        private CloudMediaContext _cloudMediaContext;
         private AccessPolicyData _accessPolicy;
         private AssetData _asset;
 
@@ -60,7 +59,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             {
                 if ((this._accessPolicy == null) && !string.IsNullOrWhiteSpace(this.Id))
                 {
-                    IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
+                    IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
                     dataContext.AttachTo(LocatorBaseCollection.LocatorSet, this);
                     dataContext.LoadProperty(this, LocatorBaseCollection.AccessPolicyPropertyName);
                 }
@@ -78,22 +77,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             {
                 if ((this._asset == null) && !string.IsNullOrWhiteSpace(this.Id))
                 {
-                    IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
+                    IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
                     dataContext.AttachTo(LocatorBaseCollection.LocatorSet, this);
                     dataContext.LoadProperty(this, LocatorBaseCollection.AssetPropertyName);
                 }
 
                 return this._asset;
             }
-        }
-
-        /// <summary>
-        /// Initializes the cloud media context.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        public void InitCloudMediaContext(CloudMediaContext context)
-        {
-            this._cloudMediaContext = context;
         }
 
         /// <summary>
@@ -133,7 +123,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new InvalidOperationException(StringTable.InvalidOperationUpdateForNotOriginLocator);
             }
 
-            IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(LocatorBaseCollection.LocatorSet, this);
 
             this.StartTime = startTime;
@@ -141,7 +131,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             dataContext.UpdateObject(this);
 
-            return dataContext.SaveChangesAsync(this);
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(this));
         }
 
         /// <summary>
@@ -170,29 +162,28 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             LocatorBaseCollection.VerifyLocator(this);
 
-            IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(LocatorBaseCollection.LocatorSet, this);
             dataContext.DeleteObject(this);
-            var cloudContext = this._cloudMediaContext;
 
-            return dataContext
-                .SaveChangesAsync(this)
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(this))
                 .ContinueWith(
                     t =>
                     {
                         t.ThrowIfFaulted();
-                       
+
                         LocatorData data = (LocatorData)t.Result.AsyncState;
-                        
-                        if (cloudContext != null)
+
+                        if (GetMediaContext() != null)
                         {
-                            var cloudContextAsset = (AssetData) cloudContext.Assets.Where(c => c.Id == data.AssetId).FirstOrDefault();
+                            var cloudContextAsset = (AssetData)GetMediaContext().Assets.Where(c => c.Id == data.AssetId).FirstOrDefault();
                             if (cloudContextAsset != null)
                             {
                                 cloudContextAsset.InvalidateLocatorsCollection();
                             }
                         }
-                        
 
                         if (data.Asset != null)
                         {

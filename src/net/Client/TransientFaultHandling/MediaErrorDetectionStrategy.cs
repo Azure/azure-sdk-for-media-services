@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="WebRequestTransientErrorDetectionStrategy.cs" company="Microsoft">Copyright 2012 Microsoft Corporation</copyright>
+// <copyright file="MediaErrorDetectionStrategy.cs" company="Microsoft">Copyright 2012 Microsoft Corporation</copyright>
 // <license>
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,9 +21,9 @@ using Microsoft.Practices.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling
 {
-    public class WebRequestTransientErrorDetectionStrategy : ITransientErrorDetectionStrategy
+    public abstract class MediaErrorDetectionStrategy : ITransientErrorDetectionStrategy
     {
-        private static readonly ReadOnlyCollection<WebExceptionStatus> CommonRetryableWebExceptions =
+        protected static readonly ReadOnlyCollection<WebExceptionStatus> CommonRetryableWebExceptions =
             new ReadOnlyCollection<WebExceptionStatus>(
                 new[]
                     {
@@ -42,43 +42,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling
             return false;
         }
 
-        public bool IsTransient(Exception ex)
+        public virtual bool IsTransient(Exception ex)
         {
             return ex != null && (CheckIsTransient(ex) || OnIsTransient(ex));
         }
 
-        private static bool CheckIsTransient(Exception ex)
-        {
-            var webException = ex.FindInnerException<WebException>();
-
-            if (webException != null &&
-                CommonRetryableWebExceptions.Contains(webException.Status))
-            {
-                return true;
-            }
-
-            if (ex.FindInnerException<TimeoutException>() != null)
-            {
-                return true;
-            }
-
-            return false;
-        }
-    }
-
-    public static class ExceptionExtensions
-    {
-        public static T FindInnerException<T>(this Exception exception) where T : class
-        {
-            T exceptionToFind = default(T);
-
-            while (exceptionToFind == default(T) && exception != null)
-            {
-                exceptionToFind = exception as T;
-                exception = exception.InnerException;
-            }
-
-            return exceptionToFind;
-        }
+        protected abstract bool CheckIsTransient(Exception ex);
     }
 }

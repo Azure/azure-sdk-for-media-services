@@ -16,7 +16,6 @@
 
 
 using System;
-using System.Data.Services.Client;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -33,19 +32,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         internal const string EntitySet = "IngestManifests";
 
-        private readonly CloudMediaContext _cloudMediaContext;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="IngestManifestCollection"/> class.
         /// </summary>
         /// <param name="cloudMediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Justification = "By design")]
-        internal IngestManifestCollection(CloudMediaContext cloudMediaContext)
+        internal IngestManifestCollection(MediaContextBase cloudMediaContext)
+            : base(cloudMediaContext)
         {
-            this._cloudMediaContext = cloudMediaContext;
-
-            this.DataContextFactory = this._cloudMediaContext.MediaServicesClassFactory;
-            this.Queryable = this.DataContextFactory.CreateDataServiceContext().CreateQuery<IngestManifestData>(EntitySet);
+            this.Queryable = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<IngestManifestData>(EntitySet);
         }
 
 
@@ -56,7 +51,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns><see cref="IIngestManifest"/></returns>
         public IIngestManifest Create(string name)
         {
-            return Create(name, this._cloudMediaContext.DefaultStorageAccount.Name);
+            return Create(name, this.MediaContext.DefaultStorageAccount.Name);
         }
 
         /// <summary>
@@ -66,7 +61,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns><see cref="Task"/> of type <see cref="IIngestManifest"/></returns>
         public Task<IIngestManifest> CreateAsync(string name)
         {
-            return CreateAsync(name, this._cloudMediaContext.DefaultStorageAccount.Name);
+            return CreateAsync(name, this.MediaContext.DefaultStorageAccount.Name);
         }
 
         /// <summary>
@@ -87,8 +82,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                                     };
 
 
-            ingestManifestData.InitCloudMediaContext(this._cloudMediaContext);
-            IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
+            ingestManifestData.SetMediaContext(this.MediaContext);
+            IMediaDataServiceContext dataContext = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AddObject(EntitySet, ingestManifestData);
 
             return dataContext

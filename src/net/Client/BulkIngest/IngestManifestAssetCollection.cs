@@ -30,7 +30,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     public class IngestManifestAssetCollection : BaseCollection<IIngestManifestAsset>
     {
         internal const string EntitySet = "IngestManifestAssets";
-        private readonly CloudMediaContext _cloudMediaContext;
         private readonly IMediaDataServiceContext _dataContext;
         private readonly IIngestManifest _parentIngestManifest;
         private readonly Lazy<IQueryable<IIngestManifestAsset>> _query;
@@ -40,10 +39,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <param name="cloudMediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
         /// <param name="parentIngestManifest">parent manifest if collection associated with manifest </param>
-        internal IngestManifestAssetCollection(CloudMediaContext cloudMediaContext, IIngestManifest parentIngestManifest)
+        internal IngestManifestAssetCollection(MediaContextBase cloudMediaContext, IIngestManifest parentIngestManifest):base(cloudMediaContext)
         {
-            _cloudMediaContext = cloudMediaContext;
-            _dataContext = _cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
+            _dataContext = MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             _parentIngestManifest = parentIngestManifest;
             _query = new Lazy<IQueryable<IIngestManifestAsset>>(() => _dataContext.CreateQuery<IngestManifestAssetData>(EntitySet));
         }
@@ -135,7 +133,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     (fileTasks) =>
                     {   
                         //Updating statistic
-                        var _this = _cloudMediaContext.IngestManifests.Where(c => c.Id == _parentIngestManifest.Id).FirstOrDefault();
+                        var _this = MediaContext.IngestManifests.Where(c => c.Id == _parentIngestManifest.Id).FirstOrDefault();
                         if (_this != null)
                         {
                             ((IngestManifestData)_parentIngestManifest).Statistics = _this.Statistics;
@@ -200,7 +198,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             IngestManifestCollection.VerifyManifest(ingestManifest);
 
-            IMediaDataServiceContext dataContext = _cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             var data = new IngestManifestAssetData
                            {
                                ParentIngestManifestId = ingestManifest.Id

@@ -14,10 +14,7 @@
 // limitations under the License.
 // </license>
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Data.Services.Client;
 using System.Collections;
 

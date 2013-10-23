@@ -27,9 +27,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// Represents a Task output asset.
     /// </summary>
     /// <remarks>This is used when creating task to specify properties for a Task's output.</remarks>
-    internal class OutputAsset : IAsset, ICloudMediaContextInit
+    internal class OutputAsset : BaseEntity<IAsset>, IAsset
     {
-        private CloudMediaContext _cloudMediaContext;
 
         /// <summary>
         /// Gets or sets the Id.
@@ -148,11 +147,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             get
             {
-                if (_cloudMediaContext == null)
+                if (GetMediaContext() == null)
                 {
                     throw new NullReferenceException("Operation can't be performed. CloudMediaContext hasn't been initiliazed for OutputAsset type");
                 }
-                return this._cloudMediaContext.StorageAccounts.Where(c => c.Name == this.StorageAccountName).FirstOrDefault();
+                return this.GetMediaContext().StorageAccounts.Where(c => c.Name == this.StorageAccountName).FirstOrDefault();
             }
         }
 
@@ -191,10 +190,5 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             throw new NotImplementedException();
         }
 
-
-        public void InitCloudMediaContext(CloudMediaContext context)
-        {
-            this._cloudMediaContext = context;
-        }
     }
 }

@@ -34,21 +34,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption
         internal const string DeliveryPolicySet = "AssetDeliveryPolicies";
 
         /// <summary>
-        /// The media context used to communicate to the server.
-        /// </summary>
-        private readonly CloudMediaContext _cloudMediaContext;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="AssetDeliveryPolicyCollection"/> class.
         /// </summary>
         /// <param name="cloudMediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Justification = "By design")]
-        internal AssetDeliveryPolicyCollection(CloudMediaContext cloudMediaContext)
+        internal AssetDeliveryPolicyCollection(MediaContextBase context)
+            : base(context)
         {
-            this._cloudMediaContext = cloudMediaContext;
-
-            this.DataContextFactory = this._cloudMediaContext.MediaServicesClassFactory;
-            this.Queryable = this.DataContextFactory.CreateDataServiceContext().CreateQuery<AssetDeliveryPolicyData>(DeliveryPolicySet);
+            MediaServicesClassFactory factory = this.MediaContext.MediaServicesClassFactory;
+            this.Queryable = factory.CreateDataServiceContext().CreateQuery<AssetDeliveryPolicyData>(DeliveryPolicySet);
         }
  
         /// <summary>
@@ -65,7 +59,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption
             AssetDeliveryProtocol deliveryProtocol,
             Dictionary<AssetDeliveryPolicyConfigurationKey, string> configuration)
         {
-            IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             var policy = new AssetDeliveryPolicyData
             {
                 Name = name, 
@@ -75,7 +69,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption
             ((IAssetDeliveryPolicy)policy).AssetDeliveryProtocol = deliveryProtocol;
             ((IAssetDeliveryPolicy)policy).AssetDeliveryConfiguration = configuration;
 
-            policy.InitCloudMediaContext(this._cloudMediaContext);
+            policy.SetMediaContext(this.MediaContext);
             dataContext.AddObject(DeliveryPolicySet, policy);
 
             return dataContext

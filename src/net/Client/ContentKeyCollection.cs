@@ -16,10 +16,10 @@
 
 
 using System;
-using System.Data.Services.Client;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -33,16 +33,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         internal const string ContentKeySet = "ContentKeys";
 
-        private readonly CloudMediaContext _cloudMediaContext;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ContentKeyCollection"/> class.
         /// </summary>
         /// <param name="cloudMediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
-        internal ContentKeyCollection(CloudMediaContext cloudMediaContext)
+        internal ContentKeyCollection(MediaContextBase cloudMediaContext)
+            : base(cloudMediaContext)
         {
-            this._cloudMediaContext = cloudMediaContext;
-            this.ContentKeyQueryable = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<ContentKeyData>(ContentKeySet);
+            
+            this.ContentKeyQueryable = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<ContentKeyData>(ContentKeySet);
         }
 
         /// <summary>
@@ -101,10 +100,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new ArgumentException(StringTable.ErrorCommonEncryptionKeySize, "contentKey");
             }
 
-            IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
-            X509Certificate2 certToUse = ContentKeyBaseCollection.GetCertificateToEncryptContentKey(dataContext, contentKeyType);
+            IMediaDataServiceContext dataContext = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
+            X509Certificate2 certToUse = ContentKeyBaseCollection.GetCertificateToEncryptContentKey(dataContext, ContentKeyType.CommonEncryption);
 
             ContentKeyData contentKeyData = null;
+
             if (contentKeyType == ContentKeyType.CommonEncryption)
             {
                 contentKeyData = InitializeCommonContentKey(keyId, contentKey, name, certToUse);
@@ -114,12 +114,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 contentKeyData = InitializeEnvelopeContentKey(keyId, contentKey, name, certToUse);
             }
 
-            contentKeyData.InitCloudMediaContext(this._cloudMediaContext);
-
+            contentKeyData.SetMediaContext(MediaContext);
             dataContext.AddObject(ContentKeySet, contentKeyData);
 
-            return dataContext
-                .SaveChangesAsync(contentKeyData)
+            MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(contentKeyData))
                 .ContinueWith<IContentKey>(
                     t =>
                     {
@@ -168,7 +168,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 task.Wait();
 
                 return task.Result;
-            }
+    }
             catch (AggregateException exception)
             {
                 throw exception.InnerException;
