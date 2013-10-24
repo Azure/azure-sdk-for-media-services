@@ -28,7 +28,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
     public class ContentKeyAuthorizationPolicyTests
     {
         private CloudMediaContext _dataContext;
-        private IContentKeyAuthorizationPolicyOption _testOption;
         private string testRun;
 
         [TestInitialize]

@@ -190,7 +190,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             get;
         }
-        
+        /// <include file='Documentation.xml' path='Documentation/Member[@name="IContentKey.Checksum"]'/>
         string Checksum
         {
             get;
@@ -201,7 +201,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         string AuthorizationPolicyId
         {
             get; set;
-        }
+    }
     }
     public partial interface IAccessPolicy
     {

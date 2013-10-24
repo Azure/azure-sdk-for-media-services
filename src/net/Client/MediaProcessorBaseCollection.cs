@@ -31,10 +31,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <param name="cloudMediaContext">The cloud media context.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Justification = "By design")]
-        internal MediaProcessorBaseCollection(CloudMediaContext cloudMediaContext)
+        internal MediaProcessorBaseCollection(MediaContextBase cloudMediaContext)
+            : base(cloudMediaContext)
         {
-            this.DataContextFactory = cloudMediaContext.MediaServicesClassFactory;
-            this.Queryable = this.DataContextFactory.CreateDataServiceContext().CreateQuery<MediaProcessorData>(MediaProcessorSet);
+           this.Queryable = cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<MediaProcessorData>(MediaProcessorSet);
         }
     }
 }

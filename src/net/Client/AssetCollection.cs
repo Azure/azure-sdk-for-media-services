@@ -16,7 +16,6 @@
 
 
 using System;
-using System.Data.Services.Client;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
@@ -35,21 +34,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// The set name for assets.
         /// </summary>
         internal const string AssetSet = "Assets";
-
-        private readonly IMediaDataServiceContext _dataContext;
-        private readonly CloudMediaContext _cloudMediaContext;
         private readonly Lazy<IQueryable<IAsset>> _assetQuery;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AssetCollection"/> class.
         /// </summary>
         /// <param name="cloudMediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
-        internal AssetCollection(CloudMediaContext cloudMediaContext)
+        internal AssetCollection(MediaContextBase cloudMediaContext)
+            : base(cloudMediaContext)
         {
-            this._cloudMediaContext = cloudMediaContext;
-            this._dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
-            this._assetQuery = new Lazy<IQueryable<IAsset>>(() => this._dataContext.CreateQuery<AssetData>(AssetSet));
-            
+            this._assetQuery = new Lazy<IQueryable<IAsset>>(() => this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<AssetData>(AssetSet));
         }
 
         /// <summary>
@@ -72,7 +66,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </returns>
         public override Task<IAsset> CreateAsync(string assetName, AssetCreationOptions options,CancellationToken cancellationToken)
         {
-            return this.CreateAsync(assetName, this._cloudMediaContext.DefaultStorageAccount.Name, options, cancellationToken);
+            return this.CreateAsync(assetName, this.MediaContext.DefaultStorageAccount.Name, options, cancellationToken);
         }
 
         /// <summary>
@@ -83,7 +77,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>The created asset.</returns>
         public override IAsset Create(string assetName, AssetCreationOptions options)
         {
-            return this.Create(assetName, this._cloudMediaContext.DefaultStorageAccount.Name, options);
+            return this.Create(assetName, this.MediaContext.DefaultStorageAccount.Name, options);
         }
 
         /// <summary>
@@ -105,19 +99,19 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 StorageAccountName = storageAccountName
             };
 
-            emptyAsset.InitCloudMediaContext(this._cloudMediaContext);
-
+            emptyAsset.SetMediaContext(this.MediaContext);
+           
             cancellationToken.ThrowIfCancellationRequested();
-            IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
-            dataContext.AddObject(AssetSet, emptyAsset);
+            IMediaDataServiceContext dataContext = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
+            dataContext.AddObject(AssetSet, (IAsset)emptyAsset);
 
-            MediaRetryPolicy retryPolicy = this._cloudMediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+            MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
 
             return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(emptyAsset))
                 .ContinueWith<IAsset>(
                     t =>
                     {
-                        t.ThrowIfFaulted();
+                        t.ThrowIfFaulted(); 
                         cancellationToken.ThrowIfCancellationRequested();
 
                         AssetData data = (AssetData)t.Result.AsyncState;
@@ -156,8 +150,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
         }
 
-
-        private static ContentKeyData CreateStorageContentKey(AssetData tempAsset, NullableFileEncryption fileEncryption, IMediaDataServiceContext dataContext)
+        private ContentKeyData CreateStorageContentKey(AssetData tempAsset, NullableFileEncryption fileEncryption, IMediaDataServiceContext dataContext)
         {
             // Create the content key.
             fileEncryption.Init();
@@ -167,7 +160,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             ContentKeyData contentKeyData = ContentKeyBaseCollection.InitializeStorageContentKey(fileEncryption.FileEncryption, certToUse);
 
             dataContext.AddObject(ContentKeyCollection.ContentKeySet, contentKeyData);
-            dataContext.SaveChanges();
+
+            MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            retryPolicy.ExecuteAction<IMediaDataServiceResponse>(() => dataContext.SaveChanges());
 
             // Associate it with the asset.
             ((IAsset) tempAsset).ContentKeys.Add(contentKeyData);

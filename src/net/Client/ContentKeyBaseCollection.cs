@@ -16,7 +16,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data.Services.Client;
 using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
@@ -30,6 +29,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// </summary>
     public abstract class ContentKeyBaseCollection : BaseCollection<IContentKey>
     {
+        protected ContentKeyBaseCollection(MediaContextBase context) : base(context)
+        {
+        }
+
         /// <summary>
         /// Gets or sets the queryable collection of content keys.
         /// </summary>

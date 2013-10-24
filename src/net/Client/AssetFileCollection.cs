@@ -15,11 +15,11 @@
 // </license>
 
 using System;
-using System.Data.Services.Client;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -33,20 +33,18 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         internal const string FileSet = "Files";
 
-        private readonly Lazy<IQueryable<IAssetFile>> _assetFileQuery;
-        private readonly IMediaDataServiceContext _dataContext;
+        private readonly Lazy<IQueryable<IAssetFile>> _assetFileQuery; 
         private readonly IAsset _parentAsset;
-        private CloudMediaContext _cloudMediaContext;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AssetFileCollection"/> class.
         /// </summary>
         /// <param name="cloudMediaContext">The cloud media context.</param>
-        internal AssetFileCollection(CloudMediaContext cloudMediaContext)
+        internal AssetFileCollection(MediaContextBase cloudMediaContext)
+            : base(cloudMediaContext)
         {
-            _cloudMediaContext = cloudMediaContext;
-            this._dataContext = cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
-            this._assetFileQuery = new Lazy<IQueryable<IAssetFile>>(() => this._dataContext.CreateQuery<AssetFileData>(FileSet));
+            MediaServicesClassFactory factory = this.MediaContext.MediaServicesClassFactory;
+            this._assetFileQuery = new Lazy<IQueryable<IAssetFile>>(() => factory.CreateDataServiceContext().CreateQuery<AssetFileData>(FileSet));
         }
 
         /// <summary>
@@ -54,9 +52,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <param name="cloudMediaContext">The cloud media context.</param>
         /// <param name="parentAsset">The parent <see cref="IAsset"/>.</param>
-        internal AssetFileCollection(CloudMediaContext cloudMediaContext, IAsset parentAsset):this(cloudMediaContext)
+        internal AssetFileCollection(MediaContextBase cloudMediaContext, IAsset parentAsset)
+            : this(cloudMediaContext)
         {
             _parentAsset = parentAsset;
+            MediaServicesClassFactory factory = this.MediaContext.MediaServicesClassFactory;
+            this._assetFileQuery = new Lazy<IQueryable<IAssetFile>>(() => factory.CreateDataServiceContext().CreateQuery<AssetFileData>(FileSet));
         }
 
         /// <summary>
@@ -91,7 +92,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new ArgumentException(String.Format(CultureInfo.InvariantCulture, StringTable.ErrorCreatingAssetFileEmptyFileName));
             }
             cancelation.ThrowIfCancellationRequested();
-            var dataContext = _cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
+            var dataContext = MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
 
             bool isEncrypted = _parentAsset.Options.HasFlag(AssetCreationOptions.CommonEncryptionProtected) || 
                                _parentAsset.Options.HasFlag(AssetCreationOptions.StorageEncrypted) || 
@@ -142,12 +143,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             dataContext.AddObject(AssetFileCollection.FileSet, assetFile);
             cancelation.ThrowIfCancellationRequested();
-            return dataContext.SaveChangesAsync(assetFile).ContinueWith<IAssetFile>(t =>
+
+            MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(assetFile))
+                .ContinueWith<IAssetFile>(t =>
                     {
                         t.ThrowIfFaulted();
                         AssetFileData data = (AssetFileData)t.Result.AsyncState;
-                        IAssetFile file = this._cloudMediaContext.Files.Where(c => c.Id == data.Id).First();
-                        return file;
+                        return data;
                     });
         }
     }

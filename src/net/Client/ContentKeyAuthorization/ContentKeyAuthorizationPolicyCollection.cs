@@ -28,38 +28,32 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
         internal const string ContentKeyAuthorizationPolicySet = "ContentKeyAuthorizationPolicies";
 
         /// <summary>
-        /// The media context used to communicate to the server.
-        /// </summary>
-        private readonly CloudMediaContext _cloudMediaContext;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="ContentKeyAuthorizationPolicyCollection"/> class.
         /// </summary>
         /// <param name="cloudMediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Justification = "By design")]
-        internal ContentKeyAuthorizationPolicyCollection(CloudMediaContext cloudMediaContext)
+        internal ContentKeyAuthorizationPolicyCollection(MediaContextBase context)
+            : base(context)
         {
-            this._cloudMediaContext = cloudMediaContext;
-
-            this.DataContextFactory = this._cloudMediaContext.MediaServicesClassFactory;
-            this.Queryable = this.DataContextFactory.CreateDataServiceContext().CreateQuery<ContentKeyAuthorizationPolicyData>(ContentKeyAuthorizationPolicySet);
+            MediaServicesClassFactory factory = this.MediaContext.MediaServicesClassFactory;
+            this.Queryable = factory.CreateDataServiceContext().CreateQuery<ContentKeyAuthorizationPolicyData>(ContentKeyAuthorizationPolicySet);
         }
 
         /// <summary>
-        /// Creates the authorization policy asyncroniusly.
+        /// Creates the authorization policy asynchronously.
         /// </summary>
         /// <param name="name">The name.</param>
         /// <returns></returns>
         public virtual Task<IContentKeyAuthorizationPolicy> CreateAsync(string name)
         {
 
-            IMediaDataServiceContext dataContext = this.DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             var authorizationPolicyData = new ContentKeyAuthorizationPolicyData
             {
                 Name = name
             };
 
-            authorizationPolicyData.InitCloudMediaContext(this._cloudMediaContext);
+            authorizationPolicyData.SetMediaContext(this.MediaContext);
             dataContext.AddObject(ContentKeyAuthorizationPolicySet, authorizationPolicyData);
 
             return dataContext

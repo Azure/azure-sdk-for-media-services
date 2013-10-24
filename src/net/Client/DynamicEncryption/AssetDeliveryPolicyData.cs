@@ -28,7 +28,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption
     /// Describes the polices applied to assets for delivery.
     /// </summary>
     [DataServiceKey("Id")]
-    internal class AssetDeliveryPolicyData : IAssetDeliveryPolicy, ICloudMediaContextInit
+    internal class AssetDeliveryPolicyData : BaseEntity<IAssetDeliveryPolicy>, IAssetDeliveryPolicy 
     {
         /// <summary>
         /// Gets Unique identifier of the DeliveryPolicy.
@@ -141,21 +141,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption
         }
 
         /// <summary>
-        /// Initializes the cloud media context.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        public void InitCloudMediaContext(CloudMediaContext context)
-        {
-            this._cloudMediaContext = context;
-        }
-
-        /// <summary>
         /// Asynchronously updates this instance.
         /// </summary>
         /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
         public Task<IAssetDeliveryPolicy> UpdateAsync()
         {
-            IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(AssetDeliveryPolicyCollection.DeliveryPolicySet, this);
             dataContext.UpdateObject(this);
 
@@ -189,7 +180,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption
         /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
         public Task<IMediaDataServiceResponse> DeleteAsync()
         {
-            IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(AssetDeliveryPolicyCollection.DeliveryPolicySet, this);
             dataContext.DeleteObject(this);
 
@@ -210,7 +201,5 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption
                 throw exception.InnerException;
             }
         }
-
-        private CloudMediaContext _cloudMediaContext;
     }
 }

@@ -16,15 +16,13 @@
 
 using System;
 using System.ComponentModel;
-using System.Data.Services.Client;
 using System.Linq;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
 
-    internal class JobNotificationSubscription : IJobNotificationSubscription, ICloudMediaContextInit
+    internal class JobNotificationSubscription : BaseEntity<IJobNotificationSubscription>, IJobNotificationSubscription
     {
-        private CloudMediaContext _cloudMediaContext;
         private int _targetJobState;
         private INotificationEndPoint _notificationEndPoint;
 
@@ -77,11 +75,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             get
             {
-                if (_notificationEndPoint == null && _cloudMediaContext != null)
+                if (_notificationEndPoint == null && GetMediaContext() != null)
                 {
                     if (!string.IsNullOrWhiteSpace(NotificationEndPointId))
                     {
-                        IMediaDataServiceContext dataContext = _cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
+                        IMediaDataServiceContext dataContext = GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
                         var notificationEndPoint = dataContext.CreateQuery<NotificationEndPoint>(NotificationEndPointCollection.NotificationEndPoints).Where(n => n.Id == NotificationEndPointId).Single();
                         if (notificationEndPoint != null)
                         {
@@ -95,19 +93,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
         #endregion
-
-        #region ICloudMediaContextInit Members
-
-        /// <summary>
-        /// Inits the cloud media context.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        public void InitCloudMediaContext(CloudMediaContext context)
-        {
-            _cloudMediaContext = context;
-        }
-
-        #endregion
-
+        
     }
 }

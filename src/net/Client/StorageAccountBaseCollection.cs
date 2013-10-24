@@ -27,11 +27,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Initializes a new instance of the <see cref="MediaProcessorBaseCollection"/> class.
         /// </summary>
-        /// <param name="cloudMediaContext">The cloud media context.</param>
-        internal StorageAccountBaseCollection(CloudMediaContext cloudMediaContext)
+        /// <param name="mediaContext">The media context.</param>
+        internal StorageAccountBaseCollection(MediaContextBase mediaContext)
+            : base(mediaContext)
         {
-            this.DataContextFactory = cloudMediaContext.MediaServicesClassFactory;
-            this.Queryable = this.DataContextFactory.CreateDataServiceContext().CreateQuery<StorageAccountData>(EntitySet);
+            MediaServicesClassFactory factory = MediaContext.MediaServicesClassFactory;
+            Queryable = factory.CreateDataServiceContext().CreateQuery<StorageAccountData>(EntitySet);
         }
          
     }

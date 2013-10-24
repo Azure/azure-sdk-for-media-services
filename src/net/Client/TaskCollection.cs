@@ -28,7 +28,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     {
         private readonly IList<ITask> _tasks;
         private readonly IJob _job;
-        private readonly CloudMediaContext _cloudMediaContext;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TaskCollection"/> class.
@@ -43,12 +42,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <param name="job">The job.</param>
         /// <param name="tasks">The tasks.</param>
-        /// <param name="cloudMediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
-        internal TaskCollection(IJob job, IEnumerable<ITask> tasks, CloudMediaContext cloudMediaContext)
+        /// <param name="mediaContext">The <seealso cref="MediaContextBase"/> instance.</param>
+        internal TaskCollection(IJob job, IEnumerable<ITask> tasks, MediaContextBase mediaContext)
         {
             this._tasks = new List<ITask>(tasks);
             this._job = job;
-            this._cloudMediaContext = cloudMediaContext;
+            this.MediaContext = mediaContext;
         }
 
         /// <summary>
@@ -146,7 +145,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                                Options = (int)options
                            };
 
-            task.InitCloudMediaContext(this._cloudMediaContext);
+            task.SetMediaContext(MediaContext);
 
             this._tasks.Add(task);
 
@@ -189,5 +188,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new NotSupportedException(string.Format(CultureInfo.InvariantCulture, StringTable.ErrorReadOnlyCollectionToSubmittedTask, "Tasks"));
             }
         }
+
+        public MediaContextBase MediaContext { get; set; }
     }
 }

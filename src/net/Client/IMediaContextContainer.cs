@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="ICloudMediaContextInit.cs" company="Microsoft">Copyright 2012 Microsoft Corporation</copyright>
+// <copyright file="IMediaContextContainer.cs" company="Microsoft">Copyright 2012 Microsoft Corporation</copyright>
 // <license>
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,12 +19,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// <summary>
     /// Provides initialization of a <see cref="CloudMediaContext"/>.
     /// </summary>
-    public interface ICloudMediaContextInit
+    public interface IMediaContextContainer
     {
-        /// <summary>
-        /// Initializes the instance with a <see cref="CloudMediaContext"/>.
-        /// </summary>
-        /// <param name="context">The <see cref="CloudMediaContext"/> instance.</param>
-        void InitCloudMediaContext(CloudMediaContext context);
+        void SetMediaContext(MediaContextBase value);
+        MediaContextBase GetMediaContext();
     }
 }

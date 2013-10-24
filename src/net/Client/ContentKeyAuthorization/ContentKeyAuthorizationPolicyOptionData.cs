@@ -26,7 +26,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
     /// A list of different ways a client can be authorized to access the content key.
     /// </summary>
     [DataServiceKey("Id")]
-    internal class ContentKeyAuthorizationPolicyOptionData : IContentKeyAuthorizationPolicyOption, ICloudMediaContextInit
+    internal class ContentKeyAuthorizationPolicyOptionData : BaseEntity<IContentKeyAuthorizationPolicyOption>, IContentKeyAuthorizationPolicyOption 
     {
         /// <summary>
         /// Gets Unique identifier of the ContentKeyAuthorizationPolicyOption.
@@ -71,8 +71,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
         /// </summary>
         public List<ContentKeyAuthorizationPolicyRestriction> Restrictions { get; set; }
 
-        private CloudMediaContext _cloudMediaContext;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ContentKeyAuthorizationPolicyOptionData"/> class.
         /// </summary>
@@ -82,21 +80,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
         }
 
         /// <summary>
-        /// Initializes the cloud media context.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        public void InitCloudMediaContext(CloudMediaContext context)
-        {
-            this._cloudMediaContext = context;
-        }
-
-        /// <summary>
         /// Asynchronously updates this instance.
         /// </summary>
         /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
         public Task<IContentKeyAuthorizationPolicyOption> UpdateAsync()
         {
-            IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(ContentKeyAuthorizationPolicyOptionCollection.ContentKeyAuthorizationPolicyOptionSet, this);
             dataContext.UpdateObject(this);
 
@@ -130,7 +119,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
         /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
         public Task<IMediaDataServiceResponse> DeleteAsync()
         {
-            IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(ContentKeyAuthorizationPolicyOptionCollection.ContentKeyAuthorizationPolicyOptionSet, this);
             dataContext.DeleteObject(this);
 

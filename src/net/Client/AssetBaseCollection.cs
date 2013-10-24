@@ -16,8 +16,6 @@
 
 using System;
 using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -29,6 +27,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// </summary>
     public abstract class AssetBaseCollection : BaseCollection<IAsset>
     {
+        protected AssetBaseCollection(MediaContextBase context) : base(context)
+        {
+        }
 
         /// <summary>
         /// Asynchronously creates an asset that does not contain any files and <see cref="AssetState"/> is Initialized.
