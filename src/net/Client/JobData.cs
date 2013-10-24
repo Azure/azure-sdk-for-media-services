@@ -705,7 +705,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 }
 
                 // Create a content key object to hold the encryption key.
-                ContentKeyData contentKeyData = ContentKeyBaseCollection.CreateConfigurationContentKey(configEncryption, certToUse);
+                ContentKeyData contentKeyData = ContentKeyBaseCollection.InitializeConfigurationContentKey(configEncryption, certToUse);
                 dataContext.AddObject(ContentKeyCollection.ContentKeySet, contentKeyData);
             }
         }
@@ -728,7 +728,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 }
 
                 // Create a content key object to hold the encryption key.
-                ContentKeyData contentKeyData = ContentKeyBaseCollection.CreateConfigurationContentKey(configEncryption, certToUse);
+                ContentKeyData contentKeyData = ContentKeyBaseCollection.InitializeConfigurationContentKey(configEncryption, certToUse);
                 dataContext.AddObject(ContentKeyCollection.ContentKeySet, contentKeyData);
             }
         }

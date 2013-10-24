@@ -121,7 +121,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="fileEncryption">The file encryption.</param>
         /// <param name="cert">The cert.</param>
         /// <returns>The content key.</returns>
-        internal static ContentKeyData CreateStorageContentKey(FileEncryption fileEncryption, X509Certificate2 cert)
+        internal static ContentKeyData InitializeStorageContentKey(FileEncryption fileEncryption, X509Certificate2 cert)
         {
             byte[] encryptedContentKey = fileEncryption.EncryptContentKeyToCertificate(cert);
 
@@ -211,7 +211,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="configEncryption">The config encryption.</param>
         /// <param name="cert">The cert.</param>
         /// <returns>The content key.</returns>
-        internal static ContentKeyData CreateConfigurationContentKey(ConfigurationEncryption configEncryption, X509Certificate2 cert)
+        internal static ContentKeyData InitializeConfigurationContentKey(ConfigurationEncryption configEncryption, X509Certificate2 cert)
         {
             byte[] encryptedContentKey = configEncryption.EncryptContentKeyToCertificate(cert);
 
