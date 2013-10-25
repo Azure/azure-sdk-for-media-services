@@ -192,7 +192,7 @@
     <Compile Include="Live\ChannelSettings.cs" />
     <Compile Include="Live\ChannelSize.cs" />
     <Compile Include="Live\ChannelState.cs" />
-    <Compile Include="Live\G20Key.cs" />
+    <Compile Include="Live\AkamaiSignatureHeaderAuthenticationKey.cs" />
     <Compile Include="Live\IChannel.cs" />
     <Compile Include="Live\IChannelMetric.cs" />
     <Compile Include="Live\IMetricsMonitor.cs" />

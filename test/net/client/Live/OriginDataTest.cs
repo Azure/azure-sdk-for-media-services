@@ -43,7 +43,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
 	                    ""Security"":
 	                    {
 		                    ""IPv4AllowList"": [{""Name"":""testName1"",""IP"":""1.1.1.1""},{""Name"":""testName2"",""IP"":""1.1.1.2""}],	
-		                    ""AkamaiG20Authentication"":
+		                    ""AkamaiSignatureHeaderAuthentication"":
 		                    [
 			                    {""Expiration"":""\/Date(1359532800000)\/"",""Identifier"":""id1"",""Base64Key"":""b64Key1""},
 			                    {""Expiration"":""\/Date(1359532800000)\/"",""Identifier"":""id1"",""Base64Key"":""b64Key1""},
@@ -57,8 +57,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
             var actual = ((IOrigin)target).Settings;
 
             Assert.AreEqual(2, actual.Playback.Security.IPv4AllowList.Count);
-            Assert.AreEqual(3, actual.Playback.Security.AkamaiG20Authentication.Count);
-            Assert.AreEqual(new DateTime(2013, 1, 30).ToUniversalTime(), actual.Playback.Security.AkamaiG20Authentication[2].Expiration);
+            Assert.AreEqual(3, actual.Playback.Security.AkamaiSignatureHeaderAuthentication.Count);
+            Assert.AreEqual(new DateTime(2013, 1, 30).ToUniversalTime(), actual.Playback.Security.AkamaiSignatureHeaderAuthentication[2].Expiration);
             Assert.AreEqual("1.1.1.2", actual.Playback.Security.IPv4AllowList[1].IP);
             Assert.AreEqual("testName2", actual.Playback.Security.IPv4AllowList[1].Name);
             Assert.AreEqual(0, actual.Playback.MaxCacheAge.Value.TotalSeconds);
@@ -79,10 +79,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
                 {
                     Security = new PlaybackEndpointSecuritySettings
                     {
-                        AkamaiG20Authentication = new List<G20Key> 
+                        AkamaiSignatureHeaderAuthentication = new List<AkamaiSignatureHeaderAuthenticationKey> 
                         { 
-                            new G20Key { Base64Key = "b64Key1", Expiration = new DateTime(2013, 1, 30), Identifier = "id1" },
-                            new G20Key { Base64Key = "b64Key2", Expiration = new DateTime(2013, 1, 30), Identifier = "id2" },
+                            new AkamaiSignatureHeaderAuthenticationKey { Base64Key = "b64Key1", Expiration = new DateTime(2013, 1, 30), Identifier = "id1" },
+                            new AkamaiSignatureHeaderAuthenticationKey { Base64Key = "b64Key2", Expiration = new DateTime(2013, 1, 30), Identifier = "id2" },
                         },
 
                         IPv4AllowList = new List<Ipv4>
@@ -103,7 +103,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
 	                    ""Security"":
 	                    {
 		                    ""IPv4AllowList"": [{""Name"":""testName1"",""IP"":""1.1.1.1""},{""Name"":""testName2"",""IP"":""1.1.1.2""}],	
-		                    ""AkamaiG20Authentication"":
+		                    ""AkamaiSignatureHeaderAuthentication"":
 		                    [
 			                    {""Expiration"":""\/Date(1359532800000)\/"",""Identifier"":""id1"",""Base64Key"":""b64Key1""},
 			                    {""Expiration"":""\/Date(1359532800000)\/"",""Identifier"":""id2"",""Base64Key"":""b64Key2""}

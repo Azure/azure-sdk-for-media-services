@@ -17,9 +17,9 @@ using System;
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
-    /// Information about G20 authentication key.
+    /// Information about Akamai Signature Header Authentication key.
     /// </summary>
-    public class G20Key
+    public class AkamaiSignatureHeaderAuthenticationKey
     {
         /// <summary>
         /// Expiration of the key.

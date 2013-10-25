@@ -48,6 +48,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
         /// Creates everything needed for streaming.
         /// </summary>
         [TestMethod]
+        [Ignore] // enable when environment is ready
         public void CreateStreamingTest()
         {
             IOrigin origin = _dataContext.Origins.Create(_testOriginName, 2, MakeOriginSettings());
@@ -114,9 +115,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
                 {
                     Security = new PlaybackEndpointSecuritySettings
                     {
-                        AkamaiG20Authentication = new List<G20Key> 
+                        AkamaiSignatureHeaderAuthentication = new List<AkamaiSignatureHeaderAuthenticationKey> 
                         { 
-                            new G20Key { Base64Key = "vUeuvDU3MIgHuFZCU3cX+24wWg6r4qho594cRcEr5fU=", Expiration = new DateTime(2030, 10, 30), Identifier = "id1" },
+                            new AkamaiSignatureHeaderAuthenticationKey { Base64Key = "vUeuvDU3MIgHuFZCU3cX+24wWg6r4qho594cRcEr5fU=", Expiration = new DateTime(2030, 10, 30), Identifier = "id1" },
                         },
 
                         IPv4AllowList = new List<Ipv4>
