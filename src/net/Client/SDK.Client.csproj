@@ -185,6 +185,7 @@
     <Compile Include="Live\ChannelBaseCollection.cs" />
     <Compile Include="Live\ChannelData.cs" />
     <Compile Include="Live\ChannelMetricBaseCollection.cs" />
+    <Compile Include="Live\ChannelServiceSettings.cs" />
     <Compile Include="Live\IMetric.cs" />
     <Compile Include="Live\MetricBaseCollection.cs" />
     <Compile Include="Live\ChannelMetricData.cs" />

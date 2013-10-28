@@ -96,7 +96,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets or sets FMp4 fragment duration
         /// </summary>
-        public UInt64 FMp4FragmentDuration { get; set; }
+        public TimeSpan? FMp4FragmentDuration { get; set; }
     }
 
     /// <summary>
@@ -107,6 +107,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets or sets the number of fragments per HLS segment
         /// </summary>
-        public UInt32 FragmentsPerHlsSegment { get; set; }
+        public UInt32? FragmentsPerHlsSegment { get; set; }
     }
 }
