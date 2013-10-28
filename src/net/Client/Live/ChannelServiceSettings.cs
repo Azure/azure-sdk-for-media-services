@@ -47,7 +47,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Rest
         public ChannelServiceSettings() { }
 
         /// <summary>
-        /// Creates an instance of ChannelServiceSettings class from an instance of OriginSettings.
+        /// Creates an instance of ChannelServiceSettings class from an instance of ChannelSettings.
         /// </summary>
         /// <param name="settings">Settings to copy into newly created instance.</param>
         public ChannelServiceSettings(ChannelSettings settings) 
@@ -62,13 +62,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Rest
             {
                 Input = new InputSettings
                 {
-                    FMp4FragmentDuration = (UInt64) settings.Input.FMp4FragmentDuration.Value.Ticks
+                    FMp4FragmentDuration = (UInt32) settings.Input.FMp4FragmentDuration.Value.Ticks
                 };
             }
         }
 
         /// <summary>
-        /// Casts OriginServiceSettings to OriginSettings.
+        /// Casts ChannelServiceSettings to ChannelSettings.
         /// </summary>
         /// <param name="settings">Object to cast.</param>
         /// <returns>Casted object.</returns>
@@ -90,7 +90,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Rest
             {
                 result.Input = new Client.InputSettings
                 {
-                    FMp4FragmentDuration = TimeSpan.FromTicks((long) settings.Input.FMp4FragmentDuration.Value)
+                    FMp4FragmentDuration = TimeSpan.FromTicks(settings.Input.FMp4FragmentDuration.Value)
                 };
             }
 
@@ -106,6 +106,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Rest
         /// <summary>
         /// Gets or sets FMp4 fragment duration
         /// </summary>
-        public UInt64? FMp4FragmentDuration { get; set; }
+        public UInt32? FMp4FragmentDuration { get; set; }
     }
 }
