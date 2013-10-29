@@ -107,6 +107,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets or sets the number of fragments per HLS segment
         /// </summary>
-        public UInt32? FragmentsPerHlsSegment { get; set; }
+        public short? FragmentsPerHlsSegment { get; set; }
     }
 }

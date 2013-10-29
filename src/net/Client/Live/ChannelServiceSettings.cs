@@ -62,7 +62,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Rest
             {
                 Input = new InputSettings
                 {
-                    FMp4FragmentDuration = (UInt32) settings.Input.FMp4FragmentDuration.Value.Ticks
+                    FMp4FragmentDuration = settings.Input.FMp4FragmentDuration.Value.Ticks
                 };
             }
         }
@@ -106,6 +106,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Rest
         /// <summary>
         /// Gets or sets FMp4 fragment duration
         /// </summary>
-        public UInt32? FMp4FragmentDuration { get; set; }
+        public long? FMp4FragmentDuration { get; set; }
     }
 }
