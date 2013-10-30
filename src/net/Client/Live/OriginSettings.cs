@@ -56,9 +56,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public IList<Ipv4> IPv4AllowList { get; set; }
 
         /// <summary>
-        /// Gets or sets the list of G20 authentication keys.
+        /// Gets or sets the list of Akamai Signature Header Authentication keys.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public IList<G20Key> AkamaiG20Authentication { get; set; }
+        public IList<AkamaiSignatureHeaderAuthenticationKey> AkamaiSignatureHeaderAuthentication { get; set; }
     }
 }
