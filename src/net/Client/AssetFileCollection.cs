@@ -55,6 +55,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             : this(cloudMediaContext)
         {
             _parentAsset = parentAsset;
+            this._assetFileQuery = new Lazy<IQueryable<IAssetFile>>(() => cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<AssetFileData>(FileSet));
         }
 
         /// <summary>
