@@ -58,3 +58,4 @@ ClickOnce.Deployment
 *.InstallLog
 build/version
 src\SDK\packages
+/test/net/client/App.Debug.config

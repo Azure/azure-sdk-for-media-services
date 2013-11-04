@@ -21,31 +21,40 @@ using System.Net;
 using Microsoft.Practices.TransientFaultHandling;
 using Microsoft.WindowsAzure.MediaServices.Client.OAuth;
 using Microsoft.WindowsAzure.MediaServices.Client.Versioning;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
     /// A factory for creating the DataServiceContext connected to Windows Azure Media Services.
     /// </summary>
-    public class AzureMediaServicesDataServiceContextFactory
+    public class AzureMediaServicesClassFactory : MediaServicesClassFactory
     {
         private readonly Uri _azureMediaServicesEndpoint;
         private readonly OAuthDataServiceAdapter _dataServiceAdapter;
         private readonly ServiceVersionAdapter _serviceVersionAdapter;
-        private readonly CloudMediaContext _cloudMediaContext;
+        private readonly MediaContextBase _mediaContext;
         
+        private const int ConnectionRetryMaxAttempts = 4;
+        private const int ConnectionRetrySleepQuantum = 100;
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="AzureMediaServicesDataServiceContextFactory"/> class.
+        /// Initializes a new instance of the <see cref="MediaServicesClassFactory"/> class.
+        /// </summary>
+        public AzureMediaServicesClassFactory() { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MediaServicesClassFactory"/> class.
         /// </summary>
         /// <param name="azureMediaServicesEndpoint">The Windows Azure Media Services endpoint to use.</param>
         /// <param name="dataServiceAdapter">The data service adapter.</param>
         /// <param name="serviceVersionAdapter">The service version adapter.</param>
-        /// <param name="cloudMediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
-        public AzureMediaServicesDataServiceContextFactory(Uri azureMediaServicesEndpoint, OAuthDataServiceAdapter dataServiceAdapter, ServiceVersionAdapter serviceVersionAdapter, CloudMediaContext cloudMediaContext)
+        /// <param name="mediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
+        public AzureMediaServicesClassFactory(Uri azureMediaServicesEndpoint, OAuthDataServiceAdapter dataServiceAdapter, ServiceVersionAdapter serviceVersionAdapter, MediaContextBase mediaContext)
         {
             this._dataServiceAdapter = dataServiceAdapter;
             this._serviceVersionAdapter = serviceVersionAdapter;
-            this._cloudMediaContext = cloudMediaContext;
+            this._mediaContext = mediaContext;
 
             this._azureMediaServicesEndpoint = GetAccountApiEndpoint(this._dataServiceAdapter, this._serviceVersionAdapter, azureMediaServicesEndpoint);
         }
@@ -54,7 +63,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Creates a data service context.
         /// </summary>
         /// <returns>The new DataServiceContext instance.</returns>
-        public DataServiceContext CreateDataServiceContext()
+        public override IMediaDataServiceContext CreateDataServiceContext()
         {
             DataServiceContext dataContext = new DataServiceContext(_azureMediaServicesEndpoint, DataServiceProtocolVersion.V3)
             {
@@ -68,13 +77,61 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             dataContext.ReadingEntity += this.OnReadingEntity;
 
-            return dataContext;
+            return new MediaDataServiceContext(dataContext);
         }
 
-        private static Uri GetAccountApiEndpoint(OAuthDataServiceAdapter dataServiceAdapter, ServiceVersionAdapter versionAdapter, Uri apiServer)
+        /// <summary>
+        /// Creates retry policy for working with Azure blob storage.
+        /// </summary>
+        /// <returns>Retry policy.</returns>
+        public override MediaRetryPolicy GetBlobStorageClientRetryPolicy()
+        {
+            var retryPolicy = new MediaRetryPolicy(
+                GetStorageTransientErrorDetectionStrategy(),
+                retryCount: ConnectionRetryMaxAttempts,
+                minBackoff: TimeSpan.FromMilliseconds(ConnectionRetrySleepQuantum),
+                maxBackoff: TimeSpan.FromMilliseconds(ConnectionRetrySleepQuantum * 16),
+                deltaBackoff: TimeSpan.FromMilliseconds(ConnectionRetrySleepQuantum));
+
+            return retryPolicy;
+        }
+
+        /// <summary>
+        /// Creates retry policy for saving changes in Media Services REST layer.
+        /// </summary>
+        /// <returns>Retry policy.</returns>
+        public override MediaRetryPolicy GetSaveChangesRetryPolicy()
+        {
+            var retryPolicy = new MediaRetryPolicy(
+                GetSaveChangesErrorDetectionStrategy(),
+                retryCount: ConnectionRetryMaxAttempts,
+                minBackoff: TimeSpan.FromMilliseconds(ConnectionRetrySleepQuantum),
+                maxBackoff: TimeSpan.FromMilliseconds(ConnectionRetrySleepQuantum * 16),
+                deltaBackoff: TimeSpan.FromMilliseconds(ConnectionRetrySleepQuantum));
+
+            return retryPolicy;
+        }
+
+        /// <summary>
+        /// Creates retry policy for querying Media Services REST layer.
+        /// </summary>
+        /// <returns>Retry policy.</returns>
+        public override MediaRetryPolicy GetQueryRetryPolicy()
+        {
+            var retryPolicy = new MediaRetryPolicy(
+                GetQueryErrorDetectionStrategy(),
+                retryCount: ConnectionRetryMaxAttempts,
+                minBackoff: TimeSpan.FromMilliseconds(ConnectionRetrySleepQuantum),
+                maxBackoff: TimeSpan.FromMilliseconds(ConnectionRetrySleepQuantum * 16),
+                deltaBackoff: TimeSpan.FromMilliseconds(ConnectionRetrySleepQuantum));
+
+            return retryPolicy;
+        }
+
+        private Uri GetAccountApiEndpoint(OAuthDataServiceAdapter dataServiceAdapter, ServiceVersionAdapter versionAdapter, Uri apiServer)
         {
             RetryPolicy retryPolicy = new RetryPolicy(
-                new WebRequestTransientErrorDetectionStrategy(),
+                GetWebRequestTransientErrorDetectionStrategy(),
                 RetryStrategyFactory.DefaultStrategy());
 
             Uri apiEndpoint = null;
@@ -115,10 +172,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         
         private void OnReadingEntity(object sender, ReadingWritingEntityEventArgs args)
         {
-            ICloudMediaContextInit init = args.Entity as ICloudMediaContextInit;
-            if (init != null)
+            IMediaContextContainer mediaContextContainer = args.Entity as IMediaContextContainer;
+            if (mediaContextContainer != null)
             {
-                init.InitCloudMediaContext(this._cloudMediaContext);
+                mediaContextContainer.SetMediaContext(this._mediaContext);
             }
         }
     }

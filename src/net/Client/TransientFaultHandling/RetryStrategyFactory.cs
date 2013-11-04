@@ -17,7 +17,7 @@
 using System;
 using Microsoft.Practices.TransientFaultHandling;
 
-namespace Microsoft.WindowsAzure.MediaServices.Client
+namespace Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling
 {
     public static class RetryStrategyFactory
     {

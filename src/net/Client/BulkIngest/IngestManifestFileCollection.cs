@@ -16,7 +16,6 @@
 
 
 using System;
-using System.Data.Services.Client;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -33,21 +32,21 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
         internal const string EntitySet = "IngestManifestFiles";
         private readonly Lazy<IQueryable<IIngestManifestFile>> _query;
-        private readonly DataServiceContext _dataContext;
-        private readonly CloudMediaContext _cloudMediaContext;
+        private readonly IMediaDataServiceContext _dataContext;
         private readonly IngestManifestAssetData _parentIngestManifestAsset;
 
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IngestManifestFileCollection"/> class.
         /// </summary>
-        /// <param name="cloudMediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
+        /// <param name="mediaContext"></param>
         /// <param name="parentIngestManifestAsset">The parent manifest asset.</param>
-        internal IngestManifestFileCollection(CloudMediaContext cloudMediaContext, IIngestManifestAsset parentIngestManifestAsset)
+        internal IngestManifestFileCollection(MediaContextBase mediaContext, IIngestManifestAsset parentIngestManifestAsset)
+            : base(mediaContext)
         {
 
-            this._cloudMediaContext = cloudMediaContext;
-            this._dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            this.MediaContext = mediaContext;
+            this._dataContext = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             this._query = new Lazy<IQueryable<IIngestManifestFile>>(() => this._dataContext.CreateQuery<IngestManifestFileData>(EntitySet));
             if (parentIngestManifestAsset != null)
             {
@@ -113,7 +112,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 if (!File.Exists(filePath)) { throw new FileNotFoundException(String.Format(CultureInfo.InvariantCulture, StringTable.BulkIngestProvidedFileDoesNotExist, filePath)); }
                 FileInfo info = new FileInfo(filePath);
 
-                DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+                IMediaDataServiceContext dataContext = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
 
                 // Set a MIME type based on the extension of the file name
                 string mimeType = AssetFileData.GetMimeType(filePath);
@@ -135,7 +134,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 {
                     t.ThrowIfFaulted();
                     token.ThrowIfCancellationRequested();
-                    IngestManifestFileData ingestManifestFile = (IngestManifestFileData)t.AsyncState;                   
+                    IngestManifestFileData ingestManifestFile = (IngestManifestFileData)t.Result.AsyncState;                   
                     return ingestManifestFile;
                 });
 

@@ -29,7 +29,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private readonly List<IAsset> _assets;
 
         private ITask _task;
-        private readonly CloudMediaContext _cloudMediaContext;
+        private readonly MediaContextBase _cloudMediaContext;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OutputAssetCollection"/> class.
@@ -45,7 +45,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="task">The task.</param>
         /// <param name="assets">The assets.</param>
         /// <param name="cloudMediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
-        internal OutputAssetCollection(ITask task, IEnumerable<IAsset> assets, CloudMediaContext cloudMediaContext)
+        internal OutputAssetCollection(ITask task, IEnumerable<IAsset> assets, MediaContextBase cloudMediaContext)
         {
             this._assets = new List<IAsset>(assets);
             this._task = task;

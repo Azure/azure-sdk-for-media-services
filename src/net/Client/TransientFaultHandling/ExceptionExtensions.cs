@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="ICloudMediaContextInit.cs" company="Microsoft">Copyright 2012 Microsoft Corporation</copyright>
+// <copyright file="ExceptionExtensions.cs" company="Microsoft">Copyright 2012 Microsoft Corporation</copyright>
 // <license>
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,17 +14,23 @@
 // limitations under the License.
 // </license>
 
-namespace Microsoft.WindowsAzure.MediaServices.Client
+using System;
+
+namespace Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling
 {
-    /// <summary>
-    /// Provides initialization of a <see cref="CloudMediaContext"/>.
-    /// </summary>
-    public interface ICloudMediaContextInit
+    public static class ExceptionExtensions
     {
-        /// <summary>
-        /// Initializes the instance with a <see cref="CloudMediaContext"/>.
-        /// </summary>
-        /// <param name="context">The <see cref="CloudMediaContext"/> instance.</param>
-        void InitCloudMediaContext(CloudMediaContext context);
+        public static T FindInnerException<T>(this Exception exception) where T : class
+        {
+            T exceptionToFind = default(T);
+
+            while (exceptionToFind == default(T) && exception != null)
+            {
+                exceptionToFind = exception as T;
+                exception = exception.InnerException;
+            }
+
+            return exceptionToFind;
+        }
     }
 }

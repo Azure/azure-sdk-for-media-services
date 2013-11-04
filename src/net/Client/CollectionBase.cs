@@ -19,6 +19,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
     
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -28,6 +29,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// <typeparam name="T">The item type of the collection.</typeparam>
     public abstract class BaseCollection<T> : IQueryable<T>
     {
+        protected BaseCollection(MediaContextBase context)
+        {
+            MediaContext = context;
+        }
+
+        public MediaContextBase MediaContext { get; set; }
+
         /// <summary>
         /// Gets the type of the element(s) that are returned when the expression tree associated with this instance of <see cref="T:System.Linq.IQueryable"/> is executed.
         /// </summary>
@@ -78,7 +86,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </returns>
         public IEnumerator<T> GetEnumerator()
         {
-            return this.Queryable.GetEnumerator();
+            MediaRetryPolicy policy = this.MediaContext.MediaServicesClassFactory.GetQueryRetryPolicy();
+            return policy.ExecuteAction(() => this.Queryable.GetEnumerator());
         }
 
         /// <summary>
@@ -89,7 +98,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return ((IEnumerable)this.Queryable).GetEnumerator();
+            return this.GetEnumerator();
         }
     }
 }

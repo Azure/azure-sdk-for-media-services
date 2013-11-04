@@ -30,19 +30,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         internal const string JobSet = "Jobs";
 
-        private readonly CloudMediaContext _cloudMediaContext;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="JobBaseCollection"/> class.
         /// </summary>
         /// <param name="cloudMediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Justification = "By design")]
-        internal JobBaseCollection(CloudMediaContext cloudMediaContext)
+        internal JobBaseCollection(MediaContextBase cloudMediaContext)
+            : base(cloudMediaContext)
         {
-            this._cloudMediaContext = cloudMediaContext;
-
-            this.DataContextFactory = this._cloudMediaContext.DataContextFactory;
-            this.Queryable = this.DataContextFactory.CreateDataServiceContext().CreateQuery<JobData>(JobSet);
+            this.Queryable = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<JobData>(JobSet);
         }
 
         /// <summary>
@@ -69,7 +65,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
 
             JobData job = new JobData { Name = name, Priority = priority };
-            job.InitCloudMediaContext(this._cloudMediaContext);
+            job.SetMediaContext(this.MediaContext);
 
             return job;
         }
@@ -130,7 +126,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             JobData job = new JobData();
 
-            job.InitCloudMediaContext(this._cloudMediaContext);
+            job.SetMediaContext(this.MediaContext);
             job.Priority = priority;
             job.Name = name;
             job.TemplateId = jobTemplate.Id;
