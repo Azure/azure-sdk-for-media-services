@@ -20,6 +20,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.MediaServices.Client.Properties;
 using System.Net;
+using Microsoft.WindowsAzure.MediaServices.Client.Rest;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -81,11 +82,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             get
             {
-                return Serializer.Serialize(_settings);
+                return Serializer.Serialize(new ChannelServiceSettings(_settings));
             }
             set
             {
-                _settings = Serializer.Deserialize<ChannelSettings>(value);
+                _settings = (ChannelSettings)Serializer.Deserialize<ChannelServiceSettings>(value);
             }
         }
 

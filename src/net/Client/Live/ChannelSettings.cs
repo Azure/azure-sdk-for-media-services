@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Collections.Generic;
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -29,6 +30,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Gets or sets ingest settings.
         /// </summary>
         public IngestEndpointSettings Ingest { get; set; }
+
+        /// <summary>
+        /// Gets or sets input settings
+        /// </summary>
+        public InputSettings Input { get; set; }
+
+        /// <summary>
+        /// Gets or sets output settings
+        /// </summary>
+        public OutputSettings Output { get; set; }
     }
 
     /// <summary>
@@ -75,5 +86,27 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public IList<Ipv4> IPv4AllowList { get; set; }
+    }
+
+    /// <summary>
+    /// Describes Channel input settings
+    /// </summary>
+    public class InputSettings
+    {
+        /// <summary>
+        /// Gets or sets FMp4 fragment duration
+        /// </summary>
+        public TimeSpan? FMp4FragmentDuration { get; set; }
+    }
+
+    /// <summary>
+    /// Describes Channel output settings
+    /// </summary>
+    public class OutputSettings
+    {
+        /// <summary>
+        /// Gets or sets the number of fragments per HLS segment
+        /// </summary>
+        public short? FragmentsPerHlsSegment { get; set; }
     }
 }
