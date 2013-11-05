@@ -257,6 +257,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(1)]
+        [Ignore]
         public void CreateAssetAndUpload4FilesUsingSyncCall()
         {
             const int expected = 4;
@@ -265,6 +266,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(0)]
+        [Ignore]
         public void ShouldCreateAssetAndUpload10FilesUsingSyncCall()
         {
             const int expected = 10;
@@ -273,6 +275,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(1)]
+        [Ignore]
         public void ShouldCreateAssetAndUpload4FilesUsingAsyncCall()
         {
             const int expected = 4;
@@ -282,6 +285,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(0)]
+        [Ignore]
         public void ShouldCreateAssetAndUpload10FilesUsingAsyncCall()
         {
             const int expected = 10;
@@ -291,6 +295,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(1)]
+        [Ignore]
         public void ShouldCreateAssetAndUploadAndDownload10FilesUsingAsyncCall()
         {
             const int expected = 10;
@@ -325,6 +330,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             }
         }
 
+        [Ignore]
         [TestMethod]
         [Priority(1)]
         public void ShouldCreateAssetAndCreate100FilesUsingAsyncCall()
