@@ -319,7 +319,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
 
-            JobData _this = this;
+           
             this.InnerSubmit(dataContext);
 
             MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
@@ -329,9 +329,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     t =>
                     {
                         t.ThrowIfFaulted();
-                        IMediaDataServiceResponse response = t.Result;
-                        _this.JobEntityRefresh(dataContext);
-                        return (IJob)_this;
+                        JobData data = (JobData)t.Result.AsyncState;
+                        data.JobEntityRefresh(dataContext);
+                        return (IJob)data;
                     },TaskContinuationOptions.ExecuteSynchronously);
         }
 
