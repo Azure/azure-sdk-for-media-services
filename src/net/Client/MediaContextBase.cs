@@ -135,5 +135,35 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// The asset delivery policies.
         /// </value>
         public abstract AssetDeliveryPolicyCollection AssetDeliveryPolicies { get; }
+
+        /// <summary>
+        /// Gets the collection of channels in the system.
+        /// </summary>
+        public abstract ChannelBaseCollection Channels { get; }
+
+        /// <summary>
+        /// Gets the collection of programs in the system.
+        /// </summary>
+        public abstract ProgramBaseCollection Programs { get; }
+
+        /// <summary>
+        /// Gets the collection of origins in the system.
+        /// </summary>
+        public abstract OriginBaseCollection Origins { get; }
+
+        /// <summary>
+        /// Gets the collection of operation in the system.
+        /// </summary>
+        public abstract OperationBaseCollection Operations { get; }
+
+        /// <summary>
+        /// Gets the collection of origin metrics in the system.
+        /// </summary>
+        public abstract OriginMetricBaseCollection OriginMetrics { get; }
+
+        /// <summary>
+        /// Gets the collection of channel metrics in the system.
+        /// </summary>
+        public abstract ChannelMetricBaseCollection ChannelMetrics { get; }
     }
 }
