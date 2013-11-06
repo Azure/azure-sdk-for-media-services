@@ -59,6 +59,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private readonly ContentKeyAuthorizationPolicyCollection _contentKeyAuthorizationPolicies;
         private readonly AssetDeliveryPolicyCollection _assetDeliveryPolicies;
 
+        // Live collections.
+        private ChannelBaseCollection _channels;
+        private ProgramBaseCollection _programs;
+        private OriginBaseCollection _origins;
+        private OperationBaseCollection _operations;
+        private OriginMetricBaseCollection _originMetrics;
+        private ChannelMetricBaseCollection _channelMetrics;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="CloudMediaContext"/> class.
         /// </summary>
@@ -115,6 +123,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             this._contentKeyAuthorizationPolicyOptions = new ContentKeyAuthorizationPolicyOptionCollection(this);
             this._contentKeyAuthorizationPolicies = new ContentKeyAuthorizationPolicyCollection(this);
             this._assetDeliveryPolicies = new AssetDeliveryPolicyCollection(this);
+
+            this._channels = new ChannelBaseCollection(this);
+            this._programs = new ProgramBaseCollection(this);
+            this._origins = new OriginBaseCollection(this);
+            this._operations = new OperationBaseCollection(this);
+            this._originMetrics = new OriginMetricBaseCollection(this);
+            this._channelMetrics = new ChannelMetricBaseCollection(this);
+            this._originMetrics = new OriginMetricBaseCollection(this);
+            this._channelMetrics = new ChannelMetricBaseCollection(this);
         }
 
         /// <summary>
@@ -269,6 +286,54 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             {
                 return this._assetDeliveryPolicies;
             }
+        }
+
+        /// <summary>
+        /// Gets the collection of channels in the system.
+        /// </summary>
+        public override ChannelBaseCollection Channels
+        {
+            get { return this._channels; }
+        }
+
+        /// <summary>
+        /// Gets the collection of programs in the system.
+        /// </summary>
+        public override ProgramBaseCollection Programs
+        {
+            get { return this._programs; }
+        }
+
+        /// <summary>
+        /// Gets the collection of origins in the system.
+        /// </summary>
+        public override OriginBaseCollection Origins
+        {
+            get { return this._origins; }
+        }
+
+        /// <summary>
+        /// Gets the collection of operation in the system.
+        /// </summary>
+        public override OperationBaseCollection Operations
+        {
+            get { return this._operations; }
+        }
+
+        /// <summary>
+        /// Gets the collection of origin metrics in the system.
+        /// </summary>
+        public override OriginMetricBaseCollection OriginMetrics
+        {
+            get { return this._originMetrics; }
+        }
+
+        /// <summary>
+        /// Gets the collection of channel metrics in the system.
+        /// </summary>
+        public override ChannelMetricBaseCollection ChannelMetrics
+        {
+            get { return this._channelMetrics; }
         }
     }
 }
