@@ -19,8 +19,6 @@
 //
 
 using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -118,6 +116,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public int ProtectionKeyType {get;set;}
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public string Checksum {get;set;}
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        public string AuthorizationPolicyId{get;set;}
 
         ContentKeyType IContentKey.ContentKeyType
         {

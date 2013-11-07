@@ -19,6 +19,7 @@ using System.Linq;
 using Microsoft.WindowsAzure.MediaServices.Client.OAuth;
 using Microsoft.WindowsAzure.MediaServices.Client.Versioning;
 using Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization;
+using Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -41,7 +42,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private static readonly Uri _mediaServicesUri = new Uri("https://media.windows.net/");
         private static readonly Uri _mediaServicesAcsBaseAddress = new Uri("https://wamsprodglobal001acs.accesscontrol.windows.net");
 
-        private readonly AzureMediaServicesDataServiceContextFactory _dataContextFactory;
         private readonly AssetCollection _assets;
         private readonly AssetFileCollection _files;
         private readonly AccessPolicyBaseCollection _accessPolicies;
@@ -56,7 +56,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private readonly IngestManifestFileCollection _ingestManifestFiles;
         private readonly StorageAccountBaseCollection _storageAccounts;
         private readonly ContentKeyAuthorizationPolicyOptionCollection _contentKeyAuthorizationPolicyOptions;
+        private readonly ContentKeyAuthorizationPolicyCollection _contentKeyAuthorizationPolicies;
+        private readonly AssetDeliveryPolicyCollection _assetDeliveryPolicies;
 
+        // Live collections.
+        private ChannelBaseCollection _channels;
+        private ProgramBaseCollection _programs;
+        private OriginBaseCollection _origins;
+        private OperationBaseCollection _operations;
+        private OriginMetricBaseCollection _originMetrics;
+        private ChannelMetricBaseCollection _channelMetrics;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CloudMediaContext"/> class.
@@ -96,7 +105,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 new OAuthDataServiceAdapter(accountName, accountKey, scope, acsBaseAddress, NimbusRestApiCertificateThumbprint, NimbusRestApiCertificateSubject);
             ServiceVersionAdapter versionAdapter = new ServiceVersionAdapter(KnownApiVersions.Current);
 
-            this._dataContextFactory = new AzureMediaServicesDataServiceContextFactory(apiServer, dataServiceAdapter, versionAdapter, this);
+            this.MediaServicesClassFactory = new AzureMediaServicesClassFactory(apiServer, dataServiceAdapter, versionAdapter, this);
 
             this._jobs = new JobBaseCollection(this);
             this._jobTemplates = new JobTemplateBaseCollection(this);
@@ -112,19 +121,18 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             this._ingestManifestFiles = new IngestManifestFileCollection(this, null);
             this._storageAccounts = new StorageAccountBaseCollection(this);
             this._contentKeyAuthorizationPolicyOptions = new ContentKeyAuthorizationPolicyOptionCollection(this);
+            this._contentKeyAuthorizationPolicies = new ContentKeyAuthorizationPolicyCollection(this);
+            this._assetDeliveryPolicies = new AssetDeliveryPolicyCollection(this);
+
+            this._channels = new ChannelBaseCollection(this);
+            this._programs = new ProgramBaseCollection(this);
+            this._origins = new OriginBaseCollection(this);
+            this._operations = new OperationBaseCollection(this);
+            this._originMetrics = new OriginMetricBaseCollection(this);
+            this._channelMetrics = new ChannelMetricBaseCollection(this);
+            this._originMetrics = new OriginMetricBaseCollection(this);
+            this._channelMetrics = new ChannelMetricBaseCollection(this);
         }
-
-        /// <summary>
-        /// Gets or sets the number of threads to use to for each blob transfer.
-        /// </summary>
-        /// <remarks>The default value is 10.</remarks>
-        public int ParallelTransferThreadCount { get; set; }
-
-        /// <summary>
-        /// Gets or sets the number of concurrent blob transfers allowed.
-        /// </summary>
-        /// <remarks>The default value is 2.</remarks>
-        public int NumberOfConcurrentTransfers { get; set; }
 
         /// <summary>
         /// Gets the collection of assets in the system.
@@ -204,7 +212,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
         /// <summary>
-        /// Gets the collection of notification endpoints avaiable in the system.
+        /// Gets the collection of notification endpoints available in the system.
         /// </summary>
         public override NotificationEndPointCollection NotificationEndPoints
         {
@@ -214,23 +222,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets the collection of locators in the system.
         /// </summary>
-        public LocatorBaseCollection Locators
+        public override LocatorBaseCollection Locators
         {
             get { return this._locators; }
         }
 
         /// <summary>
-        /// Gets a factory for creating data service context instances prepared for Windows Azure Media Services.
-        /// </summary>
-        public AzureMediaServicesDataServiceContextFactory DataContextFactory
-        {
-            get { return this._dataContextFactory; }
-        }
-
-        /// <summary>
         /// Gets the collection of bulk ingest manifests in the system.
         /// </summary>
-        public IngestManifestCollection IngestManifests
+        public override IngestManifestCollection IngestManifests
         {
             get { return this._ingestManifests; }
         }
@@ -238,7 +238,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets the collection of manifest asset files in the system
         /// </summary>
-        public IngestManifestFileCollection IngestManifestFiles
+        public  override IngestManifestFileCollection IngestManifestFiles
         {
             get { return this._ingestManifestFiles; }
         }
@@ -246,7 +246,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets the collection of manifest assets in the system
         /// </summary>
-        public IngestManifestAssetCollection IngestManifestAssets
+        public override IngestManifestAssetCollection IngestManifestAssets
         {
             get { return this._ingestManifestAssets; }
         }
@@ -255,9 +255,85 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets the collection of content key authorization policy options.
         /// </summary>
-        public ContentKeyAuthorizationPolicyOptionCollection ContentKeyAuthorizationPolicyOptions
+        public override ContentKeyAuthorizationPolicyOptionCollection ContentKeyAuthorizationPolicyOptions
         {
             get { return this._contentKeyAuthorizationPolicyOptions; }
+        }
+
+        /// <summary>
+        /// Gets the content key authorization policies.
+        /// </summary>
+        /// <value>
+        /// The content key authorization policies.
+        /// </value>
+        public override ContentKeyAuthorizationPolicyCollection ContentKeyAuthorizationPolicies
+        {
+            get
+            {
+                return this._contentKeyAuthorizationPolicies;
+            }
+        }
+
+        /// <summary>
+        /// Gets the asset delivery policies.
+        /// </summary>
+        /// <value>
+        /// The asset delivery policies.
+        /// </value>
+        public override AssetDeliveryPolicyCollection AssetDeliveryPolicies
+        {
+            get
+            {
+                return this._assetDeliveryPolicies;
+            }
+        }
+
+        /// <summary>
+        /// Gets the collection of channels in the system.
+        /// </summary>
+        public override ChannelBaseCollection Channels
+        {
+            get { return this._channels; }
+        }
+
+        /// <summary>
+        /// Gets the collection of programs in the system.
+        /// </summary>
+        public override ProgramBaseCollection Programs
+        {
+            get { return this._programs; }
+        }
+
+        /// <summary>
+        /// Gets the collection of origins in the system.
+        /// </summary>
+        public override OriginBaseCollection Origins
+        {
+            get { return this._origins; }
+        }
+
+        /// <summary>
+        /// Gets the collection of operation in the system.
+        /// </summary>
+        public override OperationBaseCollection Operations
+        {
+            get { return this._operations; }
+        }
+
+        /// <summary>
+        /// Gets the collection of origin metrics in the system.
+        /// </summary>
+        public override OriginMetricBaseCollection OriginMetrics
+        {
+            get { return this._originMetrics; }
+        }
+
+        /// <summary>
+        /// Gets the collection of channel metrics in the system.
+        /// </summary>
+        public override ChannelMetricBaseCollection ChannelMetrics
+        {
+            get { return this._channelMetrics; }
         }
     }
 }

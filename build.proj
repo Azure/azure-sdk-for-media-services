@@ -131,14 +131,14 @@
   </Target>
   
    <!-- Run the scenario tests -->
-  <Target Name="PullRequestValidation">
-    <Message Importance="high" Text="Running PullRequestValidation tests..." />
+  <Target Name="DailyBvtRun">
+    <Message Importance="high" Text="Running DailyBvtRun tests..." />
     <Message Importance="high" Text="You are required to have installed a version of Visual Studio with support for MSTest (and MSTest on your path)." />
     <MakeDir Directories="$(TestOutputDirectory)" ContinueOnError="false" />
     
-    <Message Importance="high" Text="PullRequestValidation tests:" />
+    <Message Importance="high" Text="DailyBvtRun tests:" />
     <Exec
-      Command="MSTest.exe /testcontainer:$(TestAssemblyName) /resultsfile:$(TestOutputDirectory)\PullRequestValidation.trx /category:PullRequestValidation"
+      Command="MSTest.exe /testcontainer:$(TestAssemblyName) /resultsfile:$(TestOutputDirectory)\DailyBvtRun.trx /category:DailyBvtRun"
       ContinueOnError="false" />   
   </Target>
   <Target

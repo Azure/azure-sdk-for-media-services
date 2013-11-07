@@ -34,23 +34,18 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
         internal const string ContentKeyAuthorizationPolicyOptionSet = "ContentKeyAuthorizationPolicyOptions";
 
         /// <summary>
-        /// The media context used to communicate to the server.
-        /// </summary>
-        private readonly CloudMediaContext _cloudMediaContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PolicyOptionBaseCollection"/> class.
+        /// Initializes a new instance of the <see cref="ContentKeyAuthorizationPolicyOptionCollection"/> class.
         /// </summary>
         /// <param name="cloudMediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Justification = "By design")]
-        internal ContentKeyAuthorizationPolicyOptionCollection(CloudMediaContext cloudMediaContext)
+        internal ContentKeyAuthorizationPolicyOptionCollection(MediaContextBase context)
+            : base(context)
         {
-            this._cloudMediaContext = cloudMediaContext;
-
-            this.DataContextFactory = this._cloudMediaContext.DataContextFactory;
-            this.Queryable = this.DataContextFactory.CreateDataServiceContext().CreateQuery<ContentKeyAuthorizationPolicyOptionData>(ContentKeyAuthorizationPolicyOptionSet);
+            MediaServicesClassFactory factory = this.MediaContext.MediaServicesClassFactory;
+            this.Queryable = factory.CreateDataServiceContext().CreateQuery<ContentKeyAuthorizationPolicyOptionData>(ContentKeyAuthorizationPolicyOptionSet);
         }
- 
+
+
         /// <summary>
         /// Asynchronously creates an <see cref="IContentKeyAuthorizationPolicyOption"/> with the provided name and permissions, valid for the provided duration.
         /// </summary>
@@ -65,7 +60,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
             List<ContentKeyAuthorizationPolicyRestriction> restrictions,
             string keyDeliveryConfiguration)
         {
-            DataServiceContext dataContext = this.DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             var policyOption = new ContentKeyAuthorizationPolicyOptionData
             {
                 Name = name,
@@ -75,7 +70,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
 
             ((IContentKeyAuthorizationPolicyOption)policyOption).KeyDeliveryType = deliveryType;
 
-            policyOption.InitCloudMediaContext(this._cloudMediaContext);
+            policyOption.SetMediaContext(this.MediaContext);
             dataContext.AddObject(ContentKeyAuthorizationPolicyOptionSet, policyOption);
 
             return dataContext
@@ -85,7 +80,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
                     {
                         t.ThrowIfFaulted();
 
-                        return (ContentKeyAuthorizationPolicyOptionData)t.AsyncState;
+                        return (ContentKeyAuthorizationPolicyOptionData)t.Result.AsyncState;
                     },
                     TaskContinuationOptions.ExecuteSynchronously);
         }
@@ -113,7 +108,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
             }
             catch (AggregateException exception)
             {
-                throw exception.InnerException;
+                throw exception.Flatten().InnerException;
             }
         }
     }

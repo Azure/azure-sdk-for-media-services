@@ -15,9 +15,9 @@
 // </license>
 
 using System;
-using System.Data.Services.Client;
 using System.Data.Services.Common;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -25,9 +25,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// Defines an access policy to an <see cref="IAsset"/> in the system.
     /// </summary>
     [DataServiceKey("Id")]
-    internal partial class AccessPolicyData : IAccessPolicy, ICloudMediaContextInit
+    internal partial class AccessPolicyData :BaseEntity<IAccessPolicy>, IAccessPolicy
     {
-        private CloudMediaContext _cloudMediaContext;
 
         /// <summary>
         /// Gets or sets the duration in minutes.
@@ -49,14 +48,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
         }
 
-        /// <summary>
-        /// Initializes the cloud media context.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        public void InitCloudMediaContext(CloudMediaContext context)
-        {
-            this._cloudMediaContext = context;
-        }
+        
 
         /// <summary>
         /// Deletes this instance.
@@ -66,11 +58,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             AccessPolicyBaseCollection.VerifyAccessPolicy(this);
 
-            DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(AccessPolicyBaseCollection.AccessPolicySet, this);
             dataContext.DeleteObject(this);
 
-            return dataContext.SaveChangesAsync(this);
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(this));
         }
 
         /// <summary>

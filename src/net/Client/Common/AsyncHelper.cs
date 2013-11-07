@@ -13,12 +13,10 @@
 // limitations under the License.
 
 using System;
-using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.MediaServices.Client.Properties;
-using System.Globalization;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -65,11 +63,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Waits for REST Nimbus Streaming operation completion
         /// </summary>
-        /// <param name="context">The <seealso cref="CloudMediaContextLive"/> instance.</param>
+        /// <param name="context">The <seealso cref="CloudMediaContext"/> instance.</param>
         /// <param name="operationId">Id of the operation.</param>
         /// <param name="pollInterval">Poll interval.</param>
         /// <returns>Operation.</returns>
-        public static IOperation WaitOperationCompletion(CloudMediaContextLive context, string operationId, TimeSpan pollInterval)
+        public static IOperation WaitOperationCompletion(CloudMediaContext context, string operationId, TimeSpan pollInterval)
         {
             IOperation operation;
 
@@ -77,7 +75,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             {
                 System.Threading.Thread.Sleep(pollInterval);
 
-                System.Data.Services.Client.DataServiceContext dataContext = context.DataContextFactory.CreateDataServiceContext();
+                IMediaDataServiceContext dataContext = context.MediaServicesClassFactory.CreateDataServiceContext();
                 Uri uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Operations('{0}')", operationId), UriKind.Relative);
                 operation = dataContext.Execute<OperationData>(uri).SingleOrDefault();
 

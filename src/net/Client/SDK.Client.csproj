@@ -57,14 +57,6 @@
     <DelaySign>true</DelaySign>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Data.OData">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.Data.OData.5.5.0\lib\net40\Microsoft.Data.OData.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Data.Edm">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.Data.Edm.5.5.0\lib\net40\Microsoft.Data.Edm.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Data.Services.Client">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.Data.Services.Client.5.5.0\lib\net40\Microsoft.Data.Services.Client.dll</HintPath>
@@ -73,19 +65,12 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\TransientFaultHandling.Core.5.1.1209.1\lib\NET4\Microsoft.Practices.TransientFaultHandling.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.WindowsAzure.Configuration">
-      <HintPath>..\packages\Microsoft.WindowsAzure.ConfigurationManager.2.0.1.0\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.WindowsAzure.Storage">
       <HintPath>..\packages\WindowsAzure.Storage.2.0.5.1\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Spatial">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\System.Spatial.5.5.0\lib\net40\System.Spatial.dll</HintPath>
-    </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml.Linq" />
@@ -114,7 +99,8 @@
     <Compile Include="AssetNamingSchemeResolver.cs" />
     <Compile Include="AssetPlaceholderToInstanceResolver.cs" />
     <Compile Include="AssetState.cs" />
-    <Compile Include="AzureMediaServicesDataServiceContextFactory.cs" />
+    <Compile Include="AzureMediaServicesClassFactory.cs" />
+    <Compile Include="BaseEntity.cs" />
     <Compile Include="BlobTransferClient.cs" />
     <Compile Include="BlobTransferCompleteEventArgs.cs" />
     <Compile Include="BlobTransferProgressChangedEventArgs.cs" />
@@ -140,12 +126,16 @@
     <Compile Include="CollectionBase.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Common\AsyncHelper.cs" />
     <Compile Include="ConfigurationEncryptionHelper.cs" />
+    <Compile Include="ContentKeyAuthorization\ContentKeyAuthorizationPolicyCollection.cs" />
+    <Compile Include="ContentKeyAuthorization\ContentKeyAuthorizationPolicyData.cs" />
     <Compile Include="ContentKeyAuthorization\ContentKeyAuthorizationPolicyOptionCollection.cs" />
     <Compile Include="ContentKeyAuthorization\ContentKeyAuthorizationPolicyOptionData.cs" />
     <Compile Include="ContentKeyAuthorization\ContentKeyAuthorizationPolicyRestriction.cs" />
     <Compile Include="ContentKeyAuthorization\ContentKeyDeliveryType.cs" />
     <Compile Include="ContentKeyAuthorization\ContentKeyRestrictionType.cs" />
+    <Compile Include="ContentKeyAuthorization\IContentKeyAuthorizationPolicy.cs" />
     <Compile Include="ContentKeyAuthorization\IContentKeyAuthorizationPolicyOption.cs" />
     <Compile Include="ContentKeyBaseCollection.cs">
       <SubType>Code</SubType>
@@ -153,12 +143,21 @@
     <Compile Include="DataServiceAsyncExtensions.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DuplicatedFiles\AzureStorageClientTransientFaultHandling\AzureStorageClientRetryPolicyFactory.cs" />
-    <Compile Include="DuplicatedFiles\AzureStorageClientTransientFaultHandling\RetryPolicyExtensions.cs" />
-    <Compile Include="DuplicatedFiles\AzureStorageClientTransientFaultHandling\StorageTransientErrorDetectionStrategy.cs" />
-    <Compile Include="DuplicatedFiles\TransientFaultHandling\MediaRetryPolicy.cs" />
-    <Compile Include="DuplicatedFiles\TransientFaultHandling\RetryStrategyFactory.cs" />
-    <Compile Include="DuplicatedFiles\TransientFaultHandling\WebRequestTransientErrorDetectionStrategy.cs" />
+    <Compile Include="TransientFaultHandling\RetryPolicyExtensions.cs" />
+    <Compile Include="TransientFaultHandling\StorageTransientErrorDetectionStrategy.cs" />
+    <Compile Include="TransientFaultHandling\ExceptionExtensions.cs" />
+    <Compile Include="TransientFaultHandling\MediaErrorDetectionStrategy.cs" />
+    <Compile Include="TransientFaultHandling\MediaRetryPolicy.cs" />
+    <Compile Include="TransientFaultHandling\QueryErrorDetectionStrategy.cs" />
+    <Compile Include="TransientFaultHandling\RetryStrategyFactory.cs" />
+    <Compile Include="TransientFaultHandling\SaveChangesErrorDetectionStrategy.cs" />
+    <Compile Include="TransientFaultHandling\WebRequestTransientErrorDetectionStrategy.cs" />
+    <Compile Include="DynamicEncryption\AssetDeliveryPolicyCollection.cs" />
+    <Compile Include="DynamicEncryption\AssetDeliveryPolicyConfigurationKeys.cs" />
+    <Compile Include="DynamicEncryption\AssetDeliveryPolicyData.cs" />
+    <Compile Include="DynamicEncryption\AssetDeliveryPolicyType.cs" />
+    <Compile Include="DynamicEncryption\AssetDeliveryProtocol.cs" />
+    <Compile Include="DynamicEncryption\IAssetDeliveryPolicy.cs" />
     <Compile Include="GeneratedCode\ApiClasses.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -168,6 +167,8 @@
     <Compile Include="IAssetFile.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="IMediaDataServiceContext.cs" />
+    <Compile Include="IMediaDataServiceResponse.cs" />
     <Compile Include="INotificationEndpoint.cs" />
     <Compile Include="IStorageAccount.cs" />
     <Compile Include="ITaskHistoricalEvent.cs" />
@@ -202,12 +203,59 @@
     <Compile Include="IJobTemplate.cs" />
     <Compile Include="InputAssetCollection.cs" />
     <Compile Include="JobTemplateData.cs" />
+    <Compile Include="Live\ChannelBaseCollection.cs" />
+    <Compile Include="Live\ChannelData.cs" />
+    <Compile Include="Live\ChannelMetricBaseCollection.cs" />
+    <Compile Include="Live\ChannelServiceSettings.cs" />
+    <Compile Include="Live\IMetric.cs" />
+    <Compile Include="Live\MetricBaseCollection.cs" />
+    <Compile Include="Live\ChannelMetricData.cs" />
+    <Compile Include="Live\MetricsMonitor.cs" />
+    <Compile Include="Live\ChannelSettings.cs" />
+    <Compile Include="Live\ChannelSize.cs" />
+    <Compile Include="Live\ChannelState.cs" />
+    <Compile Include="Live\AkamaiSignatureHeaderAuthenticationKey.cs" />
+    <Compile Include="Live\IChannel.cs" />
+    <Compile Include="Live\IChannelMetric.cs" />
+    <Compile Include="Live\IMetricsMonitor.cs" />
+    <Compile Include="Live\IIngestMetric.cs" />
+    <Compile Include="Live\IStreamingMonitor.cs" />
+    <Compile Include="Live\IngestMetricData.cs" />
+    <Compile Include="Live\IOperation.cs" />
+    <Compile Include="Live\IOrigin.cs" />
+    <Compile Include="Live\IOriginMetric.cs" />
+    <Compile Include="Live\IProgram.cs" />
+    <Compile Include="Live\IProgramMetric.cs" />
+    <Compile Include="Live\Ipv4.cs" />
+    <Compile Include="Live\Metric.cs" />
+    <Compile Include="Live\MetricsEventArgs.cs" />
+    <Compile Include="Live\StreamingMonitor.cs" />
+    <Compile Include="Live\OperationBaseCollection.cs" />
+    <Compile Include="Live\OperationData.cs" />
+    <Compile Include="Live\OperationState.cs" />
+    <Compile Include="Live\OriginBaseCollection.cs" />
+    <Compile Include="Live\OriginData.cs" />
+    <Compile Include="Live\OriginMetricBaseCollection.cs" />
+    <Compile Include="Live\OriginMetricData.cs" />
+    <Compile Include="Live\OriginServiceSettings.cs" />
+    <Compile Include="Live\OriginSettings.cs" />
+    <Compile Include="Live\OriginState.cs" />
+    <Compile Include="Live\ProgramBaseCollection.cs" />
+    <Compile Include="Live\ProgramData.cs" />
+    <Compile Include="Live\ProgramMetricData.cs" />
+    <Compile Include="Live\ProgramState.cs" />
+    <Compile Include="Live\RestEntity.cs" />
+    <Compile Include="Live\Serializer.cs" />
+    <Compile Include="Live\StreamingConstants.cs" />
     <Compile Include="LocatorBaseCollection.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="MediaDataServiceContext.cs" />
+    <Compile Include="MediaDataServiceResponse.cs" />
     <Compile Include="MediaProcessorBaseCollection.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="MediaServicesClassFactory.cs" />
     <Compile Include="NotificationEndpoint.cs" />
     <Compile Include="NotificationEndpointCollection.cs" />
     <Compile Include="NotificationEndpointType.cs" />
@@ -217,7 +265,7 @@
     <Compile Include="DownloadProgressEventArgs.cs" />
     <Compile Include="IAsset.cs" />
     <Compile Include="AssetData.cs" />
-    <Compile Include="ICloudMediaContextInit.cs" />
+    <Compile Include="IMediaContextContainer.cs" />
     <Compile Include="IContentKey.cs" />
     <Compile Include="IJob.cs" />
     <Compile Include="ILocator.cs" />
@@ -282,6 +330,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Settings.stylecop" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

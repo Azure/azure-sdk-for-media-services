@@ -20,16 +20,18 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
-using System.Xml;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Helpers;
+using Moq;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 {
     [TestClass]
     public class ContentKeyTests
     {
-        private CloudMediaContext _dataContext;
+        private CloudMediaContext _mediaContext;
 
         /// <summary>
         ///     Gets or sets the test context which provides
@@ -40,40 +42,40 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestInitialize]
         public void SetupTest()
         {
-            _dataContext = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
+            _mediaContext = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
         }
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("PullRequestValidation")]
+        [TestCategory("DailyBvtRun")]
         public void ShouldCreateAssetFileWithEncryption()
         {
             var filePaths = new[] {WindowsAzureMediaServicesTestConfiguration.SmallWmv};
-            IAsset asset = AssetTests.CreateAsset(_dataContext, Path.GetFullPath(WindowsAzureMediaServicesTestConfiguration.SmallWmv), AssetCreationOptions.StorageEncrypted);
+            IAsset asset = AssetTests.CreateAsset(_mediaContext, Path.GetFullPath(WindowsAzureMediaServicesTestConfiguration.SmallWmv), AssetCreationOptions.StorageEncrypted);
 
             // Associate an access policy with the asset so we can download the files associated with it
-            IAccessPolicy policy = _dataContext.AccessPolicies.Create("Test", TimeSpan.FromMinutes(10), AccessPermissions.Read);
-            _dataContext.Locators.CreateSasLocator(asset, policy);
+            IAccessPolicy policy = _mediaContext.AccessPolicies.Create("Test", TimeSpan.FromMinutes(10), AccessPermissions.Read);
+            _mediaContext.Locators.CreateSasLocator(asset, policy);
 
             Assert.IsNotNull(asset, "Asset should be non null");
             Assert.AreNotEqual(Guid.Empty, asset.Id, "Asset ID shuold not be null");
             Assert.AreEqual(1, asset.AssetFiles.Count(), "Child files count wrong");
             Assert.IsTrue(asset.Options == AssetCreationOptions.StorageEncrypted, "AssetCreationOptions did not have the expected value");
 
-            VerifyFileAndContentKeyMetadataForStorageEncryption(asset, _dataContext);
+            VerifyFileAndContentKeyMetadataForStorageEncryption(asset, _mediaContext);
             VerifyStorageEncryptionOnFiles(asset, filePaths);
         }
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWMV2.wmv", "Media")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("PullRequestValidation")]
+        [TestCategory("DailyBvtRun")]
         public void ShouldCreateAssetFileArrayWithEncryption()
         {
             var filePaths = new[] {WindowsAzureMediaServicesTestConfiguration.SmallWmv, WindowsAzureMediaServicesTestConfiguration.SmallWmv2};
-            IAsset asset = _dataContext.Assets.Create(Guid.NewGuid().ToString(), AssetCreationOptions.StorageEncrypted);
-            IAccessPolicy policy = _dataContext.AccessPolicies.Create("Write", TimeSpan.FromMinutes(5), AccessPermissions.Write);
-            ILocator locator = _dataContext.Locators.CreateSasLocator(asset, policy);
+            IAsset asset = _mediaContext.Assets.Create(Guid.NewGuid().ToString(), AssetCreationOptions.StorageEncrypted);
+            IAccessPolicy policy = _mediaContext.AccessPolicies.Create("Write", TimeSpan.FromMinutes(5), AccessPermissions.Write);
+            ILocator locator = _mediaContext.Locators.CreateSasLocator(asset, policy);
             var blobclient = new BlobTransferClient
                 {
                     NumberOfConcurrentTransfers = 5,
@@ -89,29 +91,29 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             }
 
             // Associate an access policy with the asset so we can download the files associated with it
-            policy = _dataContext.AccessPolicies.Create("Test", TimeSpan.FromMinutes(10), AccessPermissions.Read);
-            _dataContext.Locators.CreateSasLocator(asset, policy);
+            policy = _mediaContext.AccessPolicies.Create("Test", TimeSpan.FromMinutes(10), AccessPermissions.Read);
+            _mediaContext.Locators.CreateSasLocator(asset, policy);
 
             Assert.IsNotNull(asset, "Asset should be non null");
             Assert.AreNotEqual(Guid.Empty, asset.Id, "Asset ID shuold not be null");
             Assert.IsTrue(asset.Options == AssetCreationOptions.StorageEncrypted, "AssetCreationOptions did not have the expected value");
 
-            VerifyFileAndContentKeyMetadataForStorageEncryption(asset, _dataContext);
+            VerifyFileAndContentKeyMetadataForStorageEncryption(asset, _mediaContext);
             VerifyStorageEncryptionOnFiles(asset, filePaths);
         }
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("PullRequestValidation")]
+        [TestCategory("DailyBvtRun")]
         public void ShouldCreateAssetFileWithPlayReadyEncryption()
         {
             // Note that this file is not really PlayReady encrypted.  For the purposes of this test that is okay.
-            IAsset asset = AssetTests.CreateAsset(_dataContext, Path.GetFullPath(WindowsAzureMediaServicesTestConfiguration.SmallWmv), AssetCreationOptions.CommonEncryptionProtected);
+            IAsset asset = AssetTests.CreateAsset(_mediaContext, Path.GetFullPath(WindowsAzureMediaServicesTestConfiguration.SmallWmv), AssetCreationOptions.CommonEncryptionProtected);
 
             Guid keyId = Guid.NewGuid();
             byte[] contentKey = GetRandomBuffer(16);
 
-            IContentKey key = _dataContext.ContentKeys.Create(keyId, contentKey);
+            IContentKey key = _mediaContext.ContentKeys.Create(keyId, contentKey);
             asset.ContentKeys.Add(key);
 
             Assert.IsNotNull(asset, "Asset should be non null");
@@ -124,15 +126,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [TestCategory("PullRequestValidation")]
+        [TestCategory("DailyBvtRun")]
         [DeploymentItem(@"Media\SmallWMV2.wmv", "Media")]
         [Priority(0)]
         public void ShouldCreateAssetFileArrayWithPlayReadyEncryption()
         {
             // Note that these files are not really PlayReady encrypted.  For the purposes of this test that is okay.
-            IAsset asset = _dataContext.Assets.Create(Guid.NewGuid().ToString(), AssetCreationOptions.CommonEncryptionProtected);
-            IAccessPolicy policy = _dataContext.AccessPolicies.Create("Write", TimeSpan.FromMinutes(5), AccessPermissions.Write);
-            ILocator locator = _dataContext.Locators.CreateSasLocator(asset, policy);
+            IAsset asset = _mediaContext.Assets.Create(Guid.NewGuid().ToString(), AssetCreationOptions.CommonEncryptionProtected);
+            IAccessPolicy policy = _mediaContext.AccessPolicies.Create("Write", TimeSpan.FromMinutes(5), AccessPermissions.Write);
+            ILocator locator = _mediaContext.Locators.CreateSasLocator(asset, policy);
             var blobclient = new BlobTransferClient
                 {
                     NumberOfConcurrentTransfers = 5,
@@ -150,7 +152,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             Guid keyId = Guid.NewGuid();
             byte[] contentKey = GetRandomBuffer(16);
 
-            IContentKey key = _dataContext.ContentKeys.Create(keyId, contentKey);
+            IContentKey key = _mediaContext.ContentKeys.Create(keyId, contentKey);
             asset.ContentKeys.Add(key);
 
             Assert.IsNotNull(asset, "Asset should be non null");
@@ -162,48 +164,48 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [TestCategory("PullRequestValidation")]
+        [TestCategory("DailyBvtRun")]
         public void ShouldDeleteContentKey()
         {
             Guid keyId = Guid.NewGuid();
             byte[] contentKeyBytes = GetRandomBuffer(16);
 
-            IContentKey key = _dataContext.ContentKeys.Create(keyId, contentKeyBytes);
+            IContentKey key = _mediaContext.ContentKeys.Create(keyId, contentKeyBytes);
 
             string keyIdentifier = key.Id;
             key.Delete();
 
-            foreach (IContentKey contentKey in _dataContext.ContentKeys)
+            foreach (IContentKey contentKey in _mediaContext.ContentKeys)
             {
                 Assert.IsFalse(contentKey.Id == keyIdentifier);
             }
         }
 
         [TestMethod]
-        [TestCategory("PullRequestValidation")]
+        [TestCategory("DailyBvtRun")]
         public void ShouldDeleteContentKeyWithDifferentContexts()
         {
             Guid keyId = Guid.NewGuid();
             byte[] contentKeyBytes = GetRandomBuffer(16);
-            IContentKey key = _dataContext.ContentKeys.Create(keyId, contentKeyBytes);
+            IContentKey key = _mediaContext.ContentKeys.Create(keyId, contentKeyBytes);
 
             string keyIdentifier = key.Id;
             key.Delete();
 
-            foreach (IContentKey contentKey in _dataContext.ContentKeys)
+            foreach (IContentKey contentKey in _mediaContext.ContentKeys)
             {
                 Assert.IsFalse(contentKey.Id == keyIdentifier);
             }
         }
 
         [TestMethod]
-        [TestCategory("PullRequestValidation")]
+        [TestCategory("DailyBvtRun")]
         public void ShouldCreateTaskUsingStorageEncryptedAsset()
         {
             var filePaths = new[] {WindowsAzureMediaServicesTestConfiguration.SmallWmv};
-            IAsset asset = AssetTests.CreateAsset(_dataContext, Path.GetFullPath(WindowsAzureMediaServicesTestConfiguration.SmallWmv), AssetCreationOptions.StorageEncrypted);
-            IMediaProcessor processor = JobTests.GetEncoderMediaProcessor(_dataContext);
-            IJob job = _dataContext.Jobs.Create("Encode Job with encrypted asset");
+            IAsset asset = AssetTests.CreateAsset(_mediaContext, Path.GetFullPath(WindowsAzureMediaServicesTestConfiguration.SmallWmv), AssetCreationOptions.StorageEncrypted);
+            IMediaProcessor processor = JobTests.GetEncoderMediaProcessor(_mediaContext);
+            IJob job = _mediaContext.Jobs.Create("Encode Job with encrypted asset");
             ITask task = job.Tasks.AddNew("Task 1", processor, JobTests.GetWamePreset(processor), TaskOptions.None);
             task.InputAssets.Add(asset);
             task.OutputAssets.AddNew("Encrypted Output", AssetCreationOptions.StorageEncrypted);
@@ -215,7 +217,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             foreach (IAsset outputAsset in job2.Tasks[0].OutputAssets)
             {
-                VerifyFileAndContentKeyMetadataForStorageEncryption(outputAsset, _dataContext);
+                VerifyFileAndContentKeyMetadataForStorageEncryption(outputAsset, _mediaContext);
             }
         }
 
@@ -228,7 +230,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         public void ShouldGetClearConfigurationFromTask()
         {
             var filePaths = new[] {WindowsAzureMediaServicesTestConfiguration.SmallIsm, WindowsAzureMediaServicesTestConfiguration.SmallIsmc, WindowsAzureMediaServicesTestConfiguration.SmallIsmv};
-            IAsset asset = _dataContext.Assets.Create(Guid.NewGuid().ToString(), AssetCreationOptions.StorageEncrypted);
+            IAsset asset = _mediaContext.Assets.Create(Guid.NewGuid().ToString(), AssetCreationOptions.StorageEncrypted);
 
             foreach (string filePath in filePaths)
             {
@@ -243,9 +245,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             }
 
             string originalConfiguration = File.ReadAllText(WindowsAzureMediaServicesTestConfiguration.PlayReadyConfig);
-            IMediaProcessor processor = JobTests.GetMediaProcessor(_dataContext, WindowsAzureMediaServicesTestConfiguration.MpEncryptorName);
+            IMediaProcessor processor = JobTests.GetMediaProcessor(_mediaContext, WindowsAzureMediaServicesTestConfiguration.MpEncryptorName);
 
-            IJob job = _dataContext.Jobs.Create("PlayReady protect a smooth streaming asset for GetClearConfigurationFromTask");
+            IJob job = _mediaContext.Jobs.Create("PlayReady protect a smooth streaming asset for GetClearConfigurationFromTask");
             ITask task = job.Tasks.AddNew("SmoothProtectTask", processor, originalConfiguration, TaskOptions.ProtectedConfiguration);
 
             task.InputAssets.Add(asset);
@@ -273,19 +275,19 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(1)]
-        [TestCategory("PullRequestValidation")]
+        [TestCategory("DailyBvtRun")]
         public void ShouldDeleteAssetWithCommonEncryptionContentKey()
         {
             var dataContext2 = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
 
             // Note that this file is not really PlayReady encrypted.  For the purposes of this test that is okay.
-            IAsset asset = AssetTests.CreateAsset(_dataContext, Path.GetFullPath(WindowsAzureMediaServicesTestConfiguration.SmallWmv), AssetCreationOptions.CommonEncryptionProtected);
+            IAsset asset = AssetTests.CreateAsset(_mediaContext, Path.GetFullPath(WindowsAzureMediaServicesTestConfiguration.SmallWmv), AssetCreationOptions.CommonEncryptionProtected);
             string assetId = asset.Id;
             string fileId = asset.AssetFiles.ToList()[0].Id;
 
             Guid keyId = Guid.NewGuid();
             byte[] contentKeyBytes = GetRandomBuffer(16);
-            IContentKey key = _dataContext.ContentKeys.Create(keyId, contentKeyBytes);
+            IContentKey key = _mediaContext.ContentKeys.Create(keyId, contentKeyBytes);
             asset.ContentKeys.Add(key);
 
             string keyIdentifier = key.Id;
@@ -304,14 +306,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(1)]
-        [TestCategory("PullRequestValidation")]
+        [TestCategory("DailyBvtRun")]
         public void ShouldDeleteAssetWithStorageEncryptionContentKey()
         {
             // Use two contexts to cover the case where the content key needs to be internally attached to
             // the data context.  This simulates deleting a content key that we haven't just created.
             var dataContext2 = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
 
-            IAsset asset = AssetTests.CreateAsset(_dataContext, Path.GetFullPath(WindowsAzureMediaServicesTestConfiguration.SmallWmv), AssetCreationOptions.StorageEncrypted);
+            IAsset asset = AssetTests.CreateAsset(_mediaContext, Path.GetFullPath(WindowsAzureMediaServicesTestConfiguration.SmallWmv), AssetCreationOptions.StorageEncrypted);
             Assert.AreEqual(1, asset.ContentKeys.Count, "Expected 1 content key associated with the asset for storage encryption");
             Assert.AreEqual(ContentKeyType.StorageEncryption, asset.ContentKeys[0].ContentKeyType);
 
@@ -342,6 +344,39 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             {
                 Assert.IsFalse(keyFromRest.Id == keyId, "Asset was deleted we should not be able to query its associated storage encryption key by identifier.");
             }
+        }
+
+        [TestMethod]
+        [Priority(0)]
+        [TestCategory("DailyBvtRun")]
+        public void TestAssetFileDeleteRetry()
+        {
+            var dataContextMock = new Mock<IMediaDataServiceContext>();
+
+            int exceptionCount = 2;
+
+            var contentKey = new ContentKeyData { Name = "testData" };
+            var fakeResponse = new TestMediaDataServiceResponse { AsyncState = contentKey };
+            var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
+
+            dataContextMock.Setup((ctxt) => ctxt.AttachTo("ContentKeys", contentKey));
+            dataContextMock.Setup((ctxt) => ctxt.DeleteObject(contentKey));
+
+            dataContextMock.Setup((ctxt) => ctxt
+                .SaveChangesAsync(contentKey))
+                .Returns(() => Task.Factory.StartNew<IMediaDataServiceResponse>(() =>
+                {
+                    if (--exceptionCount > 0) throw fakeException;
+                    return fakeResponse;
+                }));
+
+            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
+
+            contentKey.SetMediaContext(_mediaContext);
+
+            contentKey.Delete();
+
+            Assert.AreEqual(0, exceptionCount);
         }
 
         #region Helper/utility methods
@@ -418,7 +453,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         private void VerifyFileAndContentKeyMetadataForCommonEncryption(IAsset asset)
         {
-            IAsset assetFromServer = Enumerable.First(_dataContext.Assets.Where(c => c.Id == asset.Id));
+            IAsset assetFromServer = Enumerable.First(_mediaContext.Assets.Where(c => c.Id == asset.Id));
 
             Assert.IsTrue(assetFromServer.Options == AssetCreationOptions.CommonEncryptionProtected);
 

@@ -39,7 +39,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             string configuration = "someconfiguration";
             ContentKeyRestrictionType restrictionType = ContentKeyRestrictionType.IPRestricted;
 
-            _testOption = CreateOption(optionName, requirements, configuration, restrictionType);
+            _testOption = CreateOption(_dataContext,optionName, requirements, configuration, restrictionType);
         }
 
         /*[TestCleanup] enable when rest layer bug is fixed
@@ -79,14 +79,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             string configuration = "someconfiguration";
             ContentKeyRestrictionType restrictionType = ContentKeyRestrictionType.IPRestricted;
 
-            IContentKeyAuthorizationPolicyOption option = CreateOption(optionName, requirements, configuration, restrictionType);
+            IContentKeyAuthorizationPolicyOption option = CreateOption(_dataContext,optionName, requirements, configuration, restrictionType);
 
             var ok = policyOptions.Where(o => o.KeyDeliveryType == ContentKeyDeliveryType.PlayReadyLicense).AsEnumerable().Any();
 
             Assert.IsTrue(ok, "Can not find option by DeliveryType");
         }
 
-        private IContentKeyAuthorizationPolicyOption CreateOption(string optionName, string requirements, string configuration, ContentKeyRestrictionType restrictionType)
+        public static IContentKeyAuthorizationPolicyOption CreateOption(CloudMediaContext dataContext,string optionName, string requirements, string configuration, ContentKeyRestrictionType restrictionType)
         {
             var restrictions = new List<ContentKeyAuthorizationPolicyRestriction>
                 {
@@ -95,7 +95,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             restrictions[0].SetKeyRestrictionTypeValue(restrictionType);
 
-            IContentKeyAuthorizationPolicyOption option = _dataContext.ContentKeyAuthorizationPolicyOptions.Create(
+            IContentKeyAuthorizationPolicyOption option = dataContext.ContentKeyAuthorizationPolicyOptions.Create(
                 optionName,
                 ContentKeyAuthorization.ContentKeyDeliveryType.PlayReadyLicense,
                 restrictions,

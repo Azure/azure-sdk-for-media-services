@@ -14,6 +14,9 @@
 // limitations under the License.
 // </license>
 
+using Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization;
+using Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption;
+
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
@@ -83,8 +86,84 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public abstract IStorageAccount DefaultStorageAccount { get; }
 
         /// <summary>
-        /// Gets the collection of notification endpoints avaiable in the system.
+        /// Gets the collection of notification endpoints available in the system.
         /// </summary>
         public abstract NotificationEndPointCollection NotificationEndPoints { get; }
+
+        /// <summary>
+        /// Gets the content key authorization policy options.
+        /// </summary>
+        /// <value>
+        /// The content key authorization policy options.
+        /// </value>
+        public abstract ContentKeyAuthorizationPolicyOptionCollection ContentKeyAuthorizationPolicyOptions { get; }
+
+        /// <summary>
+        /// Gets the content key authorization policies.
+        /// </summary>
+        /// <value>
+        /// The content key authorization policies.
+        /// </value>
+        public abstract ContentKeyAuthorizationPolicyCollection ContentKeyAuthorizationPolicies { get; }
+
+        /// <summary>
+        /// Gets or sets a factory for creating data service context instances prepared for Windows Azure Media Services.
+        /// </summary>
+        public MediaServicesClassFactory MediaServicesClassFactory { get; set; }
+
+        public abstract IngestManifestFileCollection IngestManifestFiles { get; }
+        public abstract IngestManifestCollection IngestManifests { get; }
+        public abstract IngestManifestAssetCollection IngestManifestAssets { get; }
+        public abstract LocatorBaseCollection Locators { get; }
+
+        /// <summary>
+        /// Gets or sets the number of threads to use to for each blob transfer.
+        /// </summary>
+        /// <remarks>The default value is 10.</remarks>
+        public int ParallelTransferThreadCount { get; set; }
+
+        /// <summary>
+        /// Gets or sets the number of concurrent blob transfers allowed.
+        /// </summary>
+        /// <remarks>The default value is 2.</remarks>
+        public int NumberOfConcurrentTransfers { get; set; }
+
+        /// <summary>
+        /// Gets the asset delivery policies.
+        /// </summary>
+        /// <value>
+        /// The asset delivery policies.
+        /// </value>
+        public abstract AssetDeliveryPolicyCollection AssetDeliveryPolicies { get; }
+
+        /// <summary>
+        /// Gets the collection of channels in the system.
+        /// </summary>
+        public abstract ChannelBaseCollection Channels { get; }
+
+        /// <summary>
+        /// Gets the collection of programs in the system.
+        /// </summary>
+        public abstract ProgramBaseCollection Programs { get; }
+
+        /// <summary>
+        /// Gets the collection of origins in the system.
+        /// </summary>
+        public abstract OriginBaseCollection Origins { get; }
+
+        /// <summary>
+        /// Gets the collection of operation in the system.
+        /// </summary>
+        public abstract OperationBaseCollection Operations { get; }
+
+        /// <summary>
+        /// Gets the collection of origin metrics in the system.
+        /// </summary>
+        public abstract OriginMetricBaseCollection OriginMetrics { get; }
+
+        /// <summary>
+        /// Gets the collection of channel metrics in the system.
+        /// </summary>
+        public abstract ChannelMetricBaseCollection ChannelMetrics { get; }
     }
 }

@@ -15,8 +15,8 @@
 // </license>
 
 using System;
-using System.Data.Services.Client;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -40,10 +40,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         internal const string AssetPropertyName = "Asset";
 
-        /// <summary>
-        /// The media context used to communicate to the server.
-        /// </summary>
-        private readonly CloudMediaContext _cloudMediaContext;
+       
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LocatorBaseCollection"/> class.
@@ -51,12 +48,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="cloudMediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors",
             Justification = "By design")]
-        internal LocatorBaseCollection(CloudMediaContext cloudMediaContext)
+        internal LocatorBaseCollection(MediaContextBase cloudMediaContext)
+            : base(cloudMediaContext)
         {
-            this._cloudMediaContext = cloudMediaContext;
-
-            this.DataContextFactory = this._cloudMediaContext.DataContextFactory;
-            this.Queryable = this.DataContextFactory.CreateDataServiceContext().CreateQuery<LocatorData>(LocatorSet);
+           this.Queryable = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<LocatorData>(LocatorSet);
         }
 
         /// <summary>
@@ -169,17 +164,17 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 Name = name
             };
 
-            locator.InitCloudMediaContext(this._cloudMediaContext);
-
-            DataServiceContext dataContext = this.DataContextFactory.CreateDataServiceContext();
+            locator.SetMediaContext(this.MediaContext);
+            IMediaDataServiceContext dataContext = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(AssetCollection.AssetSet, asset);
             dataContext.AttachTo(AccessPolicyBaseCollection.AccessPolicySet, accessPolicy);
             dataContext.AddObject(LocatorSet, locator);
             dataContext.SetLink(locator, AccessPolicyPropertyName, accessPolicy);
             dataContext.SetLink(locator, AssetPropertyName, asset);
 
-            return dataContext
-                .SaveChangesAsync(locator)
+            MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(locator))
                 .ContinueWith<ILocator>(
                     t =>
                     {
@@ -187,7 +182,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
                         assetData.InvalidateLocatorsCollection();
 
-                        return (LocatorData)t.AsyncState;
+                        return (LocatorData)t.Result.AsyncState;
                     },
                     TaskContinuationOptions.ExecuteSynchronously);
         }

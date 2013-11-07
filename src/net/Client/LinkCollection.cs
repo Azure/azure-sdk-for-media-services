@@ -17,8 +17,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Data.Services.Client;
 using System.Globalization;
+using Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption;
+using Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -29,7 +30,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// <typeparam name="TType">The type of the type.</typeparam>
     internal class LinkCollection<TInterface, TType> : ObservableCollection<TInterface>
     {
-        private readonly DataServiceContext _dataContext;
+        private readonly IMediaDataServiceContext _dataContext;
         private readonly string _propertyName;
         private readonly object _parent;
 
@@ -40,7 +41,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="parent">The parent.</param>
         /// <param name="propertyName">Name of the property.</param>
         /// <param name="items">The items.</param>
-        public LinkCollection(DataServiceContext dataContext, object parent, string propertyName, IEnumerable<TInterface> items)
+        public LinkCollection(IMediaDataServiceContext dataContext, object parent, string propertyName, IEnumerable<TInterface> items)
             : base(items)
         {
             this._dataContext = dataContext;
@@ -129,6 +130,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             if (type == typeof(IContentKey))
             {
                 return ContentKeyCollection.ContentKeySet;
+            }
+
+            if (type == typeof(IAssetDeliveryPolicy))
+            {
+                return AssetDeliveryPolicyCollection.DeliveryPolicySet;
+            }
+
+            if (type == typeof(IContentKeyAuthorizationPolicyOption))
+            {
+                return ContentKeyAuthorizationPolicyOptionCollection.ContentKeyAuthorizationPolicyOptionSet;
             }
 
             throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, "Not supported type: {0}.", type), "type");
