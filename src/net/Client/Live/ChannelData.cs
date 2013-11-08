@@ -21,6 +21,8 @@ using System.Threading.Tasks;
 using Microsoft.WindowsAzure.MediaServices.Client.Properties;
 using System.Net;
 using Microsoft.WindowsAzure.MediaServices.Client.Rest;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
+using System.Collections.Generic;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -90,19 +92,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
         }
 
-        #region ICloudMediaContextInit Members
-        /// <summary>
-        /// Initializes the cloud media context.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        public void InitCloudMediaContext(CloudMediaContext context)
-        {
-            InvalidateCollections();
-            this._cloudMediaContext = (CloudMediaContext)context;
-        }
-
-        #endregion
-
         /// <summary>
         /// Gets state of the channel.
         /// </summary>
@@ -153,9 +142,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             get
             {
-                if (_programCollection == null && _cloudMediaContext != null)
+                if (_programCollection == null && GetMediaContext() != null)
                 {
-                    this._programCollection = new ProgramBaseCollection(_cloudMediaContext, this);
+                    this._programCollection = new ProgramBaseCollection(GetMediaContext(), this);
                 }
 
                 return _programCollection;
@@ -163,17 +152,17 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
         /// <summary>
-        /// Adds or removes channel metrics recevied event handler
+        /// Adds or removes channel metrics received event handler
         /// </summary>
         event EventHandler<MetricsEventArgs<IChannelMetric>> IChannel.MetricsReceived
         {
             add
             {
-                _cloudMediaContext.ChannelMetrics.Monitor.Subscribe(Id, value);
+                GetMediaContext().ChannelMetrics.Monitor.Subscribe(Id, value);
             }
             remove
             {
-                _cloudMediaContext.ChannelMetrics.Monitor.Unsubscribe(Id, value);
+                GetMediaContext().ChannelMetrics.Monitor.Unsubscribe(Id, value);
             }
         }
 
@@ -197,6 +186,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             {
                 return new Uri(IngestUrl);
             }
+        }
+
+        /// <summary>
+        /// Initializes the cloud media context.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        public void InitCloudMediaContext(MediaContextBase context)
+        {
+            _mediaContextBase = context;
+            InvalidateCollections();
         }
 
         #region IChannel Methods
@@ -329,36 +328,39 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new InvalidOperationException(Resources.ErrorEntityWithoutId);
             }
 
-            IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(EntitySetName, this);
             dataContext.DeleteObject(this);
 
-            return dataContext.SaveChangesAsync(this).ContinueWith(t =>
-            {
-                t.ThrowIfFaulted();
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
 
-                string operationId = t.Result.Single().Headers[StreamingConstants.OperationIdHeader];
-
-                IOperation operation = AsyncHelper.WaitOperationCompletion(
-                    this._cloudMediaContext,
-                    operationId,
-                    StreamingConstants.DeleteChannelPollInterval);
-
-                string messageFormat = Resources.ErrorDeleteChannelFailedFormat;
-                string message;
-
-                switch (operation.State)
+            return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(this))
+                .ContinueWith(t =>
                 {
-                    case OperationState.Succeeded:
-                        return;
-                    case OperationState.Failed:
-                        message = string.Format(CultureInfo.CurrentCulture, messageFormat, Resources.Failed, operationId, operation.ErrorMessage);
-                        throw new InvalidOperationException(message);
-                    default: // can never happen unless state enum is extended
-                        message = string.Format(CultureInfo.CurrentCulture, messageFormat, Resources.InInvalidState, operationId, operation.State);
-                        throw new InvalidOperationException(message);
-                }
-            });
+                    t.ThrowIfFaulted();
+
+                    string operationId = t.Result.Single().Headers[StreamingConstants.OperationIdHeader];
+
+                    IOperation operation = AsyncHelper.WaitOperationCompletion(
+                        this.GetMediaContext(),
+                        operationId,
+                        StreamingConstants.DeleteChannelPollInterval);
+
+                    string messageFormat = Resources.ErrorDeleteChannelFailedFormat;
+                    string message;
+
+                    switch (operation.State)
+                    {
+                        case OperationState.Succeeded:
+                            return;
+                        case OperationState.Failed:
+                            message = string.Format(CultureInfo.CurrentCulture, messageFormat, Resources.Failed, operationId, operation.ErrorMessage);
+                            throw new InvalidOperationException(message);
+                        default: // can never happen unless state enum is extended
+                            message = string.Format(CultureInfo.CurrentCulture, messageFormat, Resources.InInvalidState, operationId, operation.State);
+                            throw new InvalidOperationException(message);
+                    }
+                });
 
         }
 
@@ -373,11 +375,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new InvalidOperationException(Resources.ErrorEntityWithoutId);
             }
 
-            IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(EntitySetName, this);
             dataContext.DeleteObject(this);
 
-            var response = dataContext.SaveChanges();
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            var response = retryPolicy.ExecuteAction<IMediaDataServiceResponse>(() => dataContext.SaveChanges());
 
             string operationId = response.Single().Headers[StreamingConstants.OperationIdHeader];
 
@@ -417,13 +421,24 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     ),
                 UriKind.Relative);
 
-            var dataContext = _cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
-            var metric = dataContext.Execute<ChannelMetricData>(uri).SingleOrDefault();
+            var dataContext = GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
+
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            var metric = retryPolicy.ExecuteAction<IEnumerable<ChannelMetricData>>(() => dataContext.Execute<ChannelMetricData>(uri)).SingleOrDefault();
 
             return metric;
         }
 
-        protected override string EntitySetName { get { return ChannelBaseCollection.ChannelSet; } }
+        public override void SetMediaContext(MediaContextBase value)
+        {
+            InitCloudMediaContext(value);
+        }
+
+        public override MediaContextBase GetMediaContext()
+        {
+            return _mediaContextBase;
+        }
 
         /// <summary>
         /// Invalidates collections to force them to be reloaded from server.
@@ -432,6 +447,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             this._programCollection = null;
         }
+
+        protected override string EntitySetName { get { return ChannelBaseCollection.ChannelSet; } }
+
+        private MediaContextBase _mediaContextBase;
 
         private ProgramBaseCollection _programCollection;
 
