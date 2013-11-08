@@ -92,7 +92,9 @@
     <Compile Include="ContentKeyAuthorizationPolicyTests.cs" />
     <Compile Include="ContentKeyTests.cs" />
     <Compile Include="Live\ChannelMetricsTest.cs" />
-    <Compile Include="ChannelTests.cs" />
+    <Compile Include="Live\ChannelTests.cs" />
+    <Compile Include="Live\RestEntityTests.cs" />
+    <Compile Include="Live\OriginTests.cs" />
     <Compile Include="Live\LiveE2ETests.cs" />
     <Compile Include="Helpers\TestMediaDataServiceResponse.cs" />
     <Compile Include="Helpers\TestMediaServicesClassFactory.cs" />

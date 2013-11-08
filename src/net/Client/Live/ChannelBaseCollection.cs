@@ -18,6 +18,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.MediaServices.Client.Properties;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -27,7 +28,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     public class ChannelBaseCollection : CloudBaseCollection<IChannel>
     {
         internal const string ChannelSet = "Channels";
-        private readonly CloudMediaContext _cloudMediaContext;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ChannelBaseCollection"/> class.
@@ -36,9 +36,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         internal ChannelBaseCollection(CloudMediaContext cloudMediaContext)
             : base(cloudMediaContext)
         {
-            this._cloudMediaContext = cloudMediaContext;
-
-            this.Queryable = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<ChannelData>(ChannelSet);
+            this.Queryable = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<ChannelData>(ChannelSet);
         }
 
         /// <summary>
@@ -90,20 +88,22 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             ((IChannel)channel).Settings = settings;
 
-            channel.InitCloudMediaContext(this._cloudMediaContext);
+            channel.InitCloudMediaContext(this.MediaContext);
 
-            IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AddObject(ChannelSet, channel);
 
-            return dataContext
-                .SaveChangesAsync(channel)
+
+            MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(channel))
                 .ContinueWith<IChannel>(t =>
                 {
                     t.ThrowIfFaulted();
                     string operationId = t.Result.Single().Headers[StreamingConstants.OperationIdHeader];
 
                     IOperation operation = AsyncHelper.WaitOperationCompletion(
-                        this._cloudMediaContext,
+                        this.MediaContext,
                         operationId,
                         StreamingConstants.CreateChannelPollInterval);
 
@@ -113,7 +113,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     switch (operation.State)
                     {
                         case OperationState.Succeeded:
-                            channel = (ChannelData)t.AsyncState;
+                            channel = (ChannelData)t.Result.AsyncState;
                             Uri uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Channels('{0}')", channel.Id), UriKind.Relative);
                             return (ChannelData)dataContext.Execute<ChannelData>(uri).SingleOrDefault();;
                         case OperationState.Failed:
@@ -183,9 +183,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             ((IChannel)channel).Settings = settings;
 
-            channel.InitCloudMediaContext(this._cloudMediaContext);
+            channel.InitCloudMediaContext(this.MediaContext);
 
-            IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AddObject(ChannelSet, channel);
             var response = dataContext.SaveChanges();
 
