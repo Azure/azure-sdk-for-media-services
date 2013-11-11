@@ -32,8 +32,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Initializes a new instance of the <see cref="ChannelBaseCollection"/> class.
         /// </summary>
-        /// <param name="cloudMediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
-        internal ChannelBaseCollection(CloudMediaContext cloudMediaContext)
+        /// <param name="cloudMediaContext">The <seealso cref="MediaContextBase"/> instance.</param>
+        internal ChannelBaseCollection(MediaContextBase cloudMediaContext)
             : base(cloudMediaContext)
         {
             this.Queryable = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<ChannelData>(ChannelSet);
@@ -88,11 +88,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             ((IChannel)channel).Settings = settings;
 
-            channel.InitCloudMediaContext(this.MediaContext);
+            channel.SetMediaContext(this.MediaContext);
 
             IMediaDataServiceContext dataContext = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AddObject(ChannelSet, channel);
-
 
             MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
 
@@ -183,11 +182,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             ((IChannel)channel).Settings = settings;
 
-            channel.InitCloudMediaContext(this.MediaContext);
+            channel.SetMediaContext(this.MediaContext);
 
             IMediaDataServiceContext dataContext = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AddObject(ChannelSet, channel);
-            var response = dataContext.SaveChanges();
+
+            MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            var response = retryPolicy.ExecuteAction<IMediaDataServiceResponse>(() => dataContext.SaveChanges()); 
 
             string operationId = response.Single().Headers[StreamingConstants.OperationIdHeader];
 

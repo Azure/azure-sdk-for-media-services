@@ -214,7 +214,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
 
-            var response = dataContext.Execute(uri, "POST", operationParameters);
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            var response = retryPolicy.ExecuteAction(() => dataContext.Execute(uri, "POST", operationParameters));
 
             if (response.StatusCode == (int)HttpStatusCode.NotFound)
             {

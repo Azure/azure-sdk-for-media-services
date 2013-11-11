@@ -32,7 +32,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Initializes a new instance of the <see cref="ProgramBaseCollection"/> class.
         /// </summary>
-        /// <param name="cloudMediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
+        /// <param name="cloudMediaContext">The <seealso cref="MediaContextBase"/> instance.</param>
         internal ProgramBaseCollection(MediaContextBase cloudMediaContext)
             : base(cloudMediaContext)
         {

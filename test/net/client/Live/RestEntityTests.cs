@@ -42,6 +42,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             Refresh();
         }
 
+        public IOperation SendOperationTest()
+        {
+            return SendOperation(new Uri("http://whatever"));
+        }
+
         protected override string EntitySetName
         {
             get { return "Origins"; }
@@ -59,7 +64,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         #region Retry Logic tests
-
 
         [TestMethod]
         [Priority(0)]
@@ -172,6 +176,40 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             target.Refresh();
 
             dataContextMock.Verify((ctxt) => ctxt.Execute<OriginData>(It.IsAny<Uri>()), Times.Exactly(2));
+        }
+
+        [TestMethod]
+        [Priority(0)]
+        public void TestRestEntitySendOperation()
+        {
+            var dataContextMock = new Mock<IMediaDataServiceContext>();
+
+            var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
+
+            int exceptionCount = 2;
+
+            dataContextMock.Setup((ctxt) => ctxt
+                .Execute(It.IsAny<Uri>(), "POST"))
+                .Returns(() =>
+                {
+                    if (--exceptionCount > 0) throw fakeException;
+                    throw new NotImplementedException(TestMediaDataServiceResponse.TestMediaDataServiceResponseExceptionMessage);
+                });
+
+            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
+
+            var target = new TestRestEntity(_mediaContext);
+
+            try
+            {
+                target.SendOperationTest();
+            }
+            catch (NotImplementedException x)
+            {
+                Assert.AreEqual(TestMediaDataServiceResponse.TestMediaDataServiceResponseExceptionMessage, x.Message);
+            }
+
+            dataContextMock.Verify((ctxt) => ctxt.Execute(It.IsAny<Uri>(), "POST"), Times.Exactly(2));
         }
 
         #endregion Retry Logic tests
