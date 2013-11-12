@@ -391,7 +391,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(0)]
-        [Ignore] // Need to figure out how to get retry logic in static methods.
         public void TestContentKeyBaseCollectionGetProtectionKeyIdForContentKey()
         {            
             var dataContextMock = new Mock<IMediaDataServiceContext>();
@@ -409,11 +408,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                     return fakeResponse;
                 });
 
-            var actual = ContentKeyBaseCollection.GetProtectionKeyIdForContentKey(dataContextMock.Object, ContentKeyType.CommonEncryption);
+            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
+
+            var actual = ContentKeyBaseCollection.GetProtectionKeyIdForContentKey(_mediaContext, ContentKeyType.CommonEncryption);
 
             Assert.AreEqual(fakeResponse[0], actual);
 
-            dataContextMock.Verify((ctxt) => ctxt.Execute<ChannelMetricData>(It.IsAny<Uri>()), Times.Exactly(2));
+            dataContextMock.Verify((ctxt) => ctxt.Execute<string>(It.IsAny<Uri>()), Times.Exactly(2));
         }
 
         [TestMethod]

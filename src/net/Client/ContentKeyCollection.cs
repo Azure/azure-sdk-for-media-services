@@ -101,7 +101,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
 
             IMediaDataServiceContext dataContext = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
-            X509Certificate2 certToUse = ContentKeyBaseCollection.GetCertificateToEncryptContentKey(dataContext, ContentKeyType.CommonEncryption);
+            X509Certificate2 certToUse = ContentKeyBaseCollection.GetCertificateToEncryptContentKey(MediaContext, ContentKeyType.CommonEncryption);
 
             ContentKeyData contentKeyData = null;
 

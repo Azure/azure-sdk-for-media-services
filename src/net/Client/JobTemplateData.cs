@@ -203,7 +203,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             return (int)type;
         }
 
-        private static void ProtectTaskConfiguration(TaskTemplateData taskTemplate, ref X509Certificate2 certToUse, IMediaDataServiceContext dataContext)
+        private void ProtectTaskConfiguration(TaskTemplateData taskTemplate, ref X509Certificate2 certToUse, IMediaDataServiceContext dataContext)
         {
             using (ConfigurationEncryption configEncryption = new ConfigurationEncryption())
             {
@@ -217,7 +217,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 if (certToUse == null)
                 {
                     // Get the certificate to use to encrypt the configuration encryption key.
-                    certToUse = ContentKeyBaseCollection.GetCertificateToEncryptContentKey(dataContext, ContentKeyType.ConfigurationEncryption);
+                    certToUse = ContentKeyBaseCollection.GetCertificateToEncryptContentKey(GetMediaContext(), ContentKeyType.ConfigurationEncryption);
                 }
 
                 // Create a content key object to hold the encryption key.
