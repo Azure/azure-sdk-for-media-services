@@ -16,6 +16,7 @@
 
 using System;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -53,8 +54,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             IMediaDataServiceContext dataContext = MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AddObject(NotificationEndPoints, notificationEndPoint);
 
-            return dataContext
-                .SaveChangesAsync(notificationEndPoint)
+            MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(notificationEndPoint))
                 .ContinueWith<INotificationEndPoint>(
                     t =>
                     {

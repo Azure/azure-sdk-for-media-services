@@ -28,6 +28,14 @@ using System.Threading.Tasks;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 {
+    class TestX509Certificate2 : X509Certificate2
+    {
+        public override byte[] Export(X509ContentType contentType)
+        {
+            return Enumerable.Range(0, 5).Select(i => (byte)i).ToArray();
+        }
+    }
+
     [TestClass]
     public class ContentKeyTests
     {
@@ -378,6 +386,146 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             Assert.AreEqual(0, exceptionCount);
         }
+
+        #region Retry Logic tests
+
+        [TestMethod]
+        [Priority(0)]
+        [Ignore] // Need to figure out how to get retry logic in static methods.
+        public void TestContentKeyBaseCollectionGetProtectionKeyIdForContentKey()
+        {            
+            var dataContextMock = new Mock<IMediaDataServiceContext>();
+
+            var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
+
+            var fakeResponse = new string[] { "testKey" };
+            int exceptionCount = 2;
+
+            dataContextMock.Setup((ctxt) => ctxt
+                .Execute<string>(It.IsAny<Uri>()))
+                .Returns(() =>
+                {
+                    if (--exceptionCount > 0) throw fakeException;
+                    return fakeResponse;
+                });
+
+            var actual = ContentKeyBaseCollection.GetProtectionKeyIdForContentKey(dataContextMock.Object, ContentKeyType.CommonEncryption);
+
+            Assert.AreEqual(fakeResponse[0], actual);
+
+            dataContextMock.Verify((ctxt) => ctxt.Execute<ChannelMetricData>(It.IsAny<Uri>()), Times.Exactly(2));
+        }
+
+        [TestMethod]
+        [Priority(0)]
+        public void TestContentKeyGetEncryptedKeyValueAsync()
+        {
+            var data = new ContentKeyData { Name = "testData" };
+
+            var dataContextMock = new Mock<IMediaDataServiceContext>();
+
+            var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
+
+            string testKey = "testKey";
+            var fakeResponse = new string[] { Convert.ToBase64String(new System.Text.UTF8Encoding().GetBytes(testKey)) };
+            int exceptionCount = 2;
+
+            dataContextMock.Setup((ctxt) => ctxt
+                .Execute<string>(It.IsAny<Uri>()))
+                .Returns(() =>
+                {
+                    if (--exceptionCount > 0) throw fakeException;
+                    return fakeResponse;
+                });
+
+            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
+            data.SetMediaContext(_mediaContext);
+
+            X509Certificate2 cert = new TestX509Certificate2();
+            var actual = data.GetEncryptedKeyValue(cert);
+
+            Assert.IsNotNull(actual);
+            Assert.IsTrue(actual.Length > 0);
+
+            dataContextMock.Verify((ctxt) => ctxt.Execute<string>(It.IsAny<Uri>()), Times.Exactly(2));
+        }
+
+        [TestMethod]
+        [Priority(0)]
+        public void TestContentKeyGetClearKeyValueAsync()
+        {
+            var data = new ContentKeyData { Name = "testData" };
+
+            var dataContextMock = new Mock<IMediaDataServiceContext>();
+
+            var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
+
+            string testKey = "testKey";
+            var fakeResponse = new string[] { Convert.ToBase64String(new System.Text.UTF8Encoding().GetBytes(testKey)) };
+            int exceptionCount = 2;
+
+            dataContextMock.Setup((ctxt) => ctxt
+                .Execute<string>(It.IsAny<Uri>()))
+                .Returns(() =>
+                {
+                    if (--exceptionCount > 0) throw fakeException;
+                    return fakeResponse;
+                });
+
+            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
+            data.SetMediaContext(_mediaContext);
+
+            X509Certificate2 cert = new TestX509Certificate2();
+            var actual = data.GetClearKeyValue();
+
+            Assert.IsNotNull(actual);
+            Assert.IsTrue(actual.Length > 0);
+
+            dataContextMock.Verify((ctxt) => ctxt.Execute<string>(It.IsAny<Uri>()), Times.Exactly(2));
+        }
+
+        [TestMethod]
+        [Priority(0)]
+        public void TestContentKeyUpdateRetry()
+        {
+            var data = new ContentKeyData { Name = "testData" };
+            var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
+            var dataContextMock = TestMediaServicesClassFactory.CreateSaveChangesMock(fakeException, 2, data);
+
+            dataContextMock.Setup((ctxt) => ctxt.AttachTo("Assets", data));
+            dataContextMock.Setup((ctxt) => ctxt.UpdateObject(data));
+
+            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
+
+            data.SetMediaContext(_mediaContext);
+
+            data.Update();
+
+            dataContextMock.Verify((ctxt) => ctxt.SaveChangesAsync(data), Times.Exactly(2));
+        }
+
+        [TestMethod]
+        [Priority(0)]
+        public void TestContentKeyDeleteRetry()
+        {
+            var data = new ContentKeyData { Name = "testData" };
+
+            var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
+
+            var dataContextMock = TestMediaServicesClassFactory.CreateSaveChangesMock(fakeException, 2, data);
+
+            dataContextMock.Setup((ctxt) => ctxt.AttachTo("Assets", data));
+            dataContextMock.Setup((ctxt) => ctxt.DeleteObject(data));
+
+            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
+
+            data.SetMediaContext(_mediaContext);
+
+            data.Delete();
+
+            dataContextMock.Verify((ctxt) => ctxt.SaveChangesAsync(data), Times.Exactly(2));
+        }
+        #endregion Retry Logic tests
 
         #region Helper/utility methods
 

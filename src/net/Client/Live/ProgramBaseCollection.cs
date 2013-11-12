@@ -18,6 +18,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Security;
 using Microsoft.WindowsAzure.MediaServices.Client.Properties;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -255,8 +256,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             IMediaDataServiceContext dataContext = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AddObject(ProgramSet, program);
 
-            return dataContext
-                .SaveChangesAsync(program)
+            MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(program))
                 .ContinueWith<IProgram>(t =>
                 {
                     t.ThrowIfFaulted();

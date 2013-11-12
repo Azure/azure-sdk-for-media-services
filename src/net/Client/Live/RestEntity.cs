@@ -256,7 +256,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(EntitySetName, this, Guid.NewGuid().ToString());
 
-            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetQueryRetryPolicy();
 
             retryPolicy.ExecuteAction<IEnumerable<T>>(() => dataContext.Execute<T>(uri)).Single();
         }

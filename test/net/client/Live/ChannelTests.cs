@@ -44,7 +44,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(1)]
-        //[Ignore] // enable when environment is ready
+        [Ignore] // enable when environment is ready
         public void ChannelTestCreateTrivial()
         {
             IChannel channel = _mediaContext.Channels.Create(Guid.NewGuid().ToString().Substring(0, 30), ChannelSize.Large, MakeChannelSettings());

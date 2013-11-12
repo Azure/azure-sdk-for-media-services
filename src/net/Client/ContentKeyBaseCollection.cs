@@ -20,6 +20,7 @@ using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -239,6 +240,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             // First query Nimbus to find out what certificate to encrypt the content key with.
             string uriString = string.Format(CultureInfo.InvariantCulture, "/GetProtectionKeyId?contentKeyType={0}", Convert.ToInt32(contentKeyType, CultureInfo.InvariantCulture));
             Uri uriGetProtectionKeyId = new Uri(uriString, UriKind.Relative);
+
             IEnumerable<string> results = dataContext.Execute<string>(uriGetProtectionKeyId);
 
             return results.Single();

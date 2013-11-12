@@ -47,7 +47,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     Uri uriRebindContentKey = new Uri(string.Format(CultureInfo.InvariantCulture, "/RebindContentKey?id='{0}'&x509Certificate=''", this.Id), UriKind.Relative);
                     IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
 
-                    IEnumerable<string> results = dataContext.Execute<string>(uriRebindContentKey);
+                    MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetQueryRetryPolicy();
+
+                    IEnumerable<string> results = retryPolicy.ExecuteAction<IEnumerable<string>>(() => dataContext.Execute<string>(uriRebindContentKey));
                     string reboundContentKey = results.Single();
 
                     returnValue = Convert.FromBase64String(reboundContentKey);
@@ -101,7 +103,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                         Uri uriRebindContentKey = new Uri(string.Format(CultureInfo.InvariantCulture, "/RebindContentKey?id='{0}'&x509Certificate='{1}'", this.Id, certToSend), UriKind.Relative);
                         IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
 
-                        IEnumerable<string> results = dataContext.Execute<string>(uriRebindContentKey);
+                        MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetQueryRetryPolicy();
+
+                        IEnumerable<string> results = retryPolicy.ExecuteAction<IEnumerable<string>>(() => dataContext.Execute<string>(uriRebindContentKey));
+
                         string reboundContentKey = results.Single();
 
                         returnValue = Convert.FromBase64String(reboundContentKey);

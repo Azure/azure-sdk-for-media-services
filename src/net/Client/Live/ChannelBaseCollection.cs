@@ -19,6 +19,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.MediaServices.Client.Properties;
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
+using System.Collections.Generic;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -114,7 +115,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                         case OperationState.Succeeded:
                             channel = (ChannelData)t.Result.AsyncState;
                             Uri uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Channels('{0}')", channel.Id), UriKind.Relative);
-                            return (ChannelData)dataContext.Execute<ChannelData>(uri).SingleOrDefault();;
+
+                            retryPolicy = this.MediaContext.MediaServicesClassFactory.GetQueryRetryPolicy();
+
+                            ChannelData result = retryPolicy.ExecuteAction<IEnumerable<ChannelData>>(() => dataContext.Execute<ChannelData>(uri)).SingleOrDefault();
+
+                            return result;
                         case OperationState.Failed:
                             message = string.Format(CultureInfo.CurrentCulture, messageFormat, Resources.Failed, operationId, operation.ErrorMessage);
                             throw new InvalidOperationException(message);

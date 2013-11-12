@@ -353,7 +353,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             var dataContext = GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
 
-            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetQueryRetryPolicy();
 
             var metric = retryPolicy.ExecuteAction<IEnumerable<OriginMetricData>>(() => dataContext.Execute<OriginMetricData>(uri)).SingleOrDefault();
 
