@@ -188,16 +188,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
         }
 
-        /// <summary>
-        /// Initializes the cloud media context.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        public void InitCloudMediaContext(MediaContextBase context)
-        {
-            _mediaContextBase = context;
-            InvalidateCollections();
-        }
-
         #region IChannel Methods
         /// <summary>
         /// Starts the channel.
@@ -423,7 +413,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             var dataContext = GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
 
-            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetQueryRetryPolicy();
 
             var metric = retryPolicy.ExecuteAction<IEnumerable<ChannelMetricData>>(() => dataContext.Execute<ChannelMetricData>(uri)).SingleOrDefault();
 
@@ -432,12 +422,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
         public override void SetMediaContext(MediaContextBase value)
         {
-            InitCloudMediaContext(value);
-        }
-
-        public override MediaContextBase GetMediaContext()
-        {
-            return _mediaContextBase;
+            InvalidateCollections();
+            base.SetMediaContext(value);
         }
 
         /// <summary>
@@ -449,8 +435,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
         protected override string EntitySetName { get { return ChannelBaseCollection.ChannelSet; } }
-
-        private MediaContextBase _mediaContextBase;
 
         private ProgramBaseCollection _programCollection;
 

@@ -19,6 +19,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.MediaServices.Client.Properties;
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
+using System.Collections.Generic;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -32,8 +33,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Initializes a new instance of the <see cref="ChannelBaseCollection"/> class.
         /// </summary>
-        /// <param name="cloudMediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
-        internal ChannelBaseCollection(CloudMediaContext cloudMediaContext)
+        /// <param name="cloudMediaContext">The <seealso cref="MediaContextBase"/> instance.</param>
+        internal ChannelBaseCollection(MediaContextBase cloudMediaContext)
             : base(cloudMediaContext)
         {
             this.Queryable = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<ChannelData>(ChannelSet);
@@ -88,11 +89,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             ((IChannel)channel).Settings = settings;
 
-            channel.InitCloudMediaContext(this.MediaContext);
+            channel.SetMediaContext(this.MediaContext);
 
             IMediaDataServiceContext dataContext = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AddObject(ChannelSet, channel);
-
 
             MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
 
@@ -115,7 +115,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                         case OperationState.Succeeded:
                             channel = (ChannelData)t.Result.AsyncState;
                             Uri uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Channels('{0}')", channel.Id), UriKind.Relative);
-                            return (ChannelData)dataContext.Execute<ChannelData>(uri).SingleOrDefault();;
+
+                            retryPolicy = this.MediaContext.MediaServicesClassFactory.GetQueryRetryPolicy();
+
+                            ChannelData result = retryPolicy.ExecuteAction<IEnumerable<ChannelData>>(() => dataContext.Execute<ChannelData>(uri)).SingleOrDefault();
+
+                            return result;
                         case OperationState.Failed:
                             message = string.Format(CultureInfo.CurrentCulture, messageFormat, Resources.Failed, operationId, operation.ErrorMessage);
                             throw new InvalidOperationException(message);
@@ -183,11 +188,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             ((IChannel)channel).Settings = settings;
 
-            channel.InitCloudMediaContext(this.MediaContext);
+            channel.SetMediaContext(this.MediaContext);
 
             IMediaDataServiceContext dataContext = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AddObject(ChannelSet, channel);
-            var response = dataContext.SaveChanges();
+
+            MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            var response = retryPolicy.ExecuteAction<IMediaDataServiceResponse>(() => dataContext.SaveChanges()); 
 
             string operationId = response.Single().Headers[StreamingConstants.OperationIdHeader];
 

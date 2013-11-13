@@ -21,6 +21,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -128,13 +129,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
                 dataContext.AddObject(EntitySet, data);
 
-                Task<IIngestManifestFile> task = dataContext.SaveChangesAsync(data).ContinueWith<IIngestManifestFile>(t =>
-                {
-                    t.ThrowIfFaulted();
-                    token.ThrowIfCancellationRequested();
-                    IngestManifestFileData ingestManifestFile = (IngestManifestFileData)t.Result.AsyncState;                   
-                    return ingestManifestFile;
-                });
+                MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+                Task<IIngestManifestFile> task = retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(data))
+                    .ContinueWith<IIngestManifestFile>(t =>
+                    {
+                        t.ThrowIfFaulted();
+                        token.ThrowIfCancellationRequested();
+                        IngestManifestFileData ingestManifestFile = (IngestManifestFileData)t.Result.AsyncState;                   
+                        return ingestManifestFile;
+                    });
 
                 return task.Result;
 
@@ -198,7 +202,5 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
             set { throw new NotSupportedException(); }
         }
-
-
     }
 }

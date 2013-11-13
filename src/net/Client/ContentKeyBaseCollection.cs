@@ -20,6 +20,7 @@ using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -234,12 +235,17 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="dataContext">The data context.</param>
         /// <param name="contentKeyType">Type of the content key.</param>
         /// <returns>The content key.</returns>
-        internal static string GetProtectionKeyIdForContentKey(IMediaDataServiceContext dataContext, ContentKeyType contentKeyType)
+        internal static string GetProtectionKeyIdForContentKey(MediaContextBase mediaContext, ContentKeyType contentKeyType)
         {
             // First query Nimbus to find out what certificate to encrypt the content key with.
             string uriString = string.Format(CultureInfo.InvariantCulture, "/GetProtectionKeyId?contentKeyType={0}", Convert.ToInt32(contentKeyType, CultureInfo.InvariantCulture));
             Uri uriGetProtectionKeyId = new Uri(uriString, UriKind.Relative);
-            IEnumerable<string> results = dataContext.Execute<string>(uriGetProtectionKeyId);
+
+            IMediaDataServiceContext dataContext = mediaContext.MediaServicesClassFactory.CreateDataServiceContext();
+
+            MediaRetryPolicy retryPolicy = mediaContext.MediaServicesClassFactory.GetQueryRetryPolicy();
+
+            IEnumerable<string> results = retryPolicy.ExecuteAction<IEnumerable<string>>(() => dataContext.Execute<string>(uriGetProtectionKeyId));
 
             return results.Single();
         }
@@ -247,19 +253,25 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets the certificate for protection key id.
         /// </summary>
-        /// <param name="dataContext">The data context.</param>
+        /// <param name="mediaContext">The media context.</param>
         /// <param name="protectionKeyId">The protection key id.</param>
         /// <returns>The content key.</returns>
-        internal static X509Certificate2 GetCertificateForProtectionKeyId(IMediaDataServiceContext dataContext, string protectionKeyId)
+        internal static X509Certificate2 GetCertificateForProtectionKeyId(MediaContextBase mediaContext, string protectionKeyId)
         {
             // First check to see if we have the cert in our store already.
             X509Certificate2 certToUse = EncryptionUtils.GetCertificateFromStore(protectionKeyId);
+
+            IMediaDataServiceContext dataContext = mediaContext.MediaServicesClassFactory.CreateDataServiceContext();
 
             if ((certToUse == null) && (dataContext != null))
             {
                 // If not, download it from Nimbus to use.
                 Uri uriGetProtectionKey = new Uri(string.Format(CultureInfo.InvariantCulture, "/GetProtectionKey?protectionKeyId='{0}'", protectionKeyId), UriKind.Relative);
-                IEnumerable<string> results2 = dataContext.Execute<string>(uriGetProtectionKey);
+
+                MediaRetryPolicy retryPolicy = mediaContext.MediaServicesClassFactory.GetQueryRetryPolicy();
+
+                IEnumerable<string> results2 = retryPolicy.ExecuteAction<IEnumerable<string>>(() => dataContext.Execute<string>(uriGetProtectionKey));
+
                 string certString = results2.Single();
 
                 byte[] certBytes = Convert.FromBase64String(certString);
@@ -275,14 +287,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets the certificate to encrypt content key.
         /// </summary>
-        /// <param name="dataContext">The data context.</param>
+        /// <param name="mediaContext">The media context.</param>
         /// <param name="contentKeyType">Type of the content key.</param>
         /// <returns>The content key.</returns>
-        internal static X509Certificate2 GetCertificateToEncryptContentKey(IMediaDataServiceContext dataContext, ContentKeyType contentKeyType)
+        internal static X509Certificate2 GetCertificateToEncryptContentKey(MediaContextBase mediaContext, ContentKeyType contentKeyType)
         {
-            string thumbprint = GetProtectionKeyIdForContentKey(dataContext, contentKeyType);
+            string thumbprint = GetProtectionKeyIdForContentKey(mediaContext, contentKeyType);
 
-            return GetCertificateForProtectionKeyId(dataContext, thumbprint);
+            return GetCertificateForProtectionKeyId(mediaContext, thumbprint);
         }
     }
 }

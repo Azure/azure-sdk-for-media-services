@@ -42,6 +42,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             channel.Reset();
         }
 
+        [TestMethod]
+        [Priority(1)]
+        [Ignore] // enable when environment is ready
+        public void ChannelTestCreateTrivial()
+        {
+            IChannel channel = _mediaContext.Channels.Create(Guid.NewGuid().ToString().Substring(0, 30), ChannelSize.Large, MakeChannelSettings());
+            channel.Delete();
+        }
+
         #region Retry Logic tests
 
         [TestMethod]
@@ -210,6 +219,30 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             dataContextMock.Verify((ctxt) => ctxt.Execute<ChannelMetricData>(It.IsAny<Uri>()), Times.Exactly(2));
         }
+
+        [TestMethod]
+        [Priority(0)]
+        public void TestChannelSendCreateOperation()
+        {
+            var expected = new ChannelData { Name = "testData" };
+            var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
+            var dataContextMock = TestMediaServicesClassFactory.CreateSaveChangesMock(fakeException, 2, expected);
+
+            dataContextMock.Setup((ctxt) => ctxt.AddObject("Channels", It.IsAny<object>()));
+
+            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
+
+            try
+            {
+                var actual = _mediaContext.Channels.SendCreateOperation("unittest", ChannelSize.Large, MakeChannelSettings());
+            }
+            catch (NotImplementedException x)
+            {
+                Assert.AreEqual(TestMediaDataServiceResponse.TestMediaDataServiceResponseExceptionMessage, x.Message);
+            }
+
+            dataContextMock.Verify((ctxt) => ctxt.SaveChanges(), Times.Exactly(2));
+        }
         #endregion Retry Logic tests
 
 
@@ -217,18 +250,17 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         static ChannelSettings MakeChannelSettings()
         {
+            var ipList = new List<Ipv4>
+                {
+                    new Ipv4 { Name = "testName1", IP = "1.1.1.1" },
+                };
+
             var settings = new ChannelSettings
             {
-                Ingest = new IngestEndpointSettings
-                {
-                    Security = new IngestEndpointSecuritySettings
-                    {
-                        IPv4AllowList = new List<Ipv4>
-                        {
-                            new Ipv4 { Name = "testName1", IP = "1.1.1.1" },
-                        }
-                    }
-                },
+                Ingest = new IngestEndpointSettings { Security = new IngestEndpointSecuritySettings { IPv4AllowList = ipList } },
+                Preview = new PreviewEndpointSettings { Security = new PreviewEndpointSecuritySettings { IPv4AllowList = ipList } },
+                Input = new InputSettings { FMp4FragmentDuration = null },
+                Output = new OutputSettings { FragmentsPerHlsSegment = null }
             };
 
             return settings;
