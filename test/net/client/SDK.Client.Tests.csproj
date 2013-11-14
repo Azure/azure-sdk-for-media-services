@@ -93,6 +93,7 @@
     <Compile Include="ContentKeyAuthorizationPolicyTests.cs" />
     <Compile Include="ContentKeyTests.cs" />
     <Compile Include="IngestManifestFileTests.cs" />
+    <Compile Include="MediaServicesCredentialsTest.cs" />
     <Compile Include="NotificationEndPointTests.cs" />
     <Compile Include="Live\ChannelMetricsTest.cs" />
     <Compile Include="Live\ChannelTests.cs" />

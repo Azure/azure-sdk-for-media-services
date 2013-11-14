@@ -62,8 +62,20 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Helpers
         public static CloudMediaContext CreateCloudMediaContext()
         {
             // This overload is used for testing purposes
-            // It is recommended to use public CloudMediaContext(string accountName, string accountKey) in your code to avoid code changes if default values will be changed later
-            return new CloudMediaContext(new Uri(MediaServicesUri), MediaServiceAccountName, MediaServiceAccountKey, MediaServicesAccessScope, MediaServicesAcsBaseAddress);
+            // It is recommended to use public CloudMediaContext(MediaServicesCredentials credentials) in your code to avoid code changes if default values will be changed later
+            return new CloudMediaContext(new Uri(MediaServicesUri), new MediaServicesCredentials(MediaServiceAccountName, MediaServiceAccountKey, MediaServicesAccessScope, MediaServicesAcsBaseAddress));
+        }
+
+        public static CloudMediaContext CreateCloudMediaContext(MediaServicesCredentials credentials)
+        {
+            return new CloudMediaContext(new Uri(MediaServicesUri), credentials);
+        }
+
+        public static MediaServicesCredentials CreateMediaServicesCredentials()
+        {
+            // This overload is used for testing purposes
+            // It is recommended to use public MediaServicesCredentials(string accountName, string accountKey) in your code to avoid code changes if default values will be changed later
+            return new MediaServicesCredentials(MediaServiceAccountName, MediaServiceAccountKey, MediaServicesAccessScope, MediaServicesAcsBaseAddress);
         }
 
         public static string GetVideoSampleFilePath(TestContext testContext, string filepath)
