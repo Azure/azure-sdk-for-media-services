@@ -875,7 +875,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
         }
 
-        private void JobEntityRefresh(IMediaDataServiceContext dataContext)
+        public void JobEntityRefresh(IMediaDataServiceContext dataContext)
         {
             
             InvalidateCollections();
