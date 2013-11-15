@@ -43,18 +43,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             var parent = new IngestManifestAssetData { Asset = new AssetData {} };
             var ingestManifestFiles = new IngestManifestFileCollection(_mediaContext, parent);
 
-            var tempFile = Path.GetTempFileName();
-            try
-            {
-                IIngestManifestFile actual = ingestManifestFiles.Create(tempFile);
+            var tempFile = "a:\\wherever\\whatever.mp3";
+            IIngestManifestFile actual = ingestManifestFiles.Create(tempFile);
 
-                Assert.AreEqual(expected.Name, actual.Name);
-                dataContextMock.Verify((ctxt) => ctxt.SaveChangesAsync(It.IsAny<object>()), Times.Exactly(2));
-            }
-            finally
-            {
-                File.Delete(tempFile);
-            }
+            Assert.AreEqual(expected.Name, actual.Name);
+            dataContextMock.Verify((ctxt) => ctxt.SaveChangesAsync(It.IsAny<object>()), Times.Exactly(2));
         }
 
         [TestMethod]
@@ -73,7 +66,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             var parent = new IngestManifestAssetData { Asset = new AssetData { } };
             var ingestManifestFiles = new IngestManifestFileCollection(_mediaContext, parent);
 
-            var tempFile = Path.GetTempFileName();
+            var tempFile = "a:\\wherever\\whatever.mp3";
             try
             {
                 IIngestManifestFile actual = ingestManifestFiles.Create(tempFile);
@@ -84,10 +77,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 dataContextMock.Verify((ctxt) => ctxt.SaveChangesAsync(It.IsAny<object>()), Times.AtLeast(3));
                 Assert.AreEqual(fakeException, x);
                 throw x;
-            }
-            finally
-            {
-                File.Delete(tempFile);
             }
 
             Assert.Fail("Expected exception");
@@ -111,7 +100,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             var parent = new IngestManifestAssetData { Asset = new AssetData { } };
             var ingestManifestFiles = new IngestManifestFileCollection(_mediaContext, parent);
 
-            var tempFile = Path.GetTempFileName();
+            var tempFile = "a:\\wherever\\whatever.mp3"; 
             try
             {
                 IIngestManifestFile actual = ingestManifestFiles.Create(tempFile);
@@ -125,10 +114,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 WebException x = (WebException)ax.GetBaseException();
                 Assert.AreEqual(fakeException, x);
                 throw x;
-            }
-            finally
-            {
-                File.Delete(tempFile);
             }
 
             Assert.Fail("Expected exception");
