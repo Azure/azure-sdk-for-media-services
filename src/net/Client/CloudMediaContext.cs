@@ -114,7 +114,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Initializes a new instance of the <see cref="CloudMediaContext"/> class.
         /// </summary>
-        /// <param name="apiServer">A <see cref="Uri"/> representing a the API endpoint.</param>
+        /// <param name="apiServer">A <see cref="Uri"/> representing the API endpoint.</param>
         /// <param name="credentials">Microsoft WindowsAzure Media Services credentials.</param>
         public CloudMediaContext(Uri apiServer, MediaServicesCredentials credentials)
         {
