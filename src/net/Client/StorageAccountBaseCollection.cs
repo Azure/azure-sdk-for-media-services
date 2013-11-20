@@ -25,12 +25,22 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         internal const string EntitySet = "StorageAccounts";
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="MediaProcessorBaseCollection"/> class to be used for Mocking purposes.
+        /// </summary>
+        public StorageAccountBaseCollection()
+            : base(null)
+        {
+
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="MediaProcessorBaseCollection"/> class.
         /// </summary>
         /// <param name="mediaContext">The media context.</param>
         internal StorageAccountBaseCollection(MediaContextBase mediaContext)
             : base(mediaContext)
         {
+            MediaContext = mediaContext;
             MediaServicesClassFactory factory = MediaContext.MediaServicesClassFactory;
             Queryable = factory.CreateDataServiceContext().CreateQuery<StorageAccountData>(EntitySet);
         }

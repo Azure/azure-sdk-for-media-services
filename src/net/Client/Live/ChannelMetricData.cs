@@ -69,17 +69,5 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 return ProgramMetrics.ToList<IProgramMetric>().AsReadOnly();
             }
         }
-
-        #region ICloudMediaContextInit Members
-
-        /// <summary>
-        /// Initializes the cloud media context.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        public void InitCloudMediaContext(CloudMediaContext context)
-        {
-        }
-
-        #endregion
     }
 }

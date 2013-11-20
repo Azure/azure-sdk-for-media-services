@@ -18,6 +18,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Security;
 using Microsoft.WindowsAzure.MediaServices.Client.Properties;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -27,18 +28,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     public class ProgramBaseCollection : CloudBaseCollection<IProgram>
     {
         internal const string ProgramSet = "Programs";
-        private readonly CloudMediaContext _cloudMediaContext;
         private readonly Lazy<IQueryable<IProgram>> _programQuery;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProgramBaseCollection"/> class.
         /// </summary>
-        /// <param name="cloudMediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
-        internal ProgramBaseCollection(CloudMediaContext cloudMediaContext)
+        /// <param name="cloudMediaContext">The <seealso cref="MediaContextBase"/> instance.</param>
+        internal ProgramBaseCollection(MediaContextBase cloudMediaContext)
             : base(cloudMediaContext)
         {
-            this._cloudMediaContext = cloudMediaContext;
-
             var dataContext = cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             this._programQuery = new Lazy<IQueryable<IProgram>>(() => dataContext.CreateQuery<ProgramData>(ProgramSet));
         }
@@ -48,7 +46,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <param name="cloudMediaContext">The cloud media context.</param>
         /// <param name="parentChannel">The parent <see cref="IChannel"/>.</param>
-        internal ProgramBaseCollection(CloudMediaContext cloudMediaContext, IChannel parentChannel)
+        internal ProgramBaseCollection(MediaContextBase cloudMediaContext, IChannel parentChannel)
             : this(cloudMediaContext)
         {
             _parentChannel = parentChannel;
@@ -253,17 +251,18 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 program.DvrWindowLengthSeconds = (int)dvrWindowLength.Value.TotalSeconds;
             }
 
-            program.InitCloudMediaContext(this._cloudMediaContext);
+            program.SetMediaContext(this.MediaContext);
 
-            IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AddObject(ProgramSet, program);
 
-            return dataContext
-                .SaveChangesAsync(program)
+            MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(program))
                 .ContinueWith<IProgram>(t =>
                 {
                     t.ThrowIfFaulted();
-                    return (ProgramData)t.AsyncState;
+                    return (ProgramData)t.Result.AsyncState;
                 });
         }
 

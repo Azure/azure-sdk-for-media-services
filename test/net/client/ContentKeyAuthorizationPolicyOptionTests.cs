@@ -20,26 +20,28 @@ using Microsoft.WindowsAzure.MediaServices.Client.Tests.Helpers;
 using Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization;
 using System.Collections.Generic;
 using System;
+using System.Net;
+using Moq;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 {
     [TestClass]
     public class ContentKeyAuthorizationPolicyOptionTests
     {
-        private CloudMediaContext _dataContext;
+        private CloudMediaContext _mediaContext;
         private IContentKeyAuthorizationPolicyOption _testOption;
 
         [TestInitialize]
         public void SetupTest()
         {
-            _dataContext = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
+            _mediaContext = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
 
             string optionName = "integrationtest-crud-749";
             string requirements = "somerequirements";
             string configuration = "someconfiguration";
             ContentKeyRestrictionType restrictionType = ContentKeyRestrictionType.IPRestricted;
 
-            _testOption = CreateOption(_dataContext,optionName, requirements, configuration, restrictionType);
+            _testOption = CreateOption(_mediaContext,optionName, requirements, configuration, restrictionType);
         }
 
         /*[TestCleanup] enable when rest layer bug is fixed
@@ -69,22 +71,140 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [Ignore] //enable when rest layer bug is fixed
         public void ContentKeyAuthorizationPolicyOptionTestEnumQuery()
         {
-            var policyOptions = _dataContext.ContentKeyAuthorizationPolicyOptions;
+            var policyOptions = _mediaContext.ContentKeyAuthorizationPolicyOptions;
 
             string optionName = "integrationtest-crud-746";
             string requirements = "somerequirements";
             string configuration = "someconfiguration";
             ContentKeyRestrictionType restrictionType = ContentKeyRestrictionType.IPRestricted;
 
-            IContentKeyAuthorizationPolicyOption option = CreateOption(_dataContext,optionName, requirements, configuration, restrictionType);
+            IContentKeyAuthorizationPolicyOption option = CreateOption(_mediaContext,optionName, requirements, configuration, restrictionType);
 
             var ok = policyOptions.Where(o => o.KeyDeliveryType == ContentKeyDeliveryType.PlayReadyLicense).AsEnumerable().Any();
 
             Assert.IsTrue(ok, "Can not find option by DeliveryType");
         }
+
+        #region Retry Logic tests
+
+        [TestMethod]
+        [Priority(0)]
+        public void TestContentKeyAuthorizationPolicyOptionCreateRetry()
+        {
+            var expected = new ContentKeyAuthorizationPolicyOptionData { Name = "testData" };
+            var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
+            var dataContextMock = TestMediaServicesClassFactory.CreateSaveChangesMock(fakeException, 2, expected);
+
+            dataContextMock.Setup((ctxt) => ctxt.AddObject("ContentKeyAuthorizationPolicyOptions", It.IsAny<object>()));
+
+            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
+
+            IContentKeyAuthorizationPolicyOption actual = _mediaContext.ContentKeyAuthorizationPolicyOptions.Create("Empty", ContentKeyDeliveryType.None, null, null);
+
+            Assert.AreEqual(expected.Name, actual.Name);
+            dataContextMock.Verify((ctxt) => ctxt.SaveChangesAsync(It.IsAny<object>()), Times.Exactly(2));
+        }
+
+        [TestMethod]
+        [Priority(0)]
+        [ExpectedException(typeof(WebException))]
+        public void TestContentKeyAuthorizationPolicyOptionCreateFailedRetry()
+        {
+            var expected = new ContentKeyAuthorizationPolicyOptionData { Name = "testData" };
+            var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
+            var dataContextMock = TestMediaServicesClassFactory.CreateSaveChangesMock(fakeException, 10, expected);
+
+            dataContextMock.Setup((ctxt) => ctxt.AddObject("ContentKeyAuthorizationPolicyOptions", It.IsAny<object>()));
+
+            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
+
+            try
+            {
+                IContentKeyAuthorizationPolicyOption actual = _mediaContext.ContentKeyAuthorizationPolicyOptions.Create("Empty", ContentKeyDeliveryType.None, null, null);
+            }
+            catch (WebException x)
+            {
+                dataContextMock.Verify((ctxt) => ctxt.SaveChangesAsync(It.IsAny<object>()), Times.AtLeast(3));
+                Assert.AreEqual(fakeException, x);
+                throw;
+            }
+
+            Assert.Fail("Expected exception");
+        }
+
+        [TestMethod]
+        [Priority(0)]
+        [ExpectedException(typeof(WebException))]
+        public void TestContentKeyAuthorizationPolicyOptionCreateFailedRetryMessageLengthLimitExceeded()
+        {
+            var expected = new ContentKeyAuthorizationPolicyOptionData { Name = "testData" };
+
+            var fakeException = new WebException("test", WebExceptionStatus.MessageLengthLimitExceeded);
+
+            var dataContextMock = TestMediaServicesClassFactory.CreateSaveChangesMock(fakeException, 10, expected);
+
+            dataContextMock.Setup((ctxt) => ctxt.AddObject("ContentKeyAuthorizationPolicyOptions", It.IsAny<object>()));
+
+            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
+
+            try
+            {
+                IContentKeyAuthorizationPolicyOption actual = _mediaContext.ContentKeyAuthorizationPolicyOptions.Create("Empty", ContentKeyDeliveryType.None, null, null);
+            }
+            catch (WebException x)
+            {
+                dataContextMock.Verify((ctxt) => ctxt.SaveChangesAsync(It.IsAny<object>()), Times.Exactly(1));
+                Assert.AreEqual(fakeException, x);
+                throw;
+            }
+
+            Assert.Fail("Expected exception");
+        }
+
+        [TestMethod]
+        [Priority(0)]
+        public void TestContentKeyAuthorizationPolicyOptionUpdateRetry()
+        {
+            var data = new ContentKeyAuthorizationPolicyOptionData { Name = "testData" };
+            var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
+            var dataContextMock = TestMediaServicesClassFactory.CreateSaveChangesMock(fakeException, 2, data);
+
+            dataContextMock.Setup((ctxt) => ctxt.AttachTo("ContentKeyAuthorizationPolicyOptions", data));
+            dataContextMock.Setup((ctxt) => ctxt.UpdateObject(data));
+
+            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
+
+            data.SetMediaContext(_mediaContext);
+
+            data.Update();
+
+            dataContextMock.Verify((ctxt) => ctxt.SaveChangesAsync(data), Times.Exactly(2));
+        }
+
+        [TestMethod]
+        [Priority(0)]
+        public void TestContentKeyAuthorizationPolicyOptionDeleteRetry()
+        {
+            var data = new ContentKeyAuthorizationPolicyOptionData { Name = "testData" };
+
+            var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
+
+            var dataContextMock = TestMediaServicesClassFactory.CreateSaveChangesMock(fakeException, 2, data);
+
+            dataContextMock.Setup((ctxt) => ctxt.AttachTo("ContentKeyAuthorizationPolicyOptions", data));
+            dataContextMock.Setup((ctxt) => ctxt.DeleteObject(data));
+
+            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
+
+            data.SetMediaContext(_mediaContext);
+
+            data.Delete();
+
+            dataContextMock.Verify((ctxt) => ctxt.SaveChangesAsync(data), Times.Exactly(2));
+        }
+        #endregion Retry Logic tests
 
         public static IContentKeyAuthorizationPolicyOption CreateOption(CloudMediaContext dataContext,string optionName, string requirements, string configuration, ContentKeyRestrictionType restrictionType)
         {
@@ -105,14 +225,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         private IContentKeyAuthorizationPolicyOption GetOption(string id)
         {
-            return _dataContext.ContentKeyAuthorizationPolicyOptions.Where(o => o.Id == id).AsEnumerable().SingleOrDefault();
+            return _mediaContext.ContentKeyAuthorizationPolicyOptions.Where(o => o.Id == id).AsEnumerable().SingleOrDefault();
         }
 
         private IContentKey CreateTestKey()
         {
             byte[] key = new byte[16];
             new Random().NextBytes(key);
-            var contentKey = _dataContext.ContentKeys.Create(Guid.NewGuid(), key, "unit-testkey-340");
+            var contentKey = _mediaContext.ContentKeys.Create(Guid.NewGuid(), key, "unit-testkey-340");
 
             return contentKey;
         }

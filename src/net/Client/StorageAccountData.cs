@@ -36,5 +36,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <c>true</c> if this instance is default; otherwise, <c>false</c>.
         /// </value>
         public bool IsDefault { get; set; }
+
+        /// <summary>
+        /// If Storage Account Metrics are enabled on the storage account, this returns the number of bytes used in the storage account by blob data.
+        /// If Storage Account Metrics are not enabled or no data is available, then null is returned.
+        /// </summary>
+        public long? BytesUsed { get; set; }
     }
 }

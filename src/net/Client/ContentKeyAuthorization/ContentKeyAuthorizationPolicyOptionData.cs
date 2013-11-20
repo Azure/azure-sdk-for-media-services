@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Data.Services.Client;
 using System.Data.Services.Common;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
 {
@@ -89,7 +90,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
             dataContext.AttachTo(ContentKeyAuthorizationPolicyOptionCollection.ContentKeyAuthorizationPolicyOptionSet, this);
             dataContext.UpdateObject(this);
 
-            return dataContext.SaveChangesAsync(this).ContinueWith<IContentKeyAuthorizationPolicyOption>(
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(this))
+                .ContinueWith<IContentKeyAuthorizationPolicyOption>(
                     t =>
                     {
                         t.ThrowIfFaulted();
@@ -123,7 +127,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
             dataContext.AttachTo(ContentKeyAuthorizationPolicyOptionCollection.ContentKeyAuthorizationPolicyOptionSet, this);
             dataContext.DeleteObject(this);
 
-            return dataContext.SaveChangesAsync(this);
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(this));
         }
 
         /// <summary>

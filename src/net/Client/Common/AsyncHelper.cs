@@ -17,6 +17,8 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.MediaServices.Client.Properties;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
+using System.Collections.Generic;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -67,7 +69,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="operationId">Id of the operation.</param>
         /// <param name="pollInterval">Poll interval.</param>
         /// <returns>Operation.</returns>
-        public static IOperation WaitOperationCompletion(CloudMediaContext context, string operationId, TimeSpan pollInterval)
+        public static IOperation WaitOperationCompletion(MediaContextBase context, string operationId, TimeSpan pollInterval)
         {
             IOperation operation;
 
@@ -77,7 +79,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
                 IMediaDataServiceContext dataContext = context.MediaServicesClassFactory.CreateDataServiceContext();
                 Uri uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Operations('{0}')", operationId), UriKind.Relative);
-                operation = dataContext.Execute<OperationData>(uri).SingleOrDefault();
+
+                MediaRetryPolicy retryPolicy = context.MediaServicesClassFactory.GetQueryRetryPolicy();
+
+                operation = retryPolicy.ExecuteAction<IEnumerable<OperationData>>(() => dataContext.Execute<OperationData>(uri)).SingleOrDefault();
 
                 if (operation == null)
                 {
