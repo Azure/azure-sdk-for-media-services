@@ -20,6 +20,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.MediaServices.Client.Properties;
 using Microsoft.WindowsAzure.MediaServices.Client.Rest;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
+using System.Collections.Generic;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -81,18 +83,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
         }
 
-        #region ICloudMediaContextInit Members
-        /// <summary>
-        /// Initializes the cloud media context.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        public void InitCloudMediaContext(CloudMediaContext context)
-        {
-            _cloudMediaContext = context;
-        }
-
-        #endregion
-
         /// <summary>
         /// Gets state of the origin.
         /// </summary>
@@ -105,17 +95,17 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
         /// <summary>
-        /// Adds or removes origin metrics recevied event handler
+        /// Adds or removes origin metrics received event handler
         /// </summary>
         event EventHandler<MetricsEventArgs<IOriginMetric>> IOrigin.MetricsReceived
         {
             add 
             {
-                _cloudMediaContext.OriginMetrics.Monitor.Subscribe(Id, value);
+                GetMediaContext().OriginMetrics.Monitor.Subscribe(Id, value);
             }
             remove
             {
-                _cloudMediaContext.OriginMetrics.Monitor.Unsubscribe(Id, value);
+                GetMediaContext().OriginMetrics.Monitor.Unsubscribe(Id, value);
             }
         }
 
@@ -269,18 +259,21 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new InvalidOperationException(Resources.ErrorEntityWithoutId);
             }
 
-            IMediaDataServiceContext dataContext = _cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(EntitySetName, this);
             dataContext.DeleteObject(this);
 
-            return dataContext.SaveChangesAsync(this).ContinueWith(t =>
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(this))
+                .ContinueWith(t =>
             {
                 t.ThrowIfFaulted();
 
                 var operationId = t.Result.Single().Headers[StreamingConstants.OperationIdHeader];
 
                 var operation = AsyncHelper.WaitOperationCompletion(
-                    _cloudMediaContext,
+                    GetMediaContext(),
                     operationId,
                     StreamingConstants.DeleteOriginPollInterval);
 
@@ -312,11 +305,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new InvalidOperationException(Resources.ErrorEntityWithoutId);
             }
 
-            var dataContext = _cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
+            var dataContext = GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(EntitySetName, this);
             dataContext.DeleteObject(this);
 
-            var response = dataContext.SaveChanges();
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            var response = retryPolicy.ExecuteAction<IMediaDataServiceResponse>(() => dataContext.SaveChanges());
 
             var operationId = response.Single().Headers[StreamingConstants.OperationIdHeader];
 
@@ -356,8 +351,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     ),
                 UriKind.Relative);
 
-            var dataContext = _cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
-            var metric = dataContext.Execute<OriginMetricData>(uri).SingleOrDefault();
+            var dataContext = GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
+
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetQueryRetryPolicy();
+
+            var metric = retryPolicy.ExecuteAction<IEnumerable<OriginMetricData>>(() => dataContext.Execute<OriginMetricData>(uri)).SingleOrDefault();
 
             return metric;
         }

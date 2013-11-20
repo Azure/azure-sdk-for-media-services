@@ -16,12 +16,15 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data.Services.Client;
 using System.Net;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Helpers
 {
-    class TestMediaDataServiceResponse : IMediaDataServiceResponse
+    public class TestMediaDataServiceResponse : IMediaDataServiceResponse
     {
+        public const string TestMediaDataServiceResponseExceptionMessage = "TestMediaDataServiceResponseExceptionMessage";
+
         #region IMediaDataServiceResponse Members
 
         public IDictionary<string, string> BatchHeaders
@@ -45,9 +48,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Helpers
 
         #region IEnumerable<OperationResponse> Members
 
-        public IEnumerator<System.Data.Services.Client.OperationResponse> GetEnumerator()
+        public IEnumerator<OperationResponse> GetEnumerator()
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException(TestMediaDataServiceResponseExceptionMessage);
         }
 
         #endregion

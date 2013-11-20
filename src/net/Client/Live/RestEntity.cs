@@ -19,6 +19,8 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.MediaServices.Client.Properties;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
+using System.Collections.Generic;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -44,11 +46,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new InvalidOperationException(Resources.ErrorEntityWithoutId);
             }
 
-            IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(EntitySetName, this);
             dataContext.DeleteObject(this);
 
-            return dataContext.SaveChangesAsync(this);
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(this));
         }
 
         /// <summary>
@@ -57,10 +61,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>Operation info that can be used to track the operation.</returns>
         public IOperation SendUpdateOperation()
         {
-            IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(this.EntitySetName, this);
             dataContext.UpdateObject(this);
-            var response = dataContext.SaveChanges().Single();
+            
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            var response = retryPolicy.ExecuteAction<IMediaDataServiceResponse>(() => dataContext.SaveChanges()).Single();
 
             if (response.StatusCode == (int)HttpStatusCode.NotFound)
             {
@@ -128,7 +135,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     while (operation.State == OperationState.InProgress)
                     {
                         operation = AsyncHelper.WaitOperationCompletion(
-                            this._cloudMediaContext,
+                            this.GetMediaContext(),
                             operation.Id,
                             StreamingConstants.CreateChannelPollInterval);
                     }
@@ -154,11 +161,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             return System.Threading.Tasks.Task.Factory.StartNew(() =>
             {
-                if (this._cloudMediaContext != null)
+                if (this.GetMediaContext() != null)
                 {
-                    IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
+                    IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
 
-                    var response = dataContext.Execute(uri, "POST", operationParameters);
+                    MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+                    var response = retryPolicy.ExecuteAction(() => dataContext.Execute(uri, "POST", operationParameters));
 
                     if (response.StatusCode == (int)HttpStatusCode.NotFound)
                     {
@@ -178,7 +187,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     string operationId = response.Headers[StreamingConstants.OperationIdHeader];
 
                     var operation = AsyncHelper.WaitOperationCompletion(
-                        this._cloudMediaContext,
+                        this.GetMediaContext(),
                         operationId,
                         pollInterval);
 
@@ -203,9 +212,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
         protected IOperation SendOperation(Uri uri, params OperationParameter[] operationParameters)
         {
-            IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
 
-            var response = dataContext.Execute(uri, "POST", operationParameters);
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            var response = retryPolicy.ExecuteAction(() => dataContext.Execute(uri, "POST", operationParameters));
 
             if (response.StatusCode == (int)HttpStatusCode.NotFound)
             {
@@ -242,13 +253,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         internal void Refresh()
         {
             Uri uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/{0}('{1}')", EntitySetName, Id), UriKind.Relative);
-            IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(EntitySetName, this, Guid.NewGuid().ToString());
-            dataContext.Execute<T>(uri).Single();
+
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetQueryRetryPolicy();
+
+            retryPolicy.ExecuteAction<IEnumerable<T>>(() => dataContext.Execute<T>(uri)).Single();
         }
 
         protected abstract string EntitySetName { get; }
-
-        protected CloudMediaContext _cloudMediaContext;
     }
 }

@@ -2,6 +2,8 @@
 using System.Data.Services.Client;
 using System.Globalization;
 using System.Linq;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
+using System.Collections.Generic;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -32,7 +34,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             Uri uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/{0}('{1}')", OperationSet, id), UriKind.Relative);
             IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
-            IOperation operation = dataContext.Execute<OperationData>(uri).SingleOrDefault();
+
+            MediaRetryPolicy retryPolicy = _cloudMediaContext.MediaServicesClassFactory.GetQueryRetryPolicy();
+
+            IOperation operation = retryPolicy.ExecuteAction<IEnumerable<OperationData>>(() => dataContext.Execute<OperationData>(uri)).SingleOrDefault();
             return operation;
         }
     }

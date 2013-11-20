@@ -18,6 +18,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.MediaServices.Client.Properties;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -27,7 +28,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     public class OriginBaseCollection : CloudBaseCollection<IOrigin>
     {
         internal const string OriginSet = "Origins";
-        private readonly CloudMediaContext _cloudMediaContext;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OriginBaseCollection"/> class.
@@ -36,9 +36,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         internal OriginBaseCollection(CloudMediaContext cloudMediaContext)
             : base(cloudMediaContext)
         {
-            this._cloudMediaContext = cloudMediaContext;
-
-            this.Queryable = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<OriginData>(OriginSet);
+            this.Queryable = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<OriginData>(OriginSet);
         }
 
         /// <summary>
@@ -188,13 +186,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             ((IOrigin)origin).Settings = settings;
 
-            origin.InitCloudMediaContext(this._cloudMediaContext);
+            origin.SetMediaContext(this.MediaContext);
 
-            IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AddObject(OriginSet, origin);
 
-            return dataContext
-                .SaveChangesAsync(origin)
+            MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(origin))
                 .ContinueWith<IOrigin>(t =>
                 {
                     t.ThrowIfFaulted();
@@ -202,7 +201,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     string operationId = t.Result.Single().Headers[StreamingConstants.OperationIdHeader];
 
                     IOperation operation = AsyncHelper.WaitOperationCompletion(
-                        this._cloudMediaContext,
+                        this.MediaContext,
                         operationId,
                         StreamingConstants.CreateOriginPollInterval);
 
@@ -212,7 +211,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     switch (operation.State)
                     {
                         case OperationState.Succeeded:
-                            OriginData result = (OriginData)t.AsyncState;
+                            OriginData result = (OriginData)t.Result.AsyncState;
                             result.Refresh();
                             return result;
                         case OperationState.Failed:
@@ -298,9 +297,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             ((IOrigin)origin).Settings = settings;
 
-            origin.InitCloudMediaContext(this._cloudMediaContext);
+            origin.SetMediaContext(this.MediaContext);
 
-            IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AddObject(OriginSet, origin);
             var response = dataContext.SaveChanges();
 
