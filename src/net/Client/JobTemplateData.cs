@@ -139,7 +139,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
                         JobTemplateData data = (JobTemplateData)t.Result.AsyncState;
 
-                        dataContext.CreateQuery<JobTemplateData>(JobTemplateBaseCollection.JobTemplateSet).Where(jt => jt.Id == data.Id).First();
                         dataContext.LoadProperty(data, TaskTemplatesPropertyName);
                     });
         }

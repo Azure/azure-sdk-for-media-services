@@ -206,7 +206,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                         t.ThrowIfFaulted();
 
                         JobData data = (JobData)t.AsyncState;
-                        data.JobEntityRefresh(dataContext);
+                        data.JobEntityRefresh();
                     });
         }
 
@@ -329,7 +329,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     {
                         t.ThrowIfFaulted();
                         JobData data = (JobData)t.Result.AsyncState;
-                        data.JobEntityRefresh(dataContext);
+                        data.JobEntityRefresh();
                     });
         }
 
@@ -375,7 +375,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                             cancellationToken.ThrowIfCancellationRequested();
 
                             JobState previousState = GetExposedState(data.State);
-                            data.JobEntityRefresh(dataContext);
+                            data.JobEntityRefresh();
 
                             if (previousState != GetExposedState(data.State))
                             {
@@ -875,12 +875,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
         }
 
-        private void JobEntityRefresh(IMediaDataServiceContext dataContext)
-        {
-            
+        private void JobEntityRefresh()
+        {            
             InvalidateCollections();
 
-            var refreshed = dataContext.CreateQuery<JobData>(JobBaseCollection.JobSet).Where(c => c.Id == this.Id).FirstOrDefault();
+            var refreshed = (JobData)GetMediaContext().Jobs.Where(c => c.Id == this.Id).FirstOrDefault();
             
             //it is possible that job has been cancelled and deleted while we are refreshing
             if (refreshed != null)
