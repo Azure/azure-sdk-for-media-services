@@ -14,7 +14,6 @@
 // limitations under the License.
 // </license>
 
-
 using System;
 using System.IO;
 using System.Linq;
@@ -45,7 +44,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("PullRequestValidation")]
+        [TestCategory("DailyBvtRun")]
         public void ShouldNotThrowWhenSavingFileInfoIfTheAssetIsInPublishedState()
         {
             IAsset asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
@@ -62,7 +61,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestMethod]
         [ExpectedException(typeof (ArgumentException))]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("PullRequestValidation")]
+        [TestCategory("DailyBvtRun")]
         public void ShouldThrowArgumentExceptionWhenUploadSyncFileNameNotEqualToAssetFileName()
         {
             IAsset asset = _mediaContext.Assets.Create("test", AssetCreationOptions.None);
@@ -84,7 +83,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestMethod]
         [ExpectedException(typeof (ArgumentException))]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("PullRequestValidation")]
+        [TestCategory("DailyBvtRun")]
         public void ShouldThrowArgumentExceptionWhenUploadAsyncFileNameNotEqualToAssetFileName()
         {
             IAsset asset = _mediaContext.Assets.Create("test", AssetCreationOptions.None);
@@ -113,7 +112,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestMethod]
         [Priority(0)]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("PullRequestValidation")]
+        [TestCategory("DailyBvtRun")]
         public void When_Uploading_Multiple_Files_The_Progress_Event_Should_Only_Be_For_The_Bound_AssetFile()
         {
             IAsset asset = _mediaContext.Assets.Create("test", AssetCreationOptions.None);
@@ -160,7 +159,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("PullRequestValidation")]
+        [TestCategory("DailyBvtRun")]
         public void ShouldDownloadToFileFromAsset()
         {
             string fileUploaded = _smallWmv;
@@ -209,7 +208,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("PullRequestValidation")]
+        [TestCategory("DailyBvtRun")]
         public void ShouldDownloadToFileFromCommonEncryptionProtectedAsset()
         {
             string fileUploaded = _smallWmv;
@@ -258,7 +257,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("PullRequestValidation")]
+        [TestCategory("DailyBvtRun")]
         public void ShouldDownloadToFileFromStorageEncryptedAsset()
         {
             string fileUploaded = _smallWmv;
@@ -308,7 +307,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestMethod]
         [Timeout(60000)]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("PullRequestValidation")]
+        [TestCategory("DailyBvtRun")]
         public void ShouldCancelDownloadToFileAsyncTaskAfter50Milliseconds()
         {
             string fileUploaded = _smallWmv;
