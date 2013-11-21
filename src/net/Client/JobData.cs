@@ -894,7 +894,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 this.State = refreshed.State;
                 this.TemplateId = refreshed.TemplateId;
                 this.JobNotificationSubscriptions = refreshed.JobNotificationSubscriptions;
-                this.Tasks = refreshed.Tasks;
             }
         }
 

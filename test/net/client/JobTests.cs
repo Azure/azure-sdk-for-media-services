@@ -205,7 +205,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             IJob job = CreateAndSubmitOneTaskJob(_mediaContext, GenerateName("ShouldFinishJobWithErrorWithInvalidPreset"), processor, "Some wrong Preset", asset, TaskOptions.None);
             Action<string> verify = id =>
             {
-                IJob job2 = _mediaContext.Jobs.Where(c => c.Id == id).FirstOrDefault();
+                IJob job2 = _mediaContext.Jobs.Where(c => c.Id == id).SingleOrDefault();
                 Assert.IsNotNull(job2);
                 Assert.IsNotNull(job2.Tasks);
                 Assert.AreEqual(1, job2.Tasks.Count);
@@ -747,25 +747,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 .Returns(() => Task.Factory.StartNew<IMediaDataServiceResponse>(() =>
                 {
                     if (--exceptionCount > 0) throw fakeException;
+                    job.Id = _mediaContext.Jobs.First().Id;
                     return fakeResponse;
                 }));
-
-            // Cannot mock DataServiceQuery. Throw artificial exception to mark pass through saving changes.
-            string artificialExceptionMessage = "artificialException";
-            dataContextMock.Setup((ctxt) => ctxt.CreateQuery<JobData>("Jobs")).Throws(new Exception(artificialExceptionMessage));
 
             _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
 
             job.SetMediaContext(_mediaContext);
 
-            try
-            {
-                job.Submit();
-            }
-            catch (Exception x)
-            {
-                Assert.AreEqual(artificialExceptionMessage, x.Message);
-            }
+            job.Submit();
 
             Assert.AreEqual(0, exceptionCount);
         }
