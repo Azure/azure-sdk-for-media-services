@@ -42,13 +42,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.OAuth
                                                                 // so setting the buffer as 2 minutes is safe for 
                                                                 // the network latency and clock skew.
 
-        private readonly string _acsBaseAddress;
+        private readonly string[] _acsBaseAddressArray;
         private readonly string _trustedRestCertificateHash;
         private readonly string _trustedRestSubject;
         private readonly string _clientSecret;
         private readonly string _clientId;
         private readonly string _scope;
 
+        private Random _random;
         private DateTime _tokenExpiration;
 
         /// <summary>
@@ -61,11 +62,25 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.OAuth
         /// <param name="trustedRestCertificateHash">The trusted rest certificate hash.</param>
         /// <param name="trustedRestSubject">The trusted rest subject.</param>
         public OAuthDataServiceAdapter(string clientId, string clientSecret, string scope, string acsBaseAddress, string trustedRestCertificateHash, string trustedRestSubject)
+            : this (clientId, clientSecret, scope, new string[] { acsBaseAddress }, trustedRestCertificateHash, trustedRestSubject)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OAuthDataServiceAdapter"/> class.
+        /// </summary>
+        /// <param name="clientId">The client id.</param>
+        /// <param name="clientSecret">The client secret.</param>
+        /// <param name="scope">The scope.</param>
+        /// <param name="acsBaseAddressArray">The array of acs base addresses to try.</param>
+        /// <param name="trustedRestCertificateHash">The trusted rest certificate hash.</param>
+        /// <param name="trustedRestSubject">The trusted rest subject.</param>
+        public OAuthDataServiceAdapter(string clientId, string clientSecret, string scope, string[] acsBaseAddressArray, string trustedRestCertificateHash, string trustedRestSubject)
         {
             this._clientId = clientId;
             this._clientSecret = clientSecret;
             this._scope = scope;
-            this._acsBaseAddress = acsBaseAddress;
+            this._acsBaseAddressArray = acsBaseAddressArray;
             this._trustedRestCertificateHash = trustedRestCertificateHash;
             this._trustedRestSubject = trustedRestSubject;
 
@@ -133,12 +148,29 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.OAuth
             return error == SslPolicyErrors.None;
         }
 
+        private string GetAcsBaseAddress()
+        {
+            if (_acsBaseAddressArray.Length > 1)
+            {
+                if (_random == null)
+                {
+                    _random = new Random();
+                }
+
+                int acsBaseAddressIndex = _random.Next(0, _acsBaseAddressArray.Length);
+
+                return _acsBaseAddressArray[acsBaseAddressIndex];
+            }
+            else
+            {
+                return _acsBaseAddressArray[0];
+            }
+        }
+
         private void GetToken()
         {
             using (WebClient client = new WebClient())
             {
-                client.BaseAddress = this._acsBaseAddress;
-
                 var oauthRequestValues = new NameValueCollection
                 {
                     {"grant_type", GrantType},
@@ -154,6 +186,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.OAuth
                 retryPolicy.ExecuteAction(
                     () =>
                         {
+                            client.BaseAddress = GetAcsBaseAddress();
+
                             byte[] responseBytes = client.UploadValues("/v2/OAuth2-13", "POST", oauthRequestValues);
 
                             using (var responseStream = new MemoryStream(responseBytes))

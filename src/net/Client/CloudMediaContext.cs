@@ -38,7 +38,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
         private const string MediaServicesAccessScope = "urn:WindowsAzureMediaServices";
         private static readonly Uri _mediaServicesUri = new Uri("https://media.windows.net/");
-        private static readonly Uri _mediaServicesAcsBaseAddress = new Uri("https://wamsprodglobal001acs.accesscontrol.windows.net");
+        private static readonly string[] _mediaServicesAcsBaseAddressArray = new string[]
+            {
+                "https://wamsprodglobal001acs.accesscontrol.windows.net",
+                "https://wamsprodglobal002acs.accesscontrol.windows.net"   
+            };
 
         private readonly AssetCollection _assets;
         private readonly AssetFileCollection _files;
@@ -60,7 +64,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="accountName">The Microsoft WindowsAzure Media Services account name to authenticate with.</param>
         /// <param name="accountKey">The Microsoft WindowsAzure Media Services account key to authenticate with.</param>
         public CloudMediaContext(string accountName, string accountKey)
-            : this(CloudMediaContext._mediaServicesUri, accountName, accountKey, CloudMediaContext.MediaServicesAccessScope, CloudMediaContext._mediaServicesAcsBaseAddress.AbsoluteUri)
+            : this(CloudMediaContext._mediaServicesUri, accountName, accountKey, CloudMediaContext.MediaServicesAccessScope, CloudMediaContext._mediaServicesAcsBaseAddressArray)
         {
         }
 
@@ -71,7 +75,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="accountName">The Microsoft WindowsAzure Media Services account name to authenticate with.</param>
         /// <param name="accountKey">The Microsoft WindowsAzure Media Services account key to authenticate with.</param>
         public CloudMediaContext(Uri apiServer, string accountName, string accountKey)
-            : this(apiServer, accountName, accountKey, scope: CloudMediaContext.MediaServicesAccessScope, acsBaseAddress: CloudMediaContext._mediaServicesAcsBaseAddress.AbsoluteUri)
+            : this(apiServer, accountName, accountKey, scope: CloudMediaContext.MediaServicesAccessScope, acsBaseAddressArray: CloudMediaContext._mediaServicesAcsBaseAddressArray)
         {
         }
 
@@ -84,12 +88,25 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="scope">The scope of authorization.</param>
         /// <param name="acsBaseAddress">The access control endpoint to authenticate against.</param>
         public CloudMediaContext(Uri apiServer, string accountName, string accountKey, string scope, string acsBaseAddress)
+            : this(apiServer, accountName, accountKey, scope, new string[] { acsBaseAddress })
+        {         
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CloudMediaContext"/> class.
+        /// </summary>
+        /// <param name="apiServer">A <see cref="Uri"/> representing a the API endpoint.</param>
+        /// <param name="accountName">The Microsoft WindowsAzure Media Services account name to authenticate with.</param>
+        /// <param name="accountKey">The Microsoft WindowsAzure Media Services account key to authenticate with.</param>
+        /// <param name="scope">The scope of authorization.</param>
+        /// <param name="acsBaseAddressArray">The list of access control endpoints to try to authenticate against.</param>
+        public CloudMediaContext(Uri apiServer, string accountName, string accountKey, string scope, string[] acsBaseAddressArray)
         {
             this.ParallelTransferThreadCount = 10;
             this.NumberOfConcurrentTransfers = 2;
 
             OAuthDataServiceAdapter dataServiceAdapter =
-                new OAuthDataServiceAdapter(accountName, accountKey, scope, acsBaseAddress, NimbusRestApiCertificateThumbprint, NimbusRestApiCertificateSubject);
+                new OAuthDataServiceAdapter(accountName, accountKey, scope, acsBaseAddressArray, NimbusRestApiCertificateThumbprint, NimbusRestApiCertificateSubject);
             ServiceVersionAdapter versionAdapter = new ServiceVersionAdapter(KnownApiVersions.Current);
 
             this.MediaServicesClassFactory = new AzureMediaServicesClassFactory(apiServer, dataServiceAdapter, versionAdapter, this);
