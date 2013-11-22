@@ -429,6 +429,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             return this.CreateJobTemplate(templateName, JobTemplateType.AccountLevel, taskTemplates.ToArray());
         }
 
+        public void Refresh()
+        {
+            JobEntityRefresh(this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext());
+        }
+
         /// <summary>
         /// Saves this instance as a job template.
         /// </summary>
@@ -877,7 +882,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
         }
 
-        private void JobEntityRefresh(IMediaDataServiceContext dataContext)
+        public void JobEntityRefresh(IMediaDataServiceContext dataContext)
         {
             
             InvalidateCollections();

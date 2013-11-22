@@ -120,5 +120,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="templateName">The job template name.</param>
         /// <returns>A function delegate that returns the future result to be available through the Task&lt;IJobTemplate&gt;.</returns>
         Task<IJobTemplate> SaveAsTemplateAsync(string templateName);
+        
+        /// <summary>
+        ///Force entity and underlying properties to be refreshed  
+        /// </summary>
+        void Refresh();
     }
 }
