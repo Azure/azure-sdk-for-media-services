@@ -81,7 +81,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="accountKey">The Microsoft WindowsAzure Media Services account key to authenticate with.</param>
         /// <param name="scope">The scope of authorization.</param>
         /// <param name="acsBaseAddress">The access control endpoint to authenticate against.</param>
-        [Obsolete]
         public CloudMediaContext(Uri apiServer, string accountName, string accountKey, string scope, string acsBaseAddress)
             : this(apiServer, new MediaServicesCredentials(accountName, accountKey, scope, acsBaseAddress))
         {
@@ -99,7 +98,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Initializes a new instance of the <see cref="CloudMediaContext"/> class.
         /// </summary>
-        /// <param name="apiServer">A <see cref="Uri"/> representing a the API endpoint.</param>
+        /// <param name="apiServer">A <see cref="Uri"/> representing the API endpoint.</param>
         /// <param name="credentials">Microsoft WindowsAzure Media Services credentials.</param>
         public CloudMediaContext(Uri apiServer, MediaServicesCredentials credentials)
         {
