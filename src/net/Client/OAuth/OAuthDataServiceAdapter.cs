@@ -39,7 +39,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.OAuth
         private const string BearerTokenFormat = "Bearer {0}";
 
         private readonly MediaServicesCredentials _credentials;
-        private readonly object _acsRefreshLock = new object();
+        private readonly static object _acsRefreshLock = new object();
         private readonly string _trustedRestCertificateHash;
         private readonly string _trustedRestSubject;
 
@@ -82,7 +82,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.OAuth
 
             if (request.Headers[AuthorizationHeader] == null)
             {
-                lock (this._acsRefreshLock)
+                lock (_acsRefreshLock)
                 {
                     if (DateTime.UtcNow > this._credentials.TokenExpiration)
                     {
