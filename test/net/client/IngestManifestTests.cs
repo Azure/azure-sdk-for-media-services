@@ -613,6 +613,46 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             CreateManifestWithAssetsAndVerifyIt(_mediaContext);
         }
 
+        [TestMethod]
+        [DeploymentItem(TestFile1, DeploymentFolder1)]
+        [DeploymentItem(TestFile2, DeploymentFolder1)]
+        [ExpectedException(typeof(IOException))]
+        public void EncryptManifestTestDisableOverwriteExistingFile()
+        {
+
+            CloudMediaContext context = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
+            var sourcePath = DeploymentFolder1;
+            Assert.IsTrue(Directory.Exists(sourcePath));
+            List<string> files = Directory.EnumerateFiles(sourcePath, "*.txt").ToList();
+            const string manifestName = "Manifest 1";
+            IIngestManifest ingestManifestCreated = context.IngestManifests.Create(manifestName);
+
+            //Adding manifest asset info with multiple file
+            IAsset emptyAsset = context.Assets.Create(Guid.NewGuid().ToString(), AssetCreationOptions.StorageEncrypted);
+
+            IIngestManifestAsset ingestManifestAsset = ingestManifestCreated.IngestManifestAssets.Create(emptyAsset, files.ToArray());
+
+            var path = @".\Resources\TestFiles\" + Guid.NewGuid();
+
+            try
+            {
+                Directory.CreateDirectory(path);
+                string dupFileName = Path.Combine(path, Path.GetFileName(files[0]));
+                File.WriteAllText(dupFileName, "");
+                ingestManifestCreated.EncryptFiles(path, false);
+            }
+            catch (AggregateException ax)
+            {
+                var expectedExcpetion = ax.GetBaseException() as IOException;
+                throw expectedExcpetion;
+            }
+            finally
+            {
+                Directory.Delete(path, true);
+            }
+        }
+
+
         #region Retry Logic tests
 
         [TestMethod]
