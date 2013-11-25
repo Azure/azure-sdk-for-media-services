@@ -122,7 +122,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     {
                         IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
                         dataContext.AttachTo(JobBaseCollection.JobSet, this);
-                        dataContext.LoadProperty(this, InputMediaAssetsPropertyName);
+                        LoadProperty(dataContext, InputMediaAssetsPropertyName);
                     }
 
                     this._inputMediaAssets = this.InputMediaAssets.ToList<IAsset>().AsReadOnly();
@@ -145,7 +145,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     {
                         IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
                         dataContext.AttachTo(JobBaseCollection.JobSet, this);
-                        dataContext.LoadProperty(this, OutputMediaAssetsPropertyName);
+                        LoadProperty(dataContext, OutputMediaAssetsPropertyName);
                     }
 
                     this._outputMediaAssets = this.OutputMediaAssets.ToList<IAsset>().AsReadOnly();
@@ -168,7 +168,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     {
                         IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
                         dataContext.AttachTo(JobBaseCollection.JobSet, this);
-                        dataContext.LoadProperty(this, TasksPropertyName);
+                        LoadProperty(dataContext, TasksPropertyName);
                     }
 
                     this._tasks = new TaskCollection(this, this.Tasks, this.GetMediaContext());

@@ -760,6 +760,24 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             Assert.AreEqual(0, exceptionCount);
         }
 
+        [TestMethod]
+        [Priority(0)]
+        [TestCategory("DailyBvtRun")]
+        public void TestJobGetContentKeysRetry()
+        {
+            var data = new JobData { Name = "testData", Id = "testId" };
+
+            var dataContextMock = TestMediaServicesClassFactory.CreateLoadPropertyMockConnectionClosed(2, data);
+
+            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
+
+            data.SetMediaContext(_mediaContext);
+
+            var actual = ((IJob)data).InputMediaAssets;
+
+            dataContextMock.Verify((ctxt) => ctxt.LoadProperty(data, "InputMediaAssets"), Times.Exactly(2));
+        }
+
         #region Helper Methods
 
         private IAsset CreateSmoothAsset()

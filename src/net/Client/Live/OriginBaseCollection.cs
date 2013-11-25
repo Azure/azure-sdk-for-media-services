@@ -301,7 +301,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             IMediaDataServiceContext dataContext = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AddObject(OriginSet, origin);
-            var response = dataContext.SaveChanges();
+
+            MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            var response = retryPolicy.ExecuteAction<IMediaDataServiceResponse>(() => dataContext.SaveChanges());
 
             string operationId = response.Single().Headers[StreamingConstants.OperationIdHeader];
 

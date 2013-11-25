@@ -21,6 +21,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -210,14 +211,17 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             dataContext.AttachTo(AssetCollection.AssetSet, asset);
             dataContext.SetLink(data,"Asset",asset);
 
-            Task<IIngestManifestAsset> task = dataContext.SaveChangesAsync(data).ContinueWith<IIngestManifestAsset>(t =>
-                                                                                                            {
-                                                                                                                t.ThrowIfFaulted();
-                                                                                                                token.ThrowIfCancellationRequested();
-                                                                                                                IngestManifestAssetData ingestManifestAsset = (IngestManifestAssetData)t.Result.AsyncState;
-                                                                                                                continueWith(ingestManifestAsset);
-                                                                                                                return ingestManifestAsset;
-                                                                                                            }, TaskContinuationOptions.ExecuteSynchronously);
+            MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            Task<IIngestManifestAsset> task = retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(data))
+                .ContinueWith<IIngestManifestAsset>(t =>
+                {
+                    t.ThrowIfFaulted();
+                    token.ThrowIfCancellationRequested();
+                    IngestManifestAssetData ingestManifestAsset = (IngestManifestAssetData)t.Result.AsyncState;
+                    continueWith(ingestManifestAsset);
+                    return ingestManifestAsset;
+                }, TaskContinuationOptions.ExecuteSynchronously);
 
             return task;
         }

@@ -123,7 +123,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     {
                         IMediaDataServiceContext dataContext = this._mediaContextBase.MediaServicesClassFactory.CreateDataServiceContext();
                         dataContext.AttachTo(AssetCollection.AssetSet, this);
-                        dataContext.LoadProperty(this, ContentKeysPropertyName);
+
+                        LoadProperty(dataContext, ContentKeysPropertyName);
 
                         this._contentKeyCollection = new LinkCollection<IContentKey, ContentKeyData>(dataContext, this, ContentKeysPropertyName, this.ContentKeys);
                     }
@@ -143,7 +144,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     {
                         IMediaDataServiceContext dataContext = this._mediaContextBase.MediaServicesClassFactory.CreateDataServiceContext();
                         dataContext.AttachTo(AssetCollection.AssetSet, this);
-                        dataContext.LoadProperty(this, DeliveryPoliciesPropertyName);
+                        LoadProperty(dataContext, DeliveryPoliciesPropertyName);
 
                         this._deliveryPolicyCollection = new LinkCollection<IAssetDeliveryPolicy, AssetDeliveryPolicyData>(dataContext, this, DeliveryPoliciesPropertyName, this.DeliveryPolicies);
                     }
@@ -167,7 +168,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
                     IMediaDataServiceContext dataContext = this._mediaContextBase.MediaServicesClassFactory.CreateDataServiceContext();
                     dataContext.AttachTo(AssetCollection.AssetSet, this);
-                    dataContext.LoadProperty(this, LocatorsPropertyName);
+                    LoadProperty(dataContext, LocatorsPropertyName);
                     if (this.Locators != null)
                     {
                         this._locatorCollection = this.Locators.ToList<ILocator>().AsReadOnly();
@@ -194,7 +195,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 {
                     IMediaDataServiceContext dataContext = this._mediaContextBase.MediaServicesClassFactory.CreateDataServiceContext();
                     dataContext.AttachTo(AssetCollection.AssetSet, this);
-                    dataContext.LoadProperty(this, ParentAssetsPropertyName);
+                    LoadProperty(dataContext, ParentAssetsPropertyName);
 
                     this._parentAssetCollection = this.ParentAssets.ToList<IAsset>().AsReadOnly();
                 }
