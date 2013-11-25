@@ -81,9 +81,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.OAuth
 
             if (request.Headers[AuthorizationHeader] == null)
             {
-                if (DateTime.UtcNow > this._credentials.TokenExpiration)
+                lock (this._credentials)
                 {
-                    this._credentials.RefreshToken();
+                    if (DateTime.UtcNow > this._credentials.TokenExpiration)
+                    {
+                        this._credentials.RefreshToken();
+                    }
                 }
 
                 request.Headers.Add(AuthorizationHeader, string.Format(CultureInfo.InvariantCulture, BearerTokenFormat, this._credentials.AccessToken));
