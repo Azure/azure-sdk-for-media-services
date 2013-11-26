@@ -266,7 +266,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Asynchronously updates this job instance.
         /// </summary>
         /// <returns></returns>
-        public Task UpdateAsync()
+        public Task<IJob> UpdateAsync()
         {
             if (string.IsNullOrWhiteSpace(this.Id))
             {
@@ -277,7 +277,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(JobBaseCollection.JobSet, this);
             dataContext.UpdateObject(this);
-
+            JobData _this = this;
             MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
 
             return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(this))
@@ -285,9 +285,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                    t =>
                    {
                        t.ThrowIfFaulted();
-                       JobData data = (JobData)t.Result.AsyncState;
-                       return data;
-                   });
+                       IMediaDataServiceResponse response = t.Result;
+                       return _this;
+                   },TaskContinuationOptions.ExecuteSynchronously);
         }
 
         /// <summary>
@@ -297,7 +297,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             try
             {
-                this.UpdateAsync().Wait();
+                IJob job = this.UpdateAsync().Result;
             }
             catch (AggregateException exception)
             {
@@ -309,7 +309,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Submits asynchronously.
         /// </summary>
         /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
-        public Task SubmitAsync()
+        public Task<IJob> SubmitAsync()
         {
             if (!string.IsNullOrWhiteSpace(this.Id))
             {
@@ -319,6 +319,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
 
+           
             this.InnerSubmit(dataContext);
 
             MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
@@ -330,7 +331,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                         t.ThrowIfFaulted();
                         JobData data = (JobData)t.Result.AsyncState;
                         data.JobEntityRefresh(dataContext);
-                    });
+                        return (IJob)data;
+                    },TaskContinuationOptions.ExecuteSynchronously);
         }
 
         /// <summary>
@@ -340,7 +342,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             try
             {
-                this.SubmitAsync().Wait();
+                IJob job = this.SubmitAsync().Result;
             }
             catch (AggregateException exception)
             {
@@ -425,6 +427,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
 
             return this.CreateJobTemplate(templateName, JobTemplateType.AccountLevel, taskTemplates.ToArray());
+        }
+
+        public void Refresh()
+        {
+            JobEntityRefresh(this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext());
         }
 
         /// <summary>
@@ -875,7 +882,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
         }
 
-        private void JobEntityRefresh(IMediaDataServiceContext dataContext)
+        public void JobEntityRefresh(IMediaDataServiceContext dataContext)
         {
             
             InvalidateCollections();

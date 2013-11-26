@@ -94,7 +94,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("PullRequestValidation")]
+        [TestCategory("DailyBvtRun")]
         public void ShouldCreateJobPreset()
         {
             IAsset asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.StorageEncrypted);
@@ -437,7 +437,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestMethod]
         [DeploymentItem(@"Configuration\MP4 to Smooth Streams.xml", "Configuration")]
         [DeploymentItem(@"Media\SmallMP41.mp4", "Media")]
-        [TestCategory("PullRequestValidation")]
+        [TestCategory("DailyBvtRun")]
         public void ShouldSubmitAndFinishMp4ToSmoothJobWithStorageProtectedInputsAndOutputs()
         {
             string configuration = File.ReadAllText(WindowsAzureMediaServicesTestConfiguration.DefaultMp4ToSmoothConfig);
@@ -768,6 +768,30 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             }
 
             Assert.AreEqual(0, exceptionCount);
+        }
+
+        [TestMethod]
+        [Priority(0)]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        public void RefreshJobAfterSubmit()
+        {
+            IAsset asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.StorageEncrypted);
+            IMediaProcessor mediaProcessor = GetMediaProcessor(_mediaContext, WindowsAzureMediaServicesTestConfiguration.MpEncoderName);
+            string name = GenerateName("Job 1");
+            IJob job = CreateAndSubmitOneTaskJob(_mediaContext, name, mediaProcessor, GetWamePreset(mediaProcessor), asset, TaskOptions.None);
+            Assert.IsFalse(String.IsNullOrEmpty(job.Id));
+            bool startProcessing = false;
+            Task.Factory.StartNew(() =>
+            {
+                while (job.State != JobState.Processing)
+                {
+                    job.Refresh();
+                    Thread.Sleep(1000);
+                }
+                startProcessing = true;
+            }).Wait(20000);
+            Assert.IsTrue(startProcessing);
+            job.DeleteAsync();
         }
 
         #region Helper Methods
