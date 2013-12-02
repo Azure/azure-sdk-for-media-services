@@ -39,7 +39,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Versioning
         /// </summary>
         public static Version Current
         {
-            get { return Version2_3; }
+            get { return Version2_4; }
         }
     }
 }
