@@ -61,7 +61,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 {
                     IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
                     dataContext.AttachTo(LocatorBaseCollection.LocatorSet, this);
-                    dataContext.LoadProperty(this, LocatorBaseCollection.AccessPolicyPropertyName);
+                    LoadProperty(dataContext, LocatorBaseCollection.AccessPolicyPropertyName);
                 }
 
                 return this._accessPolicy;
@@ -79,7 +79,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 {
                     IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
                     dataContext.AttachTo(LocatorBaseCollection.LocatorSet, this);
-                    dataContext.LoadProperty(this, LocatorBaseCollection.AssetPropertyName);
+                    LoadProperty(dataContext, LocatorBaseCollection.AssetPropertyName);
                 }
 
                 return this._asset;

@@ -122,7 +122,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     {
                         IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
                         dataContext.AttachTo(JobBaseCollection.JobSet, this);
-                        dataContext.LoadProperty(this, InputMediaAssetsPropertyName);
+                        LoadProperty(dataContext, InputMediaAssetsPropertyName);
                     }
 
                     this._inputMediaAssets = this.InputMediaAssets.ToList<IAsset>().AsReadOnly();
@@ -145,7 +145,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     {
                         IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
                         dataContext.AttachTo(JobBaseCollection.JobSet, this);
-                        dataContext.LoadProperty(this, OutputMediaAssetsPropertyName);
+                        LoadProperty(dataContext, OutputMediaAssetsPropertyName);
                     }
 
                     this._outputMediaAssets = this.OutputMediaAssets.ToList<IAsset>().AsReadOnly();
@@ -168,7 +168,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     {
                         IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
                         dataContext.AttachTo(JobBaseCollection.JobSet, this);
-                        dataContext.LoadProperty(this, TasksPropertyName);
+                        LoadProperty(dataContext, TasksPropertyName);
                     }
 
                     this._tasks = new TaskCollection(this, this.Tasks, this.GetMediaContext());
@@ -206,7 +206,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                         t.ThrowIfFaulted();
 
                         JobData data = (JobData)t.AsyncState;
-                        data.JobEntityRefresh(dataContext);
+                        data.JobEntityRefresh();
                     });
         }
 
@@ -329,7 +329,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     {
                         t.ThrowIfFaulted();
                         JobData data = (JobData)t.Result.AsyncState;
-                        data.JobEntityRefresh(dataContext);
+                        data.JobEntityRefresh();
                     });
         }
 
@@ -375,7 +375,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                             cancellationToken.ThrowIfCancellationRequested();
 
                             JobState previousState = GetExposedState(data.State);
-                            data.JobEntityRefresh(dataContext);
+                            data.JobEntityRefresh();
 
                             if (previousState != GetExposedState(data.State))
                             {
@@ -875,12 +875,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
         }
 
-        private void JobEntityRefresh(IMediaDataServiceContext dataContext)
-        {
-            
+        private void JobEntityRefresh()
+        {            
             InvalidateCollections();
 
-            var refreshed = dataContext.CreateQuery<JobData>(JobBaseCollection.JobSet).Where(c => c.Id == this.Id).FirstOrDefault();
+            var refreshed = (JobData)GetMediaContext().Jobs.Where(c => c.Id == this.Id).FirstOrDefault();
             
             //it is possible that job has been cancelled and deleted while we are refreshing
             if (refreshed != null)
@@ -895,7 +894,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 this.State = refreshed.State;
                 this.TemplateId = refreshed.TemplateId;
                 this.JobNotificationSubscriptions = refreshed.JobNotificationSubscriptions;
-                this.Tasks = refreshed.Tasks;
             }
         }
 

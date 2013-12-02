@@ -34,6 +34,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         public void MediaServicesCredentialsTestReuseToken()
         {
             var context1 = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
+
             MediaServicesCredentials credentials = new MediaServicesCredentials("whatever", "whatever")
             {
                 AccessToken = context1.Credentials.AccessToken,

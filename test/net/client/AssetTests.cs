@@ -700,6 +700,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(0)]
+        [TestCategory("DailyBvtRun")]
         public void TestAssetCreateRetry()
         {
             var expected = new AssetData { Name = "testData" };
@@ -717,6 +718,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(0)]
+        [TestCategory("DailyBvtRun")]
         [ExpectedException(typeof(WebException))]
         public void TestAssetCreateFailedRetry()
         {
@@ -744,6 +746,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(0)]
+        [TestCategory("DailyBvtRun")]
         [ExpectedException(typeof(WebException))]
         public void TestAssetCreateFailedRetryMessageLengthLimitExceeded()
         {
@@ -773,6 +776,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(0)]
+        [TestCategory("DailyBvtRun")]
         public void TestAssetUpdateRetry()
         {
             var data = new AssetData { Name = "testData" };
@@ -793,6 +797,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(0)]
+        [TestCategory("DailyBvtRun")]
         public void TestAssetDeleteRetry()
         {
             var data = new AssetData { Name = "testData" };
@@ -812,6 +817,25 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             dataContextMock.Verify((ctxt) => ctxt.SaveChangesAsync(data), Times.Exactly(2));
         }
+
+        [TestMethod]
+        [Priority(0)]
+        [TestCategory("DailyBvtRun")]
+        public void TestAssetGetContentKeysRetry()
+        {
+            var data = new AssetData { Name = "testData", Id = "testId" };
+
+            var dataContextMock = TestMediaServicesClassFactory.CreateLoadPropertyMockConnectionClosed(2, data);
+
+            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
+
+            data.SetMediaContext(_mediaContext);
+
+            var keys = ((IAsset)data).ContentKeys;
+
+            dataContextMock.Verify((ctxt) => ctxt.LoadProperty(data, "ContentKeys"), Times.Exactly(2));
+        }
+
         #endregion Retry Logic tests
         #region Helper/utility methods
 
