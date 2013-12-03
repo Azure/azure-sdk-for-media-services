@@ -76,7 +76,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Asynchronously updates this job instance.
         /// </summary>
         /// <returns></returns>
-        Task UpdateAsync();
+        Task<IJob> UpdateAsync();
 
         /// <summary>
         /// Updates this job instance.
@@ -88,7 +88,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Asynchronously submits this job instance.
         /// </summary>
         /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
-        Task SubmitAsync();
+        Task<IJob> SubmitAsync();
 
         /// <summary>
         /// Submits this job instance.
@@ -120,5 +120,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="templateName">The job template name.</param>
         /// <returns>A function delegate that returns the future result to be available through the Task&lt;IJobTemplate&gt;.</returns>
         Task<IJobTemplate> SaveAsTemplateAsync(string templateName);
+        
+        /// <summary>
+        ///Force entity and underlying properties to be refreshed  
+        /// </summary>
+        void Refresh();
     }
 }
