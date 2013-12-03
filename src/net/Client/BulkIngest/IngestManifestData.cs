@@ -194,7 +194,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                         }
                         else
                         {
-                            throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, StringTable.BulkIngestFileExists, destinationPath));
+                            throw new IOException(string.Format(CultureInfo.InvariantCulture, StringTable.BulkIngestFileExists, destinationPath));
                         }
                     }
 
