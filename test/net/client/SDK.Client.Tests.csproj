@@ -92,9 +92,9 @@
     <Compile Include="LinkCollectionTest.cs" />
     <Compile Include="Live\AsyncHelperTests.cs" />
     <Compile Include="BaseCollectionTest.cs" />
-    <Compile Include="ContentKeyAuthorizationPolicyOptionTests.cs" />
-    <Compile Include="ContentKeyAuthorizationPolicyTests.cs" />
-    <Compile Include="ContentKeyTests.cs" />
+    <Compile Include="DynamicEncryption\ContentKeyAuthorizationPolicyOptionTests.cs" />
+    <Compile Include="DynamicEncryption\ContentKeyAuthorizationPolicyTests.cs" />
+    <Compile Include="DynamicEncryption\ContentKeyTests.cs" />
     <Compile Include="IngestManifestFileTests.cs" />
     <Compile Include="MediaServicesCredentialsTest.cs" />
     <Compile Include="NotificationEndPointTests.cs" />

@@ -26,7 +26,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// <summary>
     /// Describes the context from which all entities in the Microsoft WindowsAzure Media Services platform can be accessed.
     /// </summary>
-    public class CloudMediaContext : MediaContextBase
+    public partial class CloudMediaContext : MediaContextBase
     {
         /// <summary>
         /// The certificate thumbprint for Nimbus services.
@@ -40,30 +40,19 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
         private static readonly Uri _mediaServicesUri = new Uri("https://media.windows.net/");
 
-        private readonly AssetCollection _assets;
-        private readonly AssetFileCollection _files;
-        private readonly AccessPolicyBaseCollection _accessPolicies;
-        private readonly ContentKeyCollection _contentKeys;
-        private readonly JobBaseCollection _jobs;
-        private readonly JobTemplateBaseCollection _jobTemplates;
-        private readonly NotificationEndPointCollection _notificationEndPoints;
-        private readonly MediaProcessorBaseCollection _mediaProcessors;
-        private readonly LocatorBaseCollection _locators;
-        private readonly IngestManifestCollection _ingestManifests;
-        private readonly IngestManifestAssetCollection _ingestManifestAssets;
-        private readonly IngestManifestFileCollection _ingestManifestFiles;
-        private readonly StorageAccountBaseCollection _storageAccounts;
-        private readonly ContentKeyAuthorizationPolicyOptionCollection _contentKeyAuthorizationPolicyOptions;
-        private readonly ContentKeyAuthorizationPolicyCollection _contentKeyAuthorizationPolicies;
-        private readonly AssetDeliveryPolicyCollection _assetDeliveryPolicies;
-
-        // Live collections.
-        private ChannelBaseCollection _channels;
-        private ProgramBaseCollection _programs;
-        private OriginBaseCollection _origins;
-        private OperationBaseCollection _operations;
-        private OriginMetricBaseCollection _originMetrics;
-        private ChannelMetricBaseCollection _channelMetrics;
+        private AssetCollection _assets;
+        private AssetFileCollection _files;
+        private AccessPolicyBaseCollection _accessPolicies;
+        private ContentKeyCollection _contentKeys;
+        private JobBaseCollection _jobs;
+        private JobTemplateBaseCollection _jobTemplates;
+        private NotificationEndPointCollection _notificationEndPoints;
+        private MediaProcessorBaseCollection _mediaProcessors;
+        private LocatorBaseCollection _locators;
+        private IngestManifestCollection _ingestManifests;
+        private IngestManifestAssetCollection _ingestManifestAssets;
+        private IngestManifestFileCollection _ingestManifestFiles;
+        private StorageAccountBaseCollection _storageAccounts;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CloudMediaContext"/> class.
@@ -129,6 +118,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             this.MediaServicesClassFactory = new AzureMediaServicesClassFactory(apiServer, dataServiceAdapter, versionAdapter, this);
 
+            InitializeCollections();
+            InitializeLiveCollections();
+            InitializeDynamicEncryptionCollections();
+        }
+
+        private void InitializeCollections()
+        {
             this._jobs = new JobBaseCollection(this);
             this._jobTemplates = new JobTemplateBaseCollection(this);
             this._assets = new AssetCollection(this);
@@ -142,18 +138,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             this._ingestManifestAssets = new IngestManifestAssetCollection(this, null);
             this._ingestManifestFiles = new IngestManifestFileCollection(this, null);
             this._storageAccounts = new StorageAccountBaseCollection(this);
-            this._contentKeyAuthorizationPolicyOptions = new ContentKeyAuthorizationPolicyOptionCollection(this);
-            this._contentKeyAuthorizationPolicies = new ContentKeyAuthorizationPolicyCollection(this);
-            this._assetDeliveryPolicies = new AssetDeliveryPolicyCollection(this);
-
-            this._channels = new ChannelBaseCollection(this);
-            this._programs = new ProgramBaseCollection(this);
-            this._origins = new OriginBaseCollection(this);
-            this._operations = new OperationBaseCollection(this);
-            this._originMetrics = new OriginMetricBaseCollection(this);
-            this._channelMetrics = new ChannelMetricBaseCollection(this);
-            this._originMetrics = new OriginMetricBaseCollection(this);
-            this._channelMetrics = new ChannelMetricBaseCollection(this);
         }
 
         /// <summary>
@@ -276,91 +260,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public override IngestManifestAssetCollection IngestManifestAssets
         {
             get { return this._ingestManifestAssets; }
-        }
-
-
-        /// <summary>
-        /// Gets the collection of content key authorization policy options.
-        /// </summary>
-        public override ContentKeyAuthorizationPolicyOptionCollection ContentKeyAuthorizationPolicyOptions
-        {
-            get { return this._contentKeyAuthorizationPolicyOptions; }
-        }
-
-        /// <summary>
-        /// Gets the content key authorization policies.
-        /// </summary>
-        /// <value>
-        /// The content key authorization policies.
-        /// </value>
-        public override ContentKeyAuthorizationPolicyCollection ContentKeyAuthorizationPolicies
-        {
-            get
-            {
-                return this._contentKeyAuthorizationPolicies;
-            }
-        }
-
-        /// <summary>
-        /// Gets the asset delivery policies.
-        /// </summary>
-        /// <value>
-        /// The asset delivery policies.
-        /// </value>
-        public override AssetDeliveryPolicyCollection AssetDeliveryPolicies
-        {
-            get
-            {
-                return this._assetDeliveryPolicies;
-            }
-        }
-
-        /// <summary>
-        /// Gets the collection of channels in the system.
-        /// </summary>
-        public override ChannelBaseCollection Channels
-        {
-            get { return this._channels; }
-        }
-
-        /// <summary>
-        /// Gets the collection of programs in the system.
-        /// </summary>
-        public override ProgramBaseCollection Programs
-        {
-            get { return this._programs; }
-        }
-
-        /// <summary>
-        /// Gets the collection of origins in the system.
-        /// </summary>
-        public override OriginBaseCollection Origins
-        {
-            get { return this._origins; }
-        }
-
-        /// <summary>
-        /// Gets the collection of operation in the system.
-        /// </summary>
-        public override OperationBaseCollection Operations
-        {
-            get { return this._operations; }
-        }
-
-        /// <summary>
-        /// Gets the collection of origin metrics in the system.
-        /// </summary>
-        public override OriginMetricBaseCollection OriginMetrics
-        {
-            get { return this._originMetrics; }
-        }
-
-        /// <summary>
-        /// Gets the collection of channel metrics in the system.
-        /// </summary>
-        public override ChannelMetricBaseCollection ChannelMetrics
-        {
-            get { return this._channelMetrics; }
         }
     }
 }
