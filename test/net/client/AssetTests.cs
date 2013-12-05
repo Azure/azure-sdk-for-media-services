@@ -187,7 +187,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             Assert.AreEqual(AssetState.Initialized, refreshedAsset.State);
             Assert.AreEqual(1, refreshedAsset.AssetFiles.Count(), "file count wrong");
             VerifyAndDownloadAsset(refreshedAsset,1,false);
-            ContentKeyTests.VerifyFileAndContentKeyMetadataForStorageEncryption(refreshedAsset, _mediaContext);
         }
 
         [TestMethod]

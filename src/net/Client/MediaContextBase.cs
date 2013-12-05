@@ -14,15 +14,12 @@
 // limitations under the License.
 // </license>
 
-using Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization;
-using Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption;
-
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
     /// Represents a base media context containing collections to operate on.
     /// </summary>
-    public abstract partial class MediaContextBase
+    public abstract class MediaContextBase
     {
         /// <summary>
         /// Gets a collection to operate on AccessPolicies.

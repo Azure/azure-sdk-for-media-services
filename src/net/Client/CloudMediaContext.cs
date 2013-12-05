@@ -18,15 +18,13 @@ using System;
 using System.Linq;
 using Microsoft.WindowsAzure.MediaServices.Client.OAuth;
 using Microsoft.WindowsAzure.MediaServices.Client.Versioning;
-using Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization;
-using Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
     /// Describes the context from which all entities in the Microsoft WindowsAzure Media Services platform can be accessed.
     /// </summary>
-    public partial class CloudMediaContext : MediaContextBase
+    public class CloudMediaContext : MediaContextBase
     {
         /// <summary>
         /// The certificate thumbprint for Nimbus services.
@@ -119,8 +117,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             this.MediaServicesClassFactory = new AzureMediaServicesClassFactory(apiServer, dataServiceAdapter, versionAdapter, this);
 
             InitializeCollections();
-            InitializeLiveCollections();
-            InitializeDynamicEncryptionCollections();
         }
 
         private void InitializeCollections()

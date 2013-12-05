@@ -126,27 +126,13 @@
     <Compile Include="CollectionBase.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DynamicEncryption\CloudMediaContext.cs" />
-    <Compile Include="DynamicEncryption\MediaContextBase.cs" />
-    <Compile Include="Live\AsyncHelper.cs" />
     <Compile Include="ConfigurationEncryptionHelper.cs" />
-    <Compile Include="ContentKeyAuthorization\ContentKeyAuthorizationPolicyCollection.cs" />
-    <Compile Include="ContentKeyAuthorization\ContentKeyAuthorizationPolicyData.cs" />
-    <Compile Include="ContentKeyAuthorization\ContentKeyAuthorizationPolicyOptionCollection.cs" />
-    <Compile Include="ContentKeyAuthorization\ContentKeyAuthorizationPolicyOptionData.cs" />
-    <Compile Include="ContentKeyAuthorization\ContentKeyAuthorizationPolicyRestriction.cs" />
-    <Compile Include="ContentKeyAuthorization\ContentKeyDeliveryType.cs" />
-    <Compile Include="ContentKeyAuthorization\ContentKeyRestrictionType.cs" />
-    <Compile Include="ContentKeyAuthorization\IContentKeyAuthorizationPolicy.cs" />
-    <Compile Include="ContentKeyAuthorization\IContentKeyAuthorizationPolicyOption.cs" />
     <Compile Include="ContentKeyBaseCollection.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DataServiceAsyncExtensions.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Live\CloudMediaContext.cs" />
-    <Compile Include="Live\MediaContextBase.cs" />
     <Compile Include="MediaServicesCredentials.cs" />
     <Compile Include="TransientFaultHandling\RetryPolicyExtensions.cs" />
     <Compile Include="TransientFaultHandling\StorageTransientErrorDetectionStrategy.cs" />
@@ -157,12 +143,6 @@
     <Compile Include="TransientFaultHandling\RetryStrategyFactory.cs" />
     <Compile Include="TransientFaultHandling\SaveChangesErrorDetectionStrategy.cs" />
     <Compile Include="TransientFaultHandling\WebRequestTransientErrorDetectionStrategy.cs" />
-    <Compile Include="DynamicEncryption\AssetDeliveryPolicyCollection.cs" />
-    <Compile Include="DynamicEncryption\AssetDeliveryPolicyConfigurationKeys.cs" />
-    <Compile Include="DynamicEncryption\AssetDeliveryPolicyData.cs" />
-    <Compile Include="DynamicEncryption\AssetDeliveryPolicyType.cs" />
-    <Compile Include="DynamicEncryption\AssetDeliveryProtocol.cs" />
-    <Compile Include="DynamicEncryption\IAssetDeliveryPolicy.cs" />
     <Compile Include="GeneratedCode\ApiClasses.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -208,50 +188,6 @@
     <Compile Include="IJobTemplate.cs" />
     <Compile Include="InputAssetCollection.cs" />
     <Compile Include="JobTemplateData.cs" />
-    <Compile Include="Live\ChannelBaseCollection.cs" />
-    <Compile Include="Live\ChannelData.cs" />
-    <Compile Include="Live\ChannelMetricBaseCollection.cs" />
-    <Compile Include="Live\ChannelServiceSettings.cs" />
-    <Compile Include="Live\IMetric.cs" />
-    <Compile Include="Live\MetricBaseCollection.cs" />
-    <Compile Include="Live\ChannelMetricData.cs" />
-    <Compile Include="Live\MetricsMonitor.cs" />
-    <Compile Include="Live\ChannelSettings.cs" />
-    <Compile Include="Live\ChannelSize.cs" />
-    <Compile Include="Live\ChannelState.cs" />
-    <Compile Include="Live\AkamaiSignatureHeaderAuthenticationKey.cs" />
-    <Compile Include="Live\IChannel.cs" />
-    <Compile Include="Live\IChannelMetric.cs" />
-    <Compile Include="Live\IMetricsMonitor.cs" />
-    <Compile Include="Live\IIngestMetric.cs" />
-    <Compile Include="Live\IStreamingMonitor.cs" />
-    <Compile Include="Live\IngestMetricData.cs" />
-    <Compile Include="Live\IOperation.cs" />
-    <Compile Include="Live\IOrigin.cs" />
-    <Compile Include="Live\IOriginMetric.cs" />
-    <Compile Include="Live\IProgram.cs" />
-    <Compile Include="Live\IProgramMetric.cs" />
-    <Compile Include="Live\Ipv4.cs" />
-    <Compile Include="Live\Metric.cs" />
-    <Compile Include="Live\MetricsEventArgs.cs" />
-    <Compile Include="Live\StreamingMonitor.cs" />
-    <Compile Include="Live\OperationBaseCollection.cs" />
-    <Compile Include="Live\OperationData.cs" />
-    <Compile Include="Live\OperationState.cs" />
-    <Compile Include="Live\OriginBaseCollection.cs" />
-    <Compile Include="Live\OriginData.cs" />
-    <Compile Include="Live\OriginMetricBaseCollection.cs" />
-    <Compile Include="Live\OriginMetricData.cs" />
-    <Compile Include="Live\OriginServiceSettings.cs" />
-    <Compile Include="Live\OriginSettings.cs" />
-    <Compile Include="Live\OriginState.cs" />
-    <Compile Include="Live\ProgramBaseCollection.cs" />
-    <Compile Include="Live\ProgramData.cs" />
-    <Compile Include="Live\ProgramMetricData.cs" />
-    <Compile Include="Live\ProgramState.cs" />
-    <Compile Include="Live\RestEntity.cs" />
-    <Compile Include="Live\Serializer.cs" />
-    <Compile Include="Live\StreamingConstants.cs" />
     <Compile Include="LocatorBaseCollection.cs">
       <SubType>Code</SubType>
     </Compile>

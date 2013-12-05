@@ -21,7 +21,6 @@ using System.Data.Services.Common;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
-using Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -39,7 +38,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private AssetFileCollection _fileCollection;
         private ReadOnlyCollection<ILocator> _locatorCollection;
         private IList<IContentKey> _contentKeyCollection;
-        private IList<IAssetDeliveryPolicy> _deliveryPolicyCollection;
         private ReadOnlyCollection<IAsset> _parentAssetCollection;
         private MediaContextBase _mediaContextBase;
 
@@ -53,9 +51,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             this.Locators = new List<LocatorData>();
             this.ContentKeys = new List<ContentKeyData>();
-            this.DeliveryPolicies = new List<AssetDeliveryPolicyData>();
             this.Files = new List<AssetFileData>();
-
         }
 
         /// <summary>
@@ -73,12 +69,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// The content keys.
         /// </value>
         public List<ContentKeyData> ContentKeys { get; set; }
-
-        /// <summary>
-        /// Gets the delivery policies associated with the asset.
-        /// </summary>
-        /// <value>A collection of <see cref="IAssetDeliveryPolicy"/> associated with the Asset.</value>
-        public List<AssetDeliveryPolicyData> DeliveryPolicies { get; set; }
 
         /// <summary>
         /// Gets a collection of files contained by the asset.
@@ -130,26 +120,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     }
 
                     return this._contentKeyCollection;
-                }
-            }
-        }
-
-        IList<IAssetDeliveryPolicy> IAsset.DeliveryPolicies
-        {
-            get
-            {
-                lock (_deliveryPolicyLocker)
-                {
-                    if ((this._deliveryPolicyCollection == null) && !string.IsNullOrWhiteSpace(this.Id))
-                    {
-                        IMediaDataServiceContext dataContext = this._mediaContextBase.MediaServicesClassFactory.CreateDataServiceContext();
-                        dataContext.AttachTo(AssetCollection.AssetSet, this);
-                        LoadProperty(dataContext, DeliveryPoliciesPropertyName);
-
-                        this._deliveryPolicyCollection = new LinkCollection<IAssetDeliveryPolicy, AssetDeliveryPolicyData>(dataContext, this, DeliveryPoliciesPropertyName, this.DeliveryPolicies);
-                    }
-
-                    return this._deliveryPolicyCollection;
                 }
             }
         }
@@ -215,7 +185,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             this._mediaContextBase = context;
             InvalidateLocatorsCollection();
             InvalidateContentKeysCollection();
-            InvalidateDeliveryPoliciesCollection();
             InvalidateFilesCollection();
             if (context != null)
             {
@@ -307,7 +276,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             IMediaDataServiceContext dataContext = this._mediaContextBase.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(AssetCollection.AssetSet, this);
             this.InvalidateContentKeysCollection();
-            this.InvalidateDeliveryPoliciesCollection();
             dataContext.DeleteObject(this);
 
             MediaRetryPolicy retryPolicy = this._mediaContextBase.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
@@ -322,15 +290,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             this.ContentKeys.Clear();
             this._contentKeyCollection = null;
-        }
-
-        /// <summary>
-        /// Invalidates the content key collection.
-        /// </summary>
-        internal void InvalidateDeliveryPoliciesCollection()
-        {
-            this.DeliveryPolicies.Clear();
-            this._deliveryPolicyCollection = null;
         }
 
         /// <summary>
