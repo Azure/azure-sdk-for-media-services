@@ -55,7 +55,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestMethod]
         [Priority(1)]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("DailyBvtRun")]
         public void ShouldCreateAssetFile()
         {
             IAsset asset = _mediaContext.Assets.Create("Empty", AssetCreationOptions.StorageEncrypted);
@@ -112,7 +111,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(1)]
-        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldCreateSingleFileAssetWithNoLocatorUsingOveloadSync()
         {
             IAsset asset = _mediaContext.Assets.Create("Empty", AssetCreationOptions.StorageEncrypted);
@@ -214,7 +212,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [DeploymentItem(@"Media\SmallWmv2.wmv", "Media")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         [Priority(1)]
-        [TestCategory("DailyBvtRun")]
         public void ShouldCreateEmptyAssetUploadTwoFilesSetPrimaryAndDownloadFile()
         {
             IAsset asset = _mediaContext.Assets.Create("Test", AssetCreationOptions.None);
@@ -418,7 +415,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestMethod]
         [Priority(1)]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("DailyBvtRun")]
         public void ShouldDownloadAssetFile()
         {
             IAsset asset = CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
@@ -429,7 +425,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(1)]
-        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldDownloadSameAssetFile20TimesIdenticallyAsStorageSDK()
         {
             
@@ -508,7 +503,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("DailyBvtRun")]
         public void ShouldDeleteParentAssetAndGetParentCount()
         {
             IAsset asset;
@@ -550,8 +544,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@".\Resources\interview.wmv", "Content")]
-        [TestCategory("DailyBvtRun")]
-        public void ShouldCreateAssetWithSingleFile()
+       public void ShouldCreateAssetWithSingleFile()
         {
             string assetFilePath = @"Content\interview.wmv";
 
@@ -568,8 +561,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@".\Resources\TestFiles", "TestFiles")]
-        [TestCategory("DailyBvtRun")]
-        public void ShouldCreateAssetAsyncWithMultipleFiles()
+       public void ShouldCreateAssetAsyncWithMultipleFiles()
         {
             string[] files = Directory.GetFiles("TestFiles");
 
@@ -605,7 +597,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestMethod]
         [DeploymentItem(@".\Resources\interview.wmv", "Content")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("DailyBvtRun")]
         public void ShouldReportProgressForFile()
         {
             string fileName = _smallWmv;
@@ -659,10 +650,32 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("DailyBvtRun")]
-        public void ShouldDeleteAsset()
+       public void ShouldDeleteAsset()
         {
             IAsset asset = CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
+
+
+            Assert.AreEqual(AssetState.Initialized, asset.State);
+            foreach (ILocator locator in asset.Locators)
+            {
+                locator.Delete();
+            }
+
+            asset.Delete();
+
+            Assert.IsNull(_mediaContext.Assets.Where(a => a.Id == asset.Id).SingleOrDefault());
+
+            CloudMediaContext newContext = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
+
+            Assert.IsNull(newContext.Assets.Where(a => a.Id == asset.Id).SingleOrDefault());
+        }
+
+        [TestMethod]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [TestCategory("DailyBvtRun")]
+        public void ShouldDeleteEmptyAsset()
+        {
+            IAsset asset = _mediaContext.Assets.Create("ShouldDeleteEmptyAsset", AssetCreationOptions.None);
 
 
             Assert.AreEqual(AssetState.Initialized, asset.State);
