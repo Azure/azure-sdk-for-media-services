@@ -583,39 +583,47 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 string originalFilePath = GetFilePathFromArray(originalFilePaths, file);
 
 
-                string tempFile = Path.GetTempFileName();
-                file.Download(tempFile);
-
-                using (var originalFile = new FileStream(originalFilePath, FileMode.Open, FileAccess.Read))
-                using (Stream fileFromServer = File.Open(tempFile, FileMode.Open))
+                string tempFile = Guid.NewGuid().ToString();
+                try
                 {
-                    long fileOffset = 0;
-                    var dataFromOriginalFile = new byte[1024];
-                    var dataFromServerFile = new byte[dataFromOriginalFile.Length];
-                    bool fExit = false;
-                    while (!fExit)
+                    file.Download(tempFile);
+
+                    using (var originalFile = new FileStream(originalFilePath, FileMode.Open, FileAccess.Read))
+                    using (Stream fileFromServer = File.Open(tempFile, FileMode.Open))
                     {
-                        int bytesRead = fileFromServer.Read(dataFromServerFile, 0, dataFromServerFile.Length);
-
-                        if (0 == bytesRead)
+                        long fileOffset = 0;
+                        var dataFromOriginalFile = new byte[1024];
+                        var dataFromServerFile = new byte[dataFromOriginalFile.Length];
+                        bool fExit = false;
+                        while (!fExit)
                         {
-                            fExit = true;
-                        }
-                        else
-                        {
-                            fileOffset += bytesRead;
+                            int bytesRead = fileFromServer.Read(dataFromServerFile, 0, dataFromServerFile.Length);
 
-                            int bytesRead2 = originalFile.Read(dataFromOriginalFile, 0, bytesRead);
-                            Assert.IsTrue(bytesRead == bytesRead2);
+                            if (0 == bytesRead)
+                            {
+                                fExit = true;
+                            }
+                            else
+                            {
+                                fileOffset += bytesRead;
 
-                            EnsureBuffersMatch(dataFromOriginalFile, dataFromServerFile, bytesRead);
+                                int bytesRead2 = originalFile.Read(dataFromOriginalFile, 0, bytesRead);
+                                Assert.IsTrue(bytesRead == bytesRead2);
+
+                                EnsureBuffersMatch(dataFromOriginalFile, dataFromServerFile, bytesRead);
+                            }
                         }
+
+                        Assert.IsTrue(originalFile.Length == fileOffset, "Did not process the expected file length");
                     }
-
-                    Assert.IsTrue(originalFile.Length == fileOffset, "Did not process the expected file length");
                 }
-
-                File.Delete(tempFile);
+                finally
+                {
+                    if (File.Exists(tempFile))
+                    {
+                        File.Delete(tempFile);
+                    }
+                }
             }
         }
 
