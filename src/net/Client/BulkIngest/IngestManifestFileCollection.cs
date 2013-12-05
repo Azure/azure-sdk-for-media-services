@@ -21,6 +21,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -32,7 +33,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
         internal const string EntitySet = "IngestManifestFiles";
         private readonly Lazy<IQueryable<IIngestManifestFile>> _query;
-        private readonly IMediaDataServiceContext _dataContext;
         private readonly IngestManifestAssetData _parentIngestManifestAsset;
 
 
@@ -44,10 +44,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         internal IngestManifestFileCollection(MediaContextBase mediaContext, IIngestManifestAsset parentIngestManifestAsset)
             : base(mediaContext)
         {
+            MediaServicesClassFactory factory = this.MediaContext.MediaServicesClassFactory;
+            this._query = new Lazy<IQueryable<IIngestManifestFile>>(() => factory.CreateDataServiceContext().CreateQuery<IngestManifestFileData>(EntitySet));
 
-            this.MediaContext = mediaContext;
-            this._dataContext = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
-            this._query = new Lazy<IQueryable<IIngestManifestFile>>(() => this._dataContext.CreateQuery<IngestManifestFileData>(EntitySet));
             if (parentIngestManifestAsset != null)
             {
                 this._parentIngestManifestAsset = (IngestManifestAssetData)parentIngestManifestAsset;
@@ -109,8 +108,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 token.ThrowIfCancellationRequested();
 
                 IngestManifestAssetCollection.VerifyManifestAsset(ingestManifestAsset);
-                if (!File.Exists(filePath)) { throw new FileNotFoundException(String.Format(CultureInfo.InvariantCulture, StringTable.BulkIngestProvidedFileDoesNotExist, filePath)); }
-                FileInfo info = new FileInfo(filePath);
 
                 IMediaDataServiceContext dataContext = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
 
@@ -119,24 +116,27 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
                 IngestManifestFileData data = new IngestManifestFileData
                 {
-                    Name = info.Name,
+                    Name = Path.GetFileName(filePath),
                     MimeType = mimeType,
                     ParentIngestManifestId = ingestManifestAsset.ParentIngestManifestId,
                     ParentIngestManifestAssetId = ingestManifestAsset.Id,
                     Path = filePath,
                 };
 
-                SetEncryptionSettings(ingestManifestAsset, info, options, data);
+                SetEncryptionSettings(ingestManifestAsset, options, data);
 
                 dataContext.AddObject(EntitySet, data);
 
-                Task<IIngestManifestFile> task = dataContext.SaveChangesAsync(data).ContinueWith<IIngestManifestFile>(t =>
-                {
-                    t.ThrowIfFaulted();
-                    token.ThrowIfCancellationRequested();
-                    IngestManifestFileData ingestManifestFile = (IngestManifestFileData)t.Result.AsyncState;                   
-                    return ingestManifestFile;
-                });
+                MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+                Task<IIngestManifestFile> task = retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(data))
+                    .ContinueWith<IIngestManifestFile>(t =>
+                    {
+                        t.ThrowIfFaulted();
+                        token.ThrowIfCancellationRequested();
+                        IngestManifestFileData ingestManifestFile = (IngestManifestFileData)t.Result.AsyncState;                   
+                        return ingestManifestFile;
+                    });
 
                 return task.Result;
 
@@ -146,7 +146,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
         }
 
-        private static void SetEncryptionSettings(IIngestManifestAsset ingestManifestAsset, FileInfo info, AssetCreationOptions options, IngestManifestFileData data)
+        private static void SetEncryptionSettings(IIngestManifestAsset ingestManifestAsset, AssetCreationOptions options, IngestManifestFileData data)
         {
             if (options.HasFlag(AssetCreationOptions.StorageEncrypted))
             {
@@ -157,11 +157,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 }
                 using (var fileEncryption = new FileEncryption(contentKeyData.GetClearKeyValue(), EncryptionUtils.GetKeyIdAsGuid(contentKeyData.Id)))
                 {
-                    if (!fileEncryption.IsInitializationVectorPresent(info.Name))
+                    if (!fileEncryption.IsInitializationVectorPresent(data.Name))
                     {
-                        fileEncryption.CreateInitializationVectorForFile(info.Name);
+                        fileEncryption.CreateInitializationVectorForFile(data.Name);
                     }
-                    ulong iv = fileEncryption.GetInitializationVectorForFile(info.Name);
+                    ulong iv = fileEncryption.GetInitializationVectorForFile(data.Name);
 
                     data.IsEncrypted = true;
                     data.EncryptionKeyId = fileEncryption.GetKeyIdentifierAsString();
@@ -200,7 +200,5 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
             set { throw new NotSupportedException(); }
         }
-
-
     }
 }

@@ -14,11 +14,12 @@
 // limitations under the License.
 // </license>
 
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
-    public abstract class BaseEntity<T> : IMediaContextContainer
+    public abstract class BaseEntity : IMediaContextContainer
     {
-        private  MediaContextBase _mediaContextBase;
+        private MediaContextBase _mediaContextBase;
 
         public virtual void SetMediaContext(MediaContextBase value)
         {
@@ -29,5 +30,20 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             return _mediaContextBase;
         }
+
+        protected void LoadProperty(IMediaDataServiceContext dataContext, string propertyName)
+        {
+            LoadProperty(dataContext, this, propertyName);
+        }
+
+        protected void LoadProperty(IMediaDataServiceContext dataContext, BaseEntity entity, string propertyName)
+        {
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+            retryPolicy.ExecuteAction(() => dataContext.LoadProperty(entity, propertyName));
+        }
+    }
+
+    public abstract class BaseEntity<T> : BaseEntity // todo: remove this class in a separate check-in. It will require a change to all entities.
+    {
     }
 }

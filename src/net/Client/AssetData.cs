@@ -21,6 +21,7 @@ using System.Data.Services.Common;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
+using Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -28,19 +29,22 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// Represents an asset that can be an input to jobs or tasks.
     /// </summary>
     [DataServiceKey("Id")]
-    internal partial class AssetData : BaseEntity<IAsset>,IAsset
+    internal partial class AssetData : BaseEntity<IAsset>, IAsset
     {
         private const string ContentKeysPropertyName = "ContentKeys";
+        private const string DeliveryPoliciesPropertyName = "DeliveryPolicies";
         private const string LocatorsPropertyName = "Locators";
         private const string ParentAssetsPropertyName = "ParentAssets";
 
         private AssetFileCollection _fileCollection;
         private ReadOnlyCollection<ILocator> _locatorCollection;
         private IList<IContentKey> _contentKeyCollection;
+        private IList<IAssetDeliveryPolicy> _deliveryPolicyCollection;
         private ReadOnlyCollection<IAsset> _parentAssetCollection;
         private MediaContextBase _mediaContextBase;
 
         private readonly object _contentKeyLocker = new object();
+        private readonly object _deliveryPolicyLocker = new object();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AssetData"/> class.
@@ -49,8 +53,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             this.Locators = new List<LocatorData>();
             this.ContentKeys = new List<ContentKeyData>();
+            this.DeliveryPolicies = new List<AssetDeliveryPolicyData>();
             this.Files = new List<AssetFileData>();
-            
+
         }
 
         /// <summary>
@@ -70,10 +75,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public List<ContentKeyData> ContentKeys { get; set; }
 
         /// <summary>
+        /// Gets the delivery policies associated with the asset.
+        /// </summary>
+        /// <value>A collection of <see cref="IAssetDeliveryPolicy"/> associated with the Asset.</value>
+        public List<AssetDeliveryPolicyData> DeliveryPolicies { get; set; }
+
+        /// <summary>
         /// Gets a collection of files contained by the asset.
         /// </summary>
         /// <value>A collection of files contained by the Asset.</value>
-        AssetFileBaseCollection IAsset.AssetFiles 
+        AssetFileBaseCollection IAsset.AssetFiles
         {
             get
             {
@@ -112,12 +123,33 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     {
                         IMediaDataServiceContext dataContext = this._mediaContextBase.MediaServicesClassFactory.CreateDataServiceContext();
                         dataContext.AttachTo(AssetCollection.AssetSet, this);
-                        dataContext.LoadProperty(this, ContentKeysPropertyName);
+
+                        LoadProperty(dataContext, ContentKeysPropertyName);
 
                         this._contentKeyCollection = new LinkCollection<IContentKey, ContentKeyData>(dataContext, this, ContentKeysPropertyName, this.ContentKeys);
                     }
 
                     return this._contentKeyCollection;
+                }
+            }
+        }
+
+        IList<IAssetDeliveryPolicy> IAsset.DeliveryPolicies
+        {
+            get
+            {
+                lock (_deliveryPolicyLocker)
+                {
+                    if ((this._deliveryPolicyCollection == null) && !string.IsNullOrWhiteSpace(this.Id))
+                    {
+                        IMediaDataServiceContext dataContext = this._mediaContextBase.MediaServicesClassFactory.CreateDataServiceContext();
+                        dataContext.AttachTo(AssetCollection.AssetSet, this);
+                        LoadProperty(dataContext, DeliveryPoliciesPropertyName);
+
+                        this._deliveryPolicyCollection = new LinkCollection<IAssetDeliveryPolicy, AssetDeliveryPolicyData>(dataContext, this, DeliveryPoliciesPropertyName, this.DeliveryPolicies);
+                    }
+
+                    return this._deliveryPolicyCollection;
                 }
             }
         }
@@ -136,7 +168,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
                     IMediaDataServiceContext dataContext = this._mediaContextBase.MediaServicesClassFactory.CreateDataServiceContext();
                     dataContext.AttachTo(AssetCollection.AssetSet, this);
-                    dataContext.LoadProperty(this, LocatorsPropertyName);
+                    LoadProperty(dataContext, LocatorsPropertyName);
                     if (this.Locators != null)
                     {
                         this._locatorCollection = this.Locators.ToList<ILocator>().AsReadOnly();
@@ -163,7 +195,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 {
                     IMediaDataServiceContext dataContext = this._mediaContextBase.MediaServicesClassFactory.CreateDataServiceContext();
                     dataContext.AttachTo(AssetCollection.AssetSet, this);
-                    dataContext.LoadProperty(this, ParentAssetsPropertyName);
+                    LoadProperty(dataContext, ParentAssetsPropertyName);
 
                     this._parentAssetCollection = this.ParentAssets.ToList<IAsset>().AsReadOnly();
                 }
@@ -172,7 +204,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
         }
 
-       
+
 
         /// <summary>
         /// Inits the cloud media context.
@@ -183,6 +215,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             this._mediaContextBase = context;
             InvalidateLocatorsCollection();
             InvalidateContentKeysCollection();
+            InvalidateDeliveryPoliciesCollection();
             InvalidateFilesCollection();
             if (context != null)
             {
@@ -220,8 +253,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 {
                     throw new UriFormatException(StringTable.InvalidAssetUriException);
                 }
-                
-            } 
+
+            }
         }
 
         /// <summary>
@@ -238,7 +271,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             MediaRetryPolicy retryPolicy = this._mediaContextBase.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
 
-            return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(this));
+            return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(this))
+                .ContinueWith<IAsset>(
+                    t =>
+                    {
+                        t.ThrowIfFaulted();
+                        AssetData data = (AssetData)t.Result.AsyncState;
+                        return data;
+                    });
         }
 
         /// <summary>
@@ -264,10 +304,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             AssetCollection.VerifyAsset(this);
 
-
             IMediaDataServiceContext dataContext = this._mediaContextBase.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(AssetCollection.AssetSet, this);
             this.InvalidateContentKeysCollection();
+            this.InvalidateDeliveryPoliciesCollection();
             dataContext.DeleteObject(this);
 
             MediaRetryPolicy retryPolicy = this._mediaContextBase.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
@@ -282,6 +322,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             this.ContentKeys.Clear();
             this._contentKeyCollection = null;
+        }
+
+        /// <summary>
+        /// Invalidates the content key collection.
+        /// </summary>
+        internal void InvalidateDeliveryPoliciesCollection()
+        {
+            this.DeliveryPolicies.Clear();
+            this._deliveryPolicyCollection = null;
         }
 
         /// <summary>
@@ -328,7 +377,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             InitCloudMediaContext(value);
         }
-        
+
         public override MediaContextBase GetMediaContext()
         {
             return _mediaContextBase;

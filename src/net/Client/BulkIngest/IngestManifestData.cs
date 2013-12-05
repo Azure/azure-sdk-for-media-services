@@ -23,6 +23,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -87,7 +88,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             IMediaDataServiceContext dataContext = GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(IngestManifestCollection.EntitySet, this);
             dataContext.DeleteObject(this);
-            return dataContext.SaveChangesAsync(this);
+
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(this));
         }
 
 
@@ -190,7 +194,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                         }
                         else
                         {
-                            throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, StringTable.BulkIngestFileExists, destinationPath));
+                            throw new IOException(string.Format(CultureInfo.InvariantCulture, StringTable.BulkIngestFileExists, destinationPath));
                         }
                     }
 
@@ -394,7 +398,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             IMediaDataServiceContext dataContext = GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(IngestManifestCollection.EntitySet, this);
             dataContext.UpdateObject(this);
-            return dataContext.SaveChangesAsync(this);
+
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(this));
         }
 
         /// <summary>

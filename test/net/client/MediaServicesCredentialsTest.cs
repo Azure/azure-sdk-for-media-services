@@ -47,27 +47,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod()]
         [TestCategory("DailyBvtRun")]
-        public void MediaServicesCredentialsTestTokenReaquire()
-        {
-            var context1 = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
-
-            string account = WindowsAzureMediaServicesTestConfiguration.MediaServiceAccountName;
-            string key = WindowsAzureMediaServicesTestConfiguration.MediaServiceAccountKey;
-            MediaServicesCredentials credentials = new MediaServicesCredentials(account, key)
-            {
-                AccessToken = context1.Credentials.AccessToken,
-                TokenExpiration = DateTime.UtcNow.AddYears(-1)
-            };
-
-            var context2 = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext(credentials);
-
-            Assert.IsTrue(context2.Credentials.TokenExpiration > DateTime.UtcNow.AddMinutes(-10)); 
-
-            context2.Assets.FirstOrDefault();
-        }
-
-        [TestMethod()]
-        [TestCategory("DailyBvtRun")]
         public void MediaServicesCredentialsTestGetToken()
         {
             MediaServicesCredentials target = WindowsAzureMediaServicesTestConfiguration.CreateMediaServicesCredentials();

@@ -33,7 +33,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         internal const string FileSet = "Files";
 
-        private readonly Lazy<IQueryable<IAssetFile>> _assetFileQuery;
+        private readonly Lazy<IQueryable<IAssetFile>> _assetFileQuery; 
         private readonly IAsset _parentAsset;
 
         /// <summary>
@@ -43,7 +43,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         internal AssetFileCollection(MediaContextBase cloudMediaContext)
             : base(cloudMediaContext)
         {
-            this._assetFileQuery = new Lazy<IQueryable<IAssetFile>>(() => cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<AssetFileData>(FileSet));
+            MediaServicesClassFactory factory = this.MediaContext.MediaServicesClassFactory;
+            this._assetFileQuery = new Lazy<IQueryable<IAssetFile>>(() => factory.CreateDataServiceContext().CreateQuery<AssetFileData>(FileSet));
         }
 
         /// <summary>
@@ -55,7 +56,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             : this(cloudMediaContext)
         {
             _parentAsset = parentAsset;
-            this._assetFileQuery = new Lazy<IQueryable<IAssetFile>>(() => cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<AssetFileData>(FileSet));
+            MediaServicesClassFactory factory = this.MediaContext.MediaServicesClassFactory;
+            this._assetFileQuery = new Lazy<IQueryable<IAssetFile>>(() => factory.CreateDataServiceContext().CreateQuery<AssetFileData>(FileSet));
         }
 
         /// <summary>

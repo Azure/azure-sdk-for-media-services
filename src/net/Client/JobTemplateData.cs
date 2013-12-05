@@ -25,6 +25,7 @@
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using System.Xml.Linq;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -70,7 +71,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     {
                         IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
                         dataContext.AttachTo(JobTemplateBaseCollection.JobTemplateSet, this);
-                        dataContext.LoadProperty(this, TaskTemplatesPropertyName);
+                        LoadProperty(dataContext, TaskTemplatesPropertyName);
 
                         this.ResolveTaskTemplateInputsAndOuputs();
                     }
@@ -130,8 +131,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             this.InnerSave(dataContext);
 
-            return dataContext
-                .SaveChangesAsync(SaveChangesOptions.Batch, this)
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(SaveChangesOptions.Batch, this))
                 .ContinueWith(
                     t =>
                     {
@@ -139,8 +141,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
                         JobTemplateData data = (JobTemplateData)t.Result.AsyncState;
 
-                        dataContext.CreateQuery<JobTemplateData>(JobTemplateBaseCollection.JobTemplateSet).Where(jt => jt.Id == data.Id).First();
-                        dataContext.LoadProperty(data, TaskTemplatesPropertyName);
+                        LoadProperty(dataContext, data, TaskTemplatesPropertyName);
                     });
         }
 
@@ -175,7 +176,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             dataContext.AttachTo(JobTemplateBaseCollection.JobTemplateSet, this);
             dataContext.DeleteObject(this);
 
-            return dataContext.SaveChangesAsync(this);
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(this));
         }
 
         /// <summary>
@@ -203,7 +206,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             return (int)type;
         }
 
-        private static void ProtectTaskConfiguration(TaskTemplateData taskTemplate, ref X509Certificate2 certToUse, IMediaDataServiceContext dataContext)
+        private void ProtectTaskConfiguration(TaskTemplateData taskTemplate, ref X509Certificate2 certToUse, IMediaDataServiceContext dataContext)
         {
             using (ConfigurationEncryption configEncryption = new ConfigurationEncryption())
             {
@@ -217,11 +220,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 if (certToUse == null)
                 {
                     // Get the certificate to use to encrypt the configuration encryption key.
-                    certToUse = ContentKeyBaseCollection.GetCertificateToEncryptContentKey(dataContext, ContentKeyType.ConfigurationEncryption);
+                    certToUse = ContentKeyBaseCollection.GetCertificateToEncryptContentKey(GetMediaContext(), ContentKeyType.ConfigurationEncryption);
                 }
 
                 // Create a content key object to hold the encryption key.
-                ContentKeyData contentKeyData = ContentKeyBaseCollection.CreateConfigurationContentKey(configEncryption, certToUse);
+                ContentKeyData contentKeyData = ContentKeyBaseCollection.InitializeConfigurationContentKey(configEncryption, certToUse);
                 dataContext.AddObject(ContentKeyCollection.ContentKeySet, contentKeyData);
             }
         }

@@ -20,6 +20,7 @@ using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -53,6 +54,18 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
         /// <summary>
+        /// Asynchronously creates a content key with the specifies key identifier and value.
+        /// </summary>
+        /// <param name="keyId">The key identifier.</param>
+        /// <param name="contentKey">The value of the content key.</param>
+        /// <param name="name">A friendly name for the content key.</param>
+        /// <param name="contentKeyType">Type of content key to create.</param>
+        /// <returns>
+        /// A function delegate that returns the future result to be available through the Task&lt;IContentKey&gt;.
+        /// </returns>
+        public abstract Task<IContentKey> CreateAsync(Guid keyId, byte[] contentKey, string name, ContentKeyType contentKeyType);
+
+        /// <summary>
         /// Creates a content key with the specifies key identifier and value.
         /// </summary>
         /// <param name="keyId">The key identifier.</param>
@@ -62,6 +75,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             return this.Create(keyId, contentKey, string.Empty);
         }
+
+        /// <summary>
+        /// Creates a content key with the specifies key identifier and value.
+        /// </summary>
+        /// <param name="keyId">The key identifier.</param>
+        /// <param name="contentKey">The value of the content key.</param>
+        /// <param name="name">A friendly name for the content key.</param>
+        /// <param name="contentKeyType">Type of content key to create.</param>
+        /// <returns>A <see cref="IContentKey"/> that can be associated with an <see cref="IAsset"/>.</returns>
+        public abstract IContentKey Create(Guid keyId, byte[] contentKey, string name, ContentKeyType contentKeyType);
 
         /// <summary>
         /// Asynchronously creates a content key with the specifies key identifier and value.
@@ -99,7 +122,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="fileEncryption">The file encryption.</param>
         /// <param name="cert">The cert.</param>
         /// <returns>The content key.</returns>
-        internal static ContentKeyData CreateStorageContentKey(FileEncryption fileEncryption, X509Certificate2 cert)
+        internal static ContentKeyData InitializeStorageContentKey(FileEncryption fileEncryption, X509Certificate2 cert)
         {
             byte[] encryptedContentKey = fileEncryption.EncryptContentKeyToCertificate(cert);
 
@@ -124,7 +147,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="name">The name.</param>
         /// <param name="cert">The cert.</param>
         /// <returns>The content key.</returns>
-        internal static ContentKeyData CreateCommonContentKey(Guid keyId, byte[] contentKey, string name, X509Certificate2 cert)
+        internal static ContentKeyData InitializeCommonContentKey(Guid keyId, byte[] contentKey, string name, X509Certificate2 cert)
         {
             byte[] encryptedContentKey = CommonEncryption.EncryptContentKeyToCertificate(cert, contentKey);
 
@@ -143,12 +166,53 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
         /// <summary>
+        /// Creates an envelope encryption content key.
+        /// </summary>
+        /// <param name="keyId">The key id.</param>
+        /// <param name="contentKey">The content key data.</param>
+        /// <param name="name">The name.</param>
+        /// <param name="cert">The cert.</param>
+        /// <returns>The content key.</returns>
+        internal static ContentKeyData InitializeEnvelopeContentKey(Guid keyId, byte[] contentKey, string name, X509Certificate2 cert)
+        {
+            if (cert == null)
+            {
+                throw new ArgumentNullException("cert");
+            }
+
+            if (contentKey == null)
+            {
+                throw new ArgumentNullException("contentKey");
+            }
+
+            if (contentKey.Length != EncryptionUtils.KeySizeInBytesForAes128)
+            {
+                throw new ArgumentOutOfRangeException("contentKey", "Envelope Encryption content keys are 128-bits (16 bytes) in length.");
+            }
+
+            byte[] encryptedContentKey = EncryptionUtils.EncryptSymmetricKeyData(cert, contentKey);
+
+            ContentKeyData contentKeyData = new ContentKeyData
+            {
+                Id = EncryptionUtils.GetKeyIdentifierAsString(keyId),
+                EncryptedContentKey = Convert.ToBase64String(encryptedContentKey),
+                ContentKeyType = (int)ContentKeyType.EnvelopeEncryption,
+                ProtectionKeyId = cert.Thumbprint,
+                ProtectionKeyType = (int)ProtectionKeyType.X509CertificateThumbprint,
+                Name = name,
+                Checksum = EncryptionUtils.CalculateChecksum(contentKey, keyId)
+            };
+
+            return contentKeyData;
+        }
+
+        /// <summary>
         /// Creates the configuration content key.
         /// </summary>
         /// <param name="configEncryption">The config encryption.</param>
         /// <param name="cert">The cert.</param>
         /// <returns>The content key.</returns>
-        internal static ContentKeyData CreateConfigurationContentKey(ConfigurationEncryption configEncryption, X509Certificate2 cert)
+        internal static ContentKeyData InitializeConfigurationContentKey(ConfigurationEncryption configEncryption, X509Certificate2 cert)
         {
             byte[] encryptedContentKey = configEncryption.EncryptContentKeyToCertificate(cert);
 
@@ -171,12 +235,17 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="dataContext">The data context.</param>
         /// <param name="contentKeyType">Type of the content key.</param>
         /// <returns>The content key.</returns>
-        internal static string GetProtectionKeyIdForContentKey(IMediaDataServiceContext dataContext, ContentKeyType contentKeyType)
+        internal static string GetProtectionKeyIdForContentKey(MediaContextBase mediaContext, ContentKeyType contentKeyType)
         {
             // First query Nimbus to find out what certificate to encrypt the content key with.
             string uriString = string.Format(CultureInfo.InvariantCulture, "/GetProtectionKeyId?contentKeyType={0}", Convert.ToInt32(contentKeyType, CultureInfo.InvariantCulture));
             Uri uriGetProtectionKeyId = new Uri(uriString, UriKind.Relative);
-            IEnumerable<string> results = dataContext.Execute<string>(uriGetProtectionKeyId);
+
+            IMediaDataServiceContext dataContext = mediaContext.MediaServicesClassFactory.CreateDataServiceContext();
+
+            MediaRetryPolicy retryPolicy = mediaContext.MediaServicesClassFactory.GetQueryRetryPolicy();
+
+            IEnumerable<string> results = retryPolicy.ExecuteAction<IEnumerable<string>>(() => dataContext.Execute<string>(uriGetProtectionKeyId));
 
             return results.Single();
         }
@@ -184,19 +253,25 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets the certificate for protection key id.
         /// </summary>
-        /// <param name="dataContext">The data context.</param>
+        /// <param name="mediaContext">The media context.</param>
         /// <param name="protectionKeyId">The protection key id.</param>
         /// <returns>The content key.</returns>
-        internal static X509Certificate2 GetCertificateForProtectionKeyId(IMediaDataServiceContext dataContext, string protectionKeyId)
+        internal static X509Certificate2 GetCertificateForProtectionKeyId(MediaContextBase mediaContext, string protectionKeyId)
         {
             // First check to see if we have the cert in our store already.
             X509Certificate2 certToUse = EncryptionUtils.GetCertificateFromStore(protectionKeyId);
+
+            IMediaDataServiceContext dataContext = mediaContext.MediaServicesClassFactory.CreateDataServiceContext();
 
             if ((certToUse == null) && (dataContext != null))
             {
                 // If not, download it from Nimbus to use.
                 Uri uriGetProtectionKey = new Uri(string.Format(CultureInfo.InvariantCulture, "/GetProtectionKey?protectionKeyId='{0}'", protectionKeyId), UriKind.Relative);
-                IEnumerable<string> results2 = dataContext.Execute<string>(uriGetProtectionKey);
+
+                MediaRetryPolicy retryPolicy = mediaContext.MediaServicesClassFactory.GetQueryRetryPolicy();
+
+                IEnumerable<string> results2 = retryPolicy.ExecuteAction<IEnumerable<string>>(() => dataContext.Execute<string>(uriGetProtectionKey));
+
                 string certString = results2.Single();
 
                 byte[] certBytes = Convert.FromBase64String(certString);
@@ -212,14 +287,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets the certificate to encrypt content key.
         /// </summary>
-        /// <param name="dataContext">The data context.</param>
+        /// <param name="mediaContext">The media context.</param>
         /// <param name="contentKeyType">Type of the content key.</param>
         /// <returns>The content key.</returns>
-        internal static X509Certificate2 GetCertificateToEncryptContentKey(IMediaDataServiceContext dataContext, ContentKeyType contentKeyType)
+        internal static X509Certificate2 GetCertificateToEncryptContentKey(MediaContextBase mediaContext, ContentKeyType contentKeyType)
         {
-            string thumbprint = GetProtectionKeyIdForContentKey(dataContext, contentKeyType);
+            string thumbprint = GetProtectionKeyIdForContentKey(mediaContext, contentKeyType);
 
-            return GetCertificateForProtectionKeyId(dataContext, thumbprint);
+            return GetCertificateForProtectionKeyId(mediaContext, thumbprint);
         }
     }
 }

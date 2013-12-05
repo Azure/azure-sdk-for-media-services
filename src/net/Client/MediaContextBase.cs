@@ -14,12 +14,15 @@
 // limitations under the License.
 // </license>
 
+using Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization;
+using Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption;
+
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
     /// Represents a base media context containing collections to operate on.
     /// </summary>
-    public abstract class MediaContextBase
+    public abstract partial class MediaContextBase
     {
         /// <summary>
         /// Gets a collection to operate on AccessPolicies.
@@ -86,6 +89,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Gets the collection of notification endpoints available in the system.
         /// </summary>
         public abstract NotificationEndPointCollection NotificationEndPoints { get; }
+
 
         /// <summary>
         /// Gets or sets a factory for creating data service context instances prepared for Windows Azure Media Services.

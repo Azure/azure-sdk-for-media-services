@@ -18,13 +18,15 @@ using System;
 using System.Linq;
 using Microsoft.WindowsAzure.MediaServices.Client.OAuth;
 using Microsoft.WindowsAzure.MediaServices.Client.Versioning;
+using Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization;
+using Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
     /// Describes the context from which all entities in the Microsoft WindowsAzure Media Services platform can be accessed.
     /// </summary>
-    public class CloudMediaContext : MediaContextBase
+    public partial class CloudMediaContext : MediaContextBase
     {
         /// <summary>
         /// The certificate thumbprint for Nimbus services.
@@ -38,25 +40,26 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
         private static readonly Uri _mediaServicesUri = new Uri("https://media.windows.net/");
 
-        private readonly AssetCollection _assets;
-        private readonly AssetFileCollection _files;
-        private readonly AccessPolicyBaseCollection _accessPolicies;
-        private readonly ContentKeyCollection _contentKeys;
-        private readonly JobBaseCollection _jobs;
-        private readonly JobTemplateBaseCollection _jobTemplates;
-        private readonly NotificationEndPointCollection _notificationEndPoints;
-        private readonly MediaProcessorBaseCollection _mediaProcessors;
-        private readonly LocatorBaseCollection _locators;
-        private readonly IngestManifestCollection _ingestManifests;
-        private readonly IngestManifestAssetCollection _ingestManifestAssets;
-        private readonly IngestManifestFileCollection _ingestManifestFiles;
-        private readonly StorageAccountBaseCollection _storageAccounts;
+        private AssetCollection _assets;
+        private AssetFileCollection _files;
+        private AccessPolicyBaseCollection _accessPolicies;
+        private ContentKeyCollection _contentKeys;
+        private JobBaseCollection _jobs;
+        private JobTemplateBaseCollection _jobTemplates;
+        private NotificationEndPointCollection _notificationEndPoints;
+        private MediaProcessorBaseCollection _mediaProcessors;
+        private LocatorBaseCollection _locators;
+        private IngestManifestCollection _ingestManifests;
+        private IngestManifestAssetCollection _ingestManifestAssets;
+        private IngestManifestFileCollection _ingestManifestFiles;
+        private StorageAccountBaseCollection _storageAccounts;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CloudMediaContext"/> class.
         /// </summary>
         /// <param name="accountName">The Microsoft WindowsAzure Media Services account name to authenticate with.</param>
         /// <param name="accountKey">The Microsoft WindowsAzure Media Services account key to authenticate with.</param>
+        [Obsolete]
         public CloudMediaContext(string accountName, string accountKey)
             : this(CloudMediaContext._mediaServicesUri, new MediaServicesCredentials(accountName, accountKey))
         {
@@ -68,6 +71,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="apiServer">A <see cref="Uri"/> representing a the API endpoint.</param>
         /// <param name="accountName">The Microsoft WindowsAzure Media Services account name to authenticate with.</param>
         /// <param name="accountKey">The Microsoft WindowsAzure Media Services account key to authenticate with.</param>
+        [Obsolete]
         public CloudMediaContext(Uri apiServer, string accountName, string accountKey)
             : this(apiServer, new MediaServicesCredentials(accountName, accountKey))
         {
@@ -81,6 +85,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="accountKey">The Microsoft WindowsAzure Media Services account key to authenticate with.</param>
         /// <param name="scope">The scope of authorization.</param>
         /// <param name="acsBaseAddress">The access control endpoint to authenticate against.</param>
+        [Obsolete]
         public CloudMediaContext(Uri apiServer, string accountName, string accountKey, string scope, string acsBaseAddress)
             : this(apiServer, new MediaServicesCredentials(accountName, accountKey, scope, acsBaseAddress))
         {
@@ -113,6 +118,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             this.MediaServicesClassFactory = new AzureMediaServicesClassFactory(apiServer, dataServiceAdapter, versionAdapter, this);
 
+            InitializeCollections();
+            InitializeLiveCollections();
+            InitializeDynamicEncryptionCollections();
+        }
+
+        private void InitializeCollections()
+        {
             this._jobs = new JobBaseCollection(this);
             this._jobTemplates = new JobTemplateBaseCollection(this);
             this._assets = new AssetCollection(this);
@@ -123,7 +135,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             this._mediaProcessors = new MediaProcessorBaseCollection(this);
             this._locators = new LocatorBaseCollection(this);
             this._ingestManifests = new IngestManifestCollection(this);
-            this._ingestManifestAssets = new IngestManifestAssetCollection(this,null);
+            this._ingestManifestAssets = new IngestManifestAssetCollection(this, null);
             this._ingestManifestFiles = new IngestManifestFileCollection(this, null);
             this._storageAccounts = new StorageAccountBaseCollection(this);
         }
@@ -204,9 +216,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         public override IStorageAccount DefaultStorageAccount
         {
-            get 
-            { 
-                return this.StorageAccounts.Where(c=>c.IsDefault == true).FirstOrDefault(); 
+            get
+            {
+                return this.StorageAccounts.Where(c => c.IsDefault == true).FirstOrDefault();
             }
         }
 

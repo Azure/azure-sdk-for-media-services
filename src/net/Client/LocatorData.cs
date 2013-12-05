@@ -61,7 +61,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 {
                     IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
                     dataContext.AttachTo(LocatorBaseCollection.LocatorSet, this);
-                    dataContext.LoadProperty(this, LocatorBaseCollection.AccessPolicyPropertyName);
+                    LoadProperty(dataContext, LocatorBaseCollection.AccessPolicyPropertyName);
                 }
 
                 return this._accessPolicy;
@@ -79,7 +79,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 {
                     IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
                     dataContext.AttachTo(LocatorBaseCollection.LocatorSet, this);
-                    dataContext.LoadProperty(this, LocatorBaseCollection.AssetPropertyName);
+                    LoadProperty(dataContext, LocatorBaseCollection.AssetPropertyName);
                 }
 
                 return this._asset;
@@ -175,10 +175,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                         t.ThrowIfFaulted();
 
                         LocatorData data = (LocatorData)t.Result.AsyncState;
-                        var cloudContextAsset = (AssetData) GetMediaContext().Assets.Where(c => c.Id == data.AssetId).FirstOrDefault();
-                        if (cloudContextAsset != null)
+
+                        if (GetMediaContext() != null)
                         {
-                            cloudContextAsset.InvalidateLocatorsCollection();
+                            var cloudContextAsset = (AssetData)GetMediaContext().Assets.Where(c => c.Id == data.AssetId).FirstOrDefault();
+                            if (cloudContextAsset != null)
+                            {
+                                cloudContextAsset.InvalidateLocatorsCollection();
+                            }
                         }
 
                         if (data.Asset != null)

@@ -42,7 +42,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <param name="job">The job.</param>
         /// <param name="tasks">The tasks.</param>
-        /// <param name="mediaContext"></param>
+        /// <param name="mediaContext">The <seealso cref="MediaContextBase"/> instance.</param>
         internal TaskCollection(IJob job, IEnumerable<ITask> tasks, MediaContextBase mediaContext)
         {
             this._tasks = new List<ITask>(tasks);
