@@ -22,7 +22,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// <summary>
     /// Represents a base media context containing collections to operate on.
     /// </summary>
-    public abstract class MediaContextBase
+    public abstract partial class MediaContextBase
     {
         /// <summary>
         /// Gets a collection to operate on AccessPolicies.
@@ -90,21 +90,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         public abstract NotificationEndPointCollection NotificationEndPoints { get; }
 
-        /// <summary>
-        /// Gets the content key authorization policy options.
-        /// </summary>
-        /// <value>
-        /// The content key authorization policy options.
-        /// </value>
-        public abstract ContentKeyAuthorizationPolicyOptionCollection ContentKeyAuthorizationPolicyOptions { get; }
-
-        /// <summary>
-        /// Gets the content key authorization policies.
-        /// </summary>
-        /// <value>
-        /// The content key authorization policies.
-        /// </value>
-        public abstract ContentKeyAuthorizationPolicyCollection ContentKeyAuthorizationPolicies { get; }
 
         /// <summary>
         /// Gets or sets a factory for creating data service context instances prepared for Windows Azure Media Services.
@@ -127,43 +112,5 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <remarks>The default value is 2.</remarks>
         public int NumberOfConcurrentTransfers { get; set; }
-
-        /// <summary>
-        /// Gets the asset delivery policies.
-        /// </summary>
-        /// <value>
-        /// The asset delivery policies.
-        /// </value>
-        public abstract AssetDeliveryPolicyCollection AssetDeliveryPolicies { get; }
-
-        /// <summary>
-        /// Gets the collection of channels in the system.
-        /// </summary>
-        public abstract ChannelBaseCollection Channels { get; }
-
-        /// <summary>
-        /// Gets the collection of programs in the system.
-        /// </summary>
-        public abstract ProgramBaseCollection Programs { get; }
-
-        /// <summary>
-        /// Gets the collection of origins in the system.
-        /// </summary>
-        public abstract OriginBaseCollection Origins { get; }
-
-        /// <summary>
-        /// Gets the collection of operation in the system.
-        /// </summary>
-        public abstract OperationBaseCollection Operations { get; }
-
-        /// <summary>
-        /// Gets the collection of origin metrics in the system.
-        /// </summary>
-        public abstract OriginMetricBaseCollection OriginMetrics { get; }
-
-        /// <summary>
-        /// Gets the collection of channel metrics in the system.
-        /// </summary>
-        public abstract ChannelMetricBaseCollection ChannelMetrics { get; }
     }
 }
