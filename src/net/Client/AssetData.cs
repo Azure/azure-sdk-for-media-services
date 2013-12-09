@@ -39,7 +39,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private AssetFileCollection _fileCollection;
         private ReadOnlyCollection<ILocator> _locatorCollection;
         private IList<IContentKey> _contentKeyCollection;
-        private IList<IAssetDeliveryPolicy> _deliveryPolicyCollection;
         private ReadOnlyCollection<IAsset> _parentAssetCollection;
         private MediaContextBase _mediaContextBase;
 
@@ -73,12 +72,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// The content keys.
         /// </value>
         public List<ContentKeyData> ContentKeys { get; set; }
-
-        /// <summary>
-        /// Gets the delivery policies associated with the asset.
-        /// </summary>
-        /// <value>A collection of <see cref="IAssetDeliveryPolicy"/> associated with the Asset.</value>
-        public List<AssetDeliveryPolicyData> DeliveryPolicies { get; set; }
 
         /// <summary>
         /// Gets a collection of files contained by the asset.
@@ -134,25 +127,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
         }
 
-        IList<IAssetDeliveryPolicy> IAsset.DeliveryPolicies
-        {
-            get
-            {
-                lock (_deliveryPolicyLocker)
-                {
-                    if ((this._deliveryPolicyCollection == null) && !string.IsNullOrWhiteSpace(this.Id))
-                    {
-                        IMediaDataServiceContext dataContext = this._mediaContextBase.MediaServicesClassFactory.CreateDataServiceContext();
-                        dataContext.AttachTo(AssetCollection.AssetSet, this);
-                        LoadProperty(dataContext, DeliveryPoliciesPropertyName);
-
-                        this._deliveryPolicyCollection = new LinkCollection<IAssetDeliveryPolicy, AssetDeliveryPolicyData>(dataContext, this, DeliveryPoliciesPropertyName, this.DeliveryPolicies);
-                    }
-
-                    return this._deliveryPolicyCollection;
-                }
-            }
-        }
 
         /// <summary>
         /// Gets the Locators associated with this asset.
@@ -203,8 +177,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 return this._parentAssetCollection;
             }
         }
-
-
 
         /// <summary>
         /// Inits the cloud media context.
@@ -322,15 +294,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             this.ContentKeys.Clear();
             this._contentKeyCollection = null;
-        }
-
-        /// <summary>
-        /// Invalidates the content key collection.
-        /// </summary>
-        internal void InvalidateDeliveryPoliciesCollection()
-        {
-            this.DeliveryPolicies.Clear();
-            this._deliveryPolicyCollection = null;
         }
 
         /// <summary>

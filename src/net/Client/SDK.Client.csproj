@@ -126,8 +126,11 @@
     <Compile Include="CollectionBase.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="DynamicEncryption\AssetData.cs" />
     <Compile Include="DynamicEncryption\CloudMediaContext.cs" />
+    <Compile Include="DynamicEncryption\IAsset.cs" />
     <Compile Include="DynamicEncryption\MediaContextBase.cs" />
+    <Compile Include="DynamicEncryption\OutputAsset.cs" />
     <Compile Include="Live\AsyncHelper.cs" />
     <Compile Include="ConfigurationEncryptionHelper.cs" />
     <Compile Include="ContentKeyAuthorization\ContentKeyAuthorizationPolicyCollection.cs" />

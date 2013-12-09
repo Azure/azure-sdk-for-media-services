@@ -66,7 +66,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             _mediaContext.Locators.CreateSasLocator(asset, policy);
 
             Assert.IsNotNull(asset, "Asset should be non null");
-            Assert.AreNotEqual(Guid.Empty, asset.Id, "Asset ID shuold not be null");
+            Assert.AreNotEqual(Guid.Empty, asset.Id, "Asset ID should not be null");
             Assert.AreEqual(1, asset.AssetFiles.Count(), "Child files count wrong");
             Assert.IsTrue(asset.Options == AssetCreationOptions.StorageEncrypted, "AssetCreationOptions did not have the expected value");
 
@@ -103,7 +103,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             _mediaContext.Locators.CreateSasLocator(asset, policy);
 
             Assert.IsNotNull(asset, "Asset should be non null");
-            Assert.AreNotEqual(Guid.Empty, asset.Id, "Asset ID shuold not be null");
+            Assert.AreNotEqual(Guid.Empty, asset.Id, "Asset ID should not be null");
             Assert.IsTrue(asset.Options == AssetCreationOptions.StorageEncrypted, "AssetCreationOptions did not have the expected value");
 
             VerifyFileAndContentKeyMetadataForStorageEncryption(asset, _mediaContext);
@@ -125,7 +125,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             asset.ContentKeys.Add(key);
 
             Assert.IsNotNull(asset, "Asset should be non null");
-            Assert.AreNotEqual(Guid.Empty, asset.Id, "Asset ID shuold not be null");
+            Assert.AreNotEqual(Guid.Empty, asset.Id, "Asset ID should not be null");
             Assert.AreEqual(1, asset.AssetFiles.Count(), "Child files count wrong");
             Assert.IsTrue(asset.Options == AssetCreationOptions.CommonEncryptionProtected, "AssetCreationOptions did not have the expected value");
 
@@ -164,7 +164,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             asset.ContentKeys.Add(key);
 
             Assert.IsNotNull(asset, "Asset should be non null");
-            Assert.AreNotEqual(Guid.Empty, asset.Id, "Asset ID shuold not be null");
+            Assert.AreNotEqual(Guid.Empty, asset.Id, "Asset ID should not be null");
             Assert.IsTrue(asset.Options == AssetCreationOptions.CommonEncryptionProtected, "AssetCreationOptions did not have the expected value");
 
             VerifyFileAndContentKeyMetadataForCommonEncryption(asset);

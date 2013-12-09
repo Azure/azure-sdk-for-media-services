@@ -14,9 +14,6 @@
 // limitations under the License.
 // </license>
 
-using Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization;
-using Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption;
-
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>

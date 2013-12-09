@@ -18,8 +18,6 @@ using System;
 using System.Linq;
 using Microsoft.WindowsAzure.MediaServices.Client.OAuth;
 using Microsoft.WindowsAzure.MediaServices.Client.Versioning;
-using Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization;
-using Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
