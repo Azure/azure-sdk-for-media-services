@@ -584,7 +584,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         public void DeleteActiveExistingManifest()
         {
             IIngestManifest ingestManifest = CreateManifestWithAssetsAndVerifyIt(_context);
-            VerifyAssetStateAndDelete(IngestManifestState.Activating, ingestManifest.Id);
+            VerifyAssetStateAndDelete(IngestManifestState.Active, ingestManifest.Id);
         }
 
         [TestMethod]
@@ -625,7 +625,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             VerifyManifestAsset(ingestManifestAssetInfo2);
 
             Assert.AreEqual(2, ingestManifestAssetInfo2.IngestManifestFiles.Count(), "Files collection size is not matching expectations");
-           return ingestManifest;
+            ingestManifest = context.IngestManifests.Where(c => c.Id == ingestManifest.Id).FirstOrDefault();
+            
+            Assert.AreEqual(ingestManifest.State,IngestManifestState.Active);
+            
+            return ingestManifest;
         }
 
 
