@@ -55,7 +55,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestMethod]
         [Priority(1)]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("DailyBvtRun")]
         public void ShouldCreateAssetFile()
         {
             IAsset asset = _mediaContext.Assets.Create("Empty", AssetCreationOptions.StorageEncrypted);
@@ -112,7 +111,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(1)]
-        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldCreateSingleFileAssetWithNoLocatorUsingOveloadSync()
         {
             IAsset asset = _mediaContext.Assets.Create("Empty", AssetCreationOptions.StorageEncrypted);
@@ -214,7 +212,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [DeploymentItem(@"Media\SmallWmv2.wmv", "Media")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         [Priority(1)]
-        [TestCategory("DailyBvtRun")]
         public void ShouldCreateEmptyAssetUploadTwoFilesSetPrimaryAndDownloadFile()
         {
             IAsset asset = _mediaContext.Assets.Create("Test", AssetCreationOptions.None);
@@ -311,22 +308,29 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             var downloads = new List<Task>();
             var paths = new List<string>();
-            foreach (IAssetFile file in _mediaContext.Files.Where(c => c.ParentAssetId == asset.Id))
+            try
             {
-                string path = Path.GetTempFileName();
-                paths.Add(path);
-                downloads.Add(file.DownloadAsync(path, blobTransfer, locator, CancellationToken.None));
-            }
-            Task.WaitAll(downloads.ToArray());
+                foreach (IAssetFile file in _mediaContext.Files.Where(c => c.ParentAssetId == asset.Id))
+                {
+                    string path = Guid.NewGuid().ToString();
+                    paths.Add(path);
+                    downloads.Add(file.DownloadAsync(path, blobTransfer, locator, CancellationToken.None));
+                }
+                Task.WaitAll(downloads.ToArray());
 
-            int i = 0;
-            foreach (Task download in downloads)
+                int i = 0;
+                foreach (Task download in downloads)
+                {
+                    Assert.IsTrue(download.IsCompleted);
+                    Assert.IsFalse(download.IsCanceled);
+                    Assert.IsNull(download.Exception);
+                    Assert.IsTrue(File.Exists(paths[i]));
+                    i++;
+                }
+            }
+            finally
             {
-                Assert.IsTrue(download.IsCompleted);
-                Assert.IsFalse(download.IsCanceled);
-                Assert.IsNull(download.Exception);
-                Assert.IsTrue(File.Exists(paths[i]));
-                i++;
+                paths.ForEach(f => { if (File.Exists(f)) File.Delete(f); });
             }
         }
 
@@ -411,7 +415,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestMethod]
         [Priority(1)]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("DailyBvtRun")]
         public void ShouldDownloadAssetFile()
         {
             IAsset asset = CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
@@ -422,7 +425,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(1)]
-        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldDownloadSameAssetFile20TimesIdenticallyAsStorageSDK()
         {
             
@@ -501,7 +503,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("DailyBvtRun")]
         public void ShouldDeleteParentAssetAndGetParentCount()
         {
             IAsset asset;
@@ -543,8 +544,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@".\Resources\interview.wmv", "Content")]
-        [TestCategory("DailyBvtRun")]
-        public void ShouldCreateAssetWithSingleFile()
+       public void ShouldCreateAssetWithSingleFile()
         {
             string assetFilePath = @"Content\interview.wmv";
 
@@ -561,8 +561,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@".\Resources\TestFiles", "TestFiles")]
-        [TestCategory("DailyBvtRun")]
-        public void ShouldCreateAssetAsyncWithMultipleFiles()
+       public void ShouldCreateAssetAsyncWithMultipleFiles()
         {
             string[] files = Directory.GetFiles("TestFiles");
 
@@ -598,7 +597,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestMethod]
         [DeploymentItem(@".\Resources\interview.wmv", "Content")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("DailyBvtRun")]
         public void ShouldReportProgressForFile()
         {
             string fileName = _smallWmv;
@@ -652,10 +650,32 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("DailyBvtRun")]
-        public void ShouldDeleteAsset()
+       public void ShouldDeleteAsset()
         {
             IAsset asset = CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
+
+
+            Assert.AreEqual(AssetState.Initialized, asset.State);
+            foreach (ILocator locator in asset.Locators)
+            {
+                locator.Delete();
+            }
+
+            asset.Delete();
+
+            Assert.IsNull(_mediaContext.Assets.Where(a => a.Id == asset.Id).SingleOrDefault());
+
+            CloudMediaContext newContext = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
+
+            Assert.IsNull(newContext.Assets.Where(a => a.Id == asset.Id).SingleOrDefault());
+        }
+
+        [TestMethod]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [TestCategory("DailyBvtRun")]
+        public void ShouldDeleteEmptyAsset()
+        {
+            IAsset asset = _mediaContext.Assets.Create("ShouldDeleteEmptyAsset", AssetCreationOptions.None);
 
 
             Assert.AreEqual(AssetState.Initialized, asset.State);
@@ -879,59 +899,66 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
           
             foreach (var assetFile in asset.AssetFiles)
             {
-                string downloadPathForWamsSdk = Path.GetTempFileName();
-                string downloadPathForStorageSdk = Path.GetTempFileName();
-                
-                var blob = container.GetBlobReferenceFromServer(assetFile.Name);
-                Assert.IsTrue(blob.Exists(),"Blob for asset file is not found in corresponding container");
-                blob.FetchAttributes();
-                
-                //Downloading using WAMS SDK
-                assetFile.DownloadProgressChanged += AssetTests_OnDownloadProgress;
-                assetFile.Download(downloadPathForWamsSdk);
-                assetFile.DownloadProgressChanged -= AssetTests_OnDownloadProgress;
-                Assert.AreEqual(100, _downloadProgress); 
-                
-                string hashValueForWAMSSDKDownload = GetHashValueForFileMd5CheckSum(downloadPathForWamsSdk);
+                string downloadPathForWamsSdk = Guid.NewGuid().ToString();
+                string downloadPathForStorageSdk = Guid.NewGuid().ToString();
 
-                 //Comapring checksum if it is present
-                if (blob.Properties.ContentMD5 != null)
+                try
                 {
-                    //Assert.AreEqual(hashValueForlocalSourceFile, blob.Properties.ContentMD5, "MD5 CheckSums between blob file and source file  are different");
-                    Assert.AreEqual(hashValueForWAMSSDKDownload, blob.Properties.ContentMD5, "MD5 CheckSums between blob file and wams sdk download are different");
-                   
-                }
+                    var blob = container.GetBlobReferenceFromServer(assetFile.Name);
+                    Assert.IsTrue(blob.Exists(), "Blob for asset file is not found in corresponding container");
+                    blob.FetchAttributes();
 
+                    //Downloading using WAMS SDK
+                    assetFile.DownloadProgressChanged += AssetTests_OnDownloadProgress;
+                    assetFile.Download(downloadPathForWamsSdk);
+                    assetFile.DownloadProgressChanged -= AssetTests_OnDownloadProgress;
+                    Assert.AreEqual(100, _downloadProgress);
 
-                if (performStorageSdkDownloadVerification)
-                {
-                    //Downloading Using Storage SDK
-                    var stream = File.OpenWrite(downloadPathForStorageSdk);
-                    blob.DownloadToStream(stream);
-                    stream.Close();
-                    stream.Dispose();
+                    string hashValueForWAMSSDKDownload = GetHashValueForFileMd5CheckSum(downloadPathForWamsSdk);
 
-                    string hashValueForStorageSdkDownload = GetHashValueForFileMd5CheckSum(downloadPathForStorageSdk);
-                    Assert.AreEqual(hashValueForWAMSSDKDownload, hashValueForStorageSdkDownload, "MD5 CheckSums for wams and storage downloads are different");
+                    //Comparing checksum if it is present
                     if (blob.Properties.ContentMD5 != null)
                     {
-                        Assert.AreEqual(hashValueForStorageSdkDownload, blob.Properties.ContentMD5, "MD5 CheckSums between blob file and storage sdk download are different");
-                    }
-                    var azuresdkDownloadInfo = new FileInfo(downloadPathForStorageSdk);
-                    Assert.AreEqual(azuresdkDownloadInfo.Length, blob.Properties.Length, "Azure SDK download file length in bytes is not matching length of asset file in blob");
-                    File.Delete(downloadPathForStorageSdk);
-                }
+                        //Assert.AreEqual(hashValueForlocalSourceFile, blob.Properties.ContentMD5, "MD5 CheckSums between blob file and source file  are different");
+                        Assert.AreEqual(hashValueForWAMSSDKDownload, blob.Properties.ContentMD5, "MD5 CheckSums between blob file and wams sdk download are different");
 
-                var wamssdkDownloadInfo = new FileInfo(downloadPathForWamsSdk);
-                
-                Assert.AreEqual(wamssdkDownloadInfo.Length, blob.Properties.Length, "WAMS SDK download file length in bytes is not matching length of asset file in blob");
-                
-                
-                File.Delete(downloadPathForWamsSdk);
-                
-            }
-           
-         
+                    }
+
+
+                    if (performStorageSdkDownloadVerification)
+                    {
+                        //Downloading Using Storage SDK
+                        var stream = File.OpenWrite(downloadPathForStorageSdk);
+                        blob.DownloadToStream(stream);
+                        stream.Close();
+                        stream.Dispose();
+
+                        string hashValueForStorageSdkDownload = GetHashValueForFileMd5CheckSum(downloadPathForStorageSdk);
+                        Assert.AreEqual(hashValueForWAMSSDKDownload, hashValueForStorageSdkDownload, "MD5 CheckSums for wams and storage downloads are different");
+                        if (blob.Properties.ContentMD5 != null)
+                        {
+                            Assert.AreEqual(hashValueForStorageSdkDownload, blob.Properties.ContentMD5, "MD5 CheckSums between blob file and storage sdk download are different");
+                        }
+                        var azuresdkDownloadInfo = new FileInfo(downloadPathForStorageSdk);
+                        Assert.AreEqual(azuresdkDownloadInfo.Length, blob.Properties.Length, "Azure SDK download file length in bytes is not matching length of asset file in blob");
+                    }
+
+                    var wamssdkDownloadInfo = new FileInfo(downloadPathForWamsSdk);
+
+                    Assert.AreEqual(wamssdkDownloadInfo.Length, blob.Properties.Length, "WAMS SDK download file length in bytes is not matching length of asset file in blob");
+                }
+                finally
+                {
+                    if (File.Exists(downloadPathForStorageSdk))
+                    {
+                        File.Delete(downloadPathForStorageSdk);
+                    }
+                    if (File.Exists(downloadPathForWamsSdk))
+                    {
+                        File.Delete(downloadPathForWamsSdk);
+                    }
+                }                
+            }         
         }
 
         private static string GetHashValueForFileMd5CheckSum(string filepath)
@@ -990,16 +1017,29 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         {
             IAsset asset = _mediaContext.Assets.Create("TestWithMultipleFiles", AssetCreationOptions.None);
             VerifyAsset(asset);
-            DirectoryInfo info = Directory.CreateDirectory(Guid.NewGuid().ToString());
 
-            for (int i = 0; i < expected; i++)
+            DirectoryInfo info = null;
+            try
             {
-                string fileName;
-                string fullFilePath = CreateNewFileFromOriginal(info, out fileName);
-                IAssetFile file = asset.AssetFiles.Create(fileName);
-                file.Upload(fullFilePath);
+                info = Directory.CreateDirectory(Guid.NewGuid().ToString());
+
+                for (int i = 0; i < expected; i++)
+                {
+                    string fullFilePath = null;
+                    string fileName;
+                    fullFilePath = CreateNewFileFromOriginal(info, out fileName);
+                    IAssetFile file = asset.AssetFiles.Create(fileName);
+                    file.Upload(fullFilePath);
+                }
+                Assert.AreEqual(expected, _mediaContext.Files.Where(c => c.ParentAssetId == asset.Id).Count());
             }
-            Assert.AreEqual(expected, _mediaContext.Files.Where(c => c.ParentAssetId == asset.Id).Count());
+            finally
+            {
+                if (info != null)
+                {
+                    info.Delete(recursive: true);
+                }
+            }
         }
 
         private  string CreateNewFileFromOriginal(DirectoryInfo info, out string fileName)
@@ -1077,27 +1117,37 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         {
             IAsset asset = _mediaContext.Assets.Create("TestWithMultipleFiles", AssetCreationOptions.None);
             VerifyAsset(asset);
-            DirectoryInfo info = Directory.CreateDirectory(Guid.NewGuid().ToString());
-
-            var files = new List<Task>();
-            var client = new BlobTransferClient();
-            IAccessPolicy policy = _mediaContext.AccessPolicies.Create("Write", TimeSpan.FromMinutes(20), AccessPermissions.Write);
-            ILocator locator = _mediaContext.Locators.CreateSasLocator(asset, policy);
-
-
-            for (int i = 0; i < expected; i++)
+            DirectoryInfo info = null;
+            try
             {
-                string fileName;
-                string fullFilePath = CreateNewFileFromOriginal(info, out fileName);
-                IAssetFile file = asset.AssetFiles.Create(fileName);
-                files.Add(file.UploadAsync(fullFilePath, client, locator, CancellationToken.None));
+                info = Directory.CreateDirectory(Guid.NewGuid().ToString());
+
+                var files = new List<Task>();
+                var client = new BlobTransferClient();
+                IAccessPolicy policy = _mediaContext.AccessPolicies.Create("Write", TimeSpan.FromMinutes(20), AccessPermissions.Write);
+                ILocator locator = _mediaContext.Locators.CreateSasLocator(asset, policy);
+
+                for (int i = 0; i < expected; i++)
+                {
+                    string fileName;
+                    string fullFilePath = CreateNewFileFromOriginal(info, out fileName);
+                    IAssetFile file = asset.AssetFiles.Create(fileName);
+                    files.Add(file.UploadAsync(fullFilePath, client, locator, CancellationToken.None));
+                }
+                Task.WaitAll(files.ToArray());
+                foreach (Task task in files)
+                {
+                    Assert.IsTrue(task.IsCompleted);
+                    Assert.IsFalse(task.IsFaulted);
+                    Assert.IsNull(task.Exception);
+                }
             }
-            Task.WaitAll(files.ToArray());
-            foreach (Task task in files)
+            finally
             {
-                Assert.IsTrue(task.IsCompleted);
-                Assert.IsFalse(task.IsFaulted);
-                Assert.IsNull(task.Exception);
+                if (info != null)
+                {
+                    info.Delete(recursive: true);
+                }
             }
             return asset;
         }

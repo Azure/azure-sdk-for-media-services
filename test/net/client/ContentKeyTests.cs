@@ -732,7 +732,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 string originalFilePath = GetFilePathFromArray(originalFilePaths, file);
 
 
-                string tempFile = Path.GetTempFileName();
+                string tempFile = Guid.NewGuid().ToString();
+                try
+                {
                 file.Download(tempFile);
 
                 using (var originalFile = new FileStream(originalFilePath, FileMode.Open, FileAccess.Read))
@@ -763,8 +765,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
                     Assert.IsTrue(originalFile.Length == fileOffset, "Did not process the expected file length");
                 }
-
+                }
+                finally
+                {
+                    if (File.Exists(tempFile))
+                    {
                 File.Delete(tempFile);
+            }
+        }
             }
         }
 

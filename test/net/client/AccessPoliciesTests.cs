@@ -76,6 +76,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("DailyBvtRun")]
         public void ShouldCreateAccessPolicyAsyncWhenCreateAsyncCalled()
         {
             // Arrange         
@@ -97,6 +98,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("DailyBvtRun")]
         public void ShouldRemoveAccessPolicyFromCollectionWhenDeleteCalled()
         {
             // Arrange
@@ -141,6 +143,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("DailyBvtRun")]
         public void ShouldDeleteAccessPolicyAsyncWhenDeleteAsyncCalled()
         {
             // Arrange
@@ -167,6 +170,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(0)]
+        [TestCategory("DailyBvtRun")]
         public void TestAccessPolicyCreateRetry()
         {
             var dataContextMock = new Mock<IMediaDataServiceContext>();
@@ -195,6 +199,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(0)]
+        [TestCategory("DailyBvtRun")]
         public void TestAccessPolicyDeleteRetry()
         {
             var dataContextMock = new Mock<IMediaDataServiceContext>();
