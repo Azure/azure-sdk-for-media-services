@@ -36,13 +36,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         internal const string NimbusRestApiCertificateSubject = "CN=NimbusRestApi";
 
-        private const string MediaServicesAccessScope = "urn:WindowsAzureMediaServices";
         private static readonly Uri _mediaServicesUri = new Uri("https://media.windows.net/");
-        private static readonly string[] _mediaServicesAcsBaseAddressArray = new string[]
-            {
-                "https://wamsprodglobal001acs.accesscontrol.windows.net",
-                "https://wamsprodglobal002acs.accesscontrol.windows.net"   
-            };
 
         private readonly AssetCollection _assets;
         private readonly AssetFileCollection _files;
@@ -64,7 +58,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="accountName">The Microsoft WindowsAzure Media Services account name to authenticate with.</param>
         /// <param name="accountKey">The Microsoft WindowsAzure Media Services account key to authenticate with.</param>
         public CloudMediaContext(string accountName, string accountKey)
-            : this(CloudMediaContext._mediaServicesUri, accountName, accountKey, CloudMediaContext.MediaServicesAccessScope, CloudMediaContext._mediaServicesAcsBaseAddressArray)
+            : this(CloudMediaContext._mediaServicesUri, new MediaServicesCredentials(accountName, accountKey))
         {
         }
 
@@ -75,7 +69,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="accountName">The Microsoft WindowsAzure Media Services account name to authenticate with.</param>
         /// <param name="accountKey">The Microsoft WindowsAzure Media Services account key to authenticate with.</param>
         public CloudMediaContext(Uri apiServer, string accountName, string accountKey)
-            : this(apiServer, accountName, accountKey, scope: CloudMediaContext.MediaServicesAccessScope, acsBaseAddressArray: CloudMediaContext._mediaServicesAcsBaseAddressArray)
+            : this(apiServer, new MediaServicesCredentials(accountName, accountKey))
         {
         }
 
@@ -88,25 +82,33 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="scope">The scope of authorization.</param>
         /// <param name="acsBaseAddress">The access control endpoint to authenticate against.</param>
         public CloudMediaContext(Uri apiServer, string accountName, string accountKey, string scope, string acsBaseAddress)
-            : this(apiServer, accountName, accountKey, scope, new string[] { acsBaseAddress })
-        {         
+            : this(apiServer, new MediaServicesCredentials(accountName, accountKey, scope, acsBaseAddress))
+        {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CloudMediaContext"/> class.
         /// </summary>
-        /// <param name="apiServer">A <see cref="Uri"/> representing a the API endpoint.</param>
-        /// <param name="accountName">The Microsoft WindowsAzure Media Services account name to authenticate with.</param>
-        /// <param name="accountKey">The Microsoft WindowsAzure Media Services account key to authenticate with.</param>
-        /// <param name="scope">The scope of authorization.</param>
-        /// <param name="acsBaseAddressArray">The list of access control endpoints to try to authenticate against.</param>
-        public CloudMediaContext(Uri apiServer, string accountName, string accountKey, string scope, string[] acsBaseAddressArray)
+        /// <param name="credentials">Microsoft WindowsAzure Media Services credentials.</param>
+        public CloudMediaContext(MediaServicesCredentials credentials)
+            : this(_mediaServicesUri, credentials)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CloudMediaContext"/> class.
+        /// </summary>
+        /// <param name="apiServer">A <see cref="Uri"/> representing the API endpoint.</param>
+        /// <param name="credentials">Microsoft WindowsAzure Media Services credentials.</param>
+        public CloudMediaContext(Uri apiServer, MediaServicesCredentials credentials)
         {
             this.ParallelTransferThreadCount = 10;
             this.NumberOfConcurrentTransfers = 2;
 
+            this.Credentials = credentials;
+
             OAuthDataServiceAdapter dataServiceAdapter =
-                new OAuthDataServiceAdapter(accountName, accountKey, scope, acsBaseAddressArray, NimbusRestApiCertificateThumbprint, NimbusRestApiCertificateSubject);
+                new OAuthDataServiceAdapter(credentials, NimbusRestApiCertificateThumbprint, NimbusRestApiCertificateSubject);
             ServiceVersionAdapter versionAdapter = new ServiceVersionAdapter(KnownApiVersions.Current);
 
             this.MediaServicesClassFactory = new AzureMediaServicesClassFactory(apiServer, dataServiceAdapter, versionAdapter, this);
@@ -125,6 +127,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             this._ingestManifestFiles = new IngestManifestFileCollection(this, null);
             this._storageAccounts = new StorageAccountBaseCollection(this);
         }
+
+        /// <summary>
+        /// Gets Microsoft WindowsAzure Media Services credentials used for authenticating requests.
+        /// </summary>
+        public MediaServicesCredentials Credentials { get; private set; }
 
         /// <summary>
         /// Gets the collection of assets in the system.
