@@ -19,7 +19,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -27,7 +26,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// Represents a Task output asset.
     /// </summary>
     /// <remarks>This is used when creating task to specify properties for a Task's output.</remarks>
-    internal class OutputAsset : BaseEntity<IAsset>, IAsset
+    internal partial class OutputAsset : BaseEntity<IAsset>, IAsset
     {
 
         /// <summary>
@@ -116,15 +115,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <value>A collection of <see cref="IContentKey"/> associated with the Asset.</value>
         public IList<IContentKey> ContentKeys
-        {
-            get { throw new NotSupportedException(); }
-        }
-
-        /// <summary>
-        /// Gets the delivery policies associated with the asset.
-        /// </summary>
-        /// <value>A collection of <see cref="IAssetDeliveryPolicy"/> associated with the Asset.</value>
-        public IList<IAssetDeliveryPolicy> DeliveryPolicies
         {
             get { throw new NotSupportedException(); }
         }

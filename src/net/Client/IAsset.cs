@@ -53,12 +53,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         ReadOnlyCollection<IAsset> ParentAssets { get; }
 
         /// <summary>
-        /// Gets the delivery policies associated with the asset.
-        /// </summary>
-        /// <value>A collection of <see cref="IAssetDeliveryPolicy"/> associated with the Asset.</value>
-        IList<IAssetDeliveryPolicy> DeliveryPolicies { get; }
-
-        /// <summary>
         /// Gets storage account name associated with the Asset
         /// </summary>
         string StorageAccountName { get; }

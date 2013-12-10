@@ -30,7 +30,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@".\Resources\interview.wmv", "Content")]
-        [TestCategory("DailyBvtRun")]
+       
         public void ShouldReturnSameLocatorCollectionAfterAssetRequery()
         {
             var asset = _mediaContext.Assets.Create("interview.wmv", AssetCreationOptions.StorageEncrypted);
@@ -46,8 +46,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@".\Resources\interview.wmv", "Content")]
-        [TestCategory("DailyBvtRun")]
-        public void ShouldReturnSameLocatorCollectionAfterAssetRequery2()
+       public void ShouldReturnSameLocatorCollectionAfterAssetRequery2()
         {
             var asset = _mediaContext.Assets.Create(Guid.NewGuid().ToString(), AssetCreationOptions.StorageEncrypted);
             FileInfo info = new FileInfo(@"Content\interview.wmv");
@@ -69,7 +68,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestMethod]
         [DeploymentItem(@".\Resources\interview.wmv", "Content")]
         [ExpectedException(typeof (InvalidOperationException))]
-        [TestCategory("DailyBvtRun")]
+        
         public void ShouldThrowUpdatingLocatorIfItsTypeIsNotOrigin()
         {
             // Arrange
@@ -451,7 +450,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@".\Resources\interview.wmv", "Content")]
-        [TestCategory("DailyBvtRun")]
+        
         public void ShouldUpdateExpiryTimeWhenUpdateLocatorCalledWithStartAndExpiryTime()
         {
             // Arrange            
@@ -481,7 +480,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@".\Resources\interview.wmv", "Content")]
-        [TestCategory("DailyBvtRun")]
+        
         public void ShouldUpdateExpiryTimeWhenUpdateLocatorAsyncCalledWithStartAndExpiryTime()
         {
             // Arrange          

@@ -45,7 +45,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("DailyBvtRun")]
         public void ShouldNotThrowWhenSavingFileInfoIfTheAssetIsInPublishedState()
         {
             IAsset asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
@@ -84,7 +83,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestMethod]
         [ExpectedException(typeof (ArgumentException))]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("DailyBvtRun")]
         public void ShouldThrowArgumentExceptionWhenUploadAsyncFileNameNotEqualToAssetFileName()
         {
             IAsset asset = _mediaContext.Assets.Create("test", AssetCreationOptions.None);
@@ -113,7 +111,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestMethod]
         [Priority(0)]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("DailyBvtRun")]
         public void When_Uploading_Multiple_Files_The_Progress_Event_Should_Only_Be_For_The_Bound_AssetFile()
         {
             IAsset asset = _mediaContext.Assets.Create("test", AssetCreationOptions.None);
@@ -160,7 +157,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("DailyBvtRun")]
         public void ShouldDownloadToFileFromAsset()
         {
             string fileUploaded = _smallWmv;
@@ -193,18 +189,28 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                     bytesDownloaded = e.BytesDownloaded;
                 };
 
-            assetFile.Download(fileDownloaded);
+            try
+            {
+                assetFile.Download(fileDownloaded);
 
-            Assert.IsTrue(File.Exists(fileDownloaded));
-            Assert.AreEqual(100, downloadProgress);
+                Assert.IsTrue(File.Exists(fileDownloaded));
+                Assert.AreEqual(100, downloadProgress);
 
-            var fileDownloadedInfo = new FileInfo(fileDownloaded);
+                var fileDownloadedInfo = new FileInfo(fileDownloaded);
 
-            Assert.AreEqual(fileUploadedInfo.Length, fileDownloadedInfo.Length);
-            Assert.AreEqual(fileDownloadedInfo.Length, bytesDownloaded);
+                Assert.AreEqual(fileUploadedInfo.Length, fileDownloadedInfo.Length);
+                Assert.AreEqual(fileDownloadedInfo.Length, bytesDownloaded);
 
-            asset = _mediaContext.Assets.Where(a => a.Id == asset.Id).Single();
-            Assert.AreEqual(1, asset.Locators.Count);
+                asset = _mediaContext.Assets.Where(a => a.Id == asset.Id).Single();
+                Assert.AreEqual(1, asset.Locators.Count);
+            }
+            finally
+            {
+                if (File.Exists(fileDownloaded))
+                {
+                    File.Delete(fileDownloaded);
+                }
+            }
         }
 
         [TestMethod]
@@ -242,18 +248,28 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                     bytesDownloaded = e.BytesDownloaded;
                 };
 
-            assetFile.Download(fileDownloaded);
+            try
+            {
+                assetFile.Download(fileDownloaded);
 
-            Assert.IsTrue(File.Exists(fileDownloaded));
-            Assert.AreEqual(100, downloadProgress);
+                Assert.IsTrue(File.Exists(fileDownloaded));
+                Assert.AreEqual(100, downloadProgress);
 
-            var fileDownloadedInfo = new FileInfo(fileDownloaded);
+                var fileDownloadedInfo = new FileInfo(fileDownloaded);
 
-            Assert.AreEqual(fileUploadedInfo.Length, fileDownloadedInfo.Length);
-            Assert.AreEqual(fileDownloadedInfo.Length, bytesDownloaded);
+                Assert.AreEqual(fileUploadedInfo.Length, fileDownloadedInfo.Length);
+                Assert.AreEqual(fileDownloadedInfo.Length, bytesDownloaded);
 
-            asset = _mediaContext.Assets.Where(a => a.Id == asset.Id).Single();
-            Assert.AreEqual(1, asset.Locators.Count);
+                asset = _mediaContext.Assets.Where(a => a.Id == asset.Id).Single();
+                Assert.AreEqual(1, asset.Locators.Count);
+            }
+            finally
+            {
+                if (File.Exists(fileDownloaded))
+                {
+                    File.Delete(fileDownloaded);
+                }
+            }
         }
 
         [TestMethod]
@@ -291,24 +307,33 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                     bytesDownloaded = e.BytesDownloaded;
                 };
 
-            assetFile.Download(fileDownloaded);
+            try
+            {
+                assetFile.Download(fileDownloaded);
 
-            Assert.IsTrue(File.Exists(fileDownloaded));
-            Assert.AreEqual(100, downloadProgress);
+                Assert.IsTrue(File.Exists(fileDownloaded));
+                Assert.AreEqual(100, downloadProgress);
 
-            var fileDownloadedInfo = new FileInfo(fileDownloaded);
+                var fileDownloadedInfo = new FileInfo(fileDownloaded);
 
-            Assert.AreEqual(fileUploadedInfo.Length, fileDownloadedInfo.Length);
-            Assert.AreEqual(fileDownloadedInfo.Length, bytesDownloaded);
+                Assert.AreEqual(fileUploadedInfo.Length, fileDownloadedInfo.Length);
+                Assert.AreEqual(fileDownloadedInfo.Length, bytesDownloaded);
 
-            asset = _mediaContext.Assets.Where(a => a.Id == asset.Id).Single();
-            Assert.AreEqual(1, asset.Locators.Count);
+                asset = _mediaContext.Assets.Where(a => a.Id == asset.Id).Single();
+                Assert.AreEqual(1, asset.Locators.Count);
+            }
+            finally
+            {
+                if (File.Exists(fileDownloaded))
+                {
+                    File.Delete(fileDownloaded);
+                }
+            }
         }
 
         [TestMethod]
         [Timeout(60000)]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("DailyBvtRun")]
         public void ShouldCancelDownloadToFileAsyncTaskAfter50Milliseconds()
         {
             string fileUploaded = _smallWmv;
@@ -331,11 +356,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                     NumberOfConcurrentTransfers = _mediaContext.NumberOfConcurrentTransfers,
                     ParallelTransferThreadCount = _mediaContext.ParallelTransferThreadCount
                 };
-            Task downloadToFileTask = assetFile.DownloadAsync(fileDownloaded, blobTransfer, locator, source.Token);
 
             Exception canceledException = null;
+            Task downloadToFileTask = null;
             try
             {
+                downloadToFileTask = assetFile.DownloadAsync(fileDownloaded, blobTransfer, locator, source.Token);
+
                 // Send a cancellation signal after 2 seconds.
                 Thread.Sleep(50);
                 source.Cancel();
@@ -347,6 +374,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             {
                 Assert.AreEqual(1, exception.InnerExceptions.Count);
                 canceledException = exception.InnerException;
+            }
+            finally
+            {
+                if (File.Exists(fileDownloaded))
+                {
+                    File.Delete(fileDownloaded);
+                }
             }
 
             Assert.IsNotNull(canceledException);
