@@ -1,4 +1,4 @@
-# Windows Azure Media Services SDK .NET 4 (2.4.3.0)
+# Windows Azure Media Services SDK .NET 4 (3.0.0.0)
 
 Windows Azure Media Services allows you to build a media distribution solution that can stream audio and video to Windows, iOS, Android, and other devices and platforms.To learn more, visit our [Developer Center](http://www.windowsazure.com/en-us/develop/media-services/).
 
@@ -19,8 +19,8 @@ To get the source code of our SDKs and samples via **git** just type:
 
 1. A Media Services account in a new or existing Windows Azure subscription. See the topic [How to Create a Media Services Account](http://www.windowsazure.com/en-us/manage/services/media-services/how-to-create-a-media-services-account/).
 2. Operating Systems: Windows 7, Windows 2008 R2, or Windows 8.
-3. .NET Framework 4.5 or .NET Framework 4.
-4. Visual Studio 2012 or Visual Studio 2010 SP1 (Professional, Premium, Ultimate, or Express).
+3. .NET Framework 4.
+4. Visual Studio 2012 above or Visual Studio 2010 SP1 (Professional, Premium, Ultimate, or Express).
 
 ### Building and Referencing the SDK
 
@@ -34,6 +34,9 @@ To build sdk sources and tests type following commands:
 
 This set of test allows you to verify Windows Azure Media Services .Net SDK functionality using your existing Windows Azure Media Services account. Please check out [Test instruction](https://github.com/WindowsAzure/azure-sdk-for-media-services/tree/master/test) on how to use it.
 
+## Windows Azure Media Services .NET SDK Extension
+
+If you want to simply your use of existing .NET SDK, here is the good news: please check out our [.NET SDK extension](https://github.com/WindowsAzure/azure-sdk-for-media-services-extensions/tree/master). This extension contains a set of extension methods and helpers for the Windows Azure Media Services SDK for .NET. It is a great contribution from our community. 
 
 ## Need Help?
 
@@ -47,3 +50,4 @@ If you encounter any bugs with the library please file an issue in the [Issues](
 
 ## Learn More
 [Windows Azure Media Services Developer Center](http://www.windowsazure.com/en-us/develop/media-services/)
+
