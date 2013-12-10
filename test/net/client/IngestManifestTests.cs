@@ -200,6 +200,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         /// Deleting empty manifest
         /// </summary>
         [TestMethod]
+        [TestCategory("DailyBvtRun")]
         public void CreateEmptyManifestAndDeleteIt()
         {
             IIngestManifest ingestManifest = CreateEmptyManifestAndVerifyIt();
@@ -225,6 +226,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         /// Creating empty manifest and updating it
         /// </summary>
         [TestMethod]
+        [TestCategory("DailyBvtRun")]
         public void CreateEmptyManifestAndUpdateIt()
         {
             IIngestManifest ingestManifest = CreateEmptyManifestAndVerifyIt();
@@ -452,6 +454,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [DeploymentItem(TestFile1, DeploymentFolder1)]
         [DeploymentItem(TestFile2, DeploymentFolder1)]
         [Priority(0)]
+        [TestCategory("DailyBvtRun")]
         public void EncryptManifestFilesAndVerifyThemAfterDeencryption()
         {
 
@@ -584,7 +587,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         public void DeleteActiveExistingManifest()
         {
             IIngestManifest ingestManifest = CreateManifestWithAssetsAndVerifyIt(_context);
-            VerifyAssetStateAndDelete(IngestManifestState.Activating, ingestManifest.Id);
+            VerifyAssetStateAndDelete(IngestManifestState.Active, ingestManifest.Id);
         }
 
         [TestMethod]
@@ -625,7 +628,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             VerifyManifestAsset(ingestManifestAssetInfo2);
 
             Assert.AreEqual(2, ingestManifestAssetInfo2.IngestManifestFiles.Count(), "Files collection size is not matching expectations");
-           return ingestManifest;
+            ingestManifest = context.IngestManifests.Where(c => c.Id == ingestManifest.Id).FirstOrDefault();
+            
+            Assert.AreEqual(ingestManifest.State,IngestManifestState.Active);
+            
+            return ingestManifest;
         }
 
 
