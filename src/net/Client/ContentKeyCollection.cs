@@ -142,7 +142,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             try
             {
                 Task<IContentKey> task = this.CreateAsync(keyId, contentKey, name, ContentKeyType.CommonEncryption);
-                task.Wait();
 
                 return task.Result;
             }

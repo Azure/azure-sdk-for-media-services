@@ -31,7 +31,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     internal partial class AssetData : BaseEntity<IAsset>, IAsset
     {
         private const string ContentKeysPropertyName = "ContentKeys";
-        private const string DeliveryPoliciesPropertyName = "DeliveryPolicies";
         private const string LocatorsPropertyName = "Locators";
         private const string ParentAssetsPropertyName = "ParentAssets";
 
@@ -42,7 +41,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private MediaContextBase _mediaContextBase;
 
         private readonly object _contentKeyLocker = new object();
-        private readonly object _deliveryPolicyLocker = new object();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AssetData"/> class.
