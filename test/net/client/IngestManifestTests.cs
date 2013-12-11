@@ -459,8 +459,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestCategory("DailyBvtRun")]
         public void EncryptManifestFilesAndVerifyThemAfterDeencryption()
         {
-
-
             List<IIngestManifestFile> files;
             IIngestManifest ingestManifestCreated;
             var path = CreateManifestEncryptFiles(out files, out ingestManifestCreated);
@@ -589,7 +587,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         public void DeleteActiveExistingManifest()
         {
             IIngestManifest ingestManifest = CreateManifestWithAssetsAndVerifyIt(_mediaContext);
-            VerifyAssetStateAndDelete(IngestManifestState.Active, ingestManifest.Id);
+            ingestManifest.Delete();
         }
 
         [TestMethod]
@@ -793,8 +791,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             Assert.AreEqual(2, ingestManifestAssetInfo2.IngestManifestFiles.Count(), "Files collection size is not matching expectations");
             ingestManifest = context.IngestManifests.Where(c => c.Id == ingestManifest.Id).FirstOrDefault();
-            
-            Assert.AreEqual(ingestManifest.State,IngestManifestState.Active);
             
            return ingestManifest;
         }
