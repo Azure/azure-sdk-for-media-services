@@ -18,6 +18,7 @@ using System;
 using System.ComponentModel;
 using System.Data.Services.Common;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -161,7 +162,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             dataContext.AttachTo(NotificationEndPointCollection.NotificationEndPoints, this);
             dataContext.UpdateObject(this);
 
-            return dataContext.SaveChangesAsync(this);
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(this));
         }
 
         /// <summary>
@@ -189,7 +192,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             dataContext.AttachTo(NotificationEndPointCollection.NotificationEndPoints, this);
             dataContext.DeleteObject(this);
 
-            return dataContext.SaveChangesAsync(this);
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(this));
         }
     }
 }

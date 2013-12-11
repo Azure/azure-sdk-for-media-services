@@ -16,6 +16,9 @@
 
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 using System;
+using Moq;
+using System.Threading.Tasks;
+using System.Net;
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Helpers
 {
     public class TestMediaServicesClassFactory : AzureMediaServicesClassFactory
@@ -54,6 +57,50 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Helpers
         public override MediaErrorDetectionStrategy GetQueryErrorDetectionStrategy()
         {
             return new WebRequestTransientErrorDetectionStrategy();
+        }
+
+        public static Mock<IMediaDataServiceContext> CreateSaveChangesMock<T>(Exception fakeException, int failCount,  BaseEntity<T> returnedData)
+        {
+            var dataContextMock = new Mock<IMediaDataServiceContext>();
+            var fakeResponse = new TestMediaDataServiceResponse { AsyncState = returnedData };
+            int exceptionCount = failCount;
+
+            dataContextMock.Setup((ctxt) => ctxt
+                .SaveChangesAsync(It.IsAny<object>()))
+                .Returns(() => Task.Factory.StartNew<IMediaDataServiceResponse>(() =>
+                {
+                    if (--exceptionCount > 0) throw fakeException;
+                    return fakeResponse;
+                }));
+
+            dataContextMock.Setup((ctxt) => ctxt
+                .SaveChanges())
+                .Returns(() => 
+                {
+                    if (--exceptionCount > 0) throw fakeException;
+                    return fakeResponse;
+                });
+
+            return dataContextMock;
+        }
+
+        public static Mock<IMediaDataServiceContext> CreateLoadPropertyMockConnectionClosed(int failCount, object entity)
+        {
+            var dataContextMock = new Mock<IMediaDataServiceContext>();
+            var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
+            int exceptionCount = failCount;
+
+            dataContextMock.Setup((ctxt) => ctxt.AttachTo(It.IsAny<string>(), entity));
+
+            dataContextMock.Setup((ctxt) => ctxt
+                .LoadProperty(entity, It.IsAny<string>()))
+                .Returns(() =>
+                {
+                    if (--exceptionCount > 0) throw fakeException;
+                    return null;
+                });
+
+            return dataContextMock;
         }
 
         private IMediaDataServiceContext _dataContext;

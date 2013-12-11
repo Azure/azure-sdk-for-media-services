@@ -64,6 +64,18 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         IEnumerable<TElement> Execute<TElement>(Uri requestUri);
 
         /// <summary>
+        /// Sends a request to the data service to execute a specific URI by using a
+        /// specific HTTP method.Not supported by the WCF Data Services 5.0 client for
+        /// Silverlight.
+        /// This overload expects the requestUri to end with a ServiceOperation or ServiceAction that returns void.
+        /// </summary>
+        /// <param name="requestUri">The URI to which the query request will be sent. The URI may be any valid data service URI. Can contain $ query parameters.</param>
+        /// <param name="httpMethod">The HTTP data transfer method used by the client.</param>
+        /// <param name="operationParameters">The operation parameters used.</param>
+        /// <returns>The response of the operation.</returns>
+        OperationResponse Execute(Uri requestUri, string httpMethod, params OperationParameter[] operationParameters);
+
+        /// <summary>
         /// Adds the specified object to the set of objects that the System.Data.Services.Client.DataServiceContext is tracking.
         // Remarks:
         ///     It does not follow the object graph and add related objects.  Any leading

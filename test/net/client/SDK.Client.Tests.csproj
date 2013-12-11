@@ -86,8 +86,14 @@
   <ItemGroup>
     <Compile Include="AccessPoliciesTests.cs" />
     <Compile Include="AssetFilesTests.cs" />
+    <Compile Include="IngestManifestAssetTests.cs" />
+    <Compile Include="JobTemplateTest.cs" />
+    <Compile Include="LinkCollectionTest.cs" />
     <Compile Include="BaseCollectionTest.cs" />
     <Compile Include="ContentKeyTests.cs" />
+    <Compile Include="IngestManifestFileTests.cs" />
+    <Compile Include="MediaServicesCredentialsTest.cs" />
+    <Compile Include="NotificationEndPointTests.cs" />
     <Compile Include="Helpers\TestMediaDataServiceResponse.cs" />
     <Compile Include="Helpers\TestMediaServicesClassFactory.cs" />
     <Compile Include="IngestManifestTests.cs" />
@@ -95,7 +101,6 @@
     <Compile Include="JobTests.StorageAccounts.cs" />
     <Compile Include="LocatorsTests.cs" />
     <Compile Include="MediaRetryPolicyTest.cs" />
-    <Compile Include="MediaServicesCredentialsTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AssetTests.cs" />
     <Compile Include="Helpers\SelfSignedCertificateFactory.cs" />
@@ -113,6 +118,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="Configuration\PlayReady Protection_ContentKey.xml" />
     <Content Include="Configuration\Smooth Streams to Apple HTTP Live Streams.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -181,6 +187,7 @@
     <None Include="App.Debug.config">
       <DependentUpon>App.config</DependentUpon>
       <IsTransformFile>True</IsTransformFile>
+      <SubType>Designer</SubType>
     </None>
     <None Include="App.IncrementVersion.config">
       <DependentUpon>App.config</DependentUpon>
@@ -196,8 +203,12 @@
     <None Include="Media\small.ismc">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="packages.config" />
-    <None Include="Properties\SlowCheetah\SlowCheetah.Transforms.targets" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Properties\SlowCheetah\SlowCheetah.Transforms.targets">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Data.Edm">
@@ -218,10 +229,7 @@
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.WindowsAzure.Configuration, Version=1.7.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.WindowsAzure.ConfigurationManager.2.0.2.0\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
-    </Reference>
+    <Reference Include="Microsoft.WindowsAzure.Configuration, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.WindowsAzure.Storage">
       <HintPath>..\packages\WindowsAzure.Storage.2.0.6.1\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
     </Reference>
@@ -257,7 +265,7 @@
   <PropertyGroup Label="SlowCheetah">
     <SlowCheetahToolsPath>$([System.IO.Path]::GetFullPath( $(MSBuildProjectDirectory)\..\..\..\packages\SlowCheetah.2.5.10.3\tools\))</SlowCheetahToolsPath>
     <SlowCheetah_EnableImportFromNuGet Condition=" '$(SC_EnableImportFromNuGet)'=='' ">true</SlowCheetah_EnableImportFromNuGet>
-    <SlowCheetah_NuGetImportPath Condition=" '$(SlowCheetah_NuGetImportPath)'=='' ">$([System.IO.Path]::GetFullPath( $(MSBuildProjectDirectory)\Properties\SlowCheetah\SlowCheetah.Transforms.targets ))</SlowCheetah_NuGetImportPath>
+    <SlowCheetah_NuGetImportPath Condition=" '$(SlowCheetah_NuGetImportPath)'=='' ">$([System.IO.Path]::GetFullPath( $(ProjectDir)..\packages\SlowCheetah.2.5.5\tools\SlowCheetah.Transforms.targets ))</SlowCheetah_NuGetImportPath>
     <SlowCheetahTargets Condition=" '$(SlowCheetah_EnableImportFromNuGet)'=='true' and Exists('$(SlowCheetah_NuGetImportPath)') ">$(SlowCheetah_NuGetImportPath)</SlowCheetahTargets>
   </PropertyGroup>
   <Import Project="$(NugetTargetPath)" Condition="Exists($(NugetTargetPath))" />

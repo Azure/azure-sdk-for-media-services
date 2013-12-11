@@ -122,7 +122,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     {
                         IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
                         dataContext.AttachTo(JobBaseCollection.JobSet, this);
-                        dataContext.LoadProperty(this, InputMediaAssetsPropertyName);
+                        LoadProperty(dataContext, InputMediaAssetsPropertyName);
                     }
 
                     this._inputMediaAssets = this.InputMediaAssets.ToList<IAsset>().AsReadOnly();
@@ -145,7 +145,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     {
                         IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
                         dataContext.AttachTo(JobBaseCollection.JobSet, this);
-                        dataContext.LoadProperty(this, OutputMediaAssetsPropertyName);
+                        LoadProperty(dataContext, OutputMediaAssetsPropertyName);
                     }
 
                     this._outputMediaAssets = this.OutputMediaAssets.ToList<IAsset>().AsReadOnly();
@@ -168,7 +168,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     {
                         IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
                         dataContext.AttachTo(JobBaseCollection.JobSet, this);
-                        dataContext.LoadProperty(this, TasksPropertyName);
+                        LoadProperty(dataContext, TasksPropertyName);
                     }
 
                     this._tasks = new TaskCollection(this, this.Tasks, this.GetMediaContext());
@@ -206,7 +206,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                         t.ThrowIfFaulted();
 
                         JobData data = (JobData)t.AsyncState;
-                        data.JobEntityRefresh(dataContext);
+                        data.Refresh();
                     });
         }
 
@@ -277,7 +277,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(JobBaseCollection.JobSet, this);
             dataContext.UpdateObject(this);
-            JobData _this = this;
+
             MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
 
             return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(this))
@@ -285,8 +285,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                    t =>
                    {
                        t.ThrowIfFaulted();
-                       IMediaDataServiceResponse response = t.Result;
-                       return _this;
+                       JobData data = (JobData)t.Result.AsyncState;
+                       return data;
                    },TaskContinuationOptions.ExecuteSynchronously);
         }
 
@@ -330,7 +330,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     {
                         t.ThrowIfFaulted();
                         JobData data = (JobData)t.Result.AsyncState;
-                        data.JobEntityRefresh(dataContext);
+                        data.Refresh();
                         return (IJob)data;
                     },TaskContinuationOptions.ExecuteSynchronously);
         }
@@ -377,7 +377,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                             cancellationToken.ThrowIfCancellationRequested();
 
                             JobState previousState = GetExposedState(data.State);
-                            data.JobEntityRefresh(dataContext);
+                            data.Refresh();
 
                             if (previousState != GetExposedState(data.State))
                             {
@@ -427,11 +427,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
 
             return this.CreateJobTemplate(templateName, JobTemplateType.AccountLevel, taskTemplates.ToArray());
-        }
-
-        public void Refresh()
-        {
-            JobEntityRefresh(this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext());
         }
 
         /// <summary>
@@ -694,7 +689,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             return (jobState == JobState.Canceled) || (jobState == JobState.Error) || (jobState == JobState.Finished);
         }
 
-        private static void ProtectTaskConfiguration(TaskData task, ref X509Certificate2 certToUse, IMediaDataServiceContext dataContext)
+        private void ProtectTaskConfiguration(TaskData task, ref X509Certificate2 certToUse, IMediaDataServiceContext dataContext)
         {
             using (ConfigurationEncryption configEncryption = new ConfigurationEncryption())
             {
@@ -708,16 +703,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 if (certToUse == null)
                 {
                     // Get the certificate to use to encrypt the configuration encryption key.
-                    certToUse = ContentKeyBaseCollection.GetCertificateToEncryptContentKey(dataContext, ContentKeyType.ConfigurationEncryption);
+                    certToUse = ContentKeyBaseCollection.GetCertificateToEncryptContentKey(GetMediaContext(), ContentKeyType.ConfigurationEncryption);
                 }
 
                 // Create a content key object to hold the encryption key.
-                ContentKeyData contentKeyData = ContentKeyBaseCollection.CreateConfigurationContentKey(configEncryption, certToUse);
+                ContentKeyData contentKeyData = ContentKeyBaseCollection.InitializeConfigurationContentKey(configEncryption, certToUse);
                 dataContext.AddObject(ContentKeyCollection.ContentKeySet, contentKeyData);
             }
         }
 
-        private static void ProtectTaskConfiguration(TaskTemplateData taskTemplate, ref X509Certificate2 certToUse, IMediaDataServiceContext dataContext)
+        private void ProtectTaskConfiguration(TaskTemplateData taskTemplate, ref X509Certificate2 certToUse, IMediaDataServiceContext dataContext)
         {
             using (ConfigurationEncryption configEncryption = new ConfigurationEncryption())
             {
@@ -731,11 +726,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 if (certToUse == null)
                 {
                     // Get the certificate to use to encrypt the configuration encryption key.
-                    certToUse = ContentKeyBaseCollection.GetCertificateToEncryptContentKey(dataContext, ContentKeyType.ConfigurationEncryption);
+                    certToUse = ContentKeyBaseCollection.GetCertificateToEncryptContentKey(GetMediaContext(), ContentKeyType.ConfigurationEncryption);
                 }
 
                 // Create a content key object to hold the encryption key.
-                ContentKeyData contentKeyData = ContentKeyBaseCollection.CreateConfigurationContentKey(configEncryption, certToUse);
+                ContentKeyData contentKeyData = ContentKeyBaseCollection.InitializeConfigurationContentKey(configEncryption, certToUse);
                 dataContext.AddObject(ContentKeyCollection.ContentKeySet, contentKeyData);
             }
         }
@@ -882,12 +877,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
         }
 
-        public void JobEntityRefresh(IMediaDataServiceContext dataContext)
-        {
-            
+        public void Refresh()
+        {            
             InvalidateCollections();
 
-            var refreshed = dataContext.CreateQuery<JobData>(JobBaseCollection.JobSet).Where(c => c.Id == this.Id).FirstOrDefault();
+            var refreshed = (JobData)GetMediaContext().Jobs.Where(c => c.Id == this.Id).FirstOrDefault();
             
             //it is possible that job has been cancelled and deleted while we are refreshing
             if (refreshed != null)
@@ -902,7 +896,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 this.State = refreshed.State;
                 this.TemplateId = refreshed.TemplateId;
                 this.JobNotificationSubscriptions = refreshed.JobNotificationSubscriptions;
-                this.Tasks = refreshed.Tasks;
             }
         }
 

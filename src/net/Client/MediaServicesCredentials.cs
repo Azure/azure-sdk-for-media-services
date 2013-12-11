@@ -32,8 +32,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     {
         private static readonly Uri _mediaServicesAcsBaseAddress = new Uri("https://wamsprodglobal001acs.accesscontrol.windows.net");
         private const string MediaServicesAccessScope = "urn:WindowsAzureMediaServices";
+        private const string AuthorizationHeader = "Authorization";
+        private const string BearerTokenFormat = "Bearer {0}";
         private const string GrantType = "client_credentials";
-        private const int ExpirationTimeBufferInSeconds = 1200;  // The OAuth2 token expires in several hours, 
+        private const int ExpirationTimeBufferInSeconds = 1200;  // The OAuth2 token expires in 10 hours, 
                                                                 // so setting the buffer as 20 minutes is safe for 
                                                                 // the network latency and clock skew.
 

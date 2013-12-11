@@ -164,6 +164,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 Name = name
             };
 
+            locator.SetMediaContext(this.MediaContext);
             IMediaDataServiceContext dataContext = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(AssetCollection.AssetSet, asset);
             dataContext.AttachTo(AccessPolicyBaseCollection.AccessPolicySet, accessPolicy);

@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -30,7 +31,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     {
         private readonly IMediaDataServiceContext _dataContext;
         private readonly string _propertyName;
-        private readonly object _parent;
+        private readonly BaseEntity _parent;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LinkCollection&lt;TInterface, TType&gt;"/> class.
@@ -39,7 +40,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="parent">The parent.</param>
         /// <param name="propertyName">Name of the property.</param>
         /// <param name="items">The items.</param>
-        public LinkCollection(IMediaDataServiceContext dataContext, object parent, string propertyName, IEnumerable<TInterface> items)
+        public LinkCollection(IMediaDataServiceContext dataContext, BaseEntity parent, string propertyName, IEnumerable<TInterface> items)
             : base(items)
         {
             this._dataContext = dataContext;
@@ -58,7 +59,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             this._dataContext.AttachTo(GetEntitySetName(typeof(TInterface)), item);
             this._dataContext.AddLink(this._parent, this._propertyName, item);
-            this._dataContext.SaveChanges();
+
+            MediaRetryPolicy retryPolicy = this._parent.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            retryPolicy.ExecuteAction<IMediaDataServiceResponse>(() => _dataContext.SaveChanges());
 
             base.InsertItem(index, item);
         }
@@ -70,7 +74,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         protected override void RemoveItem(int index)
         {
             this._dataContext.DeleteLink(this._parent, this._propertyName, this[index]);
-            this._dataContext.SaveChanges();
+
+            MediaRetryPolicy retryPolicy = this._parent.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            retryPolicy.ExecuteAction<IMediaDataServiceResponse>(() => _dataContext.SaveChanges());
 
             base.RemoveItem(index);
         }

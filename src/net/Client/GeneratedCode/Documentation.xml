@@ -132,6 +132,10 @@
     <summary>The checksum of the ContentKey.</summary>
     <value></value>
   </Member>
+  <Member name="IContentKey.AuthorizationPolicyId">
+    <summary>The authorization policy id associated with ContentKey.</summary>
+    <value></value>
+  </Member>
   <Member name="IAccessPolicy.Id">
     <summary>Unique identifier set by Media Services.</summary>
     <value></value>

@@ -99,6 +99,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 StorageAccountName = storageAccountName
             };
 
+            emptyAsset.SetMediaContext(this.MediaContext);
            
             cancellationToken.ThrowIfCancellationRequested();
             IMediaDataServiceContext dataContext = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
@@ -155,8 +156,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             fileEncryption.Init();
 
             // Encrypt it for delivery to Nimbus.
-            X509Certificate2 certToUse = ContentKeyCollection.GetCertificateToEncryptContentKey(dataContext, ContentKeyType.StorageEncryption);
-            ContentKeyData contentKeyData = ContentKeyBaseCollection.CreateStorageContentKey(fileEncryption.FileEncryption, certToUse);
+            X509Certificate2 certToUse = ContentKeyCollection.GetCertificateToEncryptContentKey(MediaContext, ContentKeyType.StorageEncryption);
+            ContentKeyData contentKeyData = ContentKeyBaseCollection.InitializeStorageContentKey(fileEncryption.FileEncryption, certToUse);
 
             dataContext.AddObject(ContentKeyCollection.ContentKeySet, contentKeyData);
 
