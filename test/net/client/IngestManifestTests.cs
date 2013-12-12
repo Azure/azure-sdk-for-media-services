@@ -540,15 +540,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         {
             CloudMediaContext context = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
             ingestManifestCreated = CreateManifestWithAssetsAndVerifyIt(context);
-            var path = @".\Resources\TestFiles\" + Guid.NewGuid();
-            Directory.CreateDirectory(path);
-            ingestManifestCreated.EncryptFilesAsync(path, CancellationToken.None).Wait();
+            var destination = @".\Resources\TestFiles\" + Guid.NewGuid();
+            Directory.CreateDirectory(destination);
+            ingestManifestCreated.EncryptFilesAsync(destination, CancellationToken.None).Wait();
 
             var manifestid = ingestManifestCreated.Id;
             //returning all encrypted files
             files = context.IngestManifestFiles.Where(c => c.ParentIngestManifestId == manifestid && c.IsEncrypted == true).ToList();
             Assert.AreEqual(2, files.Count);
-            return path;
+            return destination;
         }
 
         private static void AddFileToExistingManifestAssetInfo(CloudMediaContext context, string id)
@@ -790,9 +790,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             VerifyManifestAsset(ingestManifestAssetInfo2);
 
             Assert.AreEqual(2, ingestManifestAssetInfo2.IngestManifestFiles.Count(), "Files collection size is not matching expectations");
-            ingestManifest = context.IngestManifests.Where(c => c.Id == ingestManifest.Id).FirstOrDefault();
-            
-           return ingestManifest;
+          
+          
+            return ingestManifest;
         }
 
 

@@ -334,4 +334,7 @@
    <data name="MetricMonitoringIntervalOutOfRange" xml:space="preserve">
     <value>The interval must be greater than {0}s.</value>
   </data>
+  <data name="FileNotFoundForEncryption" xml:space="preserve">
+    <value>Unable to find file for encryption</value>
+  </data>
 </root>

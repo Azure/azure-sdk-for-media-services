@@ -484,6 +484,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to find file for encryption.
+        /// </summary>
+        internal static string FileNotFoundForEncryption {
+            get {
+                return ResourceManager.GetString("FileNotFoundForEncryption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to IAsset.Uri can&apos;t be created since invalid string value for property has been returned by REST layer.
         /// </summary>
         internal static string InvalidAssetUriException {
@@ -705,7 +714,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client {
         internal static string UnableToParseExpirationFromToken {
             get {
                 return ResourceManager.GetString("UnableToParseExpirationFromToken", resourceCulture);
-            }
+    }
         }
     }
 }

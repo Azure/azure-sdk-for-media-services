@@ -185,6 +185,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     FileInfo fileInfo = null;
                     fileInfo = TrackedFilesPaths.ContainsKey(file.Id) ? new FileInfo(TrackedFilesPaths[file.Id]) : new FileInfo(file.Name);
                     
+                    if (!fileInfo.Exists)
+                    {
+                        throw new FileNotFoundException(StringTable.FileNotFoundForEncryption, fileInfo.FullName);
+                    }
+                    
                     string destinationPath = Path.Combine(outputPath, fileInfo.Name);
                     if (File.Exists(destinationPath))
                     {
