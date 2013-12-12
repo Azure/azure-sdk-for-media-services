@@ -205,7 +205,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             IJob job = CreateAndSubmitOneTaskJob(_mediaContext, GenerateName("ShouldFinishJobWithErrorWithInvalidPreset"), processor, "Some wrong Preset", asset, TaskOptions.None);
             Action<string> verify = id =>
             {
-                IJob job2 = _mediaContext.Jobs.Where(c => c.Id == id).FirstOrDefault();
+                IJob job2 = _mediaContext.Jobs.Where(c => c.Id == id).SingleOrDefault();
                 Assert.IsNotNull(job2);
                 Assert.IsNotNull(job2.Tasks);
                 Assert.AreEqual(1, job2.Tasks.Count);
@@ -748,51 +748,35 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 .Returns(() => Task.Factory.StartNew<IMediaDataServiceResponse>(() =>
                 {
                     if (--exceptionCount > 0) throw fakeException;
+                    job.Id = _mediaContext.Jobs.First().Id;
                     return fakeResponse;
                 }));
-
-            // Cannot mock DataServiceQuery. Throw artificial exception to mark pass through saving changes.
-            string artificialExceptionMessage = "artificialException";
-            dataContextMock.Setup((ctxt) => ctxt.CreateQuery<JobData>("Jobs")).Throws(new Exception(artificialExceptionMessage));
 
             _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
 
             job.SetMediaContext(_mediaContext);
 
-            try
-            {
-                job.Submit();
-            }
-            catch (Exception x)
-            {
-                Assert.AreEqual(artificialExceptionMessage, x.Message);
-            }
+            job.Submit();
 
             Assert.AreEqual(0, exceptionCount);
         }
 
         [TestMethod]
         [Priority(0)]
-        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        public void RefreshJobAfterSubmit()
+        [TestCategory("DailyBvtRun")]
+        public void TestJobGetContentKeysRetry()
         {
-            IAsset asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.StorageEncrypted);
-            IMediaProcessor mediaProcessor = GetMediaProcessor(_mediaContext, WindowsAzureMediaServicesTestConfiguration.MpEncoderName);
-            string name = GenerateName("Job 1");
-            IJob job = CreateAndSubmitOneTaskJob(_mediaContext, name, mediaProcessor, GetWamePreset(mediaProcessor), asset, TaskOptions.None);
-            Assert.IsFalse(String.IsNullOrEmpty(job.Id));
-            bool startProcessing = false;
-            Task.Factory.StartNew(() =>
-            {
-                while (job.State != JobState.Processing)
-                {
-                    job.Refresh();
-                    Thread.Sleep(1000);
-                }
-                startProcessing = true;
-            }).Wait(20000);
-            Assert.IsTrue(startProcessing);
-            job.DeleteAsync();
+            var data = new JobData { Name = "testData", Id = "testId" };
+
+            var dataContextMock = TestMediaServicesClassFactory.CreateLoadPropertyMockConnectionClosed(2, data);
+
+            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
+
+            data.SetMediaContext(_mediaContext);
+
+            var actual = ((IJob)data).InputMediaAssets;
+
+            dataContextMock.Verify((ctxt) => ctxt.LoadProperty(data, "InputMediaAssets"), Times.Exactly(2));
         }
 
         #region Helper Methods

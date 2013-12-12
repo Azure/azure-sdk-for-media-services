@@ -10,6 +10,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Helpers;
+using System.Net;
+using Moq;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 {
@@ -25,18 +27,18 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         private const string DeploymentFolder1 = @".\Resources\TestFiles";
         private const string DeploymentFolder2 = @".\Resources";
 
-        private CloudMediaContext _context;
+        private CloudMediaContext _mediaContext;
         [TestInitialize]
         public void SetupTest()
         {
-            _context = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
+            _mediaContext = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
         }
 
 
         [TestMethod]
         public void ShouldBeAbleToGetManifests()
         {
-            _context.IngestManifests.ToList();
+            _mediaContext.IngestManifests.ToList();
         }
 
         [DeploymentItem(TestFile1, DeploymentFolder1)]
@@ -47,7 +49,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             IIngestManifest ingestManifest = CreateEmptyManifestAndVerifyIt();
 
-            IAsset asset = _context.Assets.Create("name", AssetCreationOptions.None);
+            IAsset asset = _mediaContext.Assets.Create("name", AssetCreationOptions.None);
             Assert.IsNotNull(asset);
             IIngestManifestAsset ingestManifestAsset = ingestManifest.IngestManifestAssets.Create(asset, new[] { TestFile1 });
             VerifyManifestAsset(ingestManifestAsset);
@@ -55,8 +57,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             VerifyManifestAsset(firstAsset);
             Assert.AreEqual(ingestManifestAsset.Id, firstAsset.Id);
 
-            _context = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
-            IIngestManifest sameIngestManifest = _context.IngestManifests.Where(c => c.Id == ingestManifest.Id).FirstOrDefault();
+            _mediaContext = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
+            IIngestManifest sameIngestManifest = _mediaContext.IngestManifests.Where(c => c.Id == ingestManifest.Id).FirstOrDefault();
             Assert.IsNotNull(sameIngestManifest);
             Assert.AreEqual(1, sameIngestManifest.IngestManifestAssets.Count(), "Manifest asset count is not matching expecting value 1");
             firstAsset = sameIngestManifest.IngestManifestAssets.FirstOrDefault();
@@ -155,7 +157,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         public void ShouldCreateEmptymanifestWithDefaultStorageAccountName()
         {
             const string manifestName = "TestManifest";
-            _context.IngestManifests.Create(manifestName, _context.DefaultStorageAccount.Name);
+            _mediaContext.IngestManifests.Create(manifestName, _mediaContext.DefaultStorageAccount.Name);
         }
 
         [TestMethod]
@@ -165,7 +167,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             const string manifestName = "TestManifest";
             try
             {
-                _context.IngestManifests.Create(manifestName, Guid.NewGuid().ToString());
+                _mediaContext.IngestManifests.Create(manifestName, Guid.NewGuid().ToString());
             }
             catch (DataServiceRequestException ex)
             {
@@ -187,7 +189,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             const string manifestName = "TestManifest";
             try
             {
-                _context.IngestManifests.Create(manifestName, String.Empty);
+                _mediaContext.IngestManifests.Create(manifestName, String.Empty);
             }
             catch (DataServiceRequestException ex)
             {
@@ -288,16 +290,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         public void AddingAdditionalFilesToAssetInManifest()
         {
 
-            IIngestManifest ingestManifestCreated = CreateManifestWithAssetsAndVerifyIt(_context);
-            _context = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
-            var ingestManifestRefreshed = _context.IngestManifests.Where(c => c.Id == ingestManifestCreated.Id).FirstOrDefault();
+            IIngestManifest ingestManifestCreated = CreateManifestWithAssetsAndVerifyIt(_mediaContext);
+            _mediaContext = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
+            var ingestManifestRefreshed = _mediaContext.IngestManifests.Where(c => c.Id == ingestManifestCreated.Id).FirstOrDefault();
             Assert.IsNotNull(ingestManifestRefreshed.Statistics);
             Assert.IsNotNull(ingestManifestCreated.Statistics);
             Assert.AreEqual(2, ingestManifestRefreshed.Statistics.PendingFilesCount);
 
-            AddFileToExistingManifestAssetInfo(_context, ingestManifestCreated.Id);
-            _context = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
-            ingestManifestRefreshed = _context.IngestManifests.Where(c => c.Id == ingestManifestCreated.Id).FirstOrDefault();
+            AddFileToExistingManifestAssetInfo(_mediaContext, ingestManifestCreated.Id);
+            _mediaContext = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
+            ingestManifestRefreshed = _mediaContext.IngestManifests.Where(c => c.Id == ingestManifestCreated.Id).FirstOrDefault();
             Assert.AreEqual(3, ingestManifestRefreshed.Statistics.PendingFilesCount);
         }
 
@@ -337,10 +339,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             //Creating empty manifest
             const string manifestName = "Manifest 1";
-            IIngestManifest ingestManifestCreated = _context.IngestManifests.Create(manifestName);
+            IIngestManifest ingestManifestCreated = _mediaContext.IngestManifests.Create(manifestName);
 
             //Adding manifest asset info with multiple file
-            IAsset emptyAsset = _context.Assets.Create(Guid.NewGuid().ToString(), AssetCreationOptions.StorageEncrypted);
+            IAsset emptyAsset = _mediaContext.Assets.Create(Guid.NewGuid().ToString(), AssetCreationOptions.StorageEncrypted);
 
             IIngestManifestAsset ingestManifestAsset = ingestManifestCreated.IngestManifestAssets.CreateAsync(emptyAsset, files.ToArray(), CancellationToken.None).Result;
             Assert.IsNotNull(ingestManifestAsset);
@@ -372,17 +374,17 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             //Creating empty manifest
             const string manifestName = "Manifest 1";
-            IIngestManifest ingestManifestCreated = _context.IngestManifests.Create(manifestName);
+            IIngestManifest ingestManifestCreated = _mediaContext.IngestManifests.Create(manifestName);
 
             //Adding manifest asset info with multiple file
-            IAsset emptyAsset = _context.Assets.Create(Guid.NewGuid().ToString(), AssetCreationOptions.StorageEncrypted);
+            IAsset emptyAsset = _mediaContext.Assets.Create(Guid.NewGuid().ToString(), AssetCreationOptions.StorageEncrypted);
 
             IIngestManifestAsset ingestManifestAsset = ingestManifestCreated.IngestManifestAssets.CreateAsync(emptyAsset, files.ToArray(), CancellationToken.None).Result;
             Assert.IsNotNull(ingestManifestAsset);
             emptyAsset.ContentKeys.RemoveAt(0);
 
             files = Directory.EnumerateFiles(sourcePath, "File1.txt").ToList();
-            emptyAsset = _context.Assets.Create(Guid.NewGuid().ToString(), AssetCreationOptions.StorageEncrypted);
+            emptyAsset = _mediaContext.Assets.Create(Guid.NewGuid().ToString(), AssetCreationOptions.StorageEncrypted);
 
             ingestManifestAsset = ingestManifestCreated.IngestManifestAssets.CreateAsync(emptyAsset, files.ToArray(), CancellationToken.None).Result;
             Assert.IsNotNull(ingestManifestAsset);
@@ -472,7 +474,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             var encryptedPath = Path.Combine(path, mFile.Name);
             Assert.IsTrue(File.Exists(encryptedPath));
-            var decryptedPath = DecryptedFile(mFile, encryptedPath, _context);
+            var decryptedPath = DecryptedFile(mFile, encryptedPath, _mediaContext);
             Assert.IsTrue(AssetTests.CompareFiles(decryptedPath, filePaths[mFile.Name]), "Original file and Decrypted are not same");
 
         }
@@ -584,7 +586,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestMethod]
         public void DeleteActiveExistingManifest()
         {
-            IIngestManifest ingestManifest = CreateManifestWithAssetsAndVerifyIt(_context);
+            IIngestManifest ingestManifest = CreateManifestWithAssetsAndVerifyIt(_mediaContext);
             ingestManifest.Delete();
         }
 
@@ -609,8 +611,170 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [DeploymentItem(TestFile2, DeploymentFolder1)]
         public void CreateEmptyBulkIngestAndAttachFiles()
         {
-            CreateManifestWithAssetsAndVerifyIt(_context);
+            CreateManifestWithAssetsAndVerifyIt(_mediaContext);
         }
+
+        [TestMethod]
+        [DeploymentItem(TestFile1, DeploymentFolder1)]
+        [DeploymentItem(TestFile2, DeploymentFolder1)]
+        [ExpectedException(typeof(IOException))]
+        public void EncryptManifestTestDisableOverwriteExistingFile()
+        {
+
+            CloudMediaContext context = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
+            var sourcePath = DeploymentFolder1;
+            Assert.IsTrue(Directory.Exists(sourcePath));
+            List<string> files = Directory.EnumerateFiles(sourcePath, "*.txt").ToList();
+            const string manifestName = "Manifest 1";
+            IIngestManifest ingestManifestCreated = context.IngestManifests.Create(manifestName);
+
+            //Adding manifest asset info with multiple file
+            IAsset emptyAsset = context.Assets.Create(Guid.NewGuid().ToString(), AssetCreationOptions.StorageEncrypted);
+
+            IIngestManifestAsset ingestManifestAsset = ingestManifestCreated.IngestManifestAssets.Create(emptyAsset, files.ToArray());
+
+            var path = @".\Resources\TestFiles\" + Guid.NewGuid();
+
+            try
+            {
+                Directory.CreateDirectory(path);
+                string dupFileName = Path.Combine(path, Path.GetFileName(files[0]));
+                File.WriteAllText(dupFileName, "");
+                ingestManifestCreated.EncryptFiles(path, false);
+            }
+            catch (AggregateException ax)
+            {
+                var expectedExcpetion = ax.GetBaseException() as IOException;
+                throw expectedExcpetion;
+            }
+            finally
+            {
+                Directory.Delete(path, true);
+            }
+        }
+
+
+        #region Retry Logic tests
+
+        [TestMethod]
+        [Priority(0)]
+        public void TestIngestManifestCreateRetry()
+        {
+            var expected = new IngestManifestData { Name = "testData" };
+            var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
+            var dataContextMock = TestMediaServicesClassFactory.CreateSaveChangesMock(fakeException, 2, expected);
+
+            dataContextMock.Setup((ctxt) => ctxt.AddObject("ContentKeyAuthorizationPolicies", It.IsAny<object>()));
+
+            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
+
+            IIngestManifest actual = _mediaContext.IngestManifests.CreateAsync(expected.Name).Result;
+
+            Assert.AreEqual(expected.Name, actual.Name);
+            dataContextMock.Verify((ctxt) => ctxt.SaveChangesAsync(It.IsAny<object>()), Times.Exactly(2));
+        }
+
+        [TestMethod]
+        [Priority(0)]
+        [ExpectedException(typeof(WebException))]
+        public void TestIngestManifestCreateFailedRetry()
+        {
+            var expected = new IngestManifestData { Name = "testData" };
+            var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
+            var dataContextMock = TestMediaServicesClassFactory.CreateSaveChangesMock(fakeException, 10, expected);
+
+            dataContextMock.Setup((ctxt) => ctxt.AddObject("ContentKeyAuthorizationPolicies", It.IsAny<object>()));
+
+            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
+
+            try
+            {
+                _mediaContext.IngestManifests.CreateAsync(expected.Name).Wait();
+            }
+            catch (AggregateException ax)
+            {
+                dataContextMock.Verify((ctxt) => ctxt.SaveChangesAsync(It.IsAny<object>()), Times.AtLeast(3));
+                WebException x = (WebException)ax.GetBaseException();
+                Assert.AreEqual(fakeException, x);
+                throw x;
+            }
+
+            Assert.Fail("Expected exception");
+        }
+
+        [TestMethod]
+        [Priority(0)]
+        [ExpectedException(typeof(WebException))]
+        public void TestIngestManifestCreateFailedRetryMessageLengthLimitExceeded()
+        {
+            var expected = new IngestManifestData { Name = "testData" };
+
+            var fakeException = new WebException("test", WebExceptionStatus.MessageLengthLimitExceeded);
+
+            var dataContextMock = TestMediaServicesClassFactory.CreateSaveChangesMock(fakeException, 10, expected);
+
+            dataContextMock.Setup((ctxt) => ctxt.AddObject("ContentKeyAuthorizationPolicies", It.IsAny<object>()));
+
+            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
+
+            try
+            {
+                _mediaContext.IngestManifests.CreateAsync(expected.Name).Wait();
+            }
+            catch (AggregateException ax)
+            {
+                dataContextMock.Verify((ctxt) => ctxt.SaveChangesAsync(It.IsAny<object>()), Times.Exactly(1));
+                WebException x = (WebException)ax.GetBaseException();
+                Assert.AreEqual(fakeException, x);
+                throw x;
+            }
+
+            Assert.Fail("Expected exception");
+        }
+
+        [TestMethod]
+        [Priority(0)]
+        public void TestIngestManifestUpdateRetry()
+        {
+            var data = new IngestManifestData { Name = "testData" };
+            var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
+            var dataContextMock = TestMediaServicesClassFactory.CreateSaveChangesMock(fakeException, 2, data);
+
+            dataContextMock.Setup((ctxt) => ctxt.AttachTo("ContentKeyAuthorizationPolicies", data));
+            dataContextMock.Setup((ctxt) => ctxt.UpdateObject(data));
+
+            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
+
+            data.SetMediaContext(_mediaContext);
+
+            data.Update();
+
+            dataContextMock.Verify((ctxt) => ctxt.SaveChangesAsync(data), Times.Exactly(2));
+        }
+
+        [TestMethod]
+        [Priority(0)]
+        public void TestIngestManifestDeleteRetry()
+        {
+            var data = new IngestManifestData { Name = "testData" };
+
+            var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
+
+            var dataContextMock = TestMediaServicesClassFactory.CreateSaveChangesMock(fakeException, 2, data);
+
+            dataContextMock.Setup((ctxt) => ctxt.AttachTo("ContentKeyAuthorizationPolicies", data));
+            dataContextMock.Setup((ctxt) => ctxt.DeleteObject(data));
+
+            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
+
+            data.SetMediaContext(_mediaContext);
+
+            data.Delete();
+
+            dataContextMock.Verify((ctxt) => ctxt.SaveChangesAsync(data), Times.Exactly(2));
+        }
+
+        #endregion Retry Logic tests
 
         private static IIngestManifest CreateManifestWithAssetsAndVerifyIt(CloudMediaContext context)
         {
@@ -627,8 +791,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             Assert.AreEqual(2, ingestManifestAssetInfo2.IngestManifestFiles.Count(), "Files collection size is not matching expectations");
             ingestManifest = context.IngestManifests.Where(c => c.Id == ingestManifest.Id).FirstOrDefault();
-          
-            return ingestManifest;
+            
+           return ingestManifest;
         }
 
 
@@ -643,12 +807,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         private IIngestManifest CreateEmptyManifestAndVerifyIt()
         {
             const string manifestName = "TestManifest";
-            IIngestManifest ingestManifest = _context.IngestManifests.Create(manifestName);
+            IIngestManifest ingestManifest = _mediaContext.IngestManifests.Create(manifestName);
             Assert.IsNotNull(ingestManifest);
             Assert.IsFalse(String.IsNullOrEmpty(ingestManifest.Id), "Manifest Id is null or empty");
             Assert.AreEqual(IngestManifestState.Inactive, ingestManifest.State, "Unexpected manifest state.Expected value is InActive");
             Assert.AreEqual(0, ingestManifest.IngestManifestAssets.Count(), "Newly created asset should not contain any assets");
-            Assert.AreEqual(0, _context.IngestManifestAssets.Where(c => c.ParentIngestManifestId == ingestManifest.Id).Count(), "Newly created asset should not contain any assets");
+            Assert.AreEqual(0, _mediaContext.IngestManifestAssets.Where(c => c.ParentIngestManifestId == ingestManifest.Id).Count(), "Newly created asset should not contain any assets");
             return ingestManifest;
         }
 

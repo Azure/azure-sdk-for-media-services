@@ -144,6 +144,9 @@
   <data name="ErrorInvalidContentKeyType" xml:space="preserve">
     <value>ContentKey must be returned from a call to IAsset.ContentKeys.</value>
   </data>
+  <data name="ErrorUnsupportedContentKeyType" xml:space="preserve">
+    <value>ContentKeyType must be CommonEncryption or EnvelopeEncryption.</value>
+  </data>
   <data name="ErrorInvalidPrimaryFile" xml:space="preserve">
     <value>Primary file not in passed in directory.</value>
   </data>
@@ -327,5 +330,8 @@
   </data>
   <data name="UnableToParseExpirationFromToken" xml:space="preserve">
     <value>Unable to parse expiration from token.  Please check the format of the token to ensure it is valid.</value>
+  </data>
+   <data name="MetricMonitoringIntervalOutOfRange" xml:space="preserve">
+    <value>The interval must be greater than {0}s.</value>
   </data>
 </root>

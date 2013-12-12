@@ -195,6 +195,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             get;
         }
+
+
+        /// <include file='Documentation.xml' path='Documentation/Member[@name="IContentKey.AuthorizationPolicyId"]'/>
+        string AuthorizationPolicyId
+        {
+            get; set;
+    }
     }
     public partial interface IAccessPolicy
     {

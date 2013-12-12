@@ -41,6 +41,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         // ACS related constants
         private static readonly Uri _mediaServicesAcsBaseAddress = new Uri("https://wamsprodglobal001acs.accesscontrol.windows.net");
         private const string MediaServicesAccessScope = "urn:WindowsAzureMediaServices";
+        private const string AuthorizationHeader = "Authorization";
+        private const string BearerTokenFormat = "Bearer {0}";
         private const string GrantType = "client_credentials";
 
         /// <summary>

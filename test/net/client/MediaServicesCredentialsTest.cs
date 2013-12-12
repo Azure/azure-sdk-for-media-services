@@ -61,7 +61,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             var context2 = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext(credentials);
 
-            Assert.IsTrue(context2.Credentials.TokenExpiration > DateTime.UtcNow.AddMinutes(-10)); 
+            Assert.IsTrue(context2.Credentials.TokenExpiration > DateTime.UtcNow.AddMinutes(-10));
 
             context2.Assets.FirstOrDefault();
         }

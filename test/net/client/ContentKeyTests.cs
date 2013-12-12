@@ -28,6 +28,14 @@ using System.Threading.Tasks;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 {
+    class TestX509Certificate2 : X509Certificate2
+    {
+        public override byte[] Export(X509ContentType contentType)
+        {
+            return Enumerable.Range(0, 5).Select(i => (byte)i).ToArray();
+        }
+    }
+
     [TestClass]
     public class ContentKeyTests
     {
@@ -58,7 +66,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             _mediaContext.Locators.CreateSasLocator(asset, policy);
 
             Assert.IsNotNull(asset, "Asset should be non null");
-            Assert.AreNotEqual(Guid.Empty, asset.Id, "Asset ID shuold not be null");
+            Assert.AreNotEqual(Guid.Empty, asset.Id, "Asset ID should not be null");
             Assert.AreEqual(1, asset.AssetFiles.Count(), "Child files count wrong");
             Assert.IsTrue(asset.Options == AssetCreationOptions.StorageEncrypted, "AssetCreationOptions did not have the expected value");
 
@@ -95,7 +103,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             _mediaContext.Locators.CreateSasLocator(asset, policy);
 
             Assert.IsNotNull(asset, "Asset should be non null");
-            Assert.AreNotEqual(Guid.Empty, asset.Id, "Asset ID shuold not be null");
+            Assert.AreNotEqual(Guid.Empty, asset.Id, "Asset ID should not be null");
             Assert.IsTrue(asset.Options == AssetCreationOptions.StorageEncrypted, "AssetCreationOptions did not have the expected value");
 
             VerifyFileAndContentKeyMetadataForStorageEncryption(asset, _mediaContext);
@@ -117,7 +125,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             asset.ContentKeys.Add(key);
 
             Assert.IsNotNull(asset, "Asset should be non null");
-            Assert.AreNotEqual(Guid.Empty, asset.Id, "Asset ID shuold not be null");
+            Assert.AreNotEqual(Guid.Empty, asset.Id, "Asset ID should not be null");
             Assert.AreEqual(1, asset.AssetFiles.Count(), "Child files count wrong");
             Assert.IsTrue(asset.Options == AssetCreationOptions.CommonEncryptionProtected, "AssetCreationOptions did not have the expected value");
 
@@ -156,7 +164,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             asset.ContentKeys.Add(key);
 
             Assert.IsNotNull(asset, "Asset should be non null");
-            Assert.AreNotEqual(Guid.Empty, asset.Id, "Asset ID shuold not be null");
+            Assert.AreNotEqual(Guid.Empty, asset.Id, "Asset ID should not be null");
             Assert.IsTrue(asset.Options == AssetCreationOptions.CommonEncryptionProtected, "AssetCreationOptions did not have the expected value");
 
             VerifyFileAndContentKeyMetadataForCommonEncryption(asset);
@@ -379,6 +387,147 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             Assert.AreEqual(0, exceptionCount);
         }
 
+        #region Retry Logic tests
+
+        [TestMethod]
+        [Priority(0)]
+        public void TestContentKeyBaseCollectionGetProtectionKeyIdForContentKey()
+        {            
+            var dataContextMock = new Mock<IMediaDataServiceContext>();
+
+            var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
+
+            var fakeResponse = new string[] { "testKey" };
+            int exceptionCount = 2;
+
+            dataContextMock.Setup((ctxt) => ctxt
+                .Execute<string>(It.IsAny<Uri>()))
+                .Returns(() =>
+                {
+                    if (--exceptionCount > 0) throw fakeException;
+                    return fakeResponse;
+                });
+
+            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
+
+            var actual = ContentKeyBaseCollection.GetProtectionKeyIdForContentKey(_mediaContext, ContentKeyType.CommonEncryption);
+
+            Assert.AreEqual(fakeResponse[0], actual);
+
+            dataContextMock.Verify((ctxt) => ctxt.Execute<string>(It.IsAny<Uri>()), Times.Exactly(2));
+        }
+
+        [TestMethod]
+        [Priority(0)]
+        public void TestContentKeyGetEncryptedKeyValueAsync()
+        {
+            var data = new ContentKeyData { Name = "testData" };
+
+            var dataContextMock = new Mock<IMediaDataServiceContext>();
+
+            var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
+
+            string testKey = "testKey";
+            var fakeResponse = new string[] { Convert.ToBase64String(new System.Text.UTF8Encoding().GetBytes(testKey)) };
+            int exceptionCount = 2;
+
+            dataContextMock.Setup((ctxt) => ctxt
+                .Execute<string>(It.IsAny<Uri>()))
+                .Returns(() =>
+                {
+                    if (--exceptionCount > 0) throw fakeException;
+                    return fakeResponse;
+                });
+
+            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
+            data.SetMediaContext(_mediaContext);
+
+            X509Certificate2 cert = new TestX509Certificate2();
+            var actual = data.GetEncryptedKeyValue(cert);
+
+            Assert.IsNotNull(actual);
+            Assert.IsTrue(actual.Length > 0);
+
+            dataContextMock.Verify((ctxt) => ctxt.Execute<string>(It.IsAny<Uri>()), Times.Exactly(2));
+        }
+
+        [TestMethod]
+        [Priority(0)]
+        public void TestContentKeyGetClearKeyValueAsync()
+        {
+            var data = new ContentKeyData { Name = "testData" };
+
+            var dataContextMock = new Mock<IMediaDataServiceContext>();
+
+            var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
+
+            string testKey = "testKey";
+            var fakeResponse = new string[] { Convert.ToBase64String(new System.Text.UTF8Encoding().GetBytes(testKey)) };
+            int exceptionCount = 2;
+
+            dataContextMock.Setup((ctxt) => ctxt
+                .Execute<string>(It.IsAny<Uri>()))
+                .Returns(() =>
+                {
+                    if (--exceptionCount > 0) throw fakeException;
+                    return fakeResponse;
+                });
+
+            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
+            data.SetMediaContext(_mediaContext);
+
+            X509Certificate2 cert = new TestX509Certificate2();
+            var actual = data.GetClearKeyValue();
+
+            Assert.IsNotNull(actual);
+            Assert.IsTrue(actual.Length > 0);
+
+            dataContextMock.Verify((ctxt) => ctxt.Execute<string>(It.IsAny<Uri>()), Times.Exactly(2));
+        }
+
+        [TestMethod]
+        [Priority(0)]
+        public void TestContentKeyUpdateRetry()
+        {
+            var data = new ContentKeyData { Name = "testData" };
+            var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
+            var dataContextMock = TestMediaServicesClassFactory.CreateSaveChangesMock(fakeException, 2, data);
+
+            dataContextMock.Setup((ctxt) => ctxt.AttachTo("Assets", data));
+            dataContextMock.Setup((ctxt) => ctxt.UpdateObject(data));
+
+            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
+
+            data.SetMediaContext(_mediaContext);
+
+            data.Update();
+
+            dataContextMock.Verify((ctxt) => ctxt.SaveChangesAsync(data), Times.Exactly(2));
+        }
+
+        [TestMethod]
+        [Priority(0)]
+        public void TestContentKeyDeleteRetry()
+        {
+            var data = new ContentKeyData { Name = "testData" };
+
+            var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
+
+            var dataContextMock = TestMediaServicesClassFactory.CreateSaveChangesMock(fakeException, 2, data);
+
+            dataContextMock.Setup((ctxt) => ctxt.AttachTo("Assets", data));
+            dataContextMock.Setup((ctxt) => ctxt.DeleteObject(data));
+
+            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
+
+            data.SetMediaContext(_mediaContext);
+
+            data.Delete();
+
+            dataContextMock.Verify((ctxt) => ctxt.SaveChangesAsync(data), Times.Exactly(2));
+        }
+        #endregion Retry Logic tests
+
         #region Helper/utility methods
 
         private static void VerifyContentKeyExists(IAssetFile file, IAsset assetFromServer, ContentKeyType expectedKeyType)
@@ -586,44 +735,44 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 string tempFile = Guid.NewGuid().ToString();
                 try
                 {
-                    file.Download(tempFile);
+                file.Download(tempFile);
 
-                    using (var originalFile = new FileStream(originalFilePath, FileMode.Open, FileAccess.Read))
-                    using (Stream fileFromServer = File.Open(tempFile, FileMode.Open))
+                using (var originalFile = new FileStream(originalFilePath, FileMode.Open, FileAccess.Read))
+                using (Stream fileFromServer = File.Open(tempFile, FileMode.Open))
+                {
+                    long fileOffset = 0;
+                    var dataFromOriginalFile = new byte[1024];
+                    var dataFromServerFile = new byte[dataFromOriginalFile.Length];
+                    bool fExit = false;
+                    while (!fExit)
                     {
-                        long fileOffset = 0;
-                        var dataFromOriginalFile = new byte[1024];
-                        var dataFromServerFile = new byte[dataFromOriginalFile.Length];
-                        bool fExit = false;
-                        while (!fExit)
+                        int bytesRead = fileFromServer.Read(dataFromServerFile, 0, dataFromServerFile.Length);
+
+                        if (0 == bytesRead)
                         {
-                            int bytesRead = fileFromServer.Read(dataFromServerFile, 0, dataFromServerFile.Length);
-
-                            if (0 == bytesRead)
-                            {
-                                fExit = true;
-                            }
-                            else
-                            {
-                                fileOffset += bytesRead;
-
-                                int bytesRead2 = originalFile.Read(dataFromOriginalFile, 0, bytesRead);
-                                Assert.IsTrue(bytesRead == bytesRead2);
-
-                                EnsureBuffersMatch(dataFromOriginalFile, dataFromServerFile, bytesRead);
-                            }
+                            fExit = true;
                         }
+                        else
+                        {
+                            fileOffset += bytesRead;
 
-                        Assert.IsTrue(originalFile.Length == fileOffset, "Did not process the expected file length");
+                            int bytesRead2 = originalFile.Read(dataFromOriginalFile, 0, bytesRead);
+                            Assert.IsTrue(bytesRead == bytesRead2);
+
+                            EnsureBuffersMatch(dataFromOriginalFile, dataFromServerFile, bytesRead);
+                        }
                     }
+
+                    Assert.IsTrue(originalFile.Length == fileOffset, "Did not process the expected file length");
+                }
                 }
                 finally
                 {
                     if (File.Exists(tempFile))
                     {
-                        File.Delete(tempFile);
-                    }
-                }
+                File.Delete(tempFile);
+            }
+        }
             }
         }
 

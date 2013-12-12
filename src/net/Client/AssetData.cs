@@ -28,7 +28,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// Represents an asset that can be an input to jobs or tasks.
     /// </summary>
     [DataServiceKey("Id")]
-    internal partial class AssetData : BaseEntity<IAsset>,IAsset
+    internal partial class AssetData : BaseEntity<IAsset>, IAsset
     {
         private const string ContentKeysPropertyName = "ContentKeys";
         private const string LocatorsPropertyName = "Locators";
@@ -50,7 +50,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             this.Locators = new List<LocatorData>();
             this.ContentKeys = new List<ContentKeyData>();
             this.Files = new List<AssetFileData>();
-            
+
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Gets a collection of files contained by the asset.
         /// </summary>
         /// <value>A collection of files contained by the Asset.</value>
-        AssetFileBaseCollection IAsset.AssetFiles 
+        AssetFileBaseCollection IAsset.AssetFiles
         {
             get
             {
@@ -112,7 +112,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     {
                         IMediaDataServiceContext dataContext = this._mediaContextBase.MediaServicesClassFactory.CreateDataServiceContext();
                         dataContext.AttachTo(AssetCollection.AssetSet, this);
-                        dataContext.LoadProperty(this, ContentKeysPropertyName);
+
+                        LoadProperty(dataContext, ContentKeysPropertyName);
 
                         this._contentKeyCollection = new LinkCollection<IContentKey, ContentKeyData>(dataContext, this, ContentKeysPropertyName, this.ContentKeys);
                     }
@@ -121,6 +122,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 }
             }
         }
+
 
         /// <summary>
         /// Gets the Locators associated with this asset.
@@ -136,7 +138,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
                     IMediaDataServiceContext dataContext = this._mediaContextBase.MediaServicesClassFactory.CreateDataServiceContext();
                     dataContext.AttachTo(AssetCollection.AssetSet, this);
-                    dataContext.LoadProperty(this, LocatorsPropertyName);
+                    LoadProperty(dataContext, LocatorsPropertyName);
                     if (this.Locators != null)
                     {
                         this._locatorCollection = this.Locators.ToList<ILocator>().AsReadOnly();
@@ -163,7 +165,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 {
                     IMediaDataServiceContext dataContext = this._mediaContextBase.MediaServicesClassFactory.CreateDataServiceContext();
                     dataContext.AttachTo(AssetCollection.AssetSet, this);
-                    dataContext.LoadProperty(this, ParentAssetsPropertyName);
+                    LoadProperty(dataContext, ParentAssetsPropertyName);
 
                     this._parentAssetCollection = this.ParentAssets.ToList<IAsset>().AsReadOnly();
                 }
@@ -171,8 +173,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 return this._parentAssetCollection;
             }
         }
-
-       
 
         /// <summary>
         /// Inits the cloud media context.
@@ -220,8 +220,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 {
                     throw new UriFormatException(StringTable.InvalidAssetUriException);
                 }
-                
-            } 
+
+            }
         }
 
         /// <summary>
@@ -238,7 +238,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             MediaRetryPolicy retryPolicy = this._mediaContextBase.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
 
-            return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(this));
+            return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(this))
+                .ContinueWith<IAsset>(
+                    t =>
+                    {
+                        t.ThrowIfFaulted();
+                        AssetData data = (AssetData)t.Result.AsyncState;
+                        return data;
+                    });
         }
 
         /// <summary>
@@ -263,7 +270,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public Task DeleteAsync()
         {
             AssetCollection.VerifyAsset(this);
-
 
             IMediaDataServiceContext dataContext = this._mediaContextBase.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(AssetCollection.AssetSet, this);
@@ -328,7 +334,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             InitCloudMediaContext(value);
         }
-        
+
         public override MediaContextBase GetMediaContext()
         {
             return _mediaContextBase;
