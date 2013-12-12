@@ -325,4 +325,7 @@
   <data name="InvalidAssetUriException" xml:space="preserve">
     <value>IAsset.Uri can't be created since invalid string value for property has been returned by REST layer</value>
   </data>
+  <data name="UnableToParseExpirationFromToken" xml:space="preserve">
+    <value>Unable to parse expiration from token.  Please check the format of the token to ensure it is valid.</value>
+  </data>
 </root>

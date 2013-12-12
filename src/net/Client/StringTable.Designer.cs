@@ -677,5 +677,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client {
                 return ResourceManager.GetString("UnknownMediaProcessor", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to parse expiration from token.  Please check the format of the token to ensure it is valid..
+        /// </summary>
+        internal static string UnableToParseExpirationFromToken {
+            get {
+                return ResourceManager.GetString("UnableToParseExpirationFromToken", resourceCulture);
+            }
+        }
     }
 }
