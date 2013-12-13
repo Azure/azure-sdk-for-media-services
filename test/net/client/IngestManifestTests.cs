@@ -790,7 +790,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             VerifyManifestAsset(ingestManifestAssetInfo2);
 
             Assert.AreEqual(2, ingestManifestAssetInfo2.IngestManifestFiles.Count(), "Files collection size is not matching expectations");
-            ingestManifest = context.IngestManifests.Where(c => c.Id == ingestManifest.Id).FirstOrDefault();
             
            return ingestManifest;
         }
