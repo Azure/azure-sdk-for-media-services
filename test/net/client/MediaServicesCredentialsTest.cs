@@ -17,6 +17,7 @@
 using System;
 using System.Linq;
 using System.Net;
+using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Helpers;
 
@@ -88,16 +89,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         {
             MediaServicesCredentials target = new MediaServicesCredentials("dummyClientId", "dummyClientSecret", "dummyScope", "dummyAcsBaseAddress");
 
-            string testAcsResponse = "{\"token_type\":\"http://schemas.xmlsoap.org/ws/2009/11/swt-token-profile-1.0\",\"access_token\":\"SomeToken\",\"expires_in\":\"36000\",\"scope\":\"urn:Nimbus\"}";
+            string testAcsResponse = "{\"token_type\":\"http://schemas.xmlsoap.org/ws/2009/11/swt-token-profile-1.0\",\"access_token\":\"http%3a%2f%2fschemas.xmlsoap.org%2fws%2f2005%2f05%2fidentity%2fclaims%2fnameidentifier=mediacreator&urn%3aSubscriptionId=3c5e503f-adcb-4aa5-a549-f34931566d6c&http%3a%2f%2fschemas.microsoft.com%2faccesscontrolservice%2f2010%2f07%2fclaims%2fidentityprovider=https%3a%2f%2fwamsprodglobal001acs.accesscontrol.windows.net%2f&Audience=urn%3aWindowsAzureMediaServices&ExpiresOn=1386947515&Issuer=https%3a%2f%2fwamsprodglobal001acs.accesscontrol.windows.net%2f&HMACSHA256=8RMeaHPfHHWAqlDSAvg0YDOpYhzjBGAsKZMMNeAwLsE%3d\",\"expires_in\":\"5999\",\"scope\":\"urn:WindowsAzureMediaServices\"}";
+            string expectedToken = "http%3a%2f%2fschemas.xmlsoap.org%2fws%2f2005%2f05%2fidentity%2fclaims%2fnameidentifier=mediacreator&urn%3aSubscriptionId=3c5e503f-adcb-4aa5-a549-f34931566d6c&http%3a%2f%2fschemas.microsoft.com%2faccesscontrolservice%2f2010%2f07%2fclaims%2fidentityprovider=https%3a%2f%2fwamsprodglobal001acs.accesscontrol.windows.net%2f&Audience=urn%3aWindowsAzureMediaServices&ExpiresOn=1386947515&Issuer=https%3a%2f%2fwamsprodglobal001acs.accesscontrol.windows.net%2f&HMACSHA256=8RMeaHPfHHWAqlDSAvg0YDOpYhzjBGAsKZMMNeAwLsE%3d";
+            long expectedTicks = 635225443150000000;
             byte[] acsResponse = new System.Text.UTF8Encoding().GetBytes(testAcsResponse);
             target.SetAcsToken(acsResponse);
 
-            Assert.AreEqual("SomeToken", target.AccessToken);
-
-            var tokenExpiresIn = target.TokenExpiration - DateTime.UtcNow;
-
-            Assert.IsTrue(tokenExpiresIn.TotalHours > 9);
-            Assert.IsTrue(tokenExpiresIn.TotalHours <= 10);
+            Assert.AreEqual(expectedToken, target.AccessToken);
+            Assert.AreEqual(expectedTicks, target.TokenExpiration.Ticks);
         }
 
         [TestMethod()]
@@ -126,12 +125,23 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestCategory("DailyBvtRun")]
         public void MediaServicesCredentialsTestReuseInvalidTokenBytes()
         {
+            // Get the current time plus two hours and then remove the milliseconds component
+            // since the encoded expiry is represented in seconds
+            DateTime timeToEncode = DateTime.UtcNow.AddSeconds(5999);
+            timeToEncode = timeToEncode.Subtract(TimeSpan.FromMilliseconds(timeToEncode.Millisecond));
+
             var context1 = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
             MediaServicesCredentials credentials = context1.Credentials;
 
-            string testAcsResponse = "{\"token_type\":\"http://schemas.xmlsoap.org/ws/2009/11/swt-token-profile-1.0\",\"access_token\":\"InvalidToken\",\"expires_in\":\"36000\",\"scope\":\"urn:Nimbus\"}";
-            byte[] acsResponse = new System.Text.UTF8Encoding().GetBytes(testAcsResponse);
+            StringBuilder builder = new StringBuilder();
+            builder.Append("{\"token_type\":\"http://schemas.xmlsoap.org/ws/2009/11/swt-token-profile-1.0\",\"access_token\":\"http%3a%2f%2fschemas.xmlsoap.org%2fws%2f2005%2f05%2fidentity%2fclaims%2fnameidentifier=mediacreator&urn%3aSubscriptionId=3c5e503f-adcb-4aa5-a549-f34931566d6c&http%3a%2f%2fschemas.microsoft.com%2faccesscontrolservice%2f2010%2f07%2fclaims%2fidentityprovider=https%3a%2f%2fwamsprodglobal001acs.accesscontrol.windows.net%2f&Audience=urn%3aWindowsAzureMediaServices&ExpiresOn=");
+            builder.Append(EncodeExpiry(timeToEncode));
+            builder.Append("&Issuer=https%3a%2f%2fwamsprodglobal001acs.accesscontrol.windows.net%2f&HMACSHA256=8RMeaHPfHHWAqlDSAvg0YDOpYhzjBGAsKZMMNeAwLsE%3d\",\"expires_in\":\"5999\",\"scope\":\"urn:WindowsAzureMediaServices\"}");
+            string badAcsResponse = builder.ToString();
+            byte[] acsResponse = new System.Text.UTF8Encoding().GetBytes(badAcsResponse);
             credentials.SetAcsToken(acsResponse);
+
+            Assert.AreEqual(timeToEncode.ToString(), credentials.TokenExpiration.ToString());
 
             try
             {
@@ -143,6 +153,18 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 Assert.AreEqual(HttpStatusCode.Unauthorized, code);
                 throw;
             }
+        }
+
+        private static readonly DateTime TokenBaseTime = new DateTime(1970, 1, 1, 0, 0, 0, 0);
+
+        // Note that this function can only encode the time to the granularity of a second.
+        // Thus you should remove or ignore the millisecond component of the DateTime if you
+        // plan to compare the DateTime values from encoding and decoding.
+        private static string EncodeExpiry(DateTime timeToEncode)
+        {
+            TimeSpan timeRelativeToBase = timeToEncode.Subtract(TokenBaseTime);
+
+            return Convert.ToInt64(timeRelativeToBase.TotalSeconds).ToString();
         }
     }
 }
