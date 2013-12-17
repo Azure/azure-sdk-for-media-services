@@ -425,7 +425,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(1)]
-        public void ShouldDownloadSameAssetFile20TimesIdenticallyAsStorageSDK()
+        public void ShouldDownloadSameAssetFile2TimesIdenticallyAsStorageSDK()
         {
             
             IAsset asset = _mediaContext.Assets.Create("Test", AssetCreationOptions.None);
@@ -447,7 +447,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             Assert.AreEqual(2, refreshedAsset.AssetFiles.Count(), "file count wrong");
            
 
-            for (int i = 0; i < 20; i++)
+            for (int i = 0; i < 2; i++)
             {
                 VerifyAndDownloadAsset(refreshedAsset, 2);
             }
