@@ -5,10 +5,13 @@
     <DocumentationFile>bin\Debug\Microsoft.WindowsAzure.MediaServices.Client.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>MSSharedLibSN1024.snk</AssemblyOriginatorKeyFile>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
+    <SigningFlag Condition="$(SigningFlag) == '' Or $(SigningFlag) == '*Undefined*'">NOTSIGNED</SigningFlag>
   </PropertyGroup>
+  
+  
+
   <Import Project="..\..\..\Build\Common.Build.settings" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -52,11 +55,15 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
+  
+  <PropertyGroup Condition=" '$(SigningFlag)' == 'NOTSIGNED' ">
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
-  <PropertyGroup>
+ 
+  <PropertyGroup Condition=" '$(SigningFlag)' == 'DELAYSIGNED' ">
+    <SignAssembly>true</SignAssembly>
     <DelaySign>true</DelaySign>
+    <AssemblyOriginatorKeyFile>..\..\..\MSSharedLibSN1024.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Data.OData">
@@ -297,7 +304,6 @@
     <TransformOnBuild>true</TransformOnBuild>
     <OverwriteReadOnlyOutputFiles>true</OverwriteReadOnlyOutputFiles>
   </PropertyGroup>
- 
   <Target Name="BeforeBuild">
   </Target>
   <Target Name="AfterBuild">
