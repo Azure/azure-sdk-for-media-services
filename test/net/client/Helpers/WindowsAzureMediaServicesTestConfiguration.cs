@@ -18,6 +18,7 @@ using System;
 using System.Configuration;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.WindowsAzure.MediaServices.Client.Tests.UnitTests;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Helpers
 {
@@ -64,6 +65,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Helpers
             // This overload is used for testing purposes
             // It is recommended to use public CloudMediaContext(MediaServicesCredentials credentials) in your code to avoid code changes if default values will be changed later
             return new CloudMediaContext(new Uri(MediaServicesUri), new MediaServicesCredentials(MediaServiceAccountName, MediaServiceAccountKey, MediaServicesAccessScope, MediaServicesAcsBaseAddress));
+
+           //TODO: Uncomment if you want to run integration tests with mocks. Will be removed from here. 
+           //return  AssetUnitTest.GetMediaDataServiceContextForUnitTests();
+           
         }
 
         public static CloudMediaContext CreateCloudMediaContext(MediaServicesCredentials credentials)

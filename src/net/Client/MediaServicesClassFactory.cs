@@ -79,5 +79,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             return new StorageTransientErrorDetectionStrategy();
         }
+
+
+        public virtual BlobTransferClient GetBlobTransferClient()
+        {
+            return new BlobTransferClient();
+        }
     }
 }

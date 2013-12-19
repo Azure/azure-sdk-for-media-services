@@ -15,6 +15,7 @@
 // </license>
 
 using System;
+using System.Data.Services.Client;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -35,7 +36,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         public void MediaServicesCredentialsTestReuseToken()
         {
             var context1 = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
-
+            Assert.IsNull(context1.Credentials.AccessToken);
+            //In order to obtain token REST call need to be issued
+            MakeRestCallAndVerifyToken(context1);
             MediaServicesCredentials credentials = new MediaServicesCredentials("whatever", "whatever")
             {
                 AccessToken = context1.Credentials.AccessToken,
@@ -44,6 +47,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             var context2 = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext(credentials);
             context2.Assets.FirstOrDefault();
+        }
+
+        private static void MakeRestCallAndVerifyToken(CloudMediaContext context)
+        {
+           context.Assets.FirstOrDefault();
+            Assert.IsNotNull(context.Credentials.AccessToken);
         }
 
         [TestMethod()]
@@ -61,6 +70,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             };
 
             var context2 = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext(credentials);
+            MakeRestCallAndVerifyToken(context2);
 
             Assert.IsTrue(context2.Credentials.TokenExpiration > DateTime.UtcNow.AddMinutes(-10));
 
@@ -100,28 +110,31 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod()]
-        [ExpectedException(typeof(WebException))]
+        [ExpectedException(typeof(DataServiceQueryException))]
         [TestCategory("DailyBvtRun")]
         public void MediaServicesCredentialsTestReuseInvalidToken()
         {
             var context1 = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
+            //Make call to get endpoint and valid token
+            MakeRestCallAndVerifyToken(context1);
             MediaServicesCredentials credentials = context1.Credentials;
             credentials.AccessToken = "Invalid";
 
             try
             {
                 var context2 = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext(credentials);
+                MakeRestCallAndVerifyToken(context2);
             }
-            catch (WebException x)
+            catch (DataServiceQueryException x)
             {
-                var code = ((HttpWebResponse)x.Response).StatusCode;
-                Assert.AreEqual(HttpStatusCode.Unauthorized, code);
+                var code = x.Response.StatusCode;
+                Assert.AreEqual((int)HttpStatusCode.Unauthorized, code);
                 throw;
             }
         }
 
         [TestMethod()]
-        [ExpectedException(typeof(WebException))]
+        [ExpectedException(typeof(DataServiceQueryException))]
         [TestCategory("DailyBvtRun")]
         public void MediaServicesCredentialsTestReuseInvalidTokenBytes()
         {
@@ -131,6 +144,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             timeToEncode = timeToEncode.Subtract(TimeSpan.FromMilliseconds(timeToEncode.Millisecond));
 
             var context1 = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
+            MakeRestCallAndVerifyToken(context1);
             MediaServicesCredentials credentials = context1.Credentials;
 
             StringBuilder builder = new StringBuilder();
@@ -146,11 +160,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             try
             {
                 var context2 = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext(credentials);
+                MakeRestCallAndVerifyToken(context2);
             }
-            catch (WebException x)
+            catch (DataServiceQueryException x)
             {
-                var code = ((HttpWebResponse)x.Response).StatusCode;
-                Assert.AreEqual(HttpStatusCode.Unauthorized, code);
+                var code = x.Response.StatusCode;
+                Assert.AreEqual((int)HttpStatusCode.Unauthorized, code);
                 throw;
             }
         }

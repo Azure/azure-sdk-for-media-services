@@ -38,6 +38,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private const int ConnectionRetryMaxAttempts = 4;
         private const int ConnectionRetrySleepQuantum = 100;
 
+        private static object _endpointRefreshLock = new object();
+        private static Uri _azureMediaServicesEndpointCached;
+        private static DateTime _endpointRefreshTime;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MediaServicesClassFactory"/> class.
         /// </summary>
@@ -56,7 +60,18 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             this._serviceVersionAdapter = serviceVersionAdapter;
             this._mediaContext = mediaContext;
 
-            this._azureMediaServicesEndpoint = GetAccountApiEndpoint(this._dataServiceAdapter, this._serviceVersionAdapter, azureMediaServicesEndpoint);
+            if (_azureMediaServicesEndpointCached == null || _endpointRefreshTime < DateTime.UtcNow)
+            {
+                lock (_endpointRefreshLock)
+                {
+                    if (_azureMediaServicesEndpointCached == null || _endpointRefreshTime < DateTime.UtcNow)
+                    {
+                        _azureMediaServicesEndpointCached = GetAccountApiEndpoint(this._dataServiceAdapter, this._serviceVersionAdapter, azureMediaServicesEndpoint);
+                        _endpointRefreshTime = mediaContext.Credentials.TokenExpiration;
+                    }
+                }
+            }
+            this._azureMediaServicesEndpoint = _azureMediaServicesEndpointCached;
         }
 
         /// <summary>

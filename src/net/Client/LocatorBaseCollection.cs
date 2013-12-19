@@ -159,6 +159,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             {
                 AccessPolicy = (AccessPolicyData)accessPolicy,
                 Asset = assetData,
+                AssetId = assetData.Id,
                 Type = (int)locatorType,
                 StartTime = startTime,
                 Name = name

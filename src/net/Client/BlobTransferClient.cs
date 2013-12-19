@@ -77,7 +77,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <param name="retryPolicy">The RetryPolicy delegate returns a ShouldRetry delegate, which can be used to implement a custom retry policy.RetryPolicies class can bee used to get default policies</param>
         /// <returns></returns>
-        public Task UploadBlob(
+        public virtual Task UploadBlob(
             Uri url,
             string localFile,
             string contentType,
@@ -101,7 +101,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="contentType">Content type of the blob</param>
         /// <param name="subDirectory">Virtual subdirectory for this file in the blog container.</param>
         /// <returns></returns>
-        public Task UploadBlob(
+        public virtual Task UploadBlob(
             Uri url,
             string localFile,
             FileEncryption fileEncryption,
@@ -136,7 +136,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <param name="retryPolicy">The RetryPolicy delegate returns a ShouldRetry delegate, which can be used to implement a custom retry policy.RetryPolicies class can bee used to get default policies</param>
         /// <returns></returns>
-        public Task DownloadBlob(Uri uri, string localFile, FileEncryption fileEncryption, ulong initializationVector, CancellationToken cancellationToken, IRetryPolicy retryPolicy)
+        public virtual Task DownloadBlob(Uri uri, string localFile, FileEncryption fileEncryption, ulong initializationVector, CancellationToken cancellationToken, IRetryPolicy retryPolicy)
         {
             return DownloadBlob(uri, localFile, fileEncryption, initializationVector, null, cancellationToken, retryPolicy);
         }
@@ -152,7 +152,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="cancellationToken">The cancellation token to cancel the download operation.</param>
         /// <param name="retryPolicy">The RetryPolicy delegate returns a ShouldRetry delegate, which can be used to implement a custom retry policy.RetryPolicies class can bee used to get default policies</param>
         /// <returns>A task that downloads the specified blob.</returns>
-        public Task DownloadBlob(Uri uri, string localFile, FileEncryption fileEncryption, ulong initializationVector, CloudBlobClient client, CancellationToken cancellationToken, IRetryPolicy retryPolicy)
+        public virtual Task DownloadBlob(Uri uri, string localFile, FileEncryption fileEncryption, ulong initializationVector, CloudBlobClient client, CancellationToken cancellationToken, IRetryPolicy retryPolicy)
         {
             SetMaxConnectionLimit(uri);
             Task task = Task.Factory.StartNew(() => DownloadFileFromBlob(uri, localFile, fileEncryption, initializationVector, client, cancellationToken, retryPolicy));

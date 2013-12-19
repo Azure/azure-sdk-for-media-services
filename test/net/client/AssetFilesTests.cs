@@ -92,12 +92,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             ILocator locator = _mediaContext.Locators.CreateLocator(LocatorType.Sas, asset, policy);
             try
             {
+                BlobTransferClient blobTransferClient = _mediaContext.MediaServicesClassFactory.GetBlobTransferClient();
+               
                 fileInfo.UploadAsync(fileUploaded,
-                                     new BlobTransferClient
-                                         {
-                                             NumberOfConcurrentTransfers = 5,
-                                             ParallelTransferThreadCount = 5
-                                         },
+                                     blobTransferClient,
                                      locator,
                                      CancellationToken.None);
             }
@@ -119,15 +117,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             IAssetFile fileInfo = asset.AssetFiles.Create(Path.GetFileName(_smallWmv));
             IAccessPolicy policy = _mediaContext.AccessPolicies.Create("Write", TimeSpan.FromMinutes(1), AccessPermissions.Write);
             ILocator locator = _mediaContext.Locators.CreateLocator(LocatorType.Sas, asset, policy);
-            var btc = new BlobTransferClient
-                {
-                    NumberOfConcurrentTransfers = 5,
-                    ParallelTransferThreadCount = 5
-                };
+            BlobTransferClient blobTransferClient = _mediaContext.MediaServicesClassFactory.GetBlobTransferClient();
+            blobTransferClient.ParallelTransferThreadCount = 5;
+            blobTransferClient.NumberOfConcurrentTransfers = 5;
 
             int allProgressEventsFiredCount = 0;
 
-            btc.TransferProgressChanged += (sender, args) => { allProgressEventsFiredCount++; };
+            blobTransferClient.TransferProgressChanged += (sender, args) => { allProgressEventsFiredCount++; };
 
             bool progressFired = false;
             bool wrongFileSize = true;
@@ -140,13 +136,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                     fileProgressEventsCount++;
                 };
 
-            Task uploadTask = fileInfo.UploadAsync(fileUploaded, btc, locator, CancellationToken.None);
+            Task uploadTask = fileInfo.UploadAsync(fileUploaded, blobTransferClient, locator, CancellationToken.None);
 
             string competingFile = WindowsAzureMediaServicesTestConfiguration.GetVideoSampleFilePath(TestContext, WindowsAzureMediaServicesTestConfiguration.SmallMp41);
 
             var retryPolicy = _mediaContext.MediaServicesClassFactory.GetBlobStorageClientRetryPolicy().AsAzureStorageClientRetryPolicy();
 
-            btc.UploadBlob(CreateUrl(locator, Path.GetFileName(competingFile)), competingFile, null, null, CancellationToken.None, retryPolicy).Wait();
+            blobTransferClient.UploadBlob(CreateUrl(locator, Path.GetFileName(competingFile)), competingFile, null, null, CancellationToken.None, retryPolicy).Wait();
 
             uploadTask.Wait();
 
@@ -351,17 +347,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             var source = new CancellationTokenSource();
             IAccessPolicy accessPolicy = _mediaContext.AccessPolicies.Create("SdkDownload", TimeSpan.FromHours(12), AccessPermissions.Read);
             ILocator locator = _mediaContext.Locators.CreateSasLocator(asset, accessPolicy);
-            var blobTransfer = new BlobTransferClient
-                {
-                    NumberOfConcurrentTransfers = _mediaContext.NumberOfConcurrentTransfers,
-                    ParallelTransferThreadCount = _mediaContext.ParallelTransferThreadCount
-                };
+            BlobTransferClient blobTransferClient = _mediaContext.MediaServicesClassFactory.GetBlobTransferClient();
+           
 
             Exception canceledException = null;
             Task downloadToFileTask = null;
             try
             {
-                downloadToFileTask = assetFile.DownloadAsync(fileDownloaded, blobTransfer, locator, source.Token);
+                downloadToFileTask = assetFile.DownloadAsync(fileDownloaded, blobTransferClient, locator, source.Token);
 
                 // Send a cancellation signal after 2 seconds.
                 Thread.Sleep(50);

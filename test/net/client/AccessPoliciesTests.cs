@@ -98,6 +98,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        public void CreateAccessPolicyWithMaxTimeStamp()
+        {
+            Task<IAccessPolicy> task = _mediaContext.AccessPolicies.CreateAsync("TimeSpan.MaxValue readonly policy", TimeSpan.MaxValue, AccessPermissions.Read);
+            var accessPolicy = task.Result;
+        }
+
+        [TestMethod]
         [TestCategory("DailyBvtRun")]
         public void ShouldRemoveAccessPolicyFromCollectionWhenDeleteCalled()
         {
