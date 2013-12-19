@@ -31,7 +31,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling
                 return false;
             }
 
-            return CommonRetryableWebExceptions.Any(s => (int)s == dataServiceException.Response.StatusCode);
+            return CommonRetryableWebExceptions.Any(s => dataServiceException.Response != null && (int)s == dataServiceException.Response.StatusCode);
         }
     }
 }
