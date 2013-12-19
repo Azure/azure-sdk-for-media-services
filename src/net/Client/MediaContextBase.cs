@@ -22,6 +22,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     public abstract partial class MediaContextBase
     {
         /// <summary>
+        /// Gets Microsoft WindowsAzure Media Services credentials used for authenticating requests.
+        /// </summary>
+        public MediaServicesCredentials Credentials { get; protected set; }
+
+        /// <summary>
         /// Gets a collection to operate on AccessPolicies.
         /// </summary>
         /// <seealso cref="AccessPolicyBaseCollection" />
