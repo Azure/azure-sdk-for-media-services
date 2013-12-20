@@ -748,7 +748,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 .Returns(() => Task.Factory.StartNew<IMediaDataServiceResponse>(() =>
                 {
                     if (--exceptionCount > 0) throw fakeException;
-                    job.Id = _mediaContext.Jobs.First().Id;
+                    job.Id = Guid.NewGuid().ToString();
                     return fakeResponse;
                 }));
 
