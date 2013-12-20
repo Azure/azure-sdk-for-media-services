@@ -163,9 +163,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 {
                     IMediaDataServiceContext dataContext = this._mediaContextBase.MediaServicesClassFactory.CreateDataServiceContext();
                     dataContext.AttachTo(AssetCollection.AssetSet, this);
-                    LoadProperty(dataContext, LocatorsPropertyName);
-
-                    this._parentAssetCollection = this.ParentAssets.ToList<IAsset>().AsReadOnly();
+                    LoadProperty(dataContext, ParentAssetsPropertyName);
+                    
+                    if (this.ParentAssets != null)
+                    {
+                        this._parentAssetCollection = this.ParentAssets.ToList<IAsset>().AsReadOnly();
+                    }
                 }
 
                 return this._parentAssetCollection;
