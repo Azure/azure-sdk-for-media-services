@@ -716,7 +716,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
 
-            IAsset asset = _mediaContext.Assets.Create("Empty", AssetCreationOptions.None);
+            IAsset asset = _mediaContext.Assets.Create("Empty","some storage", AssetCreationOptions.None);
             Assert.AreEqual(expected.Name, asset.Name);
             dataContextMock.Verify((ctxt) => ctxt.SaveChangesAsync(It.IsAny<object>()), Times.Exactly(2));
         }
@@ -737,7 +737,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             try
             {
-                IAsset asset = _mediaContext.Assets.Create("Empty", AssetCreationOptions.None);
+                IAsset asset = _mediaContext.Assets.Create("Empty", "some storage", AssetCreationOptions.None);
             }
             catch (WebException x)
             {
@@ -767,7 +767,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             try
             {
-                IAsset asset = _mediaContext.Assets.Create("Empty", AssetCreationOptions.None);
+                IAsset asset = _mediaContext.Assets.Create("Empty", "some storage", AssetCreationOptions.None);
             }
             catch (WebException x)
             {
