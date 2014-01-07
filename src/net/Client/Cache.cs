@@ -28,7 +28,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     {
         private object _refreshLock = new object();
         private MemoryCache _cache = new MemoryCache("RequestCache");
-        private bool _disposed = false;
 
         /// <summary>
         /// Gets cached element or caches new if it doesn't exist.
@@ -78,14 +77,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!this._disposed)
+            if (_cache != null)
             {
                 if (disposing)
                 {
                     _cache.Dispose();
                 }
 
-                _disposed = true;
+                _cache = null;
             }
         }
         #endregion
