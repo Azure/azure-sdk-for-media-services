@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Data.Services.Client;
@@ -19,7 +20,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <typeparam name="T">The type returned by the query</typeparam>
         /// <param name="entitySetName">A string that resolves to a URI.</param>
         /// <returns>A new System.Data.Services.Client.DataServiceQuery<TElement> instance that represents a data service query.</returns>
-        DataServiceQuery<T> CreateQuery<T>(string entitySetName);
+        IQueryable<T> CreateQuery<T>(string entitySetName);
 
         /// <summary>
         /// Notifies the System.Data.Services.Client.DataServiceContext to start tracking

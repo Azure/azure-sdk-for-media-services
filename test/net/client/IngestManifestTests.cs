@@ -668,7 +668,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
 
-            IIngestManifest actual = _mediaContext.IngestManifests.CreateAsync(expected.Name).Result;
+            IIngestManifest actual = _mediaContext.IngestManifests.CreateAsync(expected.Name,"some storage").Result;
 
             Assert.AreEqual(expected.Name, actual.Name);
             dataContextMock.Verify((ctxt) => ctxt.SaveChangesAsync(It.IsAny<object>()), Times.Exactly(2));
@@ -689,7 +689,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             try
             {
-                _mediaContext.IngestManifests.CreateAsync(expected.Name).Wait();
+                _mediaContext.IngestManifests.CreateAsync(expected.Name,"some storage").Wait();
             }
             catch (AggregateException ax)
             {
@@ -719,7 +719,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             try
             {
-                _mediaContext.IngestManifests.CreateAsync(expected.Name).Wait();
+                _mediaContext.IngestManifests.CreateAsync(expected.Name,"some storage").Wait();
             }
             catch (AggregateException ax)
             {

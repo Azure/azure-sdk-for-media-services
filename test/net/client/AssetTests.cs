@@ -61,7 +61,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             IAssetFile file = asset.AssetFiles.CreateAsync(Path.GetFileName(_smallWmv), CancellationToken.None).Result;
             IAccessPolicy policy = _mediaContext.AccessPolicies.Create("temp", TimeSpan.FromMinutes(10), AccessPermissions.Write);
             ILocator locator = _mediaContext.Locators.CreateSasLocator(asset, policy);
-            BlobTransferClient blobTransferClient = new BlobTransferClient();
+            BlobTransferClient blobTransferClient = _mediaContext.MediaServicesClassFactory.GetBlobTransferClient();
             bool transferCompletedFired = false;
             blobTransferClient.TransferCompleted += (sender, args) =>
             {
@@ -97,7 +97,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             ILocator locator = _mediaContext.Locators.CreateSasLocator(asset, policy);
             try
             {
-                file.UploadAsync(_smallWmv, new BlobTransferClient(), locator, CancellationToken.None).Wait();
+                file.UploadAsync(_smallWmv, _mediaContext.MediaServicesClassFactory.GetBlobTransferClient(), locator, CancellationToken.None).Wait();
             }
             catch (ArgumentException ex)
             {
@@ -111,6 +111,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(1)]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldCreateSingleFileAssetWithNoLocatorUsingOveloadSync()
         {
             IAsset asset = _mediaContext.Assets.Create("Empty", AssetCreationOptions.StorageEncrypted);
@@ -167,11 +168,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             IAssetFile file = asset.AssetFiles.Create(Path.GetFileName(_smallWmv));
 
             Task task = file.UploadAsync(_smallWmv,
-                                         new BlobTransferClient
-                                             {
-                                                 NumberOfConcurrentTransfers = 10,
-                                                 ParallelTransferThreadCount = 10
-                                             },
+                                         _mediaContext.MediaServicesClassFactory.GetBlobTransferClient(),
                                          locator,
                                          CancellationToken.None);
 
@@ -201,7 +198,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             IAccessPolicy policy = _mediaContext.AccessPolicies.Create("temp", TimeSpan.FromMinutes(10), AccessPermissions.Write);
             ILocator locator = _mediaContext.Locators.CreateSasLocator(asset, policy);
 
-            UploadFile(locator, asset, _smallWmv);
+            UploadFile(locator, asset, _smallWmv, _mediaContext);
 
             IAsset refreshedAsset = RefreshedAsset(asset);
             Assert.AreEqual(1, refreshedAsset.AssetFiles.Count(), "file count wrong");
@@ -221,9 +218,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             IAccessPolicy policy = _mediaContext.AccessPolicies.Create("temp", TimeSpan.FromMinutes(10), AccessPermissions.Write);
             ILocator locator = _mediaContext.Locators.CreateSasLocator(asset, policy);
 
-            UploadFile(locator, asset, _smallWmv);
+            UploadFile(locator, asset, _smallWmv, _mediaContext);
             //asset = _dataContext.Assets.Where(c => c.Id == asset.Id).FirstOrDefault();
-            UploadFile(locator, asset, WindowsAzureMediaServicesTestConfiguration.SmallWmv2);
+            UploadFile(locator, asset, WindowsAzureMediaServicesTestConfiguration.SmallWmv2, _mediaContext);
 
             Assert.AreEqual(2, asset.AssetFiles.Count());
             IAssetFile assetFile = asset.AssetFiles.ToList()[1];
@@ -300,11 +297,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             Assert.AreEqual(expected, _mediaContext.Files.Where(c => c.ParentAssetId == asset.Id).Count());
             IAccessPolicy accessPolicy = _mediaContext.AccessPolicies.Create("SdkDownload", TimeSpan.FromHours(12), AccessPermissions.Read);
             ILocator locator = _mediaContext.Locators.CreateSasLocator(asset, accessPolicy);
-            var blobTransfer = new BlobTransferClient
-                {
-                    NumberOfConcurrentTransfers = _mediaContext.NumberOfConcurrentTransfers,
-                    ParallelTransferThreadCount = _mediaContext.ParallelTransferThreadCount
-                };
+            var blobTransfer = _mediaContext.MediaServicesClassFactory.GetBlobTransferClient();
 
             var downloads = new List<Task>();
             var paths = new List<string>();
@@ -396,7 +389,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         {
             string assetId;
             {
-                IAsset asset = CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.StorageEncrypted);
+                IAsset asset = CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
                 Assert.IsNotNull(asset, "Asset should be non null");
                 asset.Name = "New Name";
                 asset.Update();
@@ -433,8 +426,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             IAccessPolicy policy = _mediaContext.AccessPolicies.Create("temp", TimeSpan.FromMinutes(10), AccessPermissions.Write);
             ILocator locator = _mediaContext.Locators.CreateSasLocator(asset, policy);
 
-            UploadFile(locator, asset, _smallWmv);
-            UploadFile(locator, asset, WindowsAzureMediaServicesTestConfiguration.SmallWmv2);
+            UploadFile(locator, asset, _smallWmv, _mediaContext);
+            UploadFile(locator, asset, WindowsAzureMediaServicesTestConfiguration.SmallWmv2, _mediaContext);
 
 
             IAssetFile assetFile = asset.AssetFiles.FirstOrDefault();
@@ -568,11 +561,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             IAsset asset = _mediaContext.Assets.Create(Guid.NewGuid().ToString(), AssetCreationOptions.None);
             IAccessPolicy policy = _mediaContext.AccessPolicies.Create("Write", TimeSpan.FromMinutes(5), AccessPermissions.Write);
             ILocator locator = _mediaContext.Locators.CreateSasLocator(asset, policy);
-            var blobclient = new BlobTransferClient
-                {
-                    NumberOfConcurrentTransfers = 5,
-                    ParallelTransferThreadCount = 5
-                };
+            var blobclient = _mediaContext.MediaServicesClassFactory.GetBlobTransferClient();
 
             var tasks = new List<Task>();
             foreach (string filePath in files)
@@ -606,19 +595,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             ILocator locator = _mediaContext.Locators.CreateSasLocator(asset, policy);
             var info = new FileInfo(fileName);
             IAssetFile file = asset.AssetFiles.Create(info.Name);
-            var blobclient = new BlobTransferClient
-                {
-                    NumberOfConcurrentTransfers = 5,
-                    ParallelTransferThreadCount = 5
-                };
-            blobclient.TransferProgressChanged += (s, e) =>
+            BlobTransferClient blobTransferClient = _mediaContext.MediaServicesClassFactory.GetBlobTransferClient();
+            blobTransferClient.TransferProgressChanged += (s, e) =>
                 {
                     Assert.AreEqual(fileName, e.LocalFile);
                     Assert.IsTrue(e.BytesTransferred <= e.TotalBytesToTransfer);
                     reportedProgress = true;
                 };
 
-            file.UploadAsync(fileName, blobclient, locator, CancellationToken.None).Wait();
+            file.UploadAsync(fileName, blobTransferClient, locator, CancellationToken.None).Wait();
             Assert.IsTrue(reportedProgress);
         }
 
@@ -731,7 +716,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
 
-            IAsset asset = _mediaContext.Assets.Create("Empty", AssetCreationOptions.None);
+            IAsset asset = _mediaContext.Assets.Create("Empty","some storage", AssetCreationOptions.None);
             Assert.AreEqual(expected.Name, asset.Name);
             dataContextMock.Verify((ctxt) => ctxt.SaveChangesAsync(It.IsAny<object>()), Times.Exactly(2));
         }
@@ -752,7 +737,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             try
             {
-                IAsset asset = _mediaContext.Assets.Create("Empty", AssetCreationOptions.None);
+                IAsset asset = _mediaContext.Assets.Create("Empty", "some storage", AssetCreationOptions.None);
             }
             catch (WebException x)
             {
@@ -782,7 +767,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             try
             {
-                IAsset asset = _mediaContext.Assets.Create("Empty", AssetCreationOptions.None);
+                IAsset asset = _mediaContext.Assets.Create("Empty", "some storage", AssetCreationOptions.None);
             }
             catch (WebException x)
             {
@@ -866,12 +851,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             ILocator locator = datacontext.Locators.CreateSasLocator(asset, policy);
             var info = new FileInfo(filePath);
             IAssetFile file = asset.AssetFiles.Create(info.Name);
+            BlobTransferClient blobTransferClient = datacontext.MediaServicesClassFactory.GetBlobTransferClient();
+            blobTransferClient.NumberOfConcurrentTransfers = 5;
+            blobTransferClient.ParallelTransferThreadCount = 5;
             file.UploadAsync(filePath,
-                             new BlobTransferClient
-                                 {
-                                     NumberOfConcurrentTransfers = 5,
-                                     ParallelTransferThreadCount = 5
-                                 },
+                             blobTransferClient,
                              locator,
                              CancellationToken.None).Wait();
             file.IsPrimary = true;
@@ -988,18 +972,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             return outasset;
         }
 
-        private static void UploadFile(ILocator locator, IAsset asset, string filePath)
+        private static void UploadFile(ILocator locator, IAsset asset, string filePath, CloudMediaContext mediaContext)
         {
             var info = new FileInfo(filePath);
             IAssetFile file = asset.AssetFiles.Create(info.Name);
-            Task task = file.UploadAsync(filePath,
-                                         new BlobTransferClient
-                                             {
-                                                 NumberOfConcurrentTransfers = 10,
-                                                 ParallelTransferThreadCount = 10
-                                             },
-                                         locator,
-                                         CancellationToken.None);
+            BlobTransferClient blobTransferClient = mediaContext.MediaServicesClassFactory.GetBlobTransferClient();
+            Task task = file.UploadAsync(filePath, blobTransferClient, locator, CancellationToken.None);
             task.Wait();
             Assert.IsTrue(task.IsCompleted);
             Assert.IsTrue(!task.IsFaulted);
@@ -1123,8 +1101,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 info = Directory.CreateDirectory(Guid.NewGuid().ToString());
 
                 var files = new List<Task>();
-                var client = new BlobTransferClient();
-                IAccessPolicy policy = _mediaContext.AccessPolicies.Create("Write", TimeSpan.FromMinutes(20), AccessPermissions.Write);
+                BlobTransferClient blobTransferClient = _mediaContext.MediaServicesClassFactory.GetBlobTransferClient();
+               IAccessPolicy policy = _mediaContext.AccessPolicies.Create("Write", TimeSpan.FromMinutes(20), AccessPermissions.Write);
                 ILocator locator = _mediaContext.Locators.CreateSasLocator(asset, policy);
 
                 for (int i = 0; i < expected; i++)
@@ -1132,7 +1110,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                     string fileName;
                     string fullFilePath = CreateNewFileFromOriginal(info, out fileName);
                     IAssetFile file = asset.AssetFiles.Create(fileName);
-                    files.Add(file.UploadAsync(fullFilePath, client, locator, CancellationToken.None));
+                    files.Add(file.UploadAsync(fullFilePath, blobTransferClient, locator, CancellationToken.None));
                 }
                 Task.WaitAll(files.ToArray());
                 foreach (Task task in files)

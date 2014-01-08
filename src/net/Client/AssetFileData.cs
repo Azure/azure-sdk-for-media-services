@@ -551,12 +551,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                             t.ThrowIfFaulted(() => this.Cleanup(null, null, locator, accessPolicy));
                             cancellationToken.ThrowIfCancellationRequested(() => this.Cleanup(null, null, locator, accessPolicy));
 
-                           
-                            var blobTransfer = new BlobTransferClient
-                                               {
-                                                   NumberOfConcurrentTransfers = this.GetMediaContext().NumberOfConcurrentTransfers,
-                                                   ParallelTransferThreadCount = this.GetMediaContext().ParallelTransferThreadCount
-                                               };
+
+                            var blobTransfer = GetMediaContext().MediaServicesClassFactory.GetBlobTransferClient();
+
+                            blobTransfer.NumberOfConcurrentTransfers = this.GetMediaContext().NumberOfConcurrentTransfers;
+                            blobTransfer.ParallelTransferThreadCount = this.GetMediaContext().ParallelTransferThreadCount;
+                                               
                             UploadAsync(path, blobTransfer, locator, cancellationToken).Wait();
                             locator.Delete(); 
                             cancellationToken.ThrowIfCancellationRequested(() => this.Cleanup(null, null, null, accessPolicy));
