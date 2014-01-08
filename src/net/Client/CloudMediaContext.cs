@@ -139,11 +139,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
         /// <summary>
-        /// Gets Microsoft WindowsAzure Media Services credentials used for authenticating requests.
-        /// </summary>
-        public MediaServicesCredentials Credentials { get; private set; }
-
-        /// <summary>
         /// Gets the collection of assets in the system.
         /// </summary>
         public override AssetBaseCollection Assets
