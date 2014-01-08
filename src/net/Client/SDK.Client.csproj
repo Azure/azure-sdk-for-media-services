@@ -9,9 +9,6 @@
     <RestorePackages>true</RestorePackages>
     <SigningFlag Condition="$(SigningFlag) == '' Or $(SigningFlag) == '*Undefined*'">NOTSIGNED</SigningFlag>
   </PropertyGroup>
-  
-  
-
   <Import Project="..\..\..\Build\Common.Build.settings" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -55,11 +52,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  
   <PropertyGroup Condition=" '$(SigningFlag)' == 'NOTSIGNED' ">
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
- 
   <PropertyGroup Condition=" '$(SigningFlag)' == 'DELAYSIGNED' ">
     <SignAssembly>true</SignAssembly>
     <DelaySign>true</DelaySign>
@@ -96,6 +91,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Spatial, Version=5.6.0">
       <SpecificVersion>False</SpecificVersion>
@@ -164,6 +160,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="MediaServicesCredentials.cs" />
+    <Compile Include="Cache.cs" />
     <Compile Include="TransientFaultHandling\RetryPolicyExtensions.cs" />
     <Compile Include="TransientFaultHandling\StorageTransientErrorDetectionStrategy.cs" />
     <Compile Include="TransientFaultHandling\ExceptionExtensions.cs" />
