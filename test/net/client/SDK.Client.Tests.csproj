@@ -78,6 +78,19 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'IncrementVersion|x64'">
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+     <SigningFlag Condition="$(SigningFlag) == '' Or $(SigningFlag) == '*Undefined*'">NOTSIGNED</SigningFlag>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition=" '$(SigningFlag)' == 'NOTSIGNED' ">
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+ 
+  <PropertyGroup Condition=" '$(SigningFlag)' == 'DELAYSIGNED' ">
+    <SignAssembly>true</SignAssembly>
+    <DelaySign>true</DelaySign>
+    <AssemblyOriginatorKeyFile>..\..\..\MSSharedLibSN1024.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <CodeAnalysisDependentAssemblyPaths Condition=" '$(VS100COMNTOOLS)' != '' " Include="$(VS100COMNTOOLS)..\IDE\PrivateAssemblies">
       <Visible>False</Visible>
