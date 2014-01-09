@@ -129,8 +129,12 @@
     <Compile Include="Helpers\WindowsAzureMediaServicesTestConfiguration.cs" />
     <Compile Include="StorageAccountTests.cs" />
     <Compile Include="QueryErrorDetectionStrategyTest.cs" />
+    <Compile Include="CacheTest.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Configuration\AudioEncodingPreset.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Configuration\MP4 to Smooth Streams.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
