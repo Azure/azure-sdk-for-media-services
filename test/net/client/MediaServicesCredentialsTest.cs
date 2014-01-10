@@ -17,6 +17,7 @@
 using System;
 using System.Linq;
 using System.Net;
+using System.Data.Services.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Helpers;
 
@@ -34,6 +35,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         public void MediaServicesCredentialsTestReuseToken()
         {
             var context1 = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
+            context1.Credentials.RefreshToken();
 
             MediaServicesCredentials credentials = new MediaServicesCredentials("whatever", "whatever")
             {
@@ -58,7 +60,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             Assert.IsNotNull(target.AccessToken);
             Assert.IsTrue(target.AccessToken.Length > 0);
-            Assert.IsTrue(target.TokenExpiration > DateTime.UtcNow.AddHours(1));
+            Assert.IsTrue(target.TokenExpiration > DateTime.UtcNow);
         }
 
         [TestMethod()]
@@ -80,32 +82,37 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod()]
-        [ExpectedException(typeof(WebException))]
+        [ExpectedException(typeof(DataServiceQueryException))]
         [TestCategory("DailyBvtRun")]
         public void MediaServicesCredentialsTestReuseInvalidToken()
         {
             var context1 = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
+            context1.Credentials.RefreshToken();
+
             MediaServicesCredentials credentials = context1.Credentials;
             credentials.AccessToken = "Invalid";
 
             try
-            {
+            {                
                 var context2 = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext(credentials);
+                context2.Assets.FirstOrDefault();
             }
-            catch (WebException x)
+            catch (DataServiceQueryException x)
             {
-                var code = ((HttpWebResponse)x.Response).StatusCode;
-                Assert.AreEqual(HttpStatusCode.Unauthorized, code);
+                var clientException = (DataServiceClientException)x.InnerException;
+                Assert.AreEqual((int)HttpStatusCode.Unauthorized, clientException.StatusCode);
                 throw;
             }
         }
 
         [TestMethod()]
-        [ExpectedException(typeof(WebException))]
+        [ExpectedException(typeof(DataServiceQueryException))]
         [TestCategory("DailyBvtRun")]
         public void MediaServicesCredentialsTestReuseInvalidTokenBytes()
         {
             var context1 = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
+            context1.Credentials.RefreshToken();
+
             MediaServicesCredentials credentials = context1.Credentials;
 
             string testAcsResponse = "{\"token_type\":\"http://schemas.xmlsoap.org/ws/2009/11/swt-token-profile-1.0\",\"access_token\":\"InvalidToken\",\"expires_in\":\"36000\",\"scope\":\"urn:Nimbus\"}";
@@ -115,11 +122,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             try
             {
                 var context2 = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext(credentials);
+                context2.Assets.FirstOrDefault();
             }
-            catch (WebException x)
+            catch (DataServiceQueryException x)
             {
-                var code = ((HttpWebResponse)x.Response).StatusCode;
-                Assert.AreEqual(HttpStatusCode.Unauthorized, code);
+                var clientException = (DataServiceClientException)x.InnerException;
+                Assert.AreEqual((int)HttpStatusCode.Unauthorized, clientException.StatusCode); 
                 throw;
             }
         }

@@ -561,6 +561,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         {
             string endPointAddress = Guid.NewGuid().ToString();
             CloudQueueClient client = CloudStorageAccount.Parse(WindowsAzureMediaServicesTestConfiguration.ClientStorageConnectionString).CreateCloudQueueClient();
+
             CloudQueue queue = client.GetQueueReference(endPointAddress);
             queue.CreateIfNotExists();
             string endPointName = Guid.NewGuid().ToString();

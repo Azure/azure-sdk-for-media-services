@@ -338,20 +338,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             // Now delete the asset and ensure that the content key and file are also deleted
             asset.Delete();
 
-            foreach (IAsset assetFromRest in dataContext2.Assets)
-            {
-                Assert.IsFalse(assetFromRest.Id == assetId, "Asset was deleted we should not be able to query it by identifier.");
-            }
-
-            foreach (IAssetFile fileFromRest in dataContext2.Files)
-            {
-                Assert.IsFalse(fileFromRest.Id == fileId, "Asset was deleted we should not be able to query its associated File by identifier.");
-            }
-
-            foreach (IContentKey keyFromRest in dataContext2.ContentKeys)
-            {
-                Assert.IsFalse(keyFromRest.Id == keyId, "Asset was deleted we should not be able to query its associated storage encryption key by identifier.");
-            }
+            Assert.IsNull(dataContext2.Assets.Where(c => c.Id == assetId).SingleOrDefault(), "Asset was deleted we should not be able to query it by identifier.");
+            Assert.IsNull(dataContext2.Files.Where(c => c.Id == fileId).SingleOrDefault(), "Asset was deleted we should not be able to query its associated File by identifier.");
+            Assert.IsNull(dataContext2.ContentKeys.Where(c => c.Id == keyId).SingleOrDefault(), "Asset was deleted we should not be able to query its associated storage encryption key by identifier.");
         }
 
         [TestMethod]

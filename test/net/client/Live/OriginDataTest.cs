@@ -58,7 +58,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
 
             Assert.AreEqual(2, actual.Playback.Security.IPv4AllowList.Count);
             Assert.AreEqual(3, actual.Playback.Security.AkamaiSignatureHeaderAuthentication.Count);
-            Assert.AreEqual(new DateTime(2013, 1, 30).ToUniversalTime(), actual.Playback.Security.AkamaiSignatureHeaderAuthentication[2].Expiration);
+            Assert.AreEqual(new DateTime(2013, 1, 30, 8, 0, 0, DateTimeKind.Utc), actual.Playback.Security.AkamaiSignatureHeaderAuthentication[2].Expiration);
             Assert.AreEqual("1.1.1.2", actual.Playback.Security.IPv4AllowList[1].IP);
             Assert.AreEqual("testName2", actual.Playback.Security.IPv4AllowList[1].Name);
             Assert.AreEqual(0, actual.Playback.MaxCacheAge.Value.TotalSeconds);
@@ -81,8 +81,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
                     {
                         AkamaiSignatureHeaderAuthentication = new List<AkamaiSignatureHeaderAuthenticationKey> 
                         { 
-                            new AkamaiSignatureHeaderAuthenticationKey { Base64Key = "b64Key1", Expiration = new DateTime(2013, 1, 30), Identifier = "id1" },
-                            new AkamaiSignatureHeaderAuthenticationKey { Base64Key = "b64Key2", Expiration = new DateTime(2013, 1, 30), Identifier = "id2" },
+                            new AkamaiSignatureHeaderAuthenticationKey { Base64Key = "b64Key1", Expiration = new DateTime(2013, 1, 30, 8, 0, 0, DateTimeKind.Utc), Identifier = "id1" },
+                            new AkamaiSignatureHeaderAuthenticationKey { Base64Key = "b64Key2", Expiration = new DateTime(2013, 1, 30, 8, 0, 0, DateTimeKind.Utc), Identifier = "id2" },
                         },
 
                         IPv4AllowList = new List<Ipv4>
