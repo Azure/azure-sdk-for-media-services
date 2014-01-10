@@ -19,7 +19,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 
-namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Helpers
+namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
 {
     public static class SelfSignedCertificateFactory
     {

@@ -14,11 +14,10 @@
 // limitations under the License.
 // </license>
 
+using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using Microsoft.Practices.TransientFaultHandling;
-using Microsoft.WindowsAzure.MediaServices.Client.Tests.Helpers;
 using System.Net;
 using System.Threading.Tasks;
 

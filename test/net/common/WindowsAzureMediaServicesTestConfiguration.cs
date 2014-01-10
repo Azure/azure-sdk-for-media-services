@@ -18,9 +18,8 @@ using System;
 using System.Configuration;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.WindowsAzure.MediaServices.Client.Tests.UnitTests;
 
-namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Helpers
+namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
 {
     public class WindowsAzureMediaServicesTestConfiguration
     {

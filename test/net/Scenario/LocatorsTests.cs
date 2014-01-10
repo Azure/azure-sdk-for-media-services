@@ -1,5 +1,5 @@
 ﻿using System.Threading;
-using Microsoft.WindowsAzure.MediaServices.Client.Tests.Helpers;
+using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
 using System;
 using System.IO;
 using System.Linq;

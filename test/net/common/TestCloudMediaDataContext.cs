@@ -23,9 +23,9 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Helpers
+namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
 {
-    internal class TestCloudMediaDataContext : IMediaDataServiceContext
+    public class TestCloudMediaDataContext : IMediaDataServiceContext
     {
         private readonly MediaContextBase _mediaContextBase;
         private readonly Dictionary<string, Type> _entitySetMappings = new Dictionary<string, Type>();

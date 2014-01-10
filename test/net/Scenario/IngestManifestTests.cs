@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.WindowsAzure.MediaServices.Client.Tests.Helpers;
+using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
 using System.Net;
 using Moq;
 

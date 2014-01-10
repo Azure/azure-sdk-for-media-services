@@ -18,7 +18,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Microsoft.WindowsAzure.MediaServices.Client.Tests</RootNamespace>
-    <AssemblyName>Microsoft.WindowsAzure.MediaServices.Client.Tests</AssemblyName>
+    <AssemblyName>Microsoft.WindowsAzure.MediaServices.Client.Tests.Scenario</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -105,19 +105,14 @@
   <ItemGroup>
     <Compile Include="AccessPoliciesTests.cs" />
     <Compile Include="AssetFilesTests.cs" />
-    <Compile Include="UnitTests\AssetUnitTest.cs" />
     <Compile Include="IngestManifestAssetTests.cs" />
     <Compile Include="JobTemplateTest.cs" />
     <Compile Include="LinkCollectionTest.cs" />
     <Compile Include="BaseCollectionTest.cs" />
     <Compile Include="ContentKeyTests.cs" />
-    <Compile Include="Helpers\TestCloudMediaContext.cs" />
-    <Compile Include="Helpers\TestCloudMediaDataContext.cs" />
     <Compile Include="IngestManifestFileTests.cs" />
     <Compile Include="MediaServicesCredentialsTest.cs" />
     <Compile Include="NotificationEndPointTests.cs" />
-    <Compile Include="Helpers\TestMediaDataServiceResponse.cs" />
-    <Compile Include="Helpers\TestMediaServicesClassFactory.cs" />
     <Compile Include="IngestManifestTests.cs" />
     <Compile Include="JobTests.cs" />
     <Compile Include="JobTests.StorageAccounts.cs" />
@@ -125,11 +120,7 @@
     <Compile Include="MediaRetryPolicyTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AssetTests.cs" />
-    <Compile Include="Helpers\SelfSignedCertificateFactory.cs" />
-    <Compile Include="Helpers\WindowsAzureMediaServicesTestConfiguration.cs" />
     <Compile Include="StorageAccountTests.cs" />
-    <Compile Include="QueryErrorDetectionStrategyTest.cs" />
-    <Compile Include="CacheTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Configuration\AudioEncodingPreset.xml">
@@ -260,13 +251,12 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\packages\Microsoft.WindowsAzure.ConfigurationManager.2.0.3\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.WindowsAzure.Storage, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="Microsoft.WindowsAzure.Storage, Version=3.0.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\WindowsAzure.Storage.3.0.1.0\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
+      <HintPath>..\..\..\packages\WindowsAzure.Storage.3.0.2.0\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
     </Reference>
-    <Reference Include="Moq, Version=4.1.1311.615, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\Moq.4.1.1311.0615\lib\net40\Moq.dll</HintPath>
+    <Reference Include="Moq">
+      <HintPath>..\..\..\packages\Moq.4.2.1312.1622\lib\net40\Moq.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\..\packages\Newtonsoft.Json.5.0.8\lib\net40\Newtonsoft.Json.dll</HintPath>
@@ -288,6 +278,10 @@
     <ProjectReference Include="..\..\..\src\net\client\SDK.Client.csproj">
       <Project>{e194b46e-9063-4cfa-85fc-51e5aad55586}</Project>
       <Name>SDK.Client</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\common\SDK.Client.Tests.Common.csproj">
+      <Project>{04db0e20-008c-45ef-b427-b6f33b25cd67}</Project>
+      <Name>SDK.Client.Tests.Common</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

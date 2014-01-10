@@ -6,14 +6,17 @@
   
   <ItemGroup>
     <MediaSln Include=".\src\net\Client\SDK.Client.csproj" />
+	<MediaSln Include=".\test\net\common\SDK.Client.Tests.Common.csproj" />
 	<MediaSln Include=".\test\net\scenario\SDK.Client.Tests.Scenario.csproj" />
+	<MediaSln Include=".\test\net\unit\SDK.Client.Tests.Unit.csproj" />
   </ItemGroup>
   
    <!-- Define build properties -->
   <PropertyGroup>
     <SourceBin>.\src\net\Client\bin</SourceBin>
     <TestDirectory>.\test\net\client</TestDirectory>
-    <TestAssemblyName>.\test\net\client\bin\debug\Microsoft.WindowsAzure.MediaServices.Client.Tests.dll</TestAssemblyName>	
+    <ScenarioTestAssemblyName>.\test\net\scenario\bin\debug\Microsoft.WindowsAzure.MediaServices.Client.Tests.Scenario.dll</ScenarioTestAssemblyName>
+	<UnitTestAssemblyName>.\test\net\unit\bin\debug\Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit.dll</UnitTestAssemblyName>		
 
     <PublishDirectory>.\Publish</PublishDirectory>
     <PackageDirectory>.\Package</PackageDirectory>
@@ -125,7 +128,7 @@
     
     <Message Importance="high" Text="Scenario tests:" />
     <Exec
-      Command="MSTest.exe /testcontainer:$(TestAssemblyName) /resultsfile:$(TestOutputDirectory)\FullTestRun.trx"
+      Command="MSTest.exe /testcontainer:$(ScenarioTestAssemblyName) /resultsfile:$(TestOutputDirectory)\FullTestRun.trx"
       ContinueOnError="false" />
    
   </Target>
@@ -138,7 +141,18 @@
     
     <Message Importance="high" Text="DailyBvtRun tests:" />
     <Exec
-      Command="MSTest.exe /testcontainer:$(TestAssemblyName) /resultsfile:$(TestOutputDirectory)\DailyBvtRun.trx /category:DailyBvtRun"
+      Command="MSTest.exe /testcontainer:$(ScenarioTestAssemblyName) /resultsfile:$(TestOutputDirectory)\DailyBvtRun.trx /category:DailyBvtRun"
+      ContinueOnError="false" />   
+  </Target>
+  
+  <Target Name="UnitTestRun" DependsOnTargets="Clean;BuildDebug;BuildRelease">
+    <Message Importance="high" Text="Running Unit tests..." />
+    <Message Importance="high" Text="You are required to have installed a version of Visual Studio with support for MSTest (and MSTest on your path)." />
+    <MakeDir Directories="$(TestOutputDirectory)" ContinueOnError="false" />
+    
+    <Message Importance="high" Text="Unit tests:" />
+    <Exec
+      Command="MSTest.exe /testcontainer:$(UnitTestAssemblyName) /resultsfile:$(TestOutputDirectory)\UnitTestRun.trx"
       ContinueOnError="false" />   
   </Target>
   <Target

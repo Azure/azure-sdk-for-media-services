@@ -20,12 +20,11 @@ using System.Data.Services.Client;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Xml;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.WindowsAzure.MediaServices.Client.Tests.Helpers;
+using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Queue;
 using Moq;
@@ -902,7 +901,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         public static void WaitForJob(string jobId, JobState jobState, Action<string> verifyAction, Action<double> progressChangedAction  = null)
         {
-            bool progressChanged = false;
             DateTime start = DateTime.Now;
             while (true)
             {

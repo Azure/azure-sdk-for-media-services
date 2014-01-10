@@ -20,7 +20,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.WindowsAzure.MediaServices.Client.Tests.Helpers;
+using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 {    

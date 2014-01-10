@@ -17,7 +17,7 @@
 
 using System;
 
-namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Helpers
+namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
 {
     public class TestCloudMediaContext : CloudMediaContext
     {

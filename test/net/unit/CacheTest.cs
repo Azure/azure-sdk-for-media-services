@@ -17,7 +17,7 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
+namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.UnitTests
 {
     [TestClass]
     public class CacheTest

@@ -1,17 +1,8 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Data.Services.Client;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.WindowsAzure.MediaServices.Client.Tests.Helpers;
 using System.Net;
 using Moq;
+using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 {

@@ -22,7 +22,7 @@ using Moq;
 using System.Net;
 using Microsoft.WindowsAzure.Storage.RetryPolicies;
 
-namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Helpers
+namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
 {
     public class TestMediaServicesClassFactory : AzureMediaServicesClassFactory
     {

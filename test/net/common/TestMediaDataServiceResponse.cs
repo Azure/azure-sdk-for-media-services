@@ -16,10 +16,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data.Services.Client;
 using System.Net;
+using System.Data.Services.Client;
 
-namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Helpers
+namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
 {
     public class TestMediaDataServiceResponse : IMediaDataServiceResponse
     {

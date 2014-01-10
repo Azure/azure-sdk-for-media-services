@@ -1,8 +1,5 @@
-﻿using Microsoft.WindowsAzure.MediaServices.Client;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using Microsoft.WindowsAzure.MediaServices.Client.Tests.Helpers;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
 using System.Net;
 using Moq;
 

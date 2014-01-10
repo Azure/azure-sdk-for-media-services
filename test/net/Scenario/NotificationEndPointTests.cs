@@ -15,17 +15,8 @@
 // </license>
 
 
-using System;
-using System.Collections.Generic;
-using System.Data.Services.Client;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.WindowsAzure.MediaServices.Client.Tests.Helpers;
-using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
 using Moq;
 using System.Net;
 
