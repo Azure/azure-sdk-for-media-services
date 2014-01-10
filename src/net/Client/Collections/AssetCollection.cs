@@ -33,7 +33,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// The set name for assets.
         /// </summary>
-        internal const string AssetSet = "Assets";
+        public const string AssetSet = "Assets";
         private readonly Lazy<IQueryable<IAsset>> _assetQuery;
 
         /// <summary>
