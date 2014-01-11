@@ -23,6 +23,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
+using Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit;
 using Moq;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.UnitTests
@@ -36,22 +37,25 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.UnitTests
         [TestInitialize]
         public void SetupTest()
         {
-            _mediaContext = GetMediaDataServiceContextForUnitTests();
-        }
-
-        public static CloudMediaContext GetMediaDataServiceContextForUnitTests()
-        {
-            CloudMediaContext mediaContext = new TestCloudMediaContext(new Uri("http://contoso.com"), new MediaServicesCredentials("", ""));
-            mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(new TestCloudMediaDataContext(mediaContext));
-            return mediaContext;
+            _mediaContext = Helper.GetMediaDataServiceContextForUnitTests();
         }
 
         [TestMethod]
-        public void AssetCreateWithEmptyFile()
+        public void AssetCRUDWithEmptyFile()
         {
             IAsset asset = _mediaContext.Assets.Create("Test", AssetCreationOptions.None);
             IAssetFile file = asset.AssetFiles.Create("test");
             Assert.IsNotNull(asset);
+            Assert.IsNotNull(asset.AssetFiles);
+            Assert.AreEqual(1, asset.AssetFiles.Count());
+            file.ContentFileSize = 100;
+            file.Update();
+            file.Delete();
+            Assert.IsNotNull(asset.AssetFiles);
+            Assert.AreEqual(0, asset.AssetFiles.Count());
+            asset.Delete();
+            Assert.IsNull(_mediaContext.Assets.Where(c=>c.Id == asset.Id).FirstOrDefault());
+
         }
 
         [TestMethod]
@@ -60,6 +64,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.UnitTests
             Task<IAsset> assetTask = _mediaContext.Assets.CreateAsync("Test", AssetCreationOptions.None, CancellationToken.None);
             IAsset asset = assetTask.Result;
             Assert.IsNotNull(asset);
+            Assert.IsNotNull(asset.Locators);
+            Assert.IsNotNull(asset.AssetFiles);
+            Assert.AreEqual(AssetState.Initialized, asset.State);
+            Assert.IsNotNull(asset.ParentAssets);
+            Assert.IsNotNull(asset.StorageAccount);
             IAsset refreshed = _mediaContext.Assets.Where(c => c.Id == asset.Id).FirstOrDefault();
             Assert.IsNotNull(refreshed);
         }
@@ -79,11 +88,20 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.UnitTests
             Assert.IsNotNull(asset);
         }
 
+        [TestMethod]
+        public void VerifyStubedData()
+        {
+            var asset = _mediaContext.Assets.FirstOrDefault();
+            Assert.IsNotNull(asset);
+            Assert.IsNotNull(asset.Locators);
+            Assert.AreEqual(1,asset.Locators.Count);
+            Assert.IsNotNull(asset.AssetFiles);
+            Assert.AreEqual(1, asset.AssetFiles.Count());
+        }
+
         #region Retry Logic tests
 
         [TestMethod]
-        [Priority(0)]
-        [TestCategory("DailyBvtRun")]
         public void TestAssetCreateRetry()
         {
             var expected = new AssetData { Name = "testData" };
@@ -100,8 +118,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.UnitTests
         }
 
         [TestMethod]
-        [Priority(0)]
-        [TestCategory("DailyBvtRun")]
         [ExpectedException(typeof(WebException))]
         public void TestAssetCreateFailedRetry()
         {
@@ -128,8 +144,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.UnitTests
         }
 
         [TestMethod]
-        [Priority(0)]
-        [TestCategory("DailyBvtRun")]
         [ExpectedException(typeof(WebException))]
         public void TestAssetCreateFailedRetryMessageLengthLimitExceeded()
         {
@@ -158,8 +172,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.UnitTests
         }
 
         [TestMethod]
-        [Priority(0)]
-        [TestCategory("DailyBvtRun")]
         public void TestAssetUpdateRetry()
         {
             var data = new AssetData { Name = "testData" };
@@ -179,8 +191,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.UnitTests
         }
 
         [TestMethod]
-        [Priority(0)]
-        [TestCategory("DailyBvtRun")]
         public void TestAssetDeleteRetry()
         {
             var data = new AssetData { Name = "testData" };
@@ -202,8 +212,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.UnitTests
         }
 
         [TestMethod]
-        [Priority(0)]
-        [TestCategory("DailyBvtRun")]
         public void TestAssetGetContentKeysRetry()
         {
             var data = new AssetData { Name = "testData", Id = "testId" };

@@ -164,10 +164,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     IMediaDataServiceContext dataContext = this._mediaContextBase.MediaServicesClassFactory.CreateDataServiceContext();
                     dataContext.AttachTo(AssetCollection.AssetSet, this);
                     LoadProperty(dataContext, ParentAssetsPropertyName);
-                    
+
                     if (this.ParentAssets != null)
                     {
                         this._parentAssetCollection = this.ParentAssets.ToList<IAsset>().AsReadOnly();
+                    }
+                    else
+                    {
+                        return new ReadOnlyCollection<IAsset>(new List<IAsset>());
                     }
                 }
 

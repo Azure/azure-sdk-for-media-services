@@ -43,6 +43,87 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
             _entitySetMappings.Add(AccessPolicyBaseCollection.AccessPolicySet, typeof (AccessPolicyData));
             _entitySetMappings.Add(ContentKeyCollection.ContentKeySet, typeof (ContentKeyData));
             _entitySetMappings.Add(LocatorBaseCollection.LocatorSet, typeof (LocatorData));
+            _entitySetMappings.Add(StorageAccountBaseCollection.EntitySet, typeof(StorageAccountData));
+
+          
+        }
+
+        public void InitilizeStubData()
+        {
+            string assetId = "nb:Id:" + Guid.NewGuid();
+
+            StorageAccountData storageAccountData = new StorageAccountData
+            {
+                IsDefault = true,
+                Name = "test storage",
+            };
+
+            _pendingChanges.Add(StorageAccountBaseCollection.EntitySet,
+                new List<StorageAccountData>
+                {
+                    storageAccountData
+                });
+
+            AssetData assetData = new AssetData()
+            {
+                Id = assetId,
+                AlternateId = String.Empty,
+                Created = DateTime.UtcNow,
+                LastModified = DateTime.UtcNow,
+                Name = "Mock Asset",
+                Options = (int) AssetCreationOptions.None,
+            };
+            assetData.SetMediaContext(_mediaContextBase);
+            _pendingChanges.Add(AssetCollection.AssetSet,
+                new List<AssetData>
+                {
+                    assetData
+                });
+            string accessPolicyId = Guid.NewGuid().ToString();
+
+            AccessPolicyData accessPolicyData = new AccessPolicyData()
+            {
+                Id = accessPolicyId,
+                Name = "Mock AccessPolicy",
+                Created = DateTime.UtcNow.AddDays(-1),
+                DurationInMinutes = 10000,
+                LastModified = DateTime.UtcNow,
+                Permissions = (int) AccessPermissions.Read
+            };
+            accessPolicyData.SetMediaContext(_mediaContextBase);
+            _pendingChanges.Add(AccessPolicyBaseCollection.AccessPolicySet,
+                new List<AccessPolicyData>
+                {
+                    accessPolicyData
+                });
+
+            LocatorData locatorData = new LocatorData()
+            {
+                Id = Guid.NewGuid().ToString(),
+                AssetId = assetId,
+                Name = "Mock locator",
+                AccessPolicyId = accessPolicyId,
+                BaseUri = "http://"
+            };
+
+            locatorData.SetMediaContext(_mediaContextBase);
+            _pendingChanges.Add(LocatorBaseCollection.LocatorSet,
+                new List<LocatorData>
+                {
+                    locatorData
+                });
+
+            _pendingChanges.Add(AssetFileCollection.FileSet,
+                new List<AssetFileData>
+                {
+                    new AssetFileData()
+                    {
+                        Id= Guid.NewGuid().ToString(),
+                        Created = DateTime.UtcNow,
+                        Name = "Mock File",
+                        ParentAssetId = assetId
+                    }
+                });
         }
 
         public bool IgnoreResourceNotFoundException { get; set; }
@@ -110,6 +191,20 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
                 {
                     case "Locators":
                         assetData.Locators = new List<LocatorData>(CreateQuery<LocatorData>("Locators").Where(c=>c.AssetId ==c.AssetId ).ToList());
+                        break;
+                    default: break;
+                }
+            }
+            if (entity is LocatorData)
+            {
+                LocatorData data = (LocatorData)(entity);
+                switch (propertyName)
+                {
+                    case "Asset":
+                        data.Asset =CreateQuery<AssetData>("Assets").Where(c => c.Id == data.AssetId).FirstOrDefault();
+                        break;
+                    case "AccessPolicy":
+                        data.AccessPolicy= CreateQuery<AccessPolicyData>(AccessPolicyBaseCollection.AccessPolicySet).Where(c => c.Id == data.AccessPolicyId).FirstOrDefault();
                         break;
                     default: break;
                 }
