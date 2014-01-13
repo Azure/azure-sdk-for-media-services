@@ -30,17 +30,20 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 _dataContext.IgnoreResourceNotFoundException = value;
             }
         }
-        
+
         /// <summary>
         /// Creates a data service query for data of a specified generic type.
         /// create a query based on (BaseUri + relativeUri)
         /// </summary>
-        /// <typeparam name="T">The type returned by the query</typeparam>
+        /// <typeparam name="TIinterface">The exposed interface type of elements returned by the query.</typeparam>
+        /// <typeparam name="TData">The type used by the query internaly.</typeparam>
         /// <param name="entitySetName">A string that resolves to a URI.</param>
         /// <returns>A new System.Data.Services.Client.DataServiceQuery<TElement> instance that represents a data service query.</returns>
-        public IQueryable<T> CreateQuery<T>(string entitySetName)
+        public IQueryable<TIinterface> CreateQuery<TIinterface, TData>(string entitySetName)
         {
-            return _dataContext.CreateQuery<T>(entitySetName);
+            IQueryable<TIinterface> inner = (IQueryable<TIinterface>)_dataContext.CreateQuery<TData>(entitySetName);
+            var result = new MediaQueryable<TIinterface, TData>(inner);
+            return result;
         }
 
         /// <summary>

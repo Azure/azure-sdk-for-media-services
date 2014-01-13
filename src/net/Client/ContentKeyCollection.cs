@@ -40,8 +40,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         internal ContentKeyCollection(MediaContextBase cloudMediaContext)
             : base(cloudMediaContext)
         {
-            
-            this.ContentKeyQueryable = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<ContentKeyData>(ContentKeySet);
+
+            this.ContentKeyQueryable = this.MediaContext
+                .MediaServicesClassFactory
+                .CreateDataServiceContext()
+                .CreateQuery<IContentKey, ContentKeyData>(ContentKeySet);
         }
 
         /// <summary>

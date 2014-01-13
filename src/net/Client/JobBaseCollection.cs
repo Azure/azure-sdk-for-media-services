@@ -38,7 +38,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         internal JobBaseCollection(MediaContextBase cloudMediaContext)
             : base(cloudMediaContext)
         {
-            this.Queryable = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<JobData>(JobSet);
+            this.Queryable = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<IJob, JobData>(JobSet);
         }
 
         /// <summary>

@@ -66,7 +66,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             MediaServicesCredentials credentials = new MediaServicesCredentials(account, key)
             {
                 AccessToken = context1.Credentials.AccessToken,
-                TokenExpiration = DateTime.UtcNow.AddYears(-1)
+                TokenExpiration = DateTime.UtcNow.AddYears(-1),
+                Scope = context1.Credentials.Scope, 
+                AcsBaseAddress = context1.Credentials.AcsBaseAddress
             };
 
             var context2 = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext(credentials);

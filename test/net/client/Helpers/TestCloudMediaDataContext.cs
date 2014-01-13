@@ -47,7 +47,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Helpers
 
         public bool IgnoreResourceNotFoundException { get; set; }
 
-        public IQueryable<T> CreateQuery<T>(string entitySetName)
+        private IQueryable<T> CreateQuery<T>(string entitySetName)
         {
             if (_pendingChanges.ContainsKey(entitySetName))
             {
@@ -58,6 +58,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Helpers
             }
 
             return new List<T>().AsQueryable();
+        }
+
+        public IQueryable<TIinterface> CreateQuery<TIinterface, TData>(string entitySetName)
+        {
+            IQueryable<TIinterface> inner = (IQueryable<TIinterface>)this.CreateQuery<TData>(entitySetName);
+            var result = new MediaQueryable<TIinterface, TData>(inner);
+            return result;
         }
 
         public void AttachTo(string entitySetName, object entity)
