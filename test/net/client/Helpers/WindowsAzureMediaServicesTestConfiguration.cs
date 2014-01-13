@@ -46,6 +46,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Helpers
         public const string SmoothToHlsConfig = @"Configuration\Smooth Streams to Apple HTTP Live Streams.xml";
         public const string SmoothToEncryptHlsConfig = @"Configuration\Smooth Streams to Encrypted Apple HTTP Live Streams.xml";
         
+        public const string AudioOnlyConfig = @"Configuration\AudioEncodingPreset.xml";
+
         public static string MediaServiceAccountName = ConfigurationManager.AppSettings["MediaServiceAccountName"];
         public static string MediaServiceAccountKey = ConfigurationManager.AppSettings["MediaServiceAccountKey"];
         public static string ClientStorageConnectionString = ConfigurationManager.AppSettings["ClientStorageConnectionString"];

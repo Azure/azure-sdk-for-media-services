@@ -20,6 +20,7 @@ using System.Data.Services.Client;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Xml;
@@ -101,7 +102,62 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             IMediaProcessor mediaProcessor = GetMediaProcessor(_mediaContext, WindowsAzureMediaServicesTestConfiguration.MpEncoderName);
             string name = GenerateName("Job 1");
             IJob job = CreateAndSubmitOneTaskJob(_mediaContext, name, mediaProcessor, GetWamePreset(mediaProcessor), asset, TaskOptions.None);
-            WaitForJob(job.Id, JobState.Finished, VerifyAllTasksFinished);
+            Task task = job.GetExecutionProgressTask(CancellationToken.None);
+            task.Wait();
+            Assert.AreEqual(JobState.Finished, job.State);
+        }
+
+        [TestMethod]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [TestCategory("DailyBvtRun")]
+        public void ShouldReportJobProgress()
+        {
+            IAsset asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.StorageEncrypted);
+            IMediaProcessor mediaProcessor = GetMediaProcessor(_mediaContext, WindowsAzureMediaServicesTestConfiguration.MpEncoderName);
+            string name = GenerateName("Job 1");
+            IJob job = CreateAndSubmitOneTaskJob(_mediaContext, name, mediaProcessor, GetWamePreset(mediaProcessor), asset, TaskOptions.None);
+            bool progressChanged = false;
+            var task = Task.Factory.StartNew(delegate
+             {
+                 while (!IsFinalJobState(job.State))
+                 {
+                     Thread.Sleep(100);
+                     double progress = job.Tasks[0].Progress;
+                     if (progress > 0 && progress < 100)
+                     {
+                         progressChanged = true;
+                     }
+                     job.Refresh();
+                 }
+             });
+            task.Wait();
+            task.ThrowIfFaulted();
+            Assert.AreEqual(JobState.Finished, job.State);
+            Assert.IsTrue(progressChanged,"Task progress has not been changed while job is expected to be finished");
+
+        }
+
+        
+
+        [TestMethod]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        public void ShouldQueryJobByStartTime()
+        {
+            DateTime startDateTime = DateTime.UtcNow;
+            IAsset asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.StorageEncrypted);
+            IMediaProcessor mediaProcessor = GetMediaProcessor(_mediaContext, WindowsAzureMediaServicesTestConfiguration.MpEncoderName);
+            string name = GenerateName("Job 1");
+            IJob job = CreateAndSubmitOneTaskJob(_mediaContext, name, mediaProcessor, GetWamePreset(mediaProcessor), asset, TaskOptions.None);
+            Task task = job.GetExecutionProgressTask(CancellationToken.None);
+            task.Wait();
+            List<IJob> jobs = _mediaContext.Jobs.Where(j => j.StartTime > startDateTime && j.StartTime < DateTime.UtcNow).ToList();
+           
+           Assert.IsTrue(jobs.Count > 0);
+        }
+
+        private static bool IsFinalJobState(JobState jobState)
+        {
+            return (jobState == JobState.Canceled) || (jobState == JobState.Error) || (jobState == JobState.Finished);
         }
 
         [TestMethod]
@@ -278,7 +334,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             task.OutputAssets.AddNew("JobOutput", options: AssetCreationOptions.None);
             job.Submit();
 
-            WaitForJob(job.Id, JobState.Finished, VerifyAllTasksFinished);
+            WaitForJob(job.Id, JobState.Finished, VerifyAllTasksFinished, delegate(double d) { Console.WriteLine(d); });
 
             Assert.IsTrue(job.OutputMediaAssets[0].ParentAssets.Count == 3);
             IEnumerable<string> parentIds = job.OutputMediaAssets[0].ParentAssets.Select(a => a.Id);
@@ -382,6 +438,18 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             IAsset asset = AssetTests.CreateAsset(_mediaContext, WindowsAzureMediaServicesTestConfiguration.SmallMp41, AssetCreationOptions.StorageEncrypted);
             IMediaProcessor mediaProcessor = GetMediaProcessor(_mediaContext, WindowsAzureMediaServicesTestConfiguration.MpPackagerName);
             IJob job = CreateAndSubmitOneTaskJob(_mediaContext, GenerateName("ShouldSubmitAndFihishMp4ToSmoothJob"), mediaProcessor, configuration, asset, TaskOptions.None);
+            WaitForJob(job.Id, JobState.Finished, VerifyAllTasksFinished);
+        }
+
+        [TestMethod]
+        [DeploymentItem(@"Configuration\AudioEncodingPreset.xml", "Configuration")]
+        [DeploymentItem(@"Media\SmallMP41.mp4", "Media")]
+        public void ShouldSubmitAndFihishMp4ToAudioJob()
+        {
+            string configuration = File.ReadAllText(WindowsAzureMediaServicesTestConfiguration.AudioOnlyConfig);
+            IAsset asset = AssetTests.CreateAsset(_mediaContext, WindowsAzureMediaServicesTestConfiguration.SmallMp41, AssetCreationOptions.None);
+            IMediaProcessor mediaProcessor = GetMediaProcessor(_mediaContext, WindowsAzureMediaServicesTestConfiguration.MpEncoderName);
+            IJob job = CreateAndSubmitOneTaskJob(_mediaContext, GenerateName("ShouldSubmitAndFihishMp4ToAudioJob"), mediaProcessor, configuration, asset, TaskOptions.None);
             WaitForJob(job.Id, JobState.Finished, VerifyAllTasksFinished);
         }
 
@@ -832,13 +900,23 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             return job;
         }
 
-        public static void WaitForJob(string jobId, JobState jobState, Action<string> verifyAction)
+        public static void WaitForJob(string jobId, JobState jobState, Action<string> verifyAction, Action<double> progressChangedAction  = null)
         {
+            bool progressChanged = false;
             DateTime start = DateTime.Now;
             while (true)
             {
                 CloudMediaContext context2 = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
                 IJob job2 = context2.Jobs.Where(c => c.Id == jobId).Single();
+                ITask jobtask = job2.Tasks.Where(t=> t.State == JobState.Processing).FirstOrDefault();
+
+                if (jobtask != null && jobtask.Progress > 0 && jobtask.Progress <= 100)
+                {
+                  if (progressChangedAction != null)
+                    {
+                        progressChangedAction(jobtask.Progress);
+                    }
+                }
                 if (job2.State == jobState)
                 {
                     verifyAction(jobId);
@@ -860,7 +938,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
                     throw new Exception(str.ToString());
                 }
-                if (DateTime.Now - start > TimeSpan.FromMinutes(5))
+                if (DateTime.Now - start > TimeSpan.FromMinutes(15))
                 {
                     throw new Exception("Job Timed out - Current State " + job2.State.ToString() + " Expected State " + jobState + " jobId = " + jobId);
                 }
