@@ -19,16 +19,20 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     internal class MediaQueryable<TIinterface, TData> : IOrderedQueryable<TIinterface>
     {
-        IQueryable<TIinterface> _inner;
-        public MediaQueryable(IQueryable<TIinterface> inner)
+        private IQueryable<TIinterface> _inner;
+
+        public MediaQueryable(IQueryable<TIinterface> inner) : this(inner, null) {}
+
+        public MediaQueryable(IQueryable<TIinterface> inner, MediaRetryPolicy queryRetryPolicy)
         {
             _inner = inner;
-            Provider = new MediaQueryProvider<TData>(_inner.Provider);
+            Provider = new MediaQueryProvider<TData>(_inner.Provider, queryRetryPolicy);
         }
 
         #region IEnumerable

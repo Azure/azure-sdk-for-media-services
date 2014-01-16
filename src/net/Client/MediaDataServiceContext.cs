@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Services.Client;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -11,9 +12,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// </summary>
     public class MediaDataServiceContext : IMediaDataServiceContext
     {
-        public MediaDataServiceContext(DataServiceContext dataContext)
+		public MediaDataServiceContext(DataServiceContext dataContext, MediaRetryPolicy queryRetryPolicy)
         {
             _dataContext = dataContext;
+			_queryRetryPolicy = queryRetryPolicy;
         }
 
         /// <summary>
@@ -42,7 +44,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public IQueryable<TIinterface> CreateQuery<TIinterface, TData>(string entitySetName)
         {
             IQueryable<TIinterface> inner = (IQueryable<TIinterface>)_dataContext.CreateQuery<TData>(entitySetName);
-            var result = new MediaQueryable<TIinterface, TData>(inner);
+            var result = new MediaQueryable<TIinterface, TData>(inner, _queryRetryPolicy);
             return result;
         }
 
@@ -393,5 +395,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
         private DataServiceContext _dataContext;
+		private MediaRetryPolicy _queryRetryPolicy;
     }
 }

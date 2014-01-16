@@ -82,7 +82,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             dataContext.ReadingEntity += this.OnReadingEntity;
 
-            return new MediaDataServiceContext(dataContext);
+			MediaRetryPolicy queryRetryPolicy = GetQueryRetryPolicy();
+
+            return new MediaDataServiceContext(dataContext, queryRetryPolicy);
         }
 
         /// <summary>

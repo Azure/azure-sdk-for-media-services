@@ -109,7 +109,6 @@
     <Compile Include="IngestManifestAssetTests.cs" />
     <Compile Include="JobTemplateTest.cs" />
     <Compile Include="LinkCollectionTest.cs" />
-    <Compile Include="BaseCollectionTest.cs" />
     <Compile Include="ContentKeyTests.cs" />
     <Compile Include="Helpers\TestCloudMediaContext.cs" />
     <Compile Include="Helpers\TestCloudMediaDataContext.cs" />
@@ -130,6 +129,7 @@
     <Compile Include="StorageAccountTests.cs" />
     <Compile Include="QueryErrorDetectionStrategyTest.cs" />
     <Compile Include="CacheTest.cs" />
+    <Compile Include="UnitTests\QueryRetryTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Configuration\AudioEncodingPreset.xml">

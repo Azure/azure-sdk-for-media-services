@@ -20,16 +20,19 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     internal class MediaQueryProvider<TData> : IQueryProvider
     {
         private IQueryProvider _inner;
+		private MediaRetryPolicy _queryRetryPolicy;
 
-        public MediaQueryProvider(IQueryProvider inner)
+		public MediaQueryProvider(IQueryProvider inner, MediaRetryPolicy queryRetryPolicy)
         {
             _inner = inner;
+			_queryRetryPolicy = queryRetryPolicy;
         }
 
         public IQueryable<TElement> CreateQuery<TElement>(Expression expression)
@@ -51,7 +54,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
         public TResult Execute<TResult>(Expression expression)
         {
-            return _inner.Execute<TResult>(expression);
+			if(_queryRetryPolicy == null)
+			{
+				return _inner.Execute<TResult>(expression);
+			}
+			else
+			{
+				return _queryRetryPolicy.ExecuteAction(() => _inner.Execute<TResult>(expression));
+			}
         }
 
         public object Execute(Expression expression)
