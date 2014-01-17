@@ -26,12 +26,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// <summary>
     /// Represents a collection of <see cref="IAssetFile"/>.
     /// </summary>
-    internal class AssetFileCollection : AssetFileBaseCollection
+    public class AssetFileCollection : AssetFileBaseCollection
     {
         /// <summary>
         /// The name of the file set.
         /// </summary>
-        internal const string FileSet = "Files";
+        public const string FileSet = "Files";
 
         private readonly Lazy<IQueryable<IAssetFile>> _assetFileQuery; 
         private readonly IAsset _parentAsset;
