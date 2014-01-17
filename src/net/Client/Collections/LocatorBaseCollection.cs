@@ -28,7 +28,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// The entity set name for locators.
         /// </summary>
-        internal const string LocatorSet = "Locators";
+        public const string LocatorSet = "Locators";
 
         /// <summary>
         /// The name of the AccessPolicy property of the <see cref="ILocator"/>.

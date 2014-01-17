@@ -31,7 +31,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// The name of the content key set.
         /// </summary>
-        internal const string ContentKeySet = "ContentKeys";
+        public const string ContentKeySet = "ContentKeys";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ContentKeyCollection"/> class.
