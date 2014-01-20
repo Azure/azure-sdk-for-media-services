@@ -43,7 +43,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         internal AssetCollection(MediaContextBase cloudMediaContext)
             : base(cloudMediaContext)
         {
-            this._assetQuery = new Lazy<IQueryable<IAsset>>(() => this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<AssetData>(AssetSet));
+            this._assetQuery = new Lazy<IQueryable<IAsset>>(
+                () => this.MediaContext
+                    .MediaServicesClassFactory
+                    .CreateDataServiceContext()
+                    .CreateQuery<IAsset, AssetData>(AssetSet));
         }
 
         /// <summary>

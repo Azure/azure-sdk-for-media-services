@@ -135,6 +135,28 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [TestCategory("DailyBvtRun")]
+        [Priority(0)]
+        public void TestQueries()
+        {
+            var keys = _mediaContext
+                .ContentKeys
+                .Where(a => a.LastModified < DateTime.UtcNow)
+                .OrderByDescending(c => c.Created)
+                .Skip(1)
+                .Take(5)
+                .First();
+
+            keys = _mediaContext
+                .ContentKeys
+                .OrderBy(c => c.Created)
+                .Where(a => a.LastModified < DateTime.UtcNow)
+                .Skip(1)
+                .Take(5)
+                .First();
+        }
+
+        [TestMethod]
+        [TestCategory("DailyBvtRun")]
         [DeploymentItem(@"Media\SmallWMV2.wmv", "Media")]
         [Priority(0)]
         public void ShouldCreateAssetFileArrayWithPlayReadyEncryption()

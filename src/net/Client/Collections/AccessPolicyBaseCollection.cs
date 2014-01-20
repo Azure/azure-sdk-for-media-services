@@ -39,7 +39,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         internal AccessPolicyBaseCollection(MediaContextBase cloudMediaContext)
             : base(cloudMediaContext)
         {
-            this.Queryable = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<AccessPolicyData>(AccessPolicySet);
+            this.Queryable = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<IAccessPolicy, AccessPolicyData>(AccessPolicySet);
         }
 
         /// <summary>

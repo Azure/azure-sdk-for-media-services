@@ -44,7 +44,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             _dataContext = MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             _parentIngestManifest = parentIngestManifest;
-            _query = new Lazy<IQueryable<IIngestManifestAsset>>(() => _dataContext.CreateQuery<IngestManifestAssetData>(EntitySet));
+            _query = new Lazy<IQueryable<IIngestManifestAsset>>(() => _dataContext.CreateQuery<IIngestManifestAsset, IngestManifestAssetData>(EntitySet));
         }
 
         /// <summary>

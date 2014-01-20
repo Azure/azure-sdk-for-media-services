@@ -41,7 +41,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         internal IngestManifestCollection(MediaContextBase cloudMediaContext)
             : base(cloudMediaContext)
         {
-            this.Queryable = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<IngestManifestData>(EntitySet);
+            this.Queryable = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<IIngestManifest, IngestManifestData>(EntitySet);
         }
 
 

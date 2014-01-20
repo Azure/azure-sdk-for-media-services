@@ -159,6 +159,8 @@
     <Compile Include="DataServiceAsyncExtensions.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="MediaQueryable.cs" />
+    <Compile Include="MediaQueryProvider.cs" />
     <Compile Include="MediaServicesCredentials.cs" />
     <Compile Include="Cache.cs" />
     <Compile Include="TransientFaultHandling\RetryPolicyExtensions.cs" />
