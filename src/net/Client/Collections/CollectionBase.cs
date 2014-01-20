@@ -86,8 +86,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </returns>
         public IEnumerator<T> GetEnumerator()
         {
-            MediaRetryPolicy policy = this.MediaContext.MediaServicesClassFactory.GetQueryRetryPolicy();
-            return policy.ExecuteAction(() => this.Queryable.GetEnumerator());
+            return this.Queryable.GetEnumerator();
         }
 
         /// <summary>

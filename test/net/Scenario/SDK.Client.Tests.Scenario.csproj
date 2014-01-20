@@ -108,7 +108,6 @@
     <Compile Include="IngestManifestAssetTests.cs" />
     <Compile Include="JobTemplateTest.cs" />
     <Compile Include="LinkCollectionTest.cs" />
-    <Compile Include="BaseCollectionTest.cs" />
     <Compile Include="ContentKeyTests.cs" />
     <Compile Include="IngestManifestFileTests.cs" />
     <Compile Include="MediaServicesCredentialsTest.cs" />

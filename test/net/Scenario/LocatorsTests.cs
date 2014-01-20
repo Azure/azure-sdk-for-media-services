@@ -621,7 +621,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             // Cannot mock DataServiceQuery. Throw artificial exception to mark pass through saving changes.
             string artificialExceptionMessage = "artificialException";
-            dataContextMock.Setup((ctxt) => ctxt.CreateQuery<AssetData>("Assets")).Throws(new Exception(artificialExceptionMessage));
+            dataContextMock.Setup((ctxt) => ctxt.CreateQuery<IAsset, AssetData>("Assets")).Throws(new Exception(artificialExceptionMessage));
 
             _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
 

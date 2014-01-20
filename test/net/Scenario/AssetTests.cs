@@ -48,6 +48,34 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             _downloadProgress = 0;
         }
 
+        [TestMethod]
+        public void TestQueries()
+        {
+            _mediaContext.Assets.FirstOrDefault();
+
+            var asset1 = _mediaContext
+                .Assets
+                .OrderByDescending(c => c.Created)
+                .Where(a => a.Name.Length > 1)
+                .Skip(10)
+                .Take(5)
+                .First();
+
+            var asset2 = _mediaContext
+                .Assets
+                .Where(a => a.Name.Length > 1)
+                .Skip(10)
+                .Take(5)
+                .First();
+
+            var asset3 = _mediaContext
+                .Assets
+                .Where(a => a.Name.Length > 1)
+                .OrderByDescending(c => c.Created)
+                .Skip(10)
+                .Take(5)
+                .First();
+        }
 
         /// <summary>
         /// Known issue with mime-type detection
