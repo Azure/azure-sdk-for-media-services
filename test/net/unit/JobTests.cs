@@ -16,16 +16,9 @@
 
 
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit;
-using Moq;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.UnitTests
 {

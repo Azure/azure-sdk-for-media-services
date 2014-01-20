@@ -20,7 +20,6 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
-using Moq;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.UnitTests
 {
