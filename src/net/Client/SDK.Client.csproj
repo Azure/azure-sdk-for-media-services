@@ -167,6 +167,8 @@
     </Compile>
     <Compile Include="Live\CloudMediaContext.cs" />
     <Compile Include="Live\MediaContextBase.cs" />
+    <Compile Include="MediaQueryable.cs" />
+    <Compile Include="MediaQueryProvider.cs" />
     <Compile Include="MediaServicesCredentials.cs" />
     <Compile Include="TransientFaultHandling\RetryPolicyExtensions.cs" />
     <Compile Include="TransientFaultHandling\StorageTransientErrorDetectionStrategy.cs" />

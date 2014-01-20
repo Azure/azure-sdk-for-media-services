@@ -28,7 +28,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         internal OriginMetricBaseCollection(CloudMediaContext cloudMediaContext)
             : base(cloudMediaContext)
         {
-            Queryable = cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<OriginMetricData>(OriginMetricSet);
+			Queryable = cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<IOriginMetric, OriginMetricData>(OriginMetricSet);
 
             Initialize(Queryable);
         }

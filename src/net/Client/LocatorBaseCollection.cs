@@ -51,7 +51,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         internal LocatorBaseCollection(MediaContextBase cloudMediaContext)
             : base(cloudMediaContext)
         {
-           this.Queryable = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<LocatorData>(LocatorSet);
+			this.Queryable = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<ILocator, LocatorData>(LocatorSet);
         }
 
         /// <summary>

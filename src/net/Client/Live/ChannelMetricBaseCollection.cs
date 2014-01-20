@@ -27,7 +27,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="cloudMediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
         internal ChannelMetricBaseCollection(CloudMediaContext cloudMediaContext) : base(cloudMediaContext)
         {
-            Queryable = cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<ChannelMetricData>(ChannelMetricSet);
+			Queryable = cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<IChannelMetric, ChannelMetricData>(ChannelMetricSet);
 
             Initialize(Queryable);
         }

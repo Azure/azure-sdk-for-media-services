@@ -38,7 +38,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             : base(cloudMediaContext)
         {
             var dataContext = cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
-            this._programQuery = new Lazy<IQueryable<IProgram>>(() => dataContext.CreateQuery<ProgramData>(ProgramSet));
+			this._programQuery = new Lazy<IQueryable<IProgram>>(() => dataContext.CreateQuery<IProgram, ProgramData>(ProgramSet));
         }
  
         /// <summary>

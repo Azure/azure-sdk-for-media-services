@@ -36,7 +36,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         internal OriginBaseCollection(CloudMediaContext cloudMediaContext)
             : base(cloudMediaContext)
         {
-            this.Queryable = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<OriginData>(OriginSet);
+			this.Queryable = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<IOrigin, OriginData>(OriginSet);
         }
 
         /// <summary>
