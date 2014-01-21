@@ -28,14 +28,6 @@ using System.Threading.Tasks;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 {
-    class TestX509Certificate2 : X509Certificate2
-    {
-        public override byte[] Export(X509ContentType contentType)
-        {
-            return Enumerable.Range(0, 5).Select(i => (byte)i).ToArray();
-        }
-    }
-
     [TestClass]
     public class ContentKeyTests
     {
