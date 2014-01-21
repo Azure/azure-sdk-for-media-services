@@ -64,6 +64,7 @@
     <Compile Include="AssetUnitTest.cs" />
     <Compile Include="CacheTest.cs" />
     <Compile Include="Helper.cs" />
+    <Compile Include="JobTests.cs" />
     <Compile Include="LocatorTest.cs" />
     <Compile Include="MediaRetryPolicyTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

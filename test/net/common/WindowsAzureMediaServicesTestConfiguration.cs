@@ -66,9 +66,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
             // This overload is used for testing purposes
             // It is recommended to use public CloudMediaContext(MediaServicesCredentials credentials) in your code to avoid code changes if default values will be changed later
             return new CloudMediaContext(new Uri(MediaServicesUri), new MediaServicesCredentials(MediaServiceAccountName, MediaServiceAccountKey, MediaServicesAccessScope, MediaServicesAcsBaseAddress));
-
-           //TODO: Uncomment if you want to run integration tests with mocks. Will be removed from here. 
-           //return  AssetUnitTest.GetMediaDataServiceContextForUnitTests();
            
         }
 

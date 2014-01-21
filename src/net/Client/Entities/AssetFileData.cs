@@ -109,11 +109,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             {
                 accessPolicy = this.GetMediaContext().AccessPolicies.Create("SdkDownload", TimeSpan.FromHours(12), AccessPermissions.Read);
                 locator = this.GetMediaContext().Locators.CreateSasLocator(this.Asset, accessPolicy);
-                BlobTransferClient blobTransfer = new BlobTransferClient
-                            {
-                                NumberOfConcurrentTransfers = this.GetMediaContext().NumberOfConcurrentTransfers,
-                                ParallelTransferThreadCount = this.GetMediaContext().ParallelTransferThreadCount
-                            };
+
+
+                BlobTransferClient blobTransfer = this.GetMediaContext().MediaServicesClassFactory.GetBlobTransferClient();
+                blobTransfer.NumberOfConcurrentTransfers = this.GetMediaContext().NumberOfConcurrentTransfers;
+                blobTransfer.ParallelTransferThreadCount = this.GetMediaContext().ParallelTransferThreadCount;
+                          
                 this.DownloadAsync(destinationPath, blobTransfer, locator, CancellationToken.None).Wait();
             }
             catch (AggregateException exception)

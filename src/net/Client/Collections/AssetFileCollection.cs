@@ -26,7 +26,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// <summary>
     /// Represents a collection of <see cref="IAssetFile"/>.
     /// </summary>
-    public class AssetFileCollection : AssetFileBaseCollection
+    internal class AssetFileCollection : AssetFileBaseCollection
     {
         /// <summary>
         /// The name of the file set.

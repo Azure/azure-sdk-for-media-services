@@ -17,6 +17,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading;
@@ -57,6 +58,70 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.UnitTests
             Assert.IsNull(_mediaContext.Assets.Where(c=>c.Id == asset.Id).FirstOrDefault());
 
         }
+
+        [TestMethod]
+        public void AssetFileQueryable()
+        {
+            IAsset asset = _mediaContext.Assets.Create("Test", AssetCreationOptions.None);
+            IAssetFile file = asset.AssetFiles.Create("test");
+            var fetched = _mediaContext.Files.Where(c => c.Id == file.Id).FirstOrDefault();
+            Assert.IsNotNull(fetched);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void AssetFileCreateWithoutParentShouldFail()
+        {
+            var fetched = _mediaContext.Files.Create("AssetFileCreateWithoutParentShouldFail");
+        }
+
+        [TestMethod]
+        
+        public void AssetFileCreateStorageEncryptedFile()
+        {
+            IAsset asset = _mediaContext.Assets.Create("Test", AssetCreationOptions.StorageEncrypted);
+            var file = asset.AssetFiles.Create("AssetFileCreateStorageEncryptedFile");
+            CallUpdateUploadDownloadAndDelete(file, "AssetFileCreateStorageEncryptedFile");
+        }
+
+        private static void CallUpdateUploadDownloadAndDelete(IAssetFile file, string name)
+        {
+            file.Update();
+            file.UpdateAsync();  
+            var uploadFile = Path.Combine(Path.GetTempPath(), name);
+            try
+            {
+              
+                File.CreateText(uploadFile).Close();
+                file.Upload(uploadFile);
+            }
+            finally
+            {
+                File.Delete(uploadFile);
+            }
+            file.Download(Path.GetTempFileName());
+            file.Delete();
+        }
+
+        [TestMethod]
+       
+        public void AssetFileCreateCommonEncryptedFile()
+        {
+            IAsset asset = _mediaContext.Assets.Create("Test", AssetCreationOptions.CommonEncryptionProtected);
+            var file = asset.AssetFiles.Create("AssetFileCreateCommonEncryptedFile");
+
+            CallUpdateUploadDownloadAndDelete(file, "AssetFileCreateCommonEncryptedFile");
+        }
+        [TestMethod]
+       
+        public void AssetFileCreateEnvelopeEncryptedFile()
+        {
+            IAsset asset = _mediaContext.Assets.Create("Test", AssetCreationOptions.EnvelopeEncryptionProtected);
+            var file = asset.AssetFiles.Create("AssetFileCreateEnvelopeEncryptedFile");
+            CallUpdateUploadDownloadAndDelete(file, "AssetFileCreateEnvelopeEncryptedFile");
+        }
+
+
 
         [TestMethod]
         public void AssetCreateAsync()

@@ -44,6 +44,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
             _entitySetMappings.Add(ContentKeyCollection.ContentKeySet, typeof (ContentKeyData));
             _entitySetMappings.Add(LocatorBaseCollection.LocatorSet, typeof (LocatorData));
             _entitySetMappings.Add(StorageAccountBaseCollection.EntitySet, typeof(StorageAccountData));
+            _entitySetMappings.Add(MediaProcessorBaseCollection.MediaProcessorSet, typeof(MediaProcessorData));
+            //TODO:Inconsistent naming of class
+            _entitySetMappings.Add(NotificationEndPointCollection.NotificationEndPoints, typeof(NotificationEndPoint));
+            _entitySetMappings.Add(JobTemplateBaseCollection.JobTemplateSet, typeof(JobTemplateData));
 
           
         }
@@ -122,6 +126,18 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
                         Created = DateTime.UtcNow,
                         Name = "Mock File",
                         ParentAssetId = assetId
+                    }
+                });
+
+            _pendingChanges.Add(MediaProcessorBaseCollection.MediaProcessorSet,
+               new List<MediaProcessorData>
+                {
+                    new MediaProcessorData()
+                    {
+                        Id= Guid.NewGuid().ToString(),
+                        Name = "Mock Processor",
+                        Version = "1",
+                        Vendor = "mock"
                     }
                 });
         }
@@ -244,12 +260,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
 
         public void DeleteLink(object source, string sourceProperty, object target)
         {
-            throw new NotImplementedException();
+            
         }
 
         public void AddRelatedObject(object source, string sourceProperty, object target)
         {
-            throw new NotImplementedException();
+           
         }
 
         public Task<IEnumerable<T>> ExecuteAsync<T>(DataServiceQueryContinuation<T> continuation, object state)
@@ -320,7 +336,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
 
         public Task<IMediaDataServiceResponse> SaveChangesAsync(SaveChangesOptions options, object state)
         {
-            throw new NotImplementedException();
+            return SaveChangesAsync(state);
         }
 
         private MethodInfo MakeMethodGeneric(object entity, string methodName)
