@@ -1,11 +1,22 @@
-﻿using System;
+﻿//-----------------------------------------------------------------------
+// <copyright file="LocatorTest.cs" company="Microsoft">Copyright 2012 Microsoft Corporation</copyright>
+// <license>
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// </license>
+
+using System;
 using System.Linq;
-using System.Net;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
-using Moq;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
 {
@@ -53,7 +64,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
         [TestMethod]
         public void LocatorCRUD()
         {
-            var stubed = _mediaContext.Locators.FirstOrDefault();
+            ILocator stubed = _mediaContext.Locators.FirstOrDefault();
             Assert.IsNotNull(stubed);
             Assert.IsNotNull(stubed.Asset);
             Assert.IsNotNull(stubed.AccessPolicy);
@@ -69,31 +80,32 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
             locator.Delete();
             Assert.IsNull(_mediaContext.Locators.Where(c => c.Id == locator.Id).FirstOrDefault());
 
-            var sas = _mediaContext.Locators.CreateSasLocator(asset, policy);
+            ILocator sas = _mediaContext.Locators.CreateSasLocator(asset, policy);
             sas.Delete();
 
             sas = _mediaContext.Locators.CreateSasLocatorAsync(asset, policy).Result;
             sas.Delete();
-            var sasAsync = _mediaContext.Locators.CreateSasLocatorAsync(asset, policy,DateTime.UtcNow,"Name").Result;
+            ILocator sasAsync = _mediaContext.Locators.CreateSasLocatorAsync(asset, policy, DateTime.UtcNow, "Name").Result;
             sasAsync.DeleteAsync().Wait();
-
         }
+
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof (ArgumentNullException))]
         public void ValidateAccessPolicyInCreateLocatorAsync()
         {
-            var asset = _mediaContext.Assets.FirstOrDefault();
+            IAsset asset = _mediaContext.Assets.FirstOrDefault();
             Assert.IsNotNull(asset);
-            var policy = _mediaContext.AccessPolicies.FirstOrDefault();
+            IAccessPolicy policy = _mediaContext.AccessPolicies.FirstOrDefault();
             Assert.IsNotNull(policy);
             _mediaContext.Locators.CreateLocatorAsync(LocatorType.None, asset, null);
         }
+
         [TestMethod]
         public void CreateLocatorAsync()
         {
-            var asset = _mediaContext.Assets.FirstOrDefault();
+            IAsset asset = _mediaContext.Assets.FirstOrDefault();
             Assert.IsNotNull(asset);
-            var policy = _mediaContext.AccessPolicies.FirstOrDefault();
+            IAccessPolicy policy = _mediaContext.AccessPolicies.FirstOrDefault();
             Assert.IsNotNull(policy);
             _mediaContext.Locators.CreateLocatorAsync(LocatorType.None, asset, policy);
         }
@@ -113,19 +125,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
         }
 
         [TestMethod]
-        [ExpectedException(typeof(System.InvalidOperationException))]
+        [ExpectedException(typeof (System.InvalidOperationException))]
         public void OnlyOriginLocatorCanBeUpdated()
         {
             IAsset asset = _mediaContext.Assets.Create("Test", AssetCreationOptions.None);
             IAccessPolicy policy = _mediaContext.AccessPolicies.Create("Test", TimeSpan.FromDays(1), AccessPermissions.Read);
             ILocator locator = _mediaContext.Locators.CreateLocator(LocatorType.Sas, asset, policy);
             locator.Update(DateTime.UtcNow.AddDays(5));
-
-
         }
-
-
-        
-       
     }
 }
