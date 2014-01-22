@@ -18,9 +18,8 @@
 using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit;
 
-namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.UnitTests
+namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
 {
     [TestClass]
     public class JobTests

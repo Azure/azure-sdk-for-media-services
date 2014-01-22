@@ -17,6 +17,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -24,10 +25,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
-using Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit;
 using Moq;
 
-namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.UnitTests
+namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
 {
     [TestClass]
     public class AssetUnitTest
@@ -104,7 +104,21 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.UnitTests
         }
 
         [TestMethod]
-       
+        [ExpectedException(typeof(ArgumentException))]
+        public void AssetFileCreateShouldThrowOnEmptyFileName()
+        {
+            IAsset asset = _mediaContext.Assets.Create("Test", AssetCreationOptions.CommonEncryptionProtected);
+            asset.AssetFiles.Create(String.Empty);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void AssetFileCreateShouldThrowNullFileName()
+        {
+            IAsset asset = _mediaContext.Assets.Create("Test", AssetCreationOptions.CommonEncryptionProtected);
+            asset.AssetFiles.Create(null);
+        }
+
         public void AssetFileCreateCommonEncryptedFile()
         {
             IAsset asset = _mediaContext.Assets.Create("Test", AssetCreationOptions.CommonEncryptionProtected);
@@ -134,8 +148,45 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.UnitTests
             Assert.AreEqual(AssetState.Initialized, asset.State);
             Assert.IsNotNull(asset.ParentAssets);
             Assert.IsNotNull(asset.StorageAccount);
+            Assert.IsNotNull(asset.Uri);
             IAsset refreshed = _mediaContext.Assets.Where(c => c.Id == asset.Id).FirstOrDefault();
             Assert.IsNotNull(refreshed);
+            //simulating refresh of asset
+            ((AssetData)asset).SetMediaContext(_mediaContext);
+            Assert.IsNotNull(asset.Locators);
+            Assert.IsNotNull(asset.AssetFiles);
+            Assert.AreEqual(AssetState.Initialized, asset.State);
+            Assert.IsNotNull(asset.ParentAssets);
+            Assert.IsNotNull(asset.StorageAccount);
+            Assert.IsNotNull(asset.Uri);
+            
+        }
+
+        [TestMethod]
+        public void CreateFileForStorageEncryptedAssetWithMissingStorageKey()
+        {
+            Task<IAsset> assetTask = _mediaContext.Assets.CreateAsync("Test", AssetCreationOptions.StorageEncrypted, CancellationToken.None);
+            IAsset asset = assetTask.Result;
+            Assert.AreEqual(1,asset.ContentKeys.Count);
+            var key = asset.ContentKeys[0];
+            Assert.AreEqual(ContentKeyType.StorageEncryption, key.ContentKeyType);
+            //this call will not remove contentkey from collection. Collection need to be converted to iquaryable
+            key.Delete();
+            //simulating refresh
+            ((AssetData)asset).SetMediaContext(_mediaContext);
+            Assert.AreEqual(0, asset.ContentKeys.Count);
+            bool exception = false;
+            try
+            {
+                var file = asset.AssetFiles.CreateAsync("test", CancellationToken.None).Result;
+            }
+            catch (InvalidOperationException ex)
+            {
+              exception = true;
+              Assert.AreEqual(ex.Message, String.Format(CultureInfo.InvariantCulture, StringTable.StorageEncryptionContentKeyIsMissing, asset.Id));
+            }
+            Assert.IsTrue(exception, "Expected InvalidOperationException");
+
         }
 
         [TestMethod]
