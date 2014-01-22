@@ -7,8 +7,9 @@
   <ItemGroup>
     <MediaSln Include=".\src\net\Client\SDK.Client.csproj" />
 	<MediaSln Include=".\test\net\common\SDK.Client.Tests.Common.csproj" />
-	<MediaSln Include=".\test\net\scenario\SDK.Client.Tests.Scenario.csproj" />
 	<MediaSln Include=".\test\net\unit\SDK.Client.Tests.Unit.csproj" />
+	<MediaSln Include=".\test\net\scenario\SDK.Client.Tests.Scenario.csproj" />
+	
   </ItemGroup>
   
    <!-- Define build properties -->
