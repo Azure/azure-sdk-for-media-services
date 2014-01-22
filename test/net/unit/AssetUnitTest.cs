@@ -119,6 +119,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
             asset.AssetFiles.Create(null);
         }
 
+        [TestMethod]
         public void AssetFileCreateCommonEncryptedFile()
         {
             IAsset asset = _mediaContext.Assets.Create("Test", AssetCreationOptions.CommonEncryptionProtected);
@@ -127,7 +128,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
             CallUpdateUploadDownloadAndDelete(file, "AssetFileCreateCommonEncryptedFile");
         }
         [TestMethod]
-       
         public void AssetFileCreateEnvelopeEncryptedFile()
         {
             IAsset asset = _mediaContext.Assets.Create("Test", AssetCreationOptions.EnvelopeEncryptionProtected);
