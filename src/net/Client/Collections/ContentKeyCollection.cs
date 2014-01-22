@@ -37,7 +37,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
         }
 
-       
+
 
         /// <summary>
         /// Asynchronously creates a content key with the specified key identifier and value.
@@ -98,7 +98,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             {
                 contentKeyData = InitializeEnvelopeContentKey(keyId, contentKey, name, certToUse);
             }
-           
+
             dataContext.AddObject(ContentKeySet, contentKeyData);
 
             MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
