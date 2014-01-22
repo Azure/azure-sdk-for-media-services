@@ -29,33 +29,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     public class ContentKeyCollection : ContentKeyBaseCollection
     {
         /// <summary>
-        /// The name of the content key set.
-        /// </summary>
-        public const string ContentKeySet = "ContentKeys";
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="ContentKeyCollection"/> class.
         /// </summary>
         /// <param name="cloudMediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
         internal ContentKeyCollection(MediaContextBase cloudMediaContext)
             : base(cloudMediaContext)
         {
-
-            this.ContentKeyQueryable = this.MediaContext
-                .MediaServicesClassFactory
-                .CreateDataServiceContext()
-                .CreateQuery<IContentKey, ContentKeyData>(ContentKeySet);
         }
 
-        /// <summary>
-        /// Gets the <see cref="System.Linq.IQueryable"/> interface to evaluate queries against 
-        /// the collection of content keys.
-        /// </summary>
-        protected override IQueryable<IContentKey> Queryable
-        {
-            get { return this.ContentKeyQueryable; }
-            set { this.ContentKeyQueryable = value; }
-        }
+
 
         /// <summary>
         /// Asynchronously creates a content key with the specified key identifier and value.
@@ -117,7 +99,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 contentKeyData = InitializeEnvelopeContentKey(keyId, contentKey, name, certToUse);
             }
 
-            contentKeyData.SetMediaContext(MediaContext);
             dataContext.AddObject(ContentKeySet, contentKeyData);
 
             MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();

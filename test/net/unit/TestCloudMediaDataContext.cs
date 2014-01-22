@@ -41,7 +41,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
             _entitySetMappings.Add(AssetCollection.AssetSet, typeof (AssetData));
             _entitySetMappings.Add(AssetFileCollection.FileSet, typeof (AssetFileData));
             _entitySetMappings.Add(AccessPolicyBaseCollection.AccessPolicySet, typeof (AccessPolicyData));
-            _entitySetMappings.Add(ContentKeyCollection.ContentKeySet, typeof (ContentKeyData));
+            _entitySetMappings.Add(ContentKeyBaseCollection.ContentKeySet, typeof (ContentKeyData));
             _entitySetMappings.Add(LocatorBaseCollection.LocatorSet, typeof (LocatorData));
             _entitySetMappings.Add(StorageAccountBaseCollection.EntitySet, typeof(StorageAccountData));
             _entitySetMappings.Add(MediaProcessorBaseCollection.MediaProcessorSet, typeof(MediaProcessorData));
@@ -156,15 +156,17 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
 
         private IQueryable<T> CreateQuery<T>(string entitySetName)
         {
-            if (_pendingChanges.ContainsKey(entitySetName))
+            if (!_pendingChanges.ContainsKey(entitySetName))
             {
-                object list = _pendingChanges[entitySetName];
+                _pendingChanges.Add(entitySetName,
+                    new List<T>
+                    {
+                    });
+            }
+            object list = _pendingChanges[entitySetName];
 
                 IEnumerable enumerable = list as IEnumerable;
                 return enumerable.OfType<T>().AsQueryable();
-            }
-
-            return new List<T>().AsQueryable();
         }
 
         public IQueryable<TIinterface> CreateQuery<TIinterface, TData>(string entitySetName)
@@ -195,6 +197,21 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
 
         public IEnumerable<TElement> Execute<TElement>(Uri requestUri)
         {
+            byte[] _knownGoodContentKey = {243, 220, 162, 177, 198, 142, 141, 81, 105, 142, 159, 49, 81, 69, 132, 217, 120, 15, 170, 6, 60, 59, 211, 247, 161, 12, 210, 74, 65, 6, 142, 205};
+            
+            if (requestUri.ToString().StartsWith("/RebindContentKey?"))
+            {
+                System.Collections.Specialized.NameValueCollection parameters = System.Web.HttpUtility.ParseQueryString(requestUri.ToString().Replace("/RebindContentKey?", String.Empty));
+                string s = parameters["id"];
+                if (s != null)
+                {
+                    var key = CreateQuery<ContentKeyData>(ContentKeyBaseCollection.ContentKeySet).Where(c => c.Id == s.Replace("'", String.Empty)).FirstOrDefault();
+                    return new List<TElement>
+                    {
+                        (TElement) ((object) Convert.ToBase64String(_knownGoodContentKey))
+                    };
+                }
+            }
             string response = "7D9BB04D9D0A4A24800CADBFEF232689E048F69C";
             return new List<TElement>
             {

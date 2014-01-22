@@ -134,7 +134,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             if (type == typeof(IContentKey))
             {
-                return ContentKeyCollection.ContentKeySet;
+                return ContentKeyBaseCollection.ContentKeySet;
             }
 
             throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, "Not supported type: {0}.", type), "type");

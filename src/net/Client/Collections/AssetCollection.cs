@@ -163,7 +163,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             X509Certificate2 certToUse = ContentKeyCollection.GetCertificateToEncryptContentKey(MediaContext, ContentKeyType.StorageEncryption);
             ContentKeyData contentKeyData = ContentKeyBaseCollection.InitializeStorageContentKey(fileEncryption.FileEncryption, certToUse);
 
-            dataContext.AddObject(ContentKeyCollection.ContentKeySet, contentKeyData);
+            dataContext.AddObject(ContentKeyBaseCollection.ContentKeySet, contentKeyData);
 
             MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
 
