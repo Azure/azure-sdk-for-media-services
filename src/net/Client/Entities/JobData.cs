@@ -560,19 +560,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
         }
 
-        private static void Verify(IJobTemplate jobTemplate)
-        {
-            if (jobTemplate == null)
-            {
-                throw new ArgumentNullException("jobTemplate");
-            }
-
-            if (!(jobTemplate is JobTemplateData))
-            {
-                throw new InvalidCastException(StringTable.ErrorInvalidJobType);
-            }
-        }
-
         private static void Verify(ITaskTemplate taskTemplate)
         {
             if (taskTemplate == null)

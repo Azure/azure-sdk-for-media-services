@@ -140,7 +140,17 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
                         Vendor = "mock"
                     }
                 });
-        }
+
+			_pendingChanges.Add(JobBaseCollection.JobSet,
+			   new List<JobData>
+                {
+                    new JobData()
+                    {
+                        Id= Guid.NewGuid().ToString(),
+                        Name = "Mock Job",
+                    }
+                });
+		}
 
         public bool IgnoreResourceNotFoundException { get; set; }
 
@@ -232,7 +242,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
                     default: break;
                 }
             }
-            return null;
+			return null;
         }
 
         public void UpdateObject(object entity)
