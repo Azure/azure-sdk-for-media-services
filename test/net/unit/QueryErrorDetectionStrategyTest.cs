@@ -18,7 +18,7 @@ using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
-namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.UnitTests
+namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
 {
     class TestQueryErrorDetectionStrategy : QueryErrorDetectionStrategy
     {

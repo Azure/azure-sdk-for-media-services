@@ -372,6 +372,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
         {
             if (!_pendingChanges.ContainsKey(entitySetName))
             {
+                if (entity is IMediaContextContainer)
+                {
+                    ((IMediaContextContainer)entity).SetMediaContext(_mediaContextBase);
+                }
                 _pendingChanges.Add(entitySetName,
                     new List<T>
                     {

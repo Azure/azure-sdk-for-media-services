@@ -23,15 +23,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// The name of the storage account processor set.
         /// </summary>
         internal const string EntitySet = "StorageAccounts";
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MediaProcessorBaseCollection"/> class to be used for Mocking purposes.
-        /// </summary>
-        public StorageAccountBaseCollection()
-            : base(null)
-        {
-
-        }
+        
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MediaProcessorBaseCollection"/> class.
