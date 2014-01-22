@@ -145,7 +145,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             ContentKeyBaseCollection.VerifyContentKey(this);
 
             IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
-            dataContext.AttachTo(ContentKeyCollection.ContentKeySet, this);
+            dataContext.AttachTo(ContentKeyBaseCollection.ContentKeySet, this);
             dataContext.DeleteObject(this);
 
             MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
@@ -175,7 +175,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public Task<IContentKey> UpdateAsync()
         {
             IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
-            dataContext.AttachTo(ContentKeyCollection.ContentKeySet, this);
+            dataContext.AttachTo(ContentKeyBaseCollection.ContentKeySet, this);
             dataContext.UpdateObject(this);
 
             MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();

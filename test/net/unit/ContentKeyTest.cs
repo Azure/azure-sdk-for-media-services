@@ -15,6 +15,7 @@
 // </license>
 
 using System;
+using System.Linq;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -34,6 +35,107 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
 		{
 			_mediaContext = Helper.GetMediaDataServiceContextForUnitTests();
 		}
+
+       
+        [TestMethod]
+        public void ContentKeyCRUD()
+        {
+            IContentKey key = _mediaContext.ContentKeys.Create(Guid.NewGuid(), new byte[16] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 });
+            Assert.IsNotNull(_mediaContext.ContentKeys.Where(c=>c.Id == key.Id).FirstOrDefault());
+            Assert.AreEqual(ContentKeyType.CommonEncryption, key.ContentKeyType);
+            Assert.AreEqual(ProtectionKeyType.X509CertificateThumbprint, key.ProtectionKeyType);
+            UpdateDeleteContentKey(key);
+            key = _mediaContext.ContentKeys.Create(Guid.NewGuid(), new byte[16] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 });
+            key.DeleteAsync();
+        }
+        [TestMethod]
+        public void ContentKeyCommonEncryptionCRUD()
+        {
+            IContentKey key = _mediaContext.ContentKeys.Create(Guid.NewGuid(), new byte[16] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }, Guid.NewGuid().ToString(), contentKeyType: ContentKeyType.CommonEncryption);
+            UpdateDeleteContentKey(key);
+
+        }
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void ContentKeyConfigurationEncryptionCRUD()
+        {
+            IContentKey key = _mediaContext.ContentKeys.Create(Guid.NewGuid(), new byte[16] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }, Guid.NewGuid().ToString(), contentKeyType: ContentKeyType.ConfigurationEncryption);
+            UpdateDeleteContentKey(key);
+
+        }
+        [TestMethod]
+        public void ContentKeyEnvelopeEncryptionCRUD()
+        {
+            IContentKey key = _mediaContext.ContentKeys.Create(Guid.NewGuid(), new byte[16] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }, Guid.NewGuid().ToString(), contentKeyType: ContentKeyType.EnvelopeEncryption);
+            UpdateDeleteContentKey(key);
+
+        }
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void ContentKeyStorageEncryptionEncryptionCRUD()
+        {
+            IContentKey key = _mediaContext.ContentKeys.Create(Guid.NewGuid(), new byte[16] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }, Guid.NewGuid().ToString(), contentKeyType: ContentKeyType.StorageEncryption);
+            UpdateDeleteContentKey(key);
+
+        }
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void ContentKeyUrlEncryptionCRUD()
+        {
+            IContentKey key = _mediaContext.ContentKeys.Create(Guid.NewGuid(), new byte[16] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }, Guid.NewGuid().ToString(), contentKeyType: ContentKeyType.UrlEncryption);
+            UpdateDeleteContentKey(key);
+
+        }
+
+        private static void UpdateDeleteContentKey(IContentKey key)
+        {
+            key.AuthorizationPolicyId = Guid.NewGuid().ToString();
+            key.Update();
+            key.AuthorizationPolicyId = Guid.NewGuid().ToString();
+            key.UpdateAsync();
+            key.Delete();
+        }
+
+
+        [TestMethod]
+        public void LinkContentKeyToAsset()
+        {
+            IContentKey key = _mediaContext.ContentKeys.Create(Guid.NewGuid(), new byte[16] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 });
+            IAsset asset = _mediaContext.Assets.Create("LinkContentKeyToAsset", AssetCreationOptions.StorageEncrypted);
+            asset.ContentKeys.Add(key);
+            var keys = asset.ContentKeys.ToList();
+            Assert.AreEqual(2, keys.Count);
+            asset.ContentKeys.Remove(key);
+            Assert.AreEqual(1, asset.ContentKeys.Count);
+
+        }
+        [TestMethod]
+        public void CreateShortContentKeyAsyncWithEmptyNameShouldPass()
+        {
+            var key = _mediaContext.ContentKeys.Create(Guid.NewGuid(), new byte[16] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }, String.Empty);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void CreateShortContentKeyShouldFail()
+        {
+            var key = _mediaContext.ContentKeys.Create(Guid.NewGuid(), new byte[1] { 1 });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void CreateContentKeyWithEmptyIdShouldFail()
+        {
+            var key = _mediaContext.ContentKeys.CreateAsync(Guid.Empty, new byte[1] { 1 }).Result;
+        }
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void CreateContentKeyWithEmptyBodyShouldFail()
+        {
+            var key = _mediaContext.ContentKeys.Create(Guid.NewGuid(), null);
+            Assert.IsNotNull(_mediaContext.ContentKeys.Where(c => c.Id == key.Id).FirstOrDefault());
+        }
+
 
 		#region Retry Logic tests
 

@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
@@ -28,19 +29,24 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// <summary>
     /// Represents a collection of content keys.
     /// </summary>
-    public abstract class ContentKeyBaseCollection : BaseCollection<IContentKey>
+    public abstract class ContentKeyBaseCollection : CloudBaseCollection<IContentKey>
     {
-        protected ContentKeyBaseCollection(MediaContextBase context) : base(context)
-        {
-        }
+        /// <summary>
+        /// The name of the content key set.
+        /// </summary>
+        public const string ContentKeySet = "ContentKeys";
 
         /// <summary>
-        /// Gets or sets the queryable collection of content keys.
+        /// Initializes a new instance of the <see cref="LocatorBaseCollection"/> class.
         /// </summary>
-        /// <value>
-        /// The queryable collection of content keys.
-        /// </value>
-        protected IQueryable<IContentKey> ContentKeyQueryable { get; set; }
+        /// <param name="cloudMediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
+        [SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors",
+            Justification = "By design")]
+        internal ContentKeyBaseCollection(MediaContextBase cloudMediaContext)
+            : base(cloudMediaContext)
+        {
+            this.Queryable = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<IContentKey, ContentKeyData>(ContentKeySet);
+        }
 
         /// <summary>
         /// Asynchronously creates a content key with the specifies key identifier and value.
@@ -50,7 +56,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>A function delegate that returns the future result to be available through the Task&lt;IContentKey&gt;.</returns>
         public Task<IContentKey> CreateAsync(Guid keyId, byte[] contentKey)
         {
-            return this.CreateAsync(keyId, contentKey, string.Empty);
+            return this.CreateAsync(keyId, contentKey, String.Empty);
         }
 
         /// <summary>
@@ -73,7 +79,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>A <see cref="IContentKey"/> that can be associated with an <see cref="IAsset"/>.</returns>
         public IContentKey Create(Guid keyId, byte[] contentKey)
         {
-            return this.Create(keyId, contentKey, string.Empty);
+            return this.Create(keyId, contentKey, String.Empty);
         }
 
         /// <summary>
@@ -238,7 +244,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         internal static string GetProtectionKeyIdForContentKey(MediaContextBase mediaContext, ContentKeyType contentKeyType)
         {
             // First query Nimbus to find out what certificate to encrypt the content key with.
-            string uriString = string.Format(CultureInfo.InvariantCulture, "/GetProtectionKeyId?contentKeyType={0}", Convert.ToInt32(contentKeyType, CultureInfo.InvariantCulture));
+            string uriString = String.Format(CultureInfo.InvariantCulture, "/GetProtectionKeyId?contentKeyType={0}", Convert.ToInt32(contentKeyType, CultureInfo.InvariantCulture));
             Uri uriGetProtectionKeyId = new Uri(uriString, UriKind.Relative);
 
             IMediaDataServiceContext dataContext = mediaContext.MediaServicesClassFactory.CreateDataServiceContext();
@@ -266,7 +272,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             if ((certToUse == null) && (dataContext != null))
             {
                 // If not, download it from Nimbus to use.
-                Uri uriGetProtectionKey = new Uri(string.Format(CultureInfo.InvariantCulture, "/GetProtectionKey?protectionKeyId='{0}'", protectionKeyId), UriKind.Relative);
+                Uri uriGetProtectionKey = new Uri(String.Format(CultureInfo.InvariantCulture, "/GetProtectionKey?protectionKeyId='{0}'", protectionKeyId), UriKind.Relative);
 
                 MediaRetryPolicy retryPolicy = mediaContext.MediaServicesClassFactory.GetQueryRetryPolicy();
 
