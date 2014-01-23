@@ -18,6 +18,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Services.Client;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -28,7 +29,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
     public class TestCloudMediaDataContext : IMediaDataServiceContext
     {
         private readonly MediaContextBase _mediaContextBase;
-        private readonly Dictionary<string, Type> _entitySetMappings = new Dictionary<string, Type>();
+        private readonly Dictionary<Type, string> _entitySetMappings = new Dictionary<Type, string>();
 
         //Tracking all pending changes.
         //Please note that none committed changes are returned by queries
@@ -37,19 +38,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
         public TestCloudMediaDataContext(MediaContextBase mediaContextBase)
         {
             _mediaContextBase = mediaContextBase;
-            _entitySetMappings.Add(JobBaseCollection.JobSet, typeof (JobData));
-            _entitySetMappings.Add(AssetCollection.AssetSet, typeof (AssetData));
-            _entitySetMappings.Add(AssetFileCollection.FileSet, typeof (AssetFileData));
-            _entitySetMappings.Add(AccessPolicyBaseCollection.AccessPolicySet, typeof (AccessPolicyData));
-            _entitySetMappings.Add(ContentKeyBaseCollection.ContentKeySet, typeof (ContentKeyData));
-            _entitySetMappings.Add(LocatorBaseCollection.LocatorSet, typeof (LocatorData));
-            _entitySetMappings.Add(StorageAccountBaseCollection.EntitySet, typeof(StorageAccountData));
-            _entitySetMappings.Add(MediaProcessorBaseCollection.MediaProcessorSet, typeof(MediaProcessorData));
-            //TODO:Inconsistent naming of class
-            _entitySetMappings.Add(NotificationEndPointCollection.NotificationEndPoints, typeof(NotificationEndPoint));
-            _entitySetMappings.Add(JobTemplateBaseCollection.JobTemplateSet, typeof(JobTemplateData));
-
-          
         }
 
         public void InitilizeStubData()
@@ -273,6 +261,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
             if (locator!=null && asset!=null)
             {
                 asset.Locators.Add(locator);
+                return;
+            }
+
+            var ingestAsset = source as IngestManifestAssetData;
+            
+            if (ingestAsset != null && asset != null)
+            {
+                ingestAsset.Asset = asset;
+                return;
             }
         }
 
@@ -375,6 +372,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
 
         public void AttachTo<T>(string entitySetName, T entity)
         {
+            if (!this._entitySetMappings.ContainsKey(typeof(T)))
+            {
+                _entitySetMappings.Add(typeof(T), entitySetName);
+            }
             if (!_pendingChanges.ContainsKey(entitySetName))
             {
                 _pendingChanges.Add(entitySetName,
@@ -386,8 +387,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
         }
 
         public void DeleteObject<T>(T entity)
-        {
-            string entitySetName = this._entitySetMappings.Where(c => c.Value == typeof (T)).FirstOrDefault().Key;
+        { 
+            if (!this._entitySetMappings.ContainsKey(typeof(T)))
+            {
+                throw new InvalidDataException(string.Format("There is no enity mapping configured for type {0}",typeof(T).Name));
+            }
+            string entitySetName = _entitySetMappings[typeof (T)];
 
             if (_pendingChanges.ContainsKey(entitySetName))
             {
@@ -397,8 +402,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
 
         public void AddObject<T>(string entitySetName, T entity)
         {
+
+            if (!this._entitySetMappings.ContainsKey(typeof (T)))
+            {
+                _entitySetMappings.Add(typeof(T),entitySetName);
+            }
+
             if (!_pendingChanges.ContainsKey(entitySetName))
             {
+                
                 if (entity is IMediaContextContainer)
                 {
                     ((IMediaContextContainer)entity).SetMediaContext(_mediaContextBase);
