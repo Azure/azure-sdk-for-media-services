@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Data.Services.Client;
+using System.Linq;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -16,10 +17,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Creates a data service query for data of a specified generic type.
         /// create a query based on (BaseUri + relativeUri)
         /// </summary>
-        /// <typeparam name="T">The type returned by the query</typeparam>
+        /// <typeparam name="TIinterface">The exposed interface type of elements returned by the query.</typeparam>
+        /// <typeparam name="TData">The type used by the query internaly.</typeparam>
         /// <param name="entitySetName">A string that resolves to a URI.</param>
         /// <returns>A new System.Data.Services.Client.DataServiceQuery<TElement> instance that represents a data service query.</returns>
-        DataServiceQuery<T> CreateQuery<T>(string entitySetName);
+        IQueryable<TIinterface> CreateQuery<TIinterface, TData>(string entitySetName);
 
         /// <summary>
         /// Notifies the System.Data.Services.Client.DataServiceContext to start tracking

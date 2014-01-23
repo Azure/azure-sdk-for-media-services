@@ -43,7 +43,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
             : base(context)
         {
             MediaServicesClassFactory factory = this.MediaContext.MediaServicesClassFactory;
-            this.Queryable = factory.CreateDataServiceContext().CreateQuery<ContentKeyAuthorizationPolicyOptionData>(ContentKeyAuthorizationPolicyOptionSet);
+			this.Queryable = factory.CreateDataServiceContext().CreateQuery<IContentKeyAuthorizationPolicyOption, ContentKeyAuthorizationPolicyOptionData>(ContentKeyAuthorizationPolicyOptionSet);
         }
 
 

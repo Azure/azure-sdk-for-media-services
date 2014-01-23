@@ -43,7 +43,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption
             : base(context)
         {
             MediaServicesClassFactory factory = this.MediaContext.MediaServicesClassFactory;
-            this.Queryable = factory.CreateDataServiceContext().CreateQuery<AssetDeliveryPolicyData>(DeliveryPolicySet);
+			this.Queryable = factory.CreateDataServiceContext().CreateQuery<IAssetDeliveryPolicy, AssetDeliveryPolicyData>(DeliveryPolicySet);
         }
  
         /// <summary>

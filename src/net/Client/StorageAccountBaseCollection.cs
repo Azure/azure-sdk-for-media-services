@@ -42,7 +42,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             MediaContext = mediaContext;
             MediaServicesClassFactory factory = MediaContext.MediaServicesClassFactory;
-            Queryable = factory.CreateDataServiceContext().CreateQuery<StorageAccountData>(EntitySet);
+			Queryable = factory.CreateDataServiceContext().CreateQuery<IStorageAccount, StorageAccountData>(EntitySet);
         }
          
     }
