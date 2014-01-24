@@ -73,6 +73,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
         public void AssetFileCreateWithoutParentShouldFail()
         {
             var fetched = _mediaContext.Files.Create("AssetFileCreateWithoutParentShouldFail");
+            Assert.Fail("Expecting exception: asset with id {0} has been created",fetched.Id);
         }
 
         [TestMethod]
@@ -180,10 +181,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
             {
                 var file = asset.AssetFiles.CreateAsync("test", CancellationToken.None).Result;
             }
-            catch (InvalidOperationException ex)
+            catch (AggregateException ex)
             {
               exception = true;
-              Assert.AreEqual(ex.Message, String.Format(CultureInfo.InvariantCulture, StringTable.StorageEncryptionContentKeyIsMissing, asset.Id));
+              Assert.AreEqual(ex.Flatten().InnerException.Message, String.Format(CultureInfo.InvariantCulture, StringTable.StorageEncryptionContentKeyIsMissing, asset.Id));
             }
             Assert.IsTrue(exception, "Expected InvalidOperationException");
 
@@ -215,6 +216,115 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
             Assert.AreEqual(1, asset.AssetFiles.Count());
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(AggregateException))]
+        public void CancelOnAssetFileCreate()
+        {
+            var mediaContext = Helper.GetMediaDataServiceContextForUnitTests(1000);
+            var asset = mediaContext.Assets.Create(Guid.NewGuid().ToString(), AssetCreationOptions.StorageEncrypted);
+            var numberofFiles = asset.AssetFiles.Count();
+            CancellationTokenSource source = new CancellationTokenSource();
+            CancellationToken token = source.Token;
+            try
+            {
+                var task = asset.AssetFiles.CreateAsync(Guid.NewGuid().ToString(), token);
+                source.Cancel();
+                var result = task.Result;
+            }
+            catch (AggregateException)
+            {
+                
+                Assert.AreEqual(numberofFiles, asset.AssetFiles.Count());
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Adding tasks using Parallel.For. making sure that task is returned immediately and cancellable
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(AggregateException))]
+        public void ShouldCancelAllAssetFileCreateWhenParallelIsUsed()
+        {
+            var mediaContext = Helper.GetMediaDataServiceContextForUnitTests(1000);
+            CancellationTokenSource source = new CancellationTokenSource();
+            CancellationToken token = source.Token;
+            var asset = mediaContext.Assets.Create(Guid.NewGuid().ToString(), AssetCreationOptions.StorageEncrypted);
+            var numberofFiles = asset.AssetFiles.Count();
+            List<Task> tasks = new List<Task>();
+            //Since we have delay on save operation 
+            try
+            {
+                var result = Parallel.For(0,
+                    5,
+                    i =>
+                    {
+                        tasks.Add(asset.AssetFiles.CreateAsync(Guid.NewGuid().ToString(), token));
+                    });
+            }
+            catch (AggregateException)
+            {
+                Assert.Fail("Not expecting to fail in  Parallel.For");
+            }
+
+            
+            source.Cancel();
+
+            try
+            {
+                Task.WaitAll(tasks.ToArray());
+            }
+            catch (AggregateException)
+            {
+                //Assert.AreEqual(tasks.Count,ex.InnerExceptions.Count);
+                foreach (var task in tasks)
+                {
+                    Assert.IsTrue(task.IsCanceled);
+                }
+                Assert.AreEqual(numberofFiles, asset.AssetFiles.Count());
+                throw;
+            }
+
+        }
+
+        /// <summary>
+        /// In this test we are creating tasks within a task.
+        /// Previous implementation of AssetFileCreate was passing
+        /// </summary>
+        [TestMethod]
+        public void ShouldCancelWithinATask()
+        {
+            var mediaContext = Helper.GetMediaDataServiceContextForUnitTests(1000);
+            CancellationTokenSource source = new CancellationTokenSource();
+            CancellationToken token = source.Token;
+            var asset = mediaContext.Assets.Create(Guid.NewGuid().ToString(), AssetCreationOptions.StorageEncrypted);
+            var numberofFiles = asset.AssetFiles.Count();
+            List<Task> tasks = new List<Task>();
+            Task.Factory.StartNew(() => {
+                                            for (int i = 0; i < 5; i++)
+                                            {
+                                                tasks.Add(asset.AssetFiles.CreateAsync(Guid.NewGuid().ToString(), token));
+                                            }
+                                            
+            });
+            source.Cancel();
+
+            try
+            {
+                Task.WaitAll(tasks.ToArray());
+            }
+            catch (AggregateException ex)
+            {
+                Assert.AreEqual(tasks.Count, ex.InnerExceptions.Count);
+                foreach (var task in tasks)
+                {
+                    Assert.IsTrue(task.IsCanceled);
+                }
+                Assert.AreEqual(numberofFiles, asset.AssetFiles.Count());
+                throw;
+            }
+
+        }
         #region Retry Logic tests
 
         [TestMethod]
@@ -344,6 +454,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
         }
 
         #endregion Retry Logic tests
-       
+
     }
 }

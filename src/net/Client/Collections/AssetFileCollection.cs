@@ -86,73 +86,85 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             {
                 throw new InvalidOperationException(StringTable.AssetFileCreateParentAssetIsNull);
             }
-            
+
             if (string.IsNullOrWhiteSpace(name))
             {
                 throw new ArgumentException(String.Format(CultureInfo.InvariantCulture, StringTable.ErrorCreatingAssetFileEmptyFileName));
             }
             cancelation.ThrowIfCancellationRequested();
-            var dataContext = MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
-
-            bool isEncrypted = _parentAsset.Options.HasFlag(AssetCreationOptions.CommonEncryptionProtected) || 
-                               _parentAsset.Options.HasFlag(AssetCreationOptions.StorageEncrypted) || 
-                               _parentAsset.Options.HasFlag(AssetCreationOptions.EnvelopeEncryptionProtected);
-
-            string scheme = null;
-            string schemeVersion = null;
-            string encryptionKeyId = null;
-
-            if (_parentAsset.Options.HasFlag(AssetCreationOptions.StorageEncrypted))
+            IMediaDataServiceContext dataContext = null;
+            AssetFileData assetFile = null;
+            return Task.Factory.StartNew(() =>
             {
-                IContentKey storageEncryptionKey = _parentAsset.ContentKeys.Where(c => c.ContentKeyType == ContentKeyType.StorageEncryption).FirstOrDefault();
-                if (storageEncryptionKey != null)
+                cancelation.ThrowIfCancellationRequested();
+                dataContext = MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
+
+                bool isEncrypted = _parentAsset.Options.HasFlag(AssetCreationOptions.CommonEncryptionProtected) || _parentAsset.Options.HasFlag(AssetCreationOptions.StorageEncrypted) ||
+                                   _parentAsset.Options.HasFlag(AssetCreationOptions.EnvelopeEncryptionProtected);
+
+                string scheme = null;
+                string schemeVersion = null;
+                string encryptionKeyId = null;
+
+                if (_parentAsset.Options.HasFlag(AssetCreationOptions.StorageEncrypted))
                 {
-                    encryptionKeyId = storageEncryptionKey.Id.ToString();
-                }
-                else
-                {
-                    throw new InvalidOperationException(String.Format(CultureInfo.InvariantCulture, StringTable.StorageEncryptionContentKeyIsMissing, _parentAsset.Id));
-                }
-
-                scheme = FileEncryption.SchemeName;
-                schemeVersion = FileEncryption.SchemeVersion;
-            }
-            else if(_parentAsset.Options.HasFlag(AssetCreationOptions.CommonEncryptionProtected))
-            {
-                scheme = CommonEncryption.SchemeName;
-                schemeVersion = CommonEncryption.SchemeVersion;
-            }
-            else if (_parentAsset.Options.HasFlag(AssetCreationOptions.EnvelopeEncryptionProtected))
-            {
-                scheme = EnvelopeEncryption.SchemeName;
-                schemeVersion = EnvelopeEncryption.SchemeVersion;
-            }
-
-            // Set a MIME type based on the extension of the file name
-            string mimeType = AssetFileData.GetMimeType(name);
-            var assetFile = new AssetFileData
-                                {
-                                    Name = name,
-                                    IsEncrypted = isEncrypted,
-                                    EncryptionScheme = scheme,
-                                    EncryptionVersion = schemeVersion,
-                                    EncryptionKeyId = encryptionKeyId,
-                                    ParentAssetId = _parentAsset.Id,
-                                    MimeType = mimeType,
-                                };
-
-            dataContext.AddObject(AssetFileCollection.FileSet, assetFile);
-            cancelation.ThrowIfCancellationRequested();
-
-            MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
-
-            return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(assetFile))
-                .ContinueWith<IAssetFile>(t =>
+                    IContentKey storageEncryptionKey = _parentAsset.ContentKeys.Where(c => c.ContentKeyType == ContentKeyType.StorageEncryption).FirstOrDefault();
+                    cancelation.ThrowIfCancellationRequested();
+                    if (storageEncryptionKey != null)
                     {
-                        t.ThrowIfFaulted();
-                        AssetFileData data = (AssetFileData)t.Result.AsyncState;
-                        return data;
-                    });
+                        encryptionKeyId = storageEncryptionKey.Id.ToString();
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException(String.Format(CultureInfo.InvariantCulture, StringTable.StorageEncryptionContentKeyIsMissing, _parentAsset.Id));
+                    }
+
+                    scheme = FileEncryption.SchemeName;
+                    schemeVersion = FileEncryption.SchemeVersion;
+                }
+                else if (_parentAsset.Options.HasFlag(AssetCreationOptions.CommonEncryptionProtected))
+                {
+                    scheme = CommonEncryption.SchemeName;
+                    schemeVersion = CommonEncryption.SchemeVersion;
+                }
+                else if (_parentAsset.Options.HasFlag(AssetCreationOptions.EnvelopeEncryptionProtected))
+                {
+                    scheme = EnvelopeEncryption.SchemeName;
+                    schemeVersion = EnvelopeEncryption.SchemeVersion;
+                }
+
+                // Set a MIME type based on the extension of the file name
+                string mimeType = AssetFileData.GetMimeType(name);
+                assetFile = new AssetFileData
+                {
+                    Name = name,
+                    IsEncrypted = isEncrypted,
+                    EncryptionScheme = scheme,
+                    EncryptionVersion = schemeVersion,
+                    EncryptionKeyId = encryptionKeyId,
+                    ParentAssetId = _parentAsset.Id,
+                    MimeType = mimeType,
+                };
+
+                dataContext.AddObject(AssetFileCollection.FileSet, assetFile);
+                cancelation.ThrowIfCancellationRequested();
+                cancelation.ThrowIfCancellationRequested();
+                MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+                return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() =>
+                {
+                    cancelation.ThrowIfCancellationRequested();
+                    return dataContext.SaveChangesAsync(assetFile);
+
+                }, cancelation).Result;
+            }, cancelation)
+            .ContinueWith<IAssetFile>(t =>
+            {
+
+                t.ThrowIfFaulted();
+                AssetFileData data = (AssetFileData)t.Result.AsyncState;
+                return data;
+            }, cancelation);
+
         }
     }
 }

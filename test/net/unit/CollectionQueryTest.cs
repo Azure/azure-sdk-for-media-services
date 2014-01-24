@@ -42,11 +42,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
             Assert.IsNull(_mediaContext.StorageAccounts.Where(c => c.Name == Guid.NewGuid().ToString()).FirstOrDefault());
         }
 
-        [TestMethod]
-        public void QueryNotificationsEndPoint()
-        {
-            Assert.IsNull(_mediaContext.NotificationEndPoints.Where(c => c.Id == Guid.NewGuid().ToString()).FirstOrDefault());
-        }
+        
 
         //TODO: Move to separate file if we have more media processor tests
         [TestMethod]
@@ -70,26 +66,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
             Assert.IsNull(_mediaContext.JobTemplates.Where(c => c.Id == Guid.NewGuid().ToString()).FirstOrDefault());
         }
 
-        //TODO: Move to separate file if we have more ingest manifest tests
-        [TestMethod]
-        public void QueryIngestmanifests()
-        {
-            Assert.IsNull(_mediaContext.IngestManifests.FirstOrDefault());
-            Assert.IsNull(_mediaContext.IngestManifests.Where(c => c.Id == Guid.NewGuid().ToString()).FirstOrDefault());
-        }
-
-        [TestMethod]
-        public void QueryIngestManifestAssets()
-        {
-            Assert.IsNull(_mediaContext.IngestManifestAssets.FirstOrDefault());
-            Assert.IsNull(_mediaContext.IngestManifestAssets.Where(c => c.Id == Guid.NewGuid().ToString()).FirstOrDefault());
-        }
-
-        [TestMethod]
-        public void QueryIngestManifestAssetFiles()
-        {
-            Assert.IsNull(_mediaContext.IngestManifestFiles.FirstOrDefault());
-            Assert.IsNull(_mediaContext.IngestManifestFiles.Where(c => c.Id == Guid.NewGuid().ToString()).FirstOrDefault());
-        }
+       
     }
 }

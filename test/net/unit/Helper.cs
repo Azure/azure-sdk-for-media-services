@@ -21,10 +21,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
 {
     public class Helper
     {
-        public static CloudMediaContext GetMediaDataServiceContextForUnitTests()
+        public static CloudMediaContext GetMediaDataServiceContextForUnitTests(int delaymilliseconds = 0)
         {
             CloudMediaContext mediaContext = new TestCloudMediaContext(new Uri("http://contoso.com"), new MediaServicesCredentials("", ""));
-            TestCloudMediaDataContext testCloudMediaDataContext = new TestCloudMediaDataContext(mediaContext);
+            TestCloudMediaDataContext testCloudMediaDataContext = new TestCloudMediaDataContext(mediaContext,delaymilliseconds);
             mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(testCloudMediaDataContext);
             testCloudMediaDataContext.InitilizeStubData();
             return mediaContext;

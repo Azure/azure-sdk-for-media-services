@@ -18,8 +18,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Services.Client;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -28,28 +30,24 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
     public class TestCloudMediaDataContext : IMediaDataServiceContext
     {
         private readonly MediaContextBase _mediaContextBase;
-        private readonly Dictionary<string, Type> _entitySetMappings = new Dictionary<string, Type>();
+        private readonly Dictionary<Type, string> _entitySetMappings = new Dictionary<Type, string>();
+        object _lock = new object();
 
         //Tracking all pending changes.
         //Please note that none committed changes are returned by queries
+        private readonly Dictionary<string, object> _persistedChanges = new Dictionary<string, object>();
         private readonly Dictionary<string, object> _pendingChanges = new Dictionary<string, object>();
-       
+        private int _delaymilliseconds;
+
         public TestCloudMediaDataContext(MediaContextBase mediaContextBase)
         {
             _mediaContextBase = mediaContextBase;
-            _entitySetMappings.Add(JobBaseCollection.JobSet, typeof (JobData));
-            _entitySetMappings.Add(AssetCollection.AssetSet, typeof (AssetData));
-            _entitySetMappings.Add(AssetFileCollection.FileSet, typeof (AssetFileData));
-            _entitySetMappings.Add(AccessPolicyBaseCollection.AccessPolicySet, typeof (AccessPolicyData));
-            _entitySetMappings.Add(ContentKeyBaseCollection.ContentKeySet, typeof (ContentKeyData));
-            _entitySetMappings.Add(LocatorBaseCollection.LocatorSet, typeof (LocatorData));
-            _entitySetMappings.Add(StorageAccountBaseCollection.EntitySet, typeof(StorageAccountData));
-            _entitySetMappings.Add(MediaProcessorBaseCollection.MediaProcessorSet, typeof(MediaProcessorData));
-            //TODO:Inconsistent naming of class
-            _entitySetMappings.Add(NotificationEndPointCollection.NotificationEndPoints, typeof(NotificationEndPoint));
-            _entitySetMappings.Add(JobTemplateBaseCollection.JobTemplateSet, typeof(JobTemplateData));
+        }
 
-          
+        public TestCloudMediaDataContext(MediaContextBase mediaContextBase, int delaymilliseconds)
+        {
+            _mediaContextBase = mediaContextBase;
+            this._delaymilliseconds = delaymilliseconds;
         }
 
         public void InitilizeStubData()
@@ -62,7 +60,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
                 Name = "test storage",
             };
 
-            _pendingChanges.Add(StorageAccountBaseCollection.EntitySet,
+            _persistedChanges.Add(StorageAccountBaseCollection.EntitySet,
                 new List<StorageAccountData>
                 {
                     storageAccountData
@@ -78,7 +76,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
                 Options = (int) AssetCreationOptions.None,
             };
             assetData.SetMediaContext(_mediaContextBase);
-            _pendingChanges.Add(AssetCollection.AssetSet,
+            _persistedChanges.Add(AssetCollection.AssetSet,
                 new List<AssetData>
                 {
                     assetData
@@ -95,7 +93,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
                 Permissions = (int) AccessPermissions.Read
             };
             accessPolicyData.SetMediaContext(_mediaContextBase);
-            _pendingChanges.Add(AccessPolicyBaseCollection.AccessPolicySet,
+            _persistedChanges.Add(AccessPolicyBaseCollection.AccessPolicySet,
                 new List<AccessPolicyData>
                 {
                     accessPolicyData
@@ -111,13 +109,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
             };
 
             locatorData.SetMediaContext(_mediaContextBase);
-            _pendingChanges.Add(LocatorBaseCollection.LocatorSet,
+            _persistedChanges.Add(LocatorBaseCollection.LocatorSet,
                 new List<LocatorData>
                 {
                     locatorData
                 });
 
-            _pendingChanges.Add(AssetFileCollection.FileSet,
+            _persistedChanges.Add(AssetFileCollection.FileSet,
                 new List<AssetFileData>
                 {
                     new AssetFileData()
@@ -129,7 +127,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
                     }
                 });
 
-            _pendingChanges.Add(MediaProcessorBaseCollection.MediaProcessorSet,
+            _persistedChanges.Add(MediaProcessorBaseCollection.MediaProcessorSet,
                new List<MediaProcessorData>
                 {
                     new MediaProcessorData()
@@ -141,7 +139,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
                     }
                 });
 
-			_pendingChanges.Add(JobBaseCollection.JobSet,
+			_persistedChanges.Add(JobBaseCollection.JobSet,
 			   new List<JobData>
                 {
                     new JobData()
@@ -156,17 +154,20 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
 
         private IQueryable<T> CreateQuery<T>(string entitySetName)
         {
-            if (!_pendingChanges.ContainsKey(entitySetName))
+            
+            if (!_persistedChanges.ContainsKey(entitySetName))
             {
-                _pendingChanges.Add(entitySetName,
-                    new List<T>
-                    {
-                    });
+                lock (_lock)
+                {
+                    _persistedChanges.Add(entitySetName,
+                        new List<T>
+                        {
+                        });
+                }
             }
-            object list = _pendingChanges[entitySetName];
+            List<T> list = (List<T>)_persistedChanges[entitySetName];
 
-                IEnumerable enumerable = list as IEnumerable;
-                return enumerable.OfType<T>().AsQueryable();
+            return list.AsQueryable();
         }
 
         public IQueryable<TIinterface> CreateQuery<TIinterface, TData>(string entitySetName)
@@ -284,6 +285,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
             if (locator!=null && asset!=null)
             {
                 asset.Locators.Add(locator);
+                return;
+            }
+
+            var ingestAsset = source as IngestManifestAssetData;
+            
+            if (ingestAsset != null && asset != null)
+            {
+                ingestAsset.Asset = asset;
+                return;
             }
         }
 
@@ -293,7 +303,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
 
         public IMediaDataServiceResponse SaveChanges()
         {
-            return null;
+            return SaveChangesAsync(null).Result;
         }
 
         public void DeleteLink(object source, string sourceProperty, object target)
@@ -352,21 +362,49 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
         {
             return Task.Factory.StartNew((object c) =>
             {
-                IMediaDataServiceResponse response = new TestMediaDataServiceResponse();
-                response.AsyncState = state;
-                state.GetType().InvokeMember("Id", BindingFlags.Instance | BindingFlags.Public | BindingFlags.SetProperty, Type.DefaultBinder, state, new[] {"nb:kid:UUID:" + Guid.NewGuid()});
-                if (state is IMediaContextContainer)
+                if (_delaymilliseconds > 0)
                 {
-                    ((IMediaContextContainer) state).SetMediaContext(_mediaContextBase);
+                    Thread.Sleep(_delaymilliseconds);
                 }
+                lock (_lock)
+                {
+                    foreach (var pendingChange in _pendingChanges)
+                    {
+                        if (_persistedChanges.ContainsKey(pendingChange.Key))
+                        {
 
-                if (state is LocatorData)
-                {
-                    ((LocatorData) state).Path = "http://contoso.com/" + Guid.NewGuid().ToString();
+                            var addRamgeMethodInfo = _persistedChanges[pendingChange.Key].GetType().GetMethods().Where(m => m.Name == "AddRange").FirstOrDefault();
+                            if (addRamgeMethodInfo != null)
+                            {
+                                addRamgeMethodInfo.Invoke(_persistedChanges[pendingChange.Key], new[] { pendingChange.Value });
+                            }
+
+                        }
+                        else
+                        {
+                            _persistedChanges.Add(pendingChange.Key, pendingChange.Value);
+                        }
+                    }
+                    _pendingChanges.Clear();
                 }
-                if (state is AssetData)
+                IMediaDataServiceResponse response = new TestMediaDataServiceResponse();
+                if (state != null)
                 {
-                    ((AssetData)state).Uri = "http://contoso.com/" + Guid.NewGuid().ToString(); 
+                    response.AsyncState = state;
+                    state.GetType().InvokeMember("Id", BindingFlags.Instance | BindingFlags.Public | BindingFlags.SetProperty, Type.DefaultBinder, state, new[] { "nb:kid:UUID:" + Guid.NewGuid() });
+                    if (state is IMediaContextContainer)
+                    {
+                        ((IMediaContextContainer)state).SetMediaContext(_mediaContextBase);
+                    }
+
+                    if (state is LocatorData)
+                    {
+                        ((LocatorData)state).Path = "http://contoso.com/" + Guid.NewGuid().ToString();
+                    }
+                    if (state is AssetData)
+                    {
+                        ((AssetData)state).Uri = "http://contoso.com/" + Guid.NewGuid().ToString();
+                    }
                 }
                 return response;
             },
@@ -388,39 +426,72 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
 
         public void AttachTo<T>(string entitySetName, T entity)
         {
-            if (!_pendingChanges.ContainsKey(entitySetName))
+            if (!this._entitySetMappings.ContainsKey(typeof(T)))
             {
-                _pendingChanges.Add(entitySetName,
-                    new List<T>
+                _entitySetMappings.Add(typeof(T), entitySetName);
+                if (!_pendingChanges.ContainsKey(entitySetName))
+                {
+                    _pendingChanges.Add(entitySetName,
+                        new List<T>
                     {
                         entity
                     });
+                }
             }
+            
         }
 
         public void DeleteObject<T>(T entity)
-        {
-            string entitySetName = this._entitySetMappings.Where(c => c.Value == typeof (T)).FirstOrDefault().Key;
-
-            if (_pendingChanges.ContainsKey(entitySetName))
+        { 
+            if (!this._entitySetMappings.ContainsKey(typeof(T)))
             {
-                ((List<T>) _pendingChanges[entitySetName]).Remove(entity);
+                throw new InvalidDataException(string.Format("There is no enity mapping configured for type {0}",typeof(T).Name));
+            }
+            string entitySetName = _entitySetMappings[typeof (T)];
+
+            if (_persistedChanges.ContainsKey(entitySetName))
+            {
+                ((List<T>) _persistedChanges[entitySetName]).Remove(entity);
             }
         }
 
         public void AddObject<T>(string entitySetName, T entity)
         {
+            //Since we are persiting objects here and not in SaveChanges, we need to have delay in order to test cancellation token
+            if (_delaymilliseconds > 0)
+            {
+                Thread.Sleep(_delaymilliseconds);
+            }
+
+            if (!this._entitySetMappings.ContainsKey(typeof (T)))
+            {
+                lock (_lock)
+                {
+                    if (!this._entitySetMappings.ContainsKey(typeof (T)))
+                    {
+                        _entitySetMappings.Add(typeof (T), entitySetName);
+                    }
+                }
+            }
+
             if (!_pendingChanges.ContainsKey(entitySetName))
             {
+                
                 if (entity is IMediaContextContainer)
                 {
                     ((IMediaContextContainer)entity).SetMediaContext(_mediaContextBase);
                 }
-                _pendingChanges.Add(entitySetName,
-                    new List<T>
+                lock (_lock)
+                {
+                    if (!_pendingChanges.ContainsKey(entitySetName))
                     {
-                        entity
-                    });
+                        _pendingChanges.Add(entitySetName,
+                            new List<T>
+                            {
+                                entity
+                            });
+                    }
+                }
             }
             else
             {
