@@ -259,6 +259,17 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
                     default: break;
                 }
             }
+            if (entity is JobTemplateData)
+            {
+				JobTemplateData data = (JobTemplateData)(entity);
+                switch (propertyName)
+                {
+					case "TaskTemplates":
+						data.TaskTemplates = CreateQuery<TaskTemplateData>("TaskTemplates").ToList();
+                        break;
+                    default: break;
+                }
+            }
 			return null;
         }
 
@@ -292,7 +303,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
 
         public void AddRelatedObject(object source, string sourceProperty, object target)
         {
-           
+			MethodInfo methodInfo = this.GetType().GetMethods().Where(c => c.Name == "AddObject" && c.IsGenericMethod).First();
+			methodInfo = methodInfo.MakeGenericMethod(new[] { target.GetType() });
+			methodInfo.Invoke(this, new[] { sourceProperty, target });           
         }
 
         public Task<IEnumerable<T>> ExecuteAsync<T>(DataServiceQueryContinuation<T> continuation, object state)

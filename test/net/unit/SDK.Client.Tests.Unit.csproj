@@ -67,6 +67,7 @@
     <Compile Include="CommonEncryptionTest.cs" />
     <Compile Include="ContentKeyTest.cs" />
     <Compile Include="Helper.cs" />
+    <Compile Include="JobTemplateTests.cs" />
     <Compile Include="JobTests.cs" />
     <Compile Include="LocatorTest.cs" />
     <Compile Include="MediaRetryPolicyTest.cs" />
