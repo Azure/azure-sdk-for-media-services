@@ -73,6 +73,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
         public void AssetFileCreateWithoutParentShouldFail()
         {
             var fetched = _mediaContext.Files.Create("AssetFileCreateWithoutParentShouldFail");
+            Assert.Fail("Expecting exception: asset with id {0} has been created",fetched.Id);
         }
 
         [TestMethod]
@@ -230,7 +231,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
                 source.Cancel();
                 var result = task.Result;
             }
-            catch (AggregateException ex)
+            catch (AggregateException)
             {
                 
                 Assert.AreEqual(numberofFiles, asset.AssetFiles.Count());
@@ -238,6 +239,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
             }
         }
 
+        /// <summary>
+        /// Adding tasks using Parallel.For. making sure that task is returned immediately and cancellable
+        /// </summary>
         [TestMethod]
         [ExpectedException(typeof(AggregateException))]
         public void ShouldCancelAllAssetFileCreateWhenParallelIsUsed()
@@ -258,7 +262,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
                         tasks.Add(asset.AssetFiles.CreateAsync(Guid.NewGuid().ToString(), token));
                     });
             }
-            catch (AggregateException ex)
+            catch (AggregateException)
             {
                 Assert.Fail("Not expecting to fail in  Parallel.For");
             }
@@ -270,7 +274,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
             {
                 Task.WaitAll(tasks.ToArray());
             }
-            catch (AggregateException ex)
+            catch (AggregateException)
             {
                 //Assert.AreEqual(tasks.Count,ex.InnerExceptions.Count);
                 foreach (var task in tasks)
@@ -283,8 +287,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
 
         }
 
+        /// <summary>
+        /// In this test we are creating tasks within a task.
+        /// Previous implementation of AssetFileCreate was passing
+        /// </summary>
         [TestMethod]
-        public void ShouldCancelAllAssetFileCreateTasksCreatedInSeparateTask()
+        public void ShouldCancelWithinATask()
         {
             var mediaContext = Helper.GetMediaDataServiceContextForUnitTests(1000);
             CancellationTokenSource source = new CancellationTokenSource();

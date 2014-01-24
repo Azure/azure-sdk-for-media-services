@@ -148,11 +148,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
                 dataContext.AddObject(AssetFileCollection.FileSet, assetFile);
                 cancelation.ThrowIfCancellationRequested();
-
-
-            }, cancelation).ContinueWith<IMediaDataServiceResponse>(dataContextTask =>
-            {
-                dataContextTask.ThrowIfFaulted();
                 cancelation.ThrowIfCancellationRequested();
                 MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
                 return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() =>

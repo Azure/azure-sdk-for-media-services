@@ -73,7 +73,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
             {
                 var endPoint = _mediaContext.NotificationEndPoints.Create(null, NotificationEndPointType.AzureQueue, "http://Contoso.com");
             }
-            catch (ArgumentNullException ex)
+            catch (ArgumentNullException)
             {
                 failed = true;
             }
@@ -84,7 +84,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
             {
                 var endPoint = _mediaContext.NotificationEndPoints.Create(String.Empty, NotificationEndPointType.AzureQueue, "http://Contoso.com");
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 failed = true;
             }
@@ -95,7 +95,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
             {
                 var endPoint = _mediaContext.NotificationEndPoints.Create(Guid.NewGuid().ToString(), NotificationEndPointType.AzureQueue, null);
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 failed = true;
             }
@@ -105,7 +105,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
             {
                 var endPoint = _mediaContext.NotificationEndPoints.Create(Guid.NewGuid().ToString(), NotificationEndPointType.AzureQueue, String.Empty);
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 failed = true;
             }
