@@ -42,11 +42,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
             Assert.IsNull(_mediaContext.StorageAccounts.Where(c => c.Name == Guid.NewGuid().ToString()).FirstOrDefault());
         }
 
-        [TestMethod]
-        public void QueryNotificationsEndPoint()
-        {
-            Assert.IsNull(_mediaContext.NotificationEndPoints.Where(c => c.Id == Guid.NewGuid().ToString()).FirstOrDefault());
-        }
+        
 
         //TODO: Move to separate file if we have more media processor tests
         [TestMethod]

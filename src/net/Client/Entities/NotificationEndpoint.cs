@@ -66,7 +66,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {
-                    throw new ArgumentNullException("value");
+                    throw new ArgumentNullException("Id");
                 }
 
                 _id = value;
@@ -86,7 +86,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             {
                 if (string.IsNullOrEmpty(value))
                 {
-                    throw new ArgumentNullException("value");
+                    throw new ArgumentNullException("Name");
                 }
 
                 _name = value;
@@ -112,7 +112,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 int endPointTypeValue = value;
                 if (endPointTypeValue != (int) (NotificationEndPointType.AzureQueue))
                 {
-                    throw new InvalidEnumArgumentException("value", endPointTypeValue, typeof(NotificationEndPointType));
+                    throw new InvalidEnumArgumentException("EndPointType", endPointTypeValue, typeof(NotificationEndPointType));
                 }
 
                 _endPointType = (NotificationEndPointType)endPointTypeValue;
@@ -130,7 +130,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {
-                    throw new ArgumentNullException("value");
+                    throw new ArgumentNullException("EndPointAddress");
                 }
 
                 _endPointAddress = value;
