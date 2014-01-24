@@ -106,7 +106,6 @@
     <Compile Include="AccessPoliciesTests.cs" />
     <Compile Include="AssetFilesTests.cs" />
     <Compile Include="IngestManifestAssetTests.cs" />
-    <Compile Include="JobTemplateTest.cs" />
     <Compile Include="LinkCollectionTest.cs" />
     <Compile Include="ContentKeyTests.cs" />
     <Compile Include="IngestManifestFileTests.cs" />

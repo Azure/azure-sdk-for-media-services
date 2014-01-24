@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="TestMediaServicesClassFactory.cs" company="Microsoft">Copyright 2012 Microsoft Corporation</copyright>
+// <copyright file="JobTests.cs" company="Microsoft">Copyright 2012 Microsoft Corporation</copyright>
 // <license>
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -138,6 +138,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
 
 			 Assert.AreEqual(1, actual.NumberofInputAssets);
 			 Assert.AreEqual("template", actual.Name);
+
+			 var template =_mediaContext.JobTemplates.First();
+
+			 var taskTemplates = template.TaskTemplates;
+			 Assert.AreEqual(1, taskTemplates.Count);
 		 }
 
 		 #region test retry logic
