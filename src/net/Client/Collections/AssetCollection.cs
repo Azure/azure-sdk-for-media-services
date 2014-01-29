@@ -70,7 +70,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </returns>
         public override Task<IAsset> CreateAsync(string assetName, AssetCreationOptions options,CancellationToken cancellationToken)
         {
-            return this.CreateAsync(assetName, this.MediaContext.DefaultStorageAccount.Name, options, cancellationToken);
+            IStorageAccount defaultStorageAccount = this.MediaContext.DefaultStorageAccount;
+            if (defaultStorageAccount == null)
+            {
+                throw new InvalidOperationException(StringTable.DefaultStorageAccountIsNull);
+            }
+            return this.CreateAsync(assetName, defaultStorageAccount.Name, options, cancellationToken);
         }
 
         /// <summary>
@@ -81,7 +86,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>The created asset.</returns>
         public override IAsset Create(string assetName, AssetCreationOptions options)
         {
-            return this.Create(assetName, this.MediaContext.DefaultStorageAccount.Name, options);
+            IStorageAccount defaultStorageAccount = this.MediaContext.DefaultStorageAccount;
+            if (defaultStorageAccount == null)
+            {
+                throw new InvalidOperationException(StringTable.DefaultStorageAccountIsNull);
+            }
+            return this.Create(assetName, defaultStorageAccount.Name, options);
         }
 
         /// <summary>

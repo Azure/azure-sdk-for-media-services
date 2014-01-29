@@ -144,6 +144,25 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
              }
          }
 
+         [TestMethod]
+         [ExpectedException(typeof(InvalidOperationException))]
+         public void ValidateDefaultStorageAccountTryingToCreateManifest()
+         {
+             var context = Helper.GetMockContextWithNullDefaultStorage();
+
+             IngestManifestCollection collection = new IngestManifestCollection(context);
+
+             try
+             {
+                 collection.Create("NullStorage");
+             }
+             catch (InvalidOperationException ex)
+             {
+                 Assert.AreEqual(StringTable.DefaultStorageAccountIsNull, ex.Message);
+                 throw;
+             }
+         }
+
          private void CreateEncryptUpdateDelete(AssetCreationOptions assetCreationOptions)
          {
              var manifest = _mediaContext.IngestManifests.Create(Guid.NewGuid().ToString(), _mediaContext.DefaultStorageAccount.Name);

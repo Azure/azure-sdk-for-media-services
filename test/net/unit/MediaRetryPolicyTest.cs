@@ -14,14 +14,14 @@
 // limitations under the License.
 // </license>
 
-using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
-using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
-namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
+namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
 {
     /// <summary>
     ///This is a test class for MediaRetryPolicyTest and is intended

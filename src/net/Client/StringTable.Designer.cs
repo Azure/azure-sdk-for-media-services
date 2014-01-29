@@ -142,6 +142,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to System can&apos;t detect default Azure storage account associated with Media services account. Please contact support..
+        /// </summary>
+        internal static string DefaultStorageAccountIsNull {
+            get {
+                return ResourceManager.GetString("DefaultStorageAccountIsNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Task must have at least one input asset..
         /// </summary>
         internal static string EmptyInputArray {
