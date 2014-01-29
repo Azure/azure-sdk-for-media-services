@@ -62,11 +62,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns><see cref="IIngestManifest"/></returns>
         public IIngestManifest Create(string name)
         {
-            if (this.MediaContext.DefaultStorageAccount == null)
+            IStorageAccount defaultStorageAccount = this.MediaContext.DefaultStorageAccount;
+            if (defaultStorageAccount == null)
             {
                 throw new InvalidOperationException(StringTable.DefaultStorageAccountIsNull);
             }
-            return Create(name, this.MediaContext.DefaultStorageAccount.Name);
+            return Create(name, defaultStorageAccount.Name);
         }
 
         /// <summary>
@@ -76,11 +77,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns><see cref="Task"/> of type <see cref="IIngestManifest"/></returns>
         public Task<IIngestManifest> CreateAsync(string name)
         {
-            if (this.MediaContext.DefaultStorageAccount == null)
+            IStorageAccount defaultStorageAccount = this.MediaContext.DefaultStorageAccount;
+            if (defaultStorageAccount == null)
             {
                 throw new InvalidOperationException(StringTable.DefaultStorageAccountIsNull);
             }
-            return CreateAsync(name, this.MediaContext.DefaultStorageAccount.Name);
+            return CreateAsync(name, defaultStorageAccount.Name);
         }
 
         /// <summary>
