@@ -331,10 +331,13 @@
   <data name="UnableToParseExpirationFromToken" xml:space="preserve">
     <value>Unable to parse expiration from token.  Please check the format of the token to ensure it is valid.</value>
   </data>
-   <data name="MetricMonitoringIntervalOutOfRange" xml:space="preserve">
+  <data name="MetricMonitoringIntervalOutOfRange" xml:space="preserve">
     <value>The interval must be greater than {0}s.</value>
   </data>
   <data name="FileNotFoundForEncryption" xml:space="preserve">
     <value>Unable to find file for encryption</value>
+  </data>
+  <data name="DefaultStorageAccountIsNull" xml:space="preserve">
+    <value>System can't detect default Azure storage account associated with Media services account. Please contact support.</value>
   </data>
 </root>

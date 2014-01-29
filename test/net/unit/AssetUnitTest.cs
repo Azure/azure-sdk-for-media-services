@@ -325,6 +325,65 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
             }
 
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void ValidateDefaultStorageAccountTryingToCreateAsset()
+        {
+            var context = Helper.GetMockContextWithNullDefaultStorage();
+
+            AssetCollection collection = new AssetCollection(context);
+           
+            try
+            {
+                collection.Create("NullStorage", AssetCreationOptions.StorageEncrypted);
+            }
+            catch (InvalidOperationException ex)
+            {
+                Assert.AreEqual(StringTable.DefaultStorageAccountIsNull,ex.Message);
+                throw;
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void ValidateDefaultStorageAccountTryingToCreateAssetAsync()
+        {
+            var context = Helper.GetMockContextWithNullDefaultStorage();
+
+            AssetCollection collection = new AssetCollection(context);
+
+            try
+            {
+                var task = collection.CreateAsync("NullStorage", AssetCreationOptions.StorageEncrypted,CancellationToken.None);
+            }
+            catch (InvalidOperationException ex)
+            {
+                Assert.AreEqual(StringTable.DefaultStorageAccountIsNull, ex.Message);
+                throw;
+            }
+
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void ValidateDefaultStorageAccountTryingToAddAssetToOutPutAssetCollection()
+        {
+            var context = Helper.GetMockContextWithNullDefaultStorage();
+
+            OutputAssetCollection collection = new OutputAssetCollection(Mock.Of<ITask>(),new List<IAsset>(), context);
+            try
+            {
+                collection.AddNew("NullStorage", AssetCreationOptions.StorageEncrypted);
+            }
+            catch (InvalidOperationException ex)
+            {
+                Assert.AreEqual(StringTable.DefaultStorageAccountIsNull, ex.Message);
+                throw;
+            }
+
+        }
+
         #region Retry Logic tests
 
         [TestMethod]

@@ -15,7 +15,9 @@
 // </license>
 
 using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
+using Moq;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
 {
@@ -28,6 +30,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
             mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(testCloudMediaDataContext);
             testCloudMediaDataContext.InitilizeStubData();
             return mediaContext;
+        }
+
+        public static MediaContextBase GetMockContextWithNullDefaultStorage()
+        {
+            var contextMock = new Mock<MediaContextBase>();
+            contextMock.Setup(c => c.DefaultStorageAccount).Returns(() => { return null; });
+            var context = contextMock.Object;
+            Assert.IsNull(context.DefaultStorageAccount);
+            return context;
         }
     }
 }
