@@ -28,7 +28,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// The name of the job set.
         /// </summary>
-        internal const string JobSet = "Jobs";
+        public const string JobSet = "Jobs";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JobBaseCollection"/> class.
@@ -38,7 +38,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         internal JobBaseCollection(MediaContextBase cloudMediaContext)
             : base(cloudMediaContext)
         {
-            this.Queryable = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<JobData>(JobSet);
+            this.Queryable = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<IJob, JobData>(JobSet);
         }
 
         /// <summary>

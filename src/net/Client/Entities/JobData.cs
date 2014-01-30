@@ -560,19 +560,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
         }
 
-        private static void Verify(IJobTemplate jobTemplate)
-        {
-            if (jobTemplate == null)
-            {
-                throw new ArgumentNullException("jobTemplate");
-            }
-
-            if (!(jobTemplate is JobTemplateData))
-            {
-                throw new InvalidCastException(StringTable.ErrorInvalidJobType);
-            }
-        }
-
         private static void Verify(ITaskTemplate taskTemplate)
         {
             if (taskTemplate == null)
@@ -708,7 +695,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
                 // Create a content key object to hold the encryption key.
                 ContentKeyData contentKeyData = ContentKeyBaseCollection.InitializeConfigurationContentKey(configEncryption, certToUse);
-                dataContext.AddObject(ContentKeyCollection.ContentKeySet, contentKeyData);
+                dataContext.AddObject(ContentKeyBaseCollection.ContentKeySet, contentKeyData);
             }
         }
 
@@ -731,7 +718,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
                 // Create a content key object to hold the encryption key.
                 ContentKeyData contentKeyData = ContentKeyBaseCollection.InitializeConfigurationContentKey(configEncryption, certToUse);
-                dataContext.AddObject(ContentKeyCollection.ContentKeySet, contentKeyData);
+                dataContext.AddObject(ContentKeyBaseCollection.ContentKeySet, contentKeyData);
             }
         }
 

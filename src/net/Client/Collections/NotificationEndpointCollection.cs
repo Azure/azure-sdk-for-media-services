@@ -30,7 +30,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         internal NotificationEndPointCollection(MediaContextBase cloudMediaContext)
             : base(cloudMediaContext)
         {
-            Queryable = MediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<NotificationEndPoint>(NotificationEndPoints);
+            Queryable = MediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<INotificationEndPoint, NotificationEndPoint>(NotificationEndPoints);
         }
 
         /// <summary>

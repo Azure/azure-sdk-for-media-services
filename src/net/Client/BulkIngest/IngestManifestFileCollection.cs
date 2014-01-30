@@ -45,7 +45,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             : base(mediaContext)
         {
             MediaServicesClassFactory factory = this.MediaContext.MediaServicesClassFactory;
-            this._query = new Lazy<IQueryable<IIngestManifestFile>>(() => factory.CreateDataServiceContext().CreateQuery<IngestManifestFileData>(EntitySet));
+            this._query = new Lazy<IQueryable<IIngestManifestFile>>(() => factory.CreateDataServiceContext().CreateQuery<IIngestManifestFile, IngestManifestFileData>(EntitySet));
 
             if (parentIngestManifestAsset != null)
             {

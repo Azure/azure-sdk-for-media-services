@@ -113,6 +113,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>The new asset.</returns>
         public IAsset AddNew(string assetName,  AssetCreationOptions options)
         {
+            if (this._cloudMediaContext.DefaultStorageAccount == null)
+            {
+                throw new InvalidOperationException(StringTable.DefaultStorageAccountIsNull);
+            }
            return this.AddNew(assetName, _cloudMediaContext.DefaultStorageAccount.Name, options);
         }
 
