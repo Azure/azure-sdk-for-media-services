@@ -34,15 +34,26 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling
                 return false;
             }
 
-            if (dataServiceException.Response.IsBatchResponse && 
-                CommonRetryableWebExceptions.Any(s => (int)s == dataServiceException.Response.BatchStatusCode))
+            if (dataServiceException.Response.IsBatchResponse &&
+                CommonRetryableWebExceptions.Any(s => dataServiceException.Response != null && (int)s == dataServiceException.Response.BatchStatusCode))
             {
                 return true;
             }
-            var responses = dataServiceException.Response.ToList();
 
-            //If we have responses with retryable status codes we should retry
-            return responses.Any(r => CommonRetryableWebExceptions.Any(s => (int)s == r.StatusCode));
+            bool returnValue = false;
+            try
+            {
+                //If we have responses with retryable status codes we should retry
+                var responses = dataServiceException.Response.ToList();
+
+                returnValue = responses.Any(r => CommonRetryableWebExceptions.Any(s => (int)s == r.StatusCode));
+            }
+            catch(Exception)
+            {
+
+            }
+
+            return returnValue;
         }
     }
 }
