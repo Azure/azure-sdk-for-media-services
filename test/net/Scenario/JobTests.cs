@@ -49,6 +49,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         private CloudMediaContext _mediaContext;
         private string _smallWmv;
+        private const int JobTimeOutInMinutes = 25;
         private const string NamePrefix = "JobTests_";
         private const int InitialJobPriority = 1;
 
@@ -821,7 +822,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
                     throw new Exception(str.ToString());
                 }
-                if (DateTime.Now - start > TimeSpan.FromMinutes(15))
+                
+                if (DateTime.Now - start > TimeSpan.FromMinutes(JobTimeOutInMinutes))
                 {
                     throw new Exception("Job Timed out - Current State " + job2.State.ToString() + " Expected State " + jobState + " jobId = " + jobId);
                 }
