@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Data.Services.Client;
@@ -16,10 +17,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Creates a data service query for data of a specified generic type.
         /// create a query based on (BaseUri + relativeUri)
         /// </summary>
-        /// <typeparam name="T">The type returned by the query</typeparam>
+        /// <typeparam name="TIinterface">The exposed interface type of elements returned by the query.</typeparam>
+        /// <typeparam name="TData">The type used by the query internaly.</typeparam>
         /// <param name="entitySetName">A string that resolves to a URI.</param>
         /// <returns>A new System.Data.Services.Client.DataServiceQuery<TElement> instance that represents a data service query.</returns>
-        DataServiceQuery<T> CreateQuery<T>(string entitySetName);
+        IQueryable<TIinterface> CreateQuery<TIinterface, TData>(string entitySetName);
 
         /// <summary>
         /// Notifies the System.Data.Services.Client.DataServiceContext to start tracking
@@ -62,6 +64,18 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="requestUri">The URI to which the query request will be sent. The URI may be any valid data service URI. Can contain $ query parameters.</param>
         /// <returns>The results of the query operation.</returns>
         IEnumerable<TElement> Execute<TElement>(Uri requestUri);
+
+        /// <summary>
+        /// Sends a request to the data service to execute a specific URI by using a
+        /// specific HTTP method.Not supported by the WCF Data Services 5.0 client for
+        /// Silverlight.
+        /// This overload expects the requestUri to end with a ServiceOperation or ServiceAction that returns void.
+        /// </summary>
+        /// <param name="requestUri">The URI to which the query request will be sent. The URI may be any valid data service URI. Can contain $ query parameters.</param>
+        /// <param name="httpMethod">The HTTP data transfer method used by the client.</param>
+        /// <param name="operationParameters">The operation parameters used.</param>
+        /// <returns>The response of the operation.</returns>
+        OperationResponse Execute(Uri requestUri, string httpMethod, params OperationParameter[] operationParameters);
 
         /// <summary>
         /// Adds the specified object to the set of objects that the System.Data.Services.Client.DataServiceContext is tracking.

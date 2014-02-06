@@ -19,8 +19,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// <summary>
     /// Represents a base media context containing collections to operate on.
     /// </summary>
-    public abstract class MediaContextBase
+    public abstract partial class MediaContextBase
     {
+        /// <summary>
+        /// Gets Microsoft WindowsAzure Media Services credentials used for authenticating requests.
+        /// </summary>
+        public MediaServicesCredentials Credentials { get; protected set; }
+
         /// <summary>
         /// Gets a collection to operate on AccessPolicies.
         /// </summary>
@@ -87,10 +92,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         public abstract NotificationEndPointCollection NotificationEndPoints { get; }
 
+
         /// <summary>
         /// Gets or sets a factory for creating data service context instances prepared for Windows Azure Media Services.
         /// </summary>
-        public MediaServicesClassFactory MediaServicesClassFactory { get; set; }
+        public virtual MediaServicesClassFactory MediaServicesClassFactory { get; set; }
 
         public abstract IngestManifestFileCollection IngestManifestFiles { get; }
         public abstract IngestManifestCollection IngestManifests { get; }

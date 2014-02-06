@@ -59,3 +59,4 @@ ClickOnce.Deployment
 build/version
 src\SDK\packages
 /test/net/client/App.Debug.config
+/test/net/Scenario/App.Debug.config

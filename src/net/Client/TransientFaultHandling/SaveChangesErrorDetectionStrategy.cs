@@ -27,22 +27,40 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling
     {
         protected override bool CheckIsTransient(Exception ex)
         {
-            var dataServiceException = ex.FindInnerException<DataServiceRequestException>();
+            bool returnValue = false;
 
-            if (dataServiceException == null)
+            try
             {
-                return false;
+                var dataServiceException = ex.FindInnerException<DataServiceRequestException>();
+
+                if ((dataServiceException != null) && (dataServiceException.Response != null))
+                {
+                    if (dataServiceException.Response.IsBatchResponse)
+                    {
+                        returnValue = CommonRetryableWebExceptions.Any(s => (int)s == dataServiceException.Response.BatchStatusCode);
+                    }
+                    else
+                    {
+                        // If this isn't a batch response we have to check the StatusCode on the Response object itself
+                        var responses = dataServiceException.Response.ToList();
+
+                        if (responses.Count == 1)
+                        {
+                            returnValue = CommonRetryableWebExceptions.Any(s => (int)s == responses[0].StatusCode);
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                // we don't want to hide the original exception with any errors we might generate here 
+                // so just swallow the exception and don't retry
+                returnValue = false;
             }
 
-            if (dataServiceException.Response.IsBatchResponse && 
-                CommonRetryableWebExceptions.Any(s => (int)s == dataServiceException.Response.BatchStatusCode))
-            {
-                return true;
-            }
-            var responses = dataServiceException.Response.ToList();
-
-            //If we have responses with retryable status codes we should retry
-            return responses.Any(r => CommonRetryableWebExceptions.Any(s => (int)s == r.StatusCode));
+            return returnValue;
         }
+
+
     }
 }

@@ -37,6 +37,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.OAuth
     {
         private const string AuthorizationHeader = "Authorization";
         private const string BearerTokenFormat = "Bearer {0}";
+        private const int ExpirationTimeBufferInSeconds = 600;  // The token has an expiration time in hours, 
+                                                                // so setting the buffer as 10 minutes is safe for 
+                                                                // the network latency and clock skew.
 
         private readonly MediaServicesCredentials _credentials;
         private readonly static object _acsRefreshLock = new object();
@@ -84,7 +87,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.OAuth
             {
                 lock (_acsRefreshLock)
                 {
-                    if (DateTime.UtcNow > this._credentials.TokenExpiration)
+                    if (DateTime.UtcNow.AddSeconds(ExpirationTimeBufferInSeconds) > this._credentials.TokenExpiration)
                     {
                         this._credentials.RefreshToken();
                     }

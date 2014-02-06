@@ -5,7 +5,7 @@
     <DocumentationFile>bin\Debug\Microsoft.WindowsAzure.MediaServices.Client.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
-   <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\</SolutionDir>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <SigningFlag Condition="$(SigningFlag) == '' Or $(SigningFlag) == '*Undefined*'">NOTSIGNED</SigningFlag>
   </PropertyGroup>
@@ -52,7 +52,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
- <PropertyGroup Condition=" '$(SigningFlag)' == 'NOTSIGNED' ">
+  <PropertyGroup Condition=" '$(SigningFlag)' == 'NOTSIGNED' ">
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(SigningFlag)' == 'DELAYSIGNED' ">
@@ -61,34 +61,41 @@
     <AssemblyOriginatorKeyFile>..\..\..\MSSharedLibSN1024.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Data.OData">
+    <Reference Include="Microsoft.Data.OData, Version=5.6.0">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.Data.OData.5.5.0\lib\net40\Microsoft.Data.OData.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.Data.OData.5.6.0\lib\net40\Microsoft.Data.OData.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Data.Edm">
+    <Reference Include="Microsoft.Data.Edm, Version=5.6.0">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.Data.Edm.5.5.0\lib\net40\Microsoft.Data.Edm.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.Data.Edm.5.6.0\lib\net40\Microsoft.Data.Edm.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Data.Services.Client">
+    <Reference Include="Microsoft.Data.Services.Client, Version=5.6.0">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.Data.Services.Client.5.5.0\lib\net40\Microsoft.Data.Services.Client.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.Data.Services.Client.5.6.0\lib\net40\Microsoft.Data.Services.Client.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Practices.TransientFaultHandling.Core, Version=5.1.1209.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\TransientFaultHandling.Core.5.1.1209.1\lib\NET4\Microsoft.Practices.TransientFaultHandling.Core.dll</HintPath>
+      <HintPath>..\..\..\packages\TransientFaultHandling.Core.5.1.1209.1\lib\NET4\Microsoft.Practices.TransientFaultHandling.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.WindowsAzure.Configuration">
-      <HintPath>..\packages\Microsoft.WindowsAzure.ConfigurationManager.2.0.1.0\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
+    <Reference Include="Microsoft.WindowsAzure.Configuration, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\Microsoft.WindowsAzure.ConfigurationManager.2.0.3\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.WindowsAzure.Storage">
-      <HintPath>..\packages\WindowsAzure.Storage.2.0.5.1\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
+    <Reference Include="Microsoft.WindowsAzure.Storage, Version=3.0.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\WindowsAzure.Storage.3.0.2.0\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\packages\Newtonsoft.Json.5.0.8\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Spatial">
+    <Reference Include="System.Spatial, Version=5.6.0">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\System.Spatial.5.5.0\lib\net40\System.Spatial.dll</HintPath>
+      <HintPath>..\..\..\packages\System.Spatial.5.6.0\lib\net40\System.Spatial.dll</HintPath>
     </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
@@ -96,30 +103,30 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AccessPermissions.cs" />
-    <Compile Include="AccessPolicyBaseCollection.cs">
+    <Compile Include="Entities\AccessPermissions.cs" />
+    <Compile Include="Collections\AccessPolicyBaseCollection.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="AccessPolicyData.cs" />
-    <Compile Include="AssetBaseCollection.cs">
+    <Compile Include="Entities\AccessPolicyData.cs" />
+    <Compile Include="Collections\AssetBaseCollection.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="AssetCollection.cs" />
-    <Compile Include="AssetCreationOptions.cs" />
-    <Compile Include="AssetFileBaseCollection.cs">
+    <Compile Include="Collections\AssetCollection.cs" />
+    <Compile Include="Entities\AssetCreationOptions.cs" />
+    <Compile Include="Collections\AssetFileBaseCollection.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="AssetFileCollection.cs">
+    <Compile Include="Collections\AssetFileCollection.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="AssetFileData.cs">
+    <Compile Include="Entities\AssetFileData.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="AssetNamingSchemeResolver.cs" />
     <Compile Include="AssetPlaceholderToInstanceResolver.cs" />
-    <Compile Include="AssetState.cs" />
+    <Compile Include="Entities\AssetState.cs" />
     <Compile Include="AzureMediaServicesClassFactory.cs" />
-    <Compile Include="BaseEntity.cs" />
+    <Compile Include="Entities\BaseEntity.cs" />
     <Compile Include="BlobTransferClient.cs" />
     <Compile Include="BlobTransferCompleteEventArgs.cs" />
     <Compile Include="BlobTransferProgressChangedEventArgs.cs" />
@@ -138,21 +145,24 @@
     <Compile Include="BulkIngest\IngestManifestFileCollection.cs" />
     <Compile Include="BulkIngest\IngestManifestState.cs" />
     <Compile Include="BulkIngest\ManifestStatisticData.cs" />
-    <Compile Include="CloudBaseCollection.cs">
+    <Compile Include="Collections\CloudBaseCollection.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="CloudMediaContext.cs" />
-    <Compile Include="CollectionBase.cs">
+    <Compile Include="Collections\CollectionBase.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ConfigurationEncryptionHelper.cs" />
-    <Compile Include="ContentKeyBaseCollection.cs">
+    <Compile Include="Collections\ContentKeyBaseCollection.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DataServiceAsyncExtensions.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="MediaQueryable.cs" />
+    <Compile Include="MediaQueryProvider.cs" />
     <Compile Include="MediaServicesCredentials.cs" />
+    <Compile Include="Cache.cs" />
     <Compile Include="TransientFaultHandling\RetryPolicyExtensions.cs" />
     <Compile Include="TransientFaultHandling\StorageTransientErrorDetectionStrategy.cs" />
     <Compile Include="TransientFaultHandling\ExceptionExtensions.cs" />
@@ -162,84 +172,84 @@
     <Compile Include="TransientFaultHandling\RetryStrategyFactory.cs" />
     <Compile Include="TransientFaultHandling\SaveChangesErrorDetectionStrategy.cs" />
     <Compile Include="TransientFaultHandling\WebRequestTransientErrorDetectionStrategy.cs" />
-    <Compile Include="GeneratedCode\ApiClasses.cs">
+    <Compile Include="Entities\ApiClasses.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="GeneratedCode\ODataClasses.cs">
+    <Compile Include="Entities\ODataClasses.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="IAssetFile.cs">
+    <Compile Include="Entities\IAssetFile.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="IMediaDataServiceContext.cs" />
     <Compile Include="IMediaDataServiceResponse.cs" />
-    <Compile Include="INotificationEndpoint.cs" />
-    <Compile Include="IStorageAccount.cs" />
-    <Compile Include="ITaskHistoricalEvent.cs" />
-    <Compile Include="JobBaseCollection.cs">
+    <Compile Include="Entities\INotificationEndpoint.cs" />
+    <Compile Include="Entities\IStorageAccount.cs" />
+    <Compile Include="Entities\ITaskHistoricalEvent.cs" />
+    <Compile Include="Collections\JobBaseCollection.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="IJobNotificationSubscription.cs" />
-    <Compile Include="JobNotificationSubscription.cs" />
-    <Compile Include="JobNotificationSubscriptionCollection.cs" />
+    <Compile Include="Entities\IJobNotificationSubscription.cs" />
+    <Compile Include="Entities\JobNotificationSubscription.cs" />
+    <Compile Include="Collections\JobNotificationSubscriptionCollection.cs" />
     <Compile Include="JobStateChangedEventArgs.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="JobTemplateBaseCollection.cs">
+    <Compile Include="Collections\JobTemplateBaseCollection.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="JobTemplateType.cs">
+    <Compile Include="Entities\JobTemplateType.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DuplicatedFiles\EnvelopeEncryption.cs" />
-    <Compile Include="DuplicatedFiles\CommonEncryption.cs" />
-    <Compile Include="DuplicatedFiles\ConfigurationEncryption.cs" />
-    <Compile Include="ContentKeyCollection.cs" />
-    <Compile Include="ContentKeyData.cs" />
-    <Compile Include="ContentKeyType.cs" />
-    <Compile Include="DuplicatedFiles\CriticalSection.cs" />
-    <Compile Include="DuplicatedFiles\EncryptionUtils.cs" />
+    <Compile Include="Encryption\EnvelopeEncryption.cs" />
+    <Compile Include="Encryption\CommonEncryption.cs" />
+    <Compile Include="Encryption\ConfigurationEncryption.cs" />
+    <Compile Include="Collections\ContentKeyCollection.cs" />
+    <Compile Include="Entities\ContentKeyData.cs" />
+    <Compile Include="Entities\ContentKeyType.cs" />
+    <Compile Include="Encryption\CriticalSection.cs" />
+    <Compile Include="Encryption\EncryptionUtils.cs" />
     <Compile Include="ErrorDetail.cs" />
-    <Compile Include="DuplicatedFiles\FileEncryption.cs" />
-    <Compile Include="DuplicatedFiles\FileEncryptionTransform.cs" />
+    <Compile Include="Encryption\FileEncryption.cs" />
+    <Compile Include="Encryption\FileEncryptionTransform.cs" />
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="IAccessPolicy.cs" />
-    <Compile Include="IJobTemplate.cs" />
-    <Compile Include="InputAssetCollection.cs" />
-    <Compile Include="JobTemplateData.cs" />
-    <Compile Include="LocatorBaseCollection.cs">
+    <Compile Include="Entities\IAccessPolicy.cs" />
+    <Compile Include="Entities\IJobTemplate.cs" />
+    <Compile Include="Collections\InputAssetCollection.cs" />
+    <Compile Include="Entities\JobTemplateData.cs" />
+    <Compile Include="Collections\LocatorBaseCollection.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="MediaDataServiceContext.cs" />
     <Compile Include="MediaDataServiceResponse.cs" />
-    <Compile Include="MediaProcessorBaseCollection.cs">
+    <Compile Include="Collections\MediaProcessorBaseCollection.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="MediaServicesClassFactory.cs" />
-    <Compile Include="NotificationEndpoint.cs" />
-    <Compile Include="NotificationEndpointCollection.cs" />
-    <Compile Include="NotificationEndpointType.cs" />
-    <Compile Include="NotificationJobState.cs" />
-    <Compile Include="OutputAssetCollection.cs" />
-    <Compile Include="ITask.cs" />
+    <Compile Include="Entities\NotificationEndpoint.cs" />
+    <Compile Include="Collections\NotificationEndpointCollection.cs" />
+    <Compile Include="Entities\NotificationEndpointType.cs" />
+    <Compile Include="Entities\NotificationJobState.cs" />
+    <Compile Include="Collections\OutputAssetCollection.cs" />
+    <Compile Include="Entities\ITask.cs" />
     <Compile Include="DownloadProgressEventArgs.cs" />
-    <Compile Include="IAsset.cs" />
-    <Compile Include="AssetData.cs" />
+    <Compile Include="Entities\IAsset.cs" />
+    <Compile Include="Entities\AssetData.cs" />
     <Compile Include="IMediaContextContainer.cs" />
-    <Compile Include="IContentKey.cs" />
-    <Compile Include="IJob.cs" />
-    <Compile Include="ILocator.cs" />
-    <Compile Include="ITaskTemplate.cs" />
-    <Compile Include="JobData.cs" />
-    <Compile Include="MediaProcessorData.cs" />
-    <Compile Include="NullableFileEncryption.cs" />
+    <Compile Include="Entities\IContentKey.cs" />
+    <Compile Include="Entities\IJob.cs" />
+    <Compile Include="Entities\ILocator.cs" />
+    <Compile Include="Entities\ITaskTemplate.cs" />
+    <Compile Include="Entities\JobData.cs" />
+    <Compile Include="Entities\MediaProcessorData.cs" />
+    <Compile Include="Encryption\NullableFileEncryption.cs" />
     <Compile Include="OAuth\OAuth2TokenResponse.cs" />
     <Compile Include="OAuth\OAuthDataServiceAdapter.cs" />
-    <Compile Include="OutputAsset.cs" />
-    <Compile Include="JobState.cs" />
-    <Compile Include="LinkCollection.cs" />
-    <Compile Include="LocatorData.cs" />
-    <Compile Include="LocatorType.cs" />
+    <Compile Include="Entities\OutputAsset.cs" />
+    <Compile Include="Entities\JobState.cs" />
+    <Compile Include="Collections\LinkCollection.cs" />
+    <Compile Include="Entities\LocatorData.cs" />
+    <Compile Include="Entities\LocatorType.cs" />
     <Compile Include="MediaContextBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources1.Designer.cs">
@@ -247,21 +257,21 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="ProtectionKeyType.cs" />
-    <Compile Include="StorageAccountBaseCollection.cs" />
-    <Compile Include="StorageAccountData.cs" />
+    <Compile Include="Entities\ProtectionKeyType.cs" />
+    <Compile Include="Collections\StorageAccountBaseCollection.cs" />
+    <Compile Include="Entities\StorageAccountData.cs" />
     <Compile Include="StringTable.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>StringTable.resx</DependentUpon>
     </Compile>
-    <Compile Include="TaskCollection.cs" />
-    <Compile Include="TaskOptions.cs" />
-    <Compile Include="TaskData.cs" />
+    <Compile Include="Collections\TaskCollection.cs" />
+    <Compile Include="Entities\TaskOptions.cs" />
+    <Compile Include="Entities\TaskData.cs" />
     <Compile Include="TaskExtensions.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="TaskTemplateData.cs" />
+    <Compile Include="Entities\TaskTemplateData.cs" />
     <Compile Include="UploadProgressChangedEventArgs.cs" />
     <Compile Include="Versioning\KnownApiVersions.cs" />
     <Compile Include="Versioning\ServiceVersionAdapter.cs" />
@@ -284,14 +294,16 @@
     <CodeAnalysisDictionary Include="..\..\..\build\CustomDictionary.xml">
       <Link>CustomDictionary.xml</Link>
     </CodeAnalysisDictionary>
-    <Content Include="GeneratedCode\Documentation.xml">
+    <Content Include="Entities\Documentation.xml">
       <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Settings.stylecop" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
@@ -299,11 +311,10 @@
     <TransformOnBuild>true</TransformOnBuild>
     <OverwriteReadOnlyOutputFiles>true</OverwriteReadOnlyOutputFiles>
   </PropertyGroup>
-  <PropertyGroup>
-    <PreBuildEvent>$([System.IO.Path]::GetFullPath('$(ProjectDir)\..\..\..\build\NuGet\NuGet.exe')) install "$(ProjectDir)packages.config" -OutputDirectory  "$([System.IO.Path]::GetFullPath('$(ProjectDir)..\packages'))"</PreBuildEvent>
-  </PropertyGroup>
   <Target Name="BeforeBuild">
   </Target>
   <Target Name="AfterBuild">
   </Target>
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Import Project="$(SlowCheetahTargets)" Condition="Exists('$(SlowCheetahTargets)')" Label="SlowCheetah" />
 </Project>
