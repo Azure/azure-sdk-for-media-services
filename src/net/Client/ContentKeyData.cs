@@ -22,6 +22,7 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using System.Web;
+using Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization;
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
@@ -197,6 +198,62 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             try
             {
                 var asset = UpdateAsync().Result;
+            }
+            catch (AggregateException exception)
+            {
+                throw exception.Flatten().InnerException;
+            }
+        }
+
+        /// <summary>
+        /// Gets the Key Delivery Uri Asynchronously
+        /// </summary>
+        public Task<Uri> GetKeyDeliveryUrlAsync(ContentKeyDeliveryType contentKeyDeliveryType)
+        {
+            return System.Threading.Tasks.Task.Factory.StartNew<Uri>(() =>
+            {
+                Uri returnValue = null;
+                if (this.GetMediaContext() != null)
+                {
+                    IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
+                    
+                    MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+                    Uri uriGetKeyDeliveryUrl = new Uri(string.Format(CultureInfo.InvariantCulture, "/ContentKeys('{0}')/GetKeyDeliveryUrl", this.Id), UriKind.Relative);
+
+                    System.Data.Services.Client.BodyOperationParameter keyDeliveryTypeParameter = new System.Data.Services.Client.BodyOperationParameter("keyDeliveryType", (int)contentKeyDeliveryType);
+
+                    try
+                    {
+                        IEnumerable<string> results = retryPolicy.ExecuteAction<IEnumerable<string>>(() => dataContext.ExecuteAsync(uriGetKeyDeliveryUrl, "POST", true, keyDeliveryTypeParameter).Result);
+
+                        if (results != null)
+                        {
+                            // We specified only one result above so take the first result
+                            string uriString = results.FirstOrDefault();
+                            returnValue = new Uri(uriString);
+                        }
+                    }
+                    catch (AggregateException exception)
+                    {
+                        throw exception.Flatten().InnerException;
+                    }
+                }
+
+                return returnValue;
+            });
+        }
+
+        /// <summary>
+        /// Gets the Key Delivery Uri
+        /// </summary>
+        public Uri GetKeyDeliveryUrl(ContentKeyDeliveryType contentKeyDeliveryType)
+        {
+            try
+            {
+                Task<Uri> task = this.GetKeyDeliveryUrlAsync(contentKeyDeliveryType);
+
+                return task.Result;
             }
             catch (AggregateException exception)
             {

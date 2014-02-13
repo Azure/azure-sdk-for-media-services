@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="AssetFilesTests.cs" company="Microsoft">Copyright 2012 Microsoft Corporation</copyright>
+// <copyright file="ContentKeyAuthorizationPolicyOptionTests.cs" company="Microsoft">Copyright 2013 Microsoft Corporation</copyright>
 // <license>
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             string configuration = "someconfiguration";
             ContentKeyRestrictionType restrictionType = ContentKeyRestrictionType.IPRestricted;
 
-            _testOption = CreateOption(_mediaContext,optionName, requirements, configuration, restrictionType);
+            _testOption = CreateOption(_mediaContext, optionName, ContentKeyDeliveryType.PlayReadyLicense, requirements, configuration, restrictionType);
         }
 
         /*[TestCleanup] enable when rest layer bug is fixed
@@ -80,7 +80,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             string configuration = "someconfiguration";
             ContentKeyRestrictionType restrictionType = ContentKeyRestrictionType.IPRestricted;
 
-            IContentKeyAuthorizationPolicyOption option = CreateOption(_mediaContext,optionName, requirements, configuration, restrictionType);
+            IContentKeyAuthorizationPolicyOption option = CreateOption(_mediaContext, optionName, ContentKeyDeliveryType.PlayReadyLicense, requirements, configuration, restrictionType);
 
             var ok = policyOptions.Where(o => o.KeyDeliveryType == ContentKeyDeliveryType.PlayReadyLicense).AsEnumerable().Any();
 
@@ -206,7 +206,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
         #endregion Retry Logic tests
 
-        public static IContentKeyAuthorizationPolicyOption CreateOption(CloudMediaContext dataContext,string optionName, string requirements, string configuration, ContentKeyRestrictionType restrictionType)
+        public static IContentKeyAuthorizationPolicyOption CreateOption(CloudMediaContext dataContext, string optionName, ContentKeyDeliveryType deliveryType, string requirements, string configuration, ContentKeyRestrictionType restrictionType)
         {
             var restrictions = new List<ContentKeyAuthorizationPolicyRestriction>
                 {
@@ -217,24 +217,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             IContentKeyAuthorizationPolicyOption option = dataContext.ContentKeyAuthorizationPolicyOptions.Create(
                 optionName,
-                ContentKeyAuthorization.ContentKeyDeliveryType.PlayReadyLicense,
+                deliveryType,
                 restrictions,
                 configuration);
+
             return option;
         }
 
         private IContentKeyAuthorizationPolicyOption GetOption(string id)
         {
             return _mediaContext.ContentKeyAuthorizationPolicyOptions.Where(o => o.Id == id).AsEnumerable().SingleOrDefault();
-        }
-
-        private IContentKey CreateTestKey()
-        {
-            byte[] key = new byte[16];
-            new Random().NextBytes(key);
-            var contentKey = _mediaContext.ContentKeys.Create(Guid.NewGuid(), key, "unit-testkey-340");
-
-            return contentKey;
         }
     }
 }

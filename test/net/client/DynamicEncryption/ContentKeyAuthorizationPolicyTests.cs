@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="AssetFilesTests.cs" company="Microsoft">Copyright 2012 Microsoft Corporation</copyright>
+// <copyright file="ContentKeyAuthorizationPolicyTests.cs" company="Microsoft">Copyright 2013 Microsoft Corporation</copyright>
 // <license>
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -154,7 +154,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             ContentKeyRestrictionType restrictionType = ContentKeyRestrictionType.IPRestricted;
 
             IContentKeyAuthorizationPolicy policy = _mediaContext.ContentKeyAuthorizationPolicies.CreateAsync(testRun).Result;
-            var option1 = ContentKeyAuthorizationPolicyOptionTests.CreateOption(_mediaContext, optionName, requirements, configuration, restrictionType);
+            var option1 = ContentKeyAuthorizationPolicyOptionTests.CreateOption(_mediaContext, optionName, ContentKeyDeliveryType.PlayReadyLicense, requirements, configuration, restrictionType);
             policy.Options.Add(option1);
 
         }

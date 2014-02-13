@@ -88,6 +88,7 @@
     <Compile Include="AssetDeliveryPolicyCollectionTest.cs" />
     <Compile Include="AssetFilesTests.cs" />
     <Compile Include="CacheTest.cs" />
+    <Compile Include="DynamicEncryption\GetKeyDeliveryUrlTests.cs" />
     <Compile Include="IngestManifestAssetTests.cs" />
     <Compile Include="JobTemplateTest.cs" />
     <Compile Include="LinkCollectionTest.cs" />
