@@ -18,6 +18,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDK.Client.Tests.Unit", "te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDK.Client.Tests.Common", "test\net\common\SDK.Client.Tests.Common.csproj", "{04DB0E20-008C-45EF-B427-B6F33B25CD67}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4FB5122C-B709-4507-8C7D-C1F73161A9DB}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\windowsazure.mediaservices.nuspec = .nuget\windowsazure.mediaservices.nuspec
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Coverage|Any CPU = Coverage|Any CPU
