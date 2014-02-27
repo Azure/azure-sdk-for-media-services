@@ -298,12 +298,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
         public Task<IEnumerable<string>> ExecuteAsync(Uri requestUri, string httpMethod, bool singleResult, params OperationParameter[] parameters)
         {
+            object state = null; // unused
+
             return Task.Factory.FromAsync<Uri, string, IEnumerable<string>>(
-                (u, m, ac, p) => _dataContext.BeginExecute<string>(requestUri, ac, (object)null, m, singleResult, parameters),
-                (ar) => _dataContext.EndExecute<string>(ar),
+                (url, method, asyncCallback, stateObj) => _dataContext.BeginExecute<string>(url, asyncCallback, stateObj, method, singleResult, parameters),
+                (asyncResult) => _dataContext.EndExecute<string>(asyncResult),
                 requestUri,
                 httpMethod,
-                parameters);
+                state);
         }
 
         /// <summary>

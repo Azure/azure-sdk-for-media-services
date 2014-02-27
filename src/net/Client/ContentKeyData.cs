@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Services.Common;
+using System.Data.Services.Client;
 using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
@@ -221,7 +222,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
                     Uri uriGetKeyDeliveryUrl = new Uri(string.Format(CultureInfo.InvariantCulture, "/ContentKeys('{0}')/GetKeyDeliveryUrl", this.Id), UriKind.Relative);
 
-                    System.Data.Services.Client.BodyOperationParameter keyDeliveryTypeParameter = new System.Data.Services.Client.BodyOperationParameter("keyDeliveryType", (int)contentKeyDeliveryType);
+                    BodyOperationParameter keyDeliveryTypeParameter = new BodyOperationParameter("keyDeliveryType", (int)contentKeyDeliveryType);
 
                     try
                     {
@@ -231,7 +232,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                         {
                             // We specified only one result above so take the first result
                             string uriString = results.FirstOrDefault();
-                            returnValue = new Uri(uriString);
+
+                            if (uriString != null)
+                            {
+                                returnValue = new Uri(uriString);
+                            }
                         }
                     }
                     catch (AggregateException exception)
