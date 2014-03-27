@@ -28,7 +28,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling
             var webException = ex.FindInnerException<WebException>();
 
             if (webException != null &&
-                CommonRetryableWebExceptions.Contains(webException.Status))
+                CommonRetryableWebExceptionsIncludingTimeout.Contains(webException.Status))
             {
                 return true;
             }

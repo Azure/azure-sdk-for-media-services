@@ -27,22 +27,49 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling
     {
         protected override bool CheckIsTransient(Exception ex)
         {
-            var dataServiceException = ex.FindInnerException<DataServiceRequestException>();
+            bool returnValue = false;
 
-            if (dataServiceException == null)
+            try
             {
-                return false;
+                var requestException = ex.FindInnerException<DataServiceRequestException>();
+
+                if ((requestException != null) && (requestException.Response != null))
+                {
+                    if (requestException.Response.IsBatchResponse)
+                    {
+                        returnValue = CommonRetryableWebExceptions.Any(s => (int)s == requestException.Response.BatchStatusCode);
+                    }
+                    else
+                    {
+                        // If this isn't a batch response we have to check the StatusCode on the Response object itself
+                        var responses = requestException.Response.ToList();
+
+                        if (responses.Count == 1)
+                        {
+                            returnValue = CommonRetryableWebExceptions.Any(s => (int)s == responses[0].StatusCode);
+                        }
+                    }
+                }
+                else
+                { 
+                    var transportException = ex.FindInnerException<DataServiceTransportException>();
+
+                    if ((transportException != null) && (transportException.Response != null))
+                    {
+                        returnValue = CommonRetryableWebExceptions.Any(s => (int)s == transportException.Response.StatusCode);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                // we don't want to hide the original exception with any errors we might generate here 
+                // so just swallow the exception and don't retry
+                returnValue = false;
             }
 
-            if (dataServiceException.Response.IsBatchResponse && 
-                CommonRetryableWebExceptions.Any(s => (int)s == dataServiceException.Response.BatchStatusCode))
-            {
-                return true;
-            }
-            var responses = dataServiceException.Response.ToList();
-
-            //If we have responses with retryable status codes we should retry
-            return responses.Any(r => CommonRetryableWebExceptions.Any(s => (int)s == r.StatusCode));
+            return returnValue;
         }
+
+
     }
 }

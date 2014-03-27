@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.Net;
 using Microsoft.Practices.TransientFaultHandling;
 
@@ -23,19 +24,35 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling
 {
     public abstract class MediaErrorDetectionStrategy : ITransientErrorDetectionStrategy
     {
-        protected static readonly ReadOnlyCollection<WebExceptionStatus> CommonRetryableWebExceptions =
-            new ReadOnlyCollection<WebExceptionStatus>(
-                new[]
-                    {
-                        WebExceptionStatus.Timeout,
-                        WebExceptionStatus.KeepAliveFailure,
-                        WebExceptionStatus.ConnectionClosed,
-                        WebExceptionStatus.ProtocolError,
-                        WebExceptionStatus.PipelineFailure,
-                        WebExceptionStatus.SendFailure,
-                        WebExceptionStatus.ReceiveFailure,
-                        WebExceptionStatus.ConnectFailure,
-                    });
+        // Used in SaveChanges scenarios where we don't want to automatically retry on a timeout.
+        // Doing so might result in duplicate entities.
+        protected static readonly ReadOnlyCollection<WebExceptionStatus> CommonRetryableWebExceptions;
+
+        // Used in scenarios where it is safe to retry even if the original request succeeded on the server
+        // but no result was received by the client.  This includes queries and other idempotent operations.
+        protected static readonly ReadOnlyCollection<WebExceptionStatus> CommonRetryableWebExceptionsIncludingTimeout;
+
+        static MediaErrorDetectionStrategy()
+        {
+            List<WebExceptionStatus> listOfCommonRetryableExceptions = new List<WebExceptionStatus>()
+                 {
+                    WebExceptionStatus.KeepAliveFailure,
+                    WebExceptionStatus.ConnectionClosed,
+                    WebExceptionStatus.ProtocolError,
+                    WebExceptionStatus.PipelineFailure,
+                    WebExceptionStatus.SendFailure,
+                    WebExceptionStatus.ReceiveFailure,
+                    WebExceptionStatus.ConnectFailure,            
+                };
+            
+            CommonRetryableWebExceptions = listOfCommonRetryableExceptions.AsReadOnly();
+
+            List<WebExceptionStatus> listOfCommonRetryableExceptionsWithTimeout = new List<WebExceptionStatus>();
+            listOfCommonRetryableExceptionsWithTimeout.AddRange(listOfCommonRetryableExceptions);
+            listOfCommonRetryableExceptionsWithTimeout.Add(WebExceptionStatus.Timeout);
+
+            CommonRetryableWebExceptionsIncludingTimeout = listOfCommonRetryableExceptionsWithTimeout.AsReadOnly();
+        }
 
         protected virtual bool OnIsTransient(Exception ex)
         {

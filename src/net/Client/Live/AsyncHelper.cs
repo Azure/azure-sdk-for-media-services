@@ -82,7 +82,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
                 MediaRetryPolicy retryPolicy = context.MediaServicesClassFactory.GetQueryRetryPolicy();
 
-                operation = retryPolicy.ExecuteAction<IEnumerable<OperationData>>(() => dataContext.Execute<OperationData>(uri)).SingleOrDefault();
+                try
+                {
+                    operation = retryPolicy.ExecuteAction<IEnumerable<OperationData>>(() => dataContext.Execute<OperationData>(uri)).SingleOrDefault();
+                }
+                catch (Exception e)
+                {
+                    e.Data.Add("OperationId", operationId);
+                    throw;
+                }
 
                 if (operation == null)
                 {
