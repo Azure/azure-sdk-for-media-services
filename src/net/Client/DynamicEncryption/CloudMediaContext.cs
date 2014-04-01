@@ -14,10 +14,7 @@
 // limitations under the License.
 // </license>
 
-using System;
-using System.Linq;
-using Microsoft.WindowsAzure.MediaServices.Client.OAuth;
-using Microsoft.WindowsAzure.MediaServices.Client.Versioning;
+using System.Threading;
 using Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization;
 using Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption;
 
@@ -32,21 +29,20 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private ContentKeyAuthorizationPolicyCollection _contentKeyAuthorizationPolicies;
         private AssetDeliveryPolicyCollection _assetDeliveryPolicies;
 
-        private void InitializeDynamicEncryptionCollections()
-        {
-            this._contentKeyAuthorizationPolicyOptions = new ContentKeyAuthorizationPolicyOptionCollection(this);
-            this._contentKeyAuthorizationPolicies = new ContentKeyAuthorizationPolicyCollection(this);
-            this._assetDeliveryPolicies = new AssetDeliveryPolicyCollection(this);
-        }
-
         /// <summary>
         /// Gets the collection of content key authorization policy options.
         /// </summary>
         public override ContentKeyAuthorizationPolicyOptionCollection ContentKeyAuthorizationPolicyOptions
         {
-            get 
-            { 
-                return this._contentKeyAuthorizationPolicyOptions; 
+
+            get
+            {
+                if (_contentKeyAuthorizationPolicyOptions == null)
+                {
+                    Interlocked.CompareExchange(ref _contentKeyAuthorizationPolicyOptions, new ContentKeyAuthorizationPolicyOptionCollection(this), null);
+                }
+                return _contentKeyAuthorizationPolicyOptions;
+
             }
         }
 
@@ -58,9 +54,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </value>
         public override ContentKeyAuthorizationPolicyCollection ContentKeyAuthorizationPolicies
         {
-            get
+
+             get
             {
-                return this._contentKeyAuthorizationPolicies;
+                if (_contentKeyAuthorizationPolicies == null)
+                {
+                    Interlocked.CompareExchange(ref _contentKeyAuthorizationPolicies, new ContentKeyAuthorizationPolicyCollection(this), null);
+                }
+                return _contentKeyAuthorizationPolicies;
+
             }
         }
 
@@ -74,7 +76,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             get
             {
-                return this._assetDeliveryPolicies;
+                if (_assetDeliveryPolicies == null)
+                {
+                    Interlocked.CompareExchange(ref _assetDeliveryPolicies, new AssetDeliveryPolicyCollection(this), null);
+                }
+                return _assetDeliveryPolicies;
+
             }
         }
     }

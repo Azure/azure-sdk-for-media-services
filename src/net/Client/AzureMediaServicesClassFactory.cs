@@ -58,13 +58,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             this._serviceVersionAdapter = serviceVersionAdapter;
             this._mediaContext = mediaContext;
 
-            string cacheKey = string.Format(
-                "{0},{1}",
-                mediaContext.Credentials.ClientId,
-                azureMediaServicesEndpoint.ToString());
+			string cacheKey = string.Format(
+				"{0},{1}",
+				mediaContext.Credentials.ClientId,
+				azureMediaServicesEndpoint.ToString());
 
             this._azureMediaServicesEndpoint = _endpointCache.GetOrAdd(
-                cacheKey,
+				cacheKey,
                 () => GetAccountApiEndpoint(this._dataServiceAdapter, this._serviceVersionAdapter, azureMediaServicesEndpoint),
                 () => mediaContext.Credentials.TokenExpiration);
         }

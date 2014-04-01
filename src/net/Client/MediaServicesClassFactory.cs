@@ -37,7 +37,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <returns>Retry policy.</returns>
         public abstract MediaRetryPolicy GetSaveChangesRetryPolicy();
- 
+
         /// <summary>
         /// Creates retry policy for querying Media Services REST layer.
         /// </summary>
@@ -78,6 +78,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public virtual MediaErrorDetectionStrategy GetStorageTransientErrorDetectionStrategy()
         {
             return new StorageTransientErrorDetectionStrategy();
+        }
+
+
+        public virtual BlobTransferClient GetBlobTransferClient()
+        {
+            return new BlobTransferClient();
         }
     }
 }
