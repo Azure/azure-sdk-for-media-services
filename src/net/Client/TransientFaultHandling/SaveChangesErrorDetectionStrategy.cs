@@ -31,32 +31,23 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling
 
             try
             {
-                var requestException = ex.FindInnerException<DataServiceRequestException>();
+                var dataServiceException = ex.FindInnerException<DataServiceRequestException>();
 
-                if ((requestException != null) && (requestException.Response != null))
+                if ((dataServiceException != null) && (dataServiceException.Response != null))
                 {
-                    if (requestException.Response.IsBatchResponse)
+                    if (dataServiceException.Response.IsBatchResponse)
                     {
-                        returnValue = CommonRetryableWebExceptions.Any(s => (int)s == requestException.Response.BatchStatusCode);
+                        returnValue = CommonRetryableWebExceptions.Any(s => (int)s == dataServiceException.Response.BatchStatusCode);
                     }
                     else
                     {
                         // If this isn't a batch response we have to check the StatusCode on the Response object itself
-                        var responses = requestException.Response.ToList();
+                        var responses = dataServiceException.Response.ToList();
 
                         if (responses.Count == 1)
                         {
                             returnValue = CommonRetryableWebExceptions.Any(s => (int)s == responses[0].StatusCode);
                         }
-                    }
-                }
-                else
-                { 
-                    var transportException = ex.FindInnerException<DataServiceTransportException>();
-
-                    if ((transportException != null) && (transportException.Response != null))
-                    {
-                        returnValue = CommonRetryableWebExceptions.Any(s => (int)s == transportException.Response.StatusCode);
                     }
                 }
             }

@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Data.Services.Client;
-using System.Linq;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -187,6 +187,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Executes the operation asynchronously.
         /// </summary>
         /// <typeparam name="T">The type of the element.</typeparam>
+        /// <param name="context">The context.</param>
         /// <param name="continuation">The continuation.</param>
         /// <param name="state">The state.</param>
         /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
@@ -196,6 +197,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Executes the operation asynchronously.
         /// </summary>
         /// <typeparam name="T">The type of the element.</typeparam>
+        /// <param name="context">The context.</param>
         /// <param name="requestUri">The request URI.</param>
         /// <param name="state">The state.</param>
         /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
@@ -204,6 +206,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Executes the asynchronously.
         /// </summary>
+        /// <param name="context">The context.</param>
         /// <param name="requestUri">The request URI.</param>
         /// <param name="state">The state.</param>
         /// <param name="httpMethod">The HTTP method.</param>
@@ -219,10 +222,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="parameters">OperationParameters to be sent with the Execute request.</param>
         /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
         Task<IEnumerable<string>> ExecuteAsync(Uri requestUri, string httpMethod, bool singleResult, params OperationParameter[] parameter);
-
-        /// <summary>
-        /// Executes the batch operation asynchronously.
+        /// 
+        /// <summary>Executes the batch operation asynchronously.
         /// </summary>
+        /// <param name="context">The context.</param>
         /// <param name="state">The state.</param>
         /// <param name="queries">The queries.</param>
         /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
@@ -231,6 +234,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets the read stream asynchronously.
         /// </summary>
+        /// <param name="context">The context.</param>
         /// <param name="entity">The entity.</param>
         /// <param name="args">The args.</param>
         /// <param name="state">The state.</param>
@@ -240,6 +244,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Loads the property asynchronously.
         /// </summary>
+        /// <param name="context">The context.</param>
         /// <param name="entity">The entity.</param>
         /// <param name="propertyName">Name of the property.</param>
         /// <param name="state">The state.</param>
@@ -249,6 +254,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Loads the property asynchronously.
         /// </summary>
+        /// <param name="context">The context.</param>
         /// <param name="entity">The entity.</param>
         /// <param name="propertyName">Name of the property.</param>
         /// <param name="continuation">The continuation.</param>
@@ -259,6 +265,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Loads the property asynchronously.
         /// </summary>
+        /// <param name="context">The context.</param>
         /// <param name="entity">The entity.</param>
         /// <param name="propertyName">Name of the property.</param>
         /// <param name="nextLinkUri">The next link URI.</param>
@@ -269,6 +276,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Saves the changes asynchronously.
         /// </summary>
+        /// <param name="context">The context.</param>
         /// <param name="state">The state.</param>
         /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
         Task<IMediaDataServiceResponse> SaveChangesAsync(object state);
@@ -276,6 +284,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Saves the changes asynchronously.
         /// </summary>
+        /// <param name="context">The context.</param>
         /// <param name="options">The options.</param>
         /// <param name="state">The state.</param>
         /// <returns>A function delegate that returns the future result to be available through the Task.</returns>

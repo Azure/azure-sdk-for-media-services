@@ -16,6 +16,7 @@
 
 using System;
 using System.Linq;
+using System.Threading;
 using Microsoft.WindowsAzure.MediaServices.Client.OAuth;
 using Microsoft.WindowsAzure.MediaServices.Client.Versioning;
 using Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization;
@@ -35,25 +36,20 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private OriginMetricBaseCollection _originMetrics;
         private ChannelMetricBaseCollection _channelMetrics;
 
-        private void InitializeLiveCollections()
-        {
-            this._channels = new ChannelBaseCollection(this);
-            this._programs = new ProgramBaseCollection(this);
-            this._origins = new OriginBaseCollection(this);
-            this._operations = new OperationBaseCollection(this);
-            this._originMetrics = new OriginMetricBaseCollection(this);
-            this._channelMetrics = new ChannelMetricBaseCollection(this);
-            this._originMetrics = new OriginMetricBaseCollection(this);
-            this._channelMetrics = new ChannelMetricBaseCollection(this);
-        }
-
-
         /// <summary>
         /// Gets the collection of channels in the system.
         /// </summary>
         public override ChannelBaseCollection Channels
         {
-            get { return this._channels; }
+            get
+            {
+                if (_channels == null)
+                {
+                    Interlocked.CompareExchange(ref _channels, new ChannelBaseCollection(this), null);
+                }
+                return _channels;
+
+            }
         }
 
         /// <summary>
@@ -61,7 +57,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         public override ProgramBaseCollection Programs
         {
-            get { return this._programs; }
+            get
+            {
+                if (_programs == null)
+                {
+                    Interlocked.CompareExchange(ref _programs, new ProgramBaseCollection(this), null);
+                }
+                return _programs;
+            }
         }
 
         /// <summary>
@@ -69,7 +72,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         public override OriginBaseCollection Origins
         {
-            get { return this._origins; }
+            get
+            {
+                if (_origins == null)
+                {
+                    Interlocked.CompareExchange(ref _origins, new OriginBaseCollection(this), null);
+                }
+                return _origins;
+            }
         }
 
         /// <summary>
@@ -77,7 +87,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         public override OperationBaseCollection Operations
         {
-            get { return this._operations; }
+            get
+            {
+                if (_operations == null)
+                {
+                    Interlocked.CompareExchange(ref _operations, new OperationBaseCollection(this), null);
+                }
+                return _operations;
+            }
         }
 
         /// <summary>
@@ -85,7 +102,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         public override OriginMetricBaseCollection OriginMetrics
         {
-            get { return this._originMetrics; }
+           get
+            {
+                if (_originMetrics == null)
+                {
+                    Interlocked.CompareExchange(ref _originMetrics, new OriginMetricBaseCollection(this), null);
+                }
+                return _originMetrics;
+            }
         }
 
         /// <summary>
@@ -93,7 +117,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         public override ChannelMetricBaseCollection ChannelMetrics
         {
-            get { return this._channelMetrics; }
+            get
+            {
+                if (_channelMetrics == null)
+                {
+                    Interlocked.CompareExchange(ref _channelMetrics, new ChannelMetricBaseCollection(this), null);
+                }
+                return _channelMetrics;
+            }
         }
     }
 }

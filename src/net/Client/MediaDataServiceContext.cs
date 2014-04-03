@@ -287,7 +287,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 httpMethod,
                 state);
         }
-
         /// <summary>
         /// Executes the url method asynchronously.
         /// </summary>
@@ -307,7 +306,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 httpMethod,
                 state);
         }
-
         /// <summary>
         /// Executes the batch operation asynchronously.
         /// </summary>
@@ -362,7 +360,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Loads the property asynchronously.
         /// </summary>
-        /// <param name="entity">The entity.</param>
+       /// <param name="entity">The entity.</param>
         /// <param name="propertyName">Name of the property.</param>
         /// <param name="nextLinkUri">The next link URI.</param>
         /// <param name="state">The state.</param>

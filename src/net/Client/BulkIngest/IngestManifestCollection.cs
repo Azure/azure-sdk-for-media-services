@@ -32,6 +32,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// The name of the entity set.
         /// </summary>
         internal const string EntitySet = "IngestManifests";
+        private readonly Lazy<IQueryable<IIngestManifest>> _query;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IngestManifestCollection"/> class.
@@ -41,9 +42,18 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         internal IngestManifestCollection(MediaContextBase cloudMediaContext)
             : base(cloudMediaContext)
         {
-            this.Queryable = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<IIngestManifest, IngestManifestData>(EntitySet);
+             this._query = new Lazy<IQueryable<IIngestManifest>>(() => this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<IIngestManifest, IngestManifestData>(EntitySet));
         }
 
+
+        /// <summary>
+        /// Gets the queryable collection of assets.
+        /// </summary>
+        protected override IQueryable<IIngestManifest> Queryable
+        {
+            get { return this._query.Value; }
+            set { throw new NotSupportedException(); }
+        }
 
         /// <summary>
         /// Creates the specified name.
@@ -52,7 +62,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns><see cref="IIngestManifest"/></returns>
         public IIngestManifest Create(string name)
         {
-            return Create(name, this.MediaContext.DefaultStorageAccount.Name);
+            IStorageAccount defaultStorageAccount = this.MediaContext.DefaultStorageAccount;
+            if (defaultStorageAccount == null)
+            {
+                throw new InvalidOperationException(StringTable.DefaultStorageAccountIsNull);
+            }
+            return Create(name, defaultStorageAccount.Name);
         }
 
         /// <summary>
@@ -62,7 +77,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns><see cref="Task"/> of type <see cref="IIngestManifest"/></returns>
         public Task<IIngestManifest> CreateAsync(string name)
         {
-            return CreateAsync(name, this.MediaContext.DefaultStorageAccount.Name);
+            IStorageAccount defaultStorageAccount = this.MediaContext.DefaultStorageAccount;
+            if (defaultStorageAccount == null)
+            {
+                throw new InvalidOperationException(StringTable.DefaultStorageAccountIsNull);
+            }
+            return CreateAsync(name, defaultStorageAccount.Name);
         }
 
         /// <summary>
