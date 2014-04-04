@@ -64,7 +64,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
             return new WebRequestTransientErrorDetectionStrategy();
         }
 
-        public static Mock<IMediaDataServiceContext> CreateSaveChangesMock<T>(Exception fakeException, int failCount,  BaseEntity<T> returnedData)
+        public static Mock<IMediaDataServiceContext> CreateSaveChangesMock<T>(Exception fakeException, int failCount, BaseEntity<T> returnedData)
         {
             var dataContextMock = new Mock<IMediaDataServiceContext>();
             var fakeResponse = new TestMediaDataServiceResponse { AsyncState = returnedData };
@@ -80,7 +80,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
 
             dataContextMock.Setup((ctxt) => ctxt
                 .SaveChanges())
-                .Returns(() => 
+                .Returns(() =>
                 {
                     if (--exceptionCount > 0) throw fakeException;
                     return fakeResponse;
@@ -125,16 +125,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
                 {
                     lock (fileEncryption)
                     {
-                        using (FileEncryptionTransform encryptor = fileEncryption.GetTransform(info.Name,0))
+                        using (FileEncryptionTransform encryptor = fileEncryption.GetTransform(info.Name, 0))
                         {
-                            
+
                         }
                     }
                 }
             }));
             mock.Setup(c => c.DownloadBlob(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<FileEncryption>(), It.IsAny<ulong>(), It.IsAny<CancellationToken>(), It.IsAny<IRetryPolicy>())).Returns(() => Task.Factory.StartNew(() => { }));
-            mock.Setup(c => c.DownloadBlob(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<FileEncryption>(), It.IsAny<ulong>(),It.IsAny<CloudBlobClient>(), It.IsAny<CancellationToken>(), It.IsAny<IRetryPolicy>())).Returns(() => Task.Factory.StartNew(() => { }));
-           return mock.Object;
+            mock.Setup(c => c.DownloadBlob(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<FileEncryption>(), It.IsAny<ulong>(), It.IsAny<CloudBlobClient>(), It.IsAny<CancellationToken>(), It.IsAny<IRetryPolicy>())).Returns(() => Task.Factory.StartNew(() => { }));
+            return mock.Object;
 
         }
     }
