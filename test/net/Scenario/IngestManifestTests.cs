@@ -38,7 +38,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestMethod]
         public void ShouldBeAbleToGetManifests()
         {
-            _mediaContext.IngestManifests.ToList();
+            _mediaContext.IngestManifests.Take(5).ToList();
         }
 
         [DeploymentItem(TestFile1, DeploymentFolder1)]
