@@ -142,7 +142,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
 									}
 								}
             }));
-            mock.Setup(c => c.DownloadBlob(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<FileEncryption>(), It.IsAny<ulong>(), It.IsAny<CancellationToken>(), It.IsAny<IRetryPolicy>())).Returns(() => Task.Factory.StartNew(() => { }));
+            mock.Setup(c => c.DownloadBlob(
+				It.IsAny<Uri>(), 
+				It.IsAny<string>(), 
+				It.IsAny<FileEncryption>(), 
+				It.IsAny<ulong>(), 
+				It.IsAny<CancellationToken>(), 
+				It.IsAny<IRetryPolicy>(),
+				It.IsAny<Func<string>>() 
+			)).Returns(() => Task.Factory.StartNew(() => { }));
+
             mock.Setup(c => c.DownloadBlob(
 				It.IsAny<Uri>(), 
 				It.IsAny<string>(), 

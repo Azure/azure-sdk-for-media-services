@@ -192,10 +192,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 			string localFile, 
 			FileEncryption fileEncryption, 
 			ulong initializationVector, 
-			CancellationToken cancellationToken, 
-			IRetryPolicy retryPolicy)
+			CancellationToken cancellationToken,
+			IRetryPolicy retryPolicy,
+			Func<string> getSharedAccessSignature = null)
 		{
-			return DownloadBlob(uri, localFile, fileEncryption, initializationVector, null, cancellationToken, retryPolicy);
+			return DownloadBlob(uri, localFile, fileEncryption, initializationVector, null, cancellationToken, retryPolicy, getSharedAccessSignature);
 		}
 
 		/// <summary>

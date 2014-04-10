@@ -373,7 +373,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 						destinationPath, 
 						fileEncryption, 
 						iv, 
-						null,
 						cancellationToken, 
 						retryPolicy, 
 						() => locator.ContentAccessComponent)
