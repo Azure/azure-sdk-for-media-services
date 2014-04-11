@@ -103,6 +103,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BlobTransfer\BlobDownloader.cs" />
+    <Compile Include="BlobTransfer\BlobTransferBase.cs" />
+    <Compile Include="BlobTransfer\BlobTransferClient.cs" />
+    <Compile Include="BlobTransfer\BlobTransferContext.cs" />
+    <Compile Include="BlobTransfer\BlobUploader.cs" />
+    <Compile Include="BlobTransfer\MemoryManager.cs" />
+    <Compile Include="BlobTransfer\MemoryManagerFactory.cs" />
+    <Compile Include="BlobTransfer\ServicePointModifier.cs" />
     <Compile Include="ContentKeyAuthorization\ContentKeyAuthorizationPolicyCollection.cs" />
     <Compile Include="ContentKeyAuthorization\ContentKeyAuthorizationPolicyData.cs" />
     <Compile Include="ContentKeyAuthorization\ContentKeyAuthorizationPolicyOptionCollection.cs" />
@@ -147,7 +155,6 @@
     <Compile Include="Entities\AssetState.cs" />
     <Compile Include="AzureMediaServicesClassFactory.cs" />
     <Compile Include="Entities\BaseEntity.cs" />
-    <Compile Include="BlobTransferClient.cs" />
     <Compile Include="BlobTransferCompleteEventArgs.cs" />
     <Compile Include="BlobTransferProgressChangedEventArgs.cs" />
     <Compile Include="BlobTransferSpeedCalculator.cs" />
