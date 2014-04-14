@@ -283,8 +283,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 byte[] certBytes = Convert.FromBase64String(certString);
                 certToUse = new X509Certificate2(certBytes);
 
-                // Finally save it for next time.
-                EncryptionUtils.SaveCertificateToStore(certToUse);
+                try
+                {
+                    // Finally save it for next time.
+                    EncryptionUtils.SaveCertificateToStore(certToUse);
+                }
+                catch
+                {
+                    // Azure Web Sites does not allow writing access to the local certificate store (it is blocked by the security model used to isolate each web site).
+                    // Swallow the exception and continue executing.
+                }
             }
 
             return certToUse;
