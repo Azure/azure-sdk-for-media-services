@@ -111,6 +111,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestMethod]
         [Priority(0)]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+		[DeploymentItem(@"Media\SmallMP41.mp4", "Media")]
         public void When_Uploading_Multiple_Files_The_Progress_Event_Should_Only_Be_For_The_Bound_AssetFile()
         {
             IAsset asset = _mediaContext.Assets.Create("test", AssetCreationOptions.None);
