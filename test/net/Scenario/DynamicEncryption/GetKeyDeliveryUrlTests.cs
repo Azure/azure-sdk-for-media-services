@@ -54,7 +54,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 Uri keyDeliveryServiceUri = contentKey.GetKeyDeliveryUrl(ContentKeyDeliveryType.PlayReadyLicense);
 
                 Assert.IsNotNull(keyDeliveryServiceUri);
-                Assert.IsTrue(0 == String.Compare(keyDeliveryServiceUri.AbsolutePath, "/PlayReadyHandler.ashx", StringComparison.OrdinalIgnoreCase));
+                Assert.IsTrue(0 == String.Compare(keyDeliveryServiceUri.AbsolutePath, "/PlayReady/", StringComparison.OrdinalIgnoreCase));
             }
             finally
             {
@@ -73,13 +73,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             {
                 contentKey = CreateTestKey(ContentKeyType.EnvelopeEncryption);
 
-                policyOption = ContentKeyAuthorizationPolicyOptionTests.CreateOption(_mediaContext, String.Empty, ContentKeyDeliveryType.HlsKeyFile, null, null, ContentKeyRestrictionType.Open);
+                policyOption = ContentKeyAuthorizationPolicyOptionTests.CreateOption(_mediaContext, String.Empty, ContentKeyDeliveryType.BaselineHttp, null, null, ContentKeyRestrictionType.Open);
 
                 List<IContentKeyAuthorizationPolicyOption> options = new List<IContentKeyAuthorizationPolicyOption> { policyOption };
 
                 contentKeyAuthorizationPolicy = CreateTestPolicy(String.Empty, options, ref contentKey);
 
-                Uri keyDeliveryServiceUri = contentKey.GetKeyDeliveryUrl(ContentKeyDeliveryType.HlsKeyFile);
+                Uri keyDeliveryServiceUri = contentKey.GetKeyDeliveryUrl(ContentKeyDeliveryType.BaselineHttp);
 
                 Assert.IsNotNull(keyDeliveryServiceUri);
                 Assert.IsTrue(0 == String.Compare(keyDeliveryServiceUri.AbsolutePath, "/HlsHandler.ashx", StringComparison.OrdinalIgnoreCase));
@@ -102,7 +102,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             {
                 contentKey = CreateTestKey(ContentKeyType.EnvelopeEncryption);
 
-                policyOption = ContentKeyAuthorizationPolicyOptionTests.CreateOption(_mediaContext, String.Empty, ContentKeyDeliveryType.HlsKeyFile, null, null, ContentKeyRestrictionType.Open);
+                policyOption = ContentKeyAuthorizationPolicyOptionTests.CreateOption(_mediaContext, String.Empty, ContentKeyDeliveryType.BaselineHttp, null, null, ContentKeyRestrictionType.Open);
 
                 List<IContentKeyAuthorizationPolicyOption> options = new List<IContentKeyAuthorizationPolicyOption> { policyOption };
 
@@ -134,7 +134,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
                 contentKeyAuthorizationPolicy = CreateTestPolicy(String.Empty, options, ref contentKey);
 
-                Uri keyDeliveryServiceUri = contentKey.GetKeyDeliveryUrl(ContentKeyDeliveryType.HlsKeyFile);
+                Uri keyDeliveryServiceUri = contentKey.GetKeyDeliveryUrl(ContentKeyDeliveryType.BaselineHttp);
             }
             finally
             {
@@ -154,7 +154,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             {
                 contentKey = CreateTestKey(ContentKeyType.EnvelopeEncryption);
 
-                policyOption = ContentKeyAuthorizationPolicyOptionTests.CreateOption(_mediaContext, String.Empty, ContentKeyDeliveryType.HlsKeyFile, null, null, ContentKeyRestrictionType.Open);
+                policyOption = ContentKeyAuthorizationPolicyOptionTests.CreateOption(_mediaContext, String.Empty, ContentKeyDeliveryType.BaselineHttp, null, null, ContentKeyRestrictionType.Open);
 
                 List<IContentKeyAuthorizationPolicyOption> options = new List<IContentKeyAuthorizationPolicyOption> { policyOption };
 

@@ -27,18 +27,28 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption
         None,
 
         /// <summary>
-        /// Exact key URL.
+        /// Exact Envelope key URL.
         /// </summary>
-        KeyAcquisitionUrl,
+        EnvelopeKeyAcquisitionUrl,
 
         /// <summary>
         /// Base key url that will have KID=<Guid> appended for Envelope.
         /// </summary>
-        BaseKeyAcquisitionUrl,
+        EnvelopeBaseKeyAcquisitionUrl,
         
         /// <summary>
         /// The initialization vector to use for envelope encryption.
         /// </summary>
         EnvelopeEncryptionIV,
+
+        /// <summary>
+        /// The PlayReady License Acquisition Url to use for common encryption.
+        /// </summary>
+        PlayReadyLicenseAcquisitionUrl,
+
+        /// <summary>
+        /// The PlayReady Custom Attributes to add to the PlayReady Content Header
+        /// </summary>
+        PlayReadyCustomAttributes
     }
 }

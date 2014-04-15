@@ -38,9 +38,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption
         NoDynamicEncryption,  
 
         /// <summary>
-        /// Encrypt the envelope.
+        /// Apply Dynamic Envelope encryption.
         /// </summary>
-        DynamicEnvelopeEncryption
+        DynamicEnvelopeEncryption,
 
+        /// <summary>
+        /// Apploy Dynamic Common encryption.
+        /// </summary>
+        DynamicCommonEncryption
     }
 }

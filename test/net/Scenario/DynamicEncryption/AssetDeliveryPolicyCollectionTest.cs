@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.WindowsAzure.MediaServices.Client.Tests.Helpers;
+using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
 using Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption;
 using System.Net;
 using Moq;
 using System;
+using System.Security.Cryptography;
+using System.Data.Services.Client;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 {
@@ -19,31 +21,35 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
     public class AssetDeliveryPolicyCollectionTest
     {
         private CloudMediaContext _mediaContext;
-        private IAssetDeliveryPolicy _policy = null;
 
         [TestInitialize]
         public void SetupTest()
         {
             _mediaContext = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
-
-            _policy = Create("e2etest-AssetDeliverPolicyCollectionTest");
         }
 
-        /*[TestCleanup]
-        public void CleanupTest()
+        private byte[] GetRandomData(int size)
         {
-            _policy.Delete();            
-            var deleted = !_mediaContext.AssetDeliveryPolicies.Where(p => p.Id == _policy.Id).AsEnumerable().Any();
-            Assert.IsTrue(deleted, "AssetDeliveryPolicy was not deleted");
-        }*/
+            byte[] randomBytes = new byte[size];
+            using (RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider())
+            {
+                rng.GetBytes(randomBytes);
+            }
 
-        public IAssetDeliveryPolicy Create(string name)
+            return randomBytes;
+        }
+
+        private IAssetDeliveryPolicy CreateEnvelopePolicy(string name)
         {
             string acquisitionUrl = "http://localhost";
-            string envelopeEncryptionIV = "Yx4K1t0/AApWC8W0qhTYw9IGYfm5VxC88L9FubGOeOaZ00C4lVB/6fngZZr0rgmKXjI3YHPZQ5nu8LW6Pna8GclG+YGJKdT/LoGzUs9MmvdZ4H9F+zswzMu9e1nk9itAS+rgnyekYtRrgxDx2THqWxkJ8wY9Z6OiBURedxt0mpsaqB1D66pWAkNP5ymk1i6qrTwSDiguWXf9hjp7jRttC4nziz31gZxlRJvbZiSr6xnCXMX88c/LfRJszVCylpen5DFZz/wAbcB10YbDq35nGKKj8CT1jVjGGqPlx8AQRiKgDPlQJ+YsiY5ztJIzs9t4dCaANSZezmBn/u6v8mNB7w==";
+
+            byte[] ivBytes = GetRandomData(8);
+            ulong iv = BitConverter.ToUInt64(ivBytes, 0);
+
+            string envelopeEncryptionIV = iv.ToString("X");
             var configuration = new Dictionary<AssetDeliveryPolicyConfigurationKey, string>
             {
-                {AssetDeliveryPolicyConfigurationKey.KeyAcquisitionUrl, acquisitionUrl},
+                {AssetDeliveryPolicyConfigurationKey.EnvelopeKeyAcquisitionUrl, acquisitionUrl},
                 {AssetDeliveryPolicyConfigurationKey.EnvelopeEncryptionIV, envelopeEncryptionIV}
             };
 
@@ -56,40 +62,167 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             var check = _mediaContext.AssetDeliveryPolicies.Where(p => p.Id == result.Id).AsEnumerable().SingleOrDefault();
 
             Assert.AreEqual(name, check.Name);
-            Assert.AreEqual(acquisitionUrl, check.AssetDeliveryConfiguration[AssetDeliveryPolicyConfigurationKey.KeyAcquisitionUrl]);
+            Assert.AreEqual(acquisitionUrl, check.AssetDeliveryConfiguration[AssetDeliveryPolicyConfigurationKey.EnvelopeKeyAcquisitionUrl]);
             Assert.AreEqual(envelopeEncryptionIV, check.AssetDeliveryConfiguration[AssetDeliveryPolicyConfigurationKey.EnvelopeEncryptionIV]);
 
             return result;
         }
 
-        [TestMethod]
-        public void AssetDeliveryPolicyTestUpdate()
+        private IAssetDeliveryPolicy CreatePlayReadyPolicy(string name)
         {
-            string newName = "somenewname";
-            _policy.Name = newName;
-            _policy.Update();
+            string acquisitionUrl = "http://localhost";
 
-            var check = _mediaContext.AssetDeliveryPolicies.Where(p => p.Id == _policy.Id).AsEnumerable().Single();
-            Assert.AreEqual(newName, check.Name);
+            var configuration = new Dictionary<AssetDeliveryPolicyConfigurationKey, string>
+            {
+                {AssetDeliveryPolicyConfigurationKey.PlayReadyLicenseAcquisitionUrl, acquisitionUrl},
+            };
+
+            var result = _mediaContext.AssetDeliveryPolicies.Create(
+                name,
+                AssetDeliveryPolicyType.DynamicCommonEncryption,
+                AssetDeliveryProtocol.SmoothStreaming,
+                configuration);
+
+            var check = _mediaContext.AssetDeliveryPolicies.Where(p => p.Id == result.Id).AsEnumerable().SingleOrDefault();
+
+            Assert.AreEqual(name, check.Name);
+            Assert.AreEqual(acquisitionUrl, check.AssetDeliveryConfiguration[AssetDeliveryPolicyConfigurationKey.PlayReadyLicenseAcquisitionUrl]);
+
+            return result;
+        }
+
+        private void DeleteDeliveryPolicyAndVerify(IAssetDeliveryPolicy policy)
+        {
+            string id = policy.Id;
+
+            policy.Delete();
+
+            IAssetDeliveryPolicy policyToCheck = _mediaContext.AssetDeliveryPolicies.Where(p => p.Id == id).FirstOrDefault();
+            Assert.IsNull(policyToCheck);
         }
 
         [TestMethod]
-        public void AssetDeliveryPolicyTestAttach()
+        public void AssetDeliveryPolicyTestUpdate()
         {
-            var asset = _mediaContext.Assets.Create("e2etest-94223", AssetCreationOptions.None);
-            asset.DeliveryPolicies.Add(_policy);
+            IAssetDeliveryPolicy policy = CreateEnvelopePolicy("AssetDeliveryPolicyTestUpdate");
+
+            string newName = "somenewname";
+            policy.Name = newName;
+            policy.Update();
+
+            var check = _mediaContext.AssetDeliveryPolicies.Where(p => p.Id == policy.Id).AsEnumerable().Single();
+            Assert.AreEqual(newName, check.Name);
+
+            DeleteDeliveryPolicyAndVerify(policy);
+        }
+
+        [TestMethod]
+        public void EnvelopeAssetDeliveryPolicyTestAttach()
+        {
+            var asset = _mediaContext.Assets.Create("Asset for EnvelopeAssetDeliveryPolicyTestAttach", AssetCreationOptions.None);
+
+            var contentKey = _mediaContext.ContentKeys.Create(Guid.NewGuid(), GetRandomData(16), "Content Key for EnvelopeAssetDeliveryPolicyTestAttach", ContentKeyType.EnvelopeEncryption);
+
+            asset.ContentKeys.Add(contentKey);
+
+            IAssetDeliveryPolicy policy = CreateEnvelopePolicy("Policy for EnvelopeAssetDeliveryPolicyTestAttach");
+            asset.DeliveryPolicies.Add(policy);
 
             asset = _mediaContext.Assets.Where(a => a.Id == asset.Id).Single();
             var check = asset.DeliveryPolicies[0];
-            Assert.AreEqual(_policy.Id, check.Id);
+            Assert.AreEqual(policy.Id, check.Id);
             Assert.AreEqual(1, asset.DeliveryPolicies.Count);
 
-            for (int i = 0; i < asset.DeliveryPolicies.Count; i++)
+            List<IAssetDeliveryPolicy> policies = asset.DeliveryPolicies.ToList();
+            foreach(IAssetDeliveryPolicy current in policies)
             {
-                asset.DeliveryPolicies.RemoveAt(i);
+                asset.DeliveryPolicies.Remove(current);
+                current.Delete();
             }
 
             asset.Delete();
+        }
+
+        [TestMethod]
+        [Ignore] // Not enabled in REST yet
+        public void PlayReadyAssetDeliveryPolicyTestAttach()
+        {
+            var asset = _mediaContext.Assets.Create("Asset for PlayReadyAssetDeliveryPolicyTestAttach", AssetCreationOptions.None);
+
+            var contentKey = _mediaContext.ContentKeys.Create(Guid.NewGuid(), GetRandomData(16), "Content Key for PlayReadyAssetDeliveryPolicyTestAttach", ContentKeyType.CommonEncryption);
+
+            asset.ContentKeys.Add(contentKey);
+
+            IAssetDeliveryPolicy policy = CreatePlayReadyPolicy("Policy for PlayReadyAssetDeliveryPolicyTestAttach");
+            asset.DeliveryPolicies.Add(policy);
+
+            asset = _mediaContext.Assets.Where(a => a.Id == asset.Id).Single();
+            var check = asset.DeliveryPolicies[0];
+            Assert.AreEqual(policy.Id, check.Id);
+            Assert.AreEqual(1, asset.DeliveryPolicies.Count);
+
+            List<IAssetDeliveryPolicy> policies = asset.DeliveryPolicies.ToList();
+            foreach (IAssetDeliveryPolicy current in policies)
+            {
+                asset.DeliveryPolicies.Remove(current);
+                current.Delete();
+            }
+
+            asset.Delete();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DataServiceRequestException))]
+        public void FailToAttachPolicyIfCommonContentKeyNotPresent()
+        {
+            var asset = _mediaContext.Assets.Create("Asset for FailToAttachPolicyIfCommonContentKeyNotPresent", AssetCreationOptions.None);
+
+            // Do not create or attach a content key
+
+            IAssetDeliveryPolicy policy = CreatePlayReadyPolicy("Policy for FailToAttachPolicyIfCommonContentKeyNotPresent");
+
+            try
+            {
+                asset.DeliveryPolicies.Add(policy);
+            }
+            catch (DataServiceRequestException e)
+            {
+                Assert.IsTrue(e.ToString().Contains("Cannot set an AssetDeliveryPolicy specifying AssetDeliveryPolicyType.DynamicCommonEncryption when no ContentKey with ContentKeyType.CommonEncryption is linked to it"));
+
+                throw;
+            }
+            finally
+            {
+                asset.Delete();
+                policy.Delete();
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DataServiceRequestException))]
+        public void FailToAttachPolicyIfRequiredEnvelopeKeyNotPresent()
+        {
+            var asset = _mediaContext.Assets.Create("Asset for FailToAttachPolicyIfRequiredEnvelopeKeyNotPresent", AssetCreationOptions.None);
+
+            // Do not create or attach a content key
+
+            IAssetDeliveryPolicy policy = CreateEnvelopePolicy("Policy for FailToAttachPolicyIfRequiredEnvelopeKeyNotPresent");
+
+            try
+            {
+                asset.DeliveryPolicies.Add(policy);
+            }
+            catch (DataServiceRequestException e)
+            {
+                Assert.IsTrue(e.ToString().Contains("Cannot set an AssetDeliveryPolicy specifying AssetDeliveryPolicyType.DynamicEnvelopeEncryption when no ContentKey with ContentKeyType.EnvelopeEncryption is linked to it"));
+
+                throw;
+            }
+            finally
+            {
+                asset.Delete();
+                policy.Delete();
+            }
         }
 
         #region Retry Logic tests
