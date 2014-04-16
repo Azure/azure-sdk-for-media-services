@@ -59,7 +59,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 Uri keyDeliveryServiceUri = contentKey.GetKeyDeliveryUrl(ContentKeyDeliveryType.PlayReadyLicense);
 
                 Assert.IsNotNull(keyDeliveryServiceUri);
-                Assert.IsTrue(0 == String.Compare(keyDeliveryServiceUri.AbsolutePath, "/PlayReadyHandler.ashx", StringComparison.OrdinalIgnoreCase));
+                Assert.IsTrue(0 == String.Compare(keyDeliveryServiceUri.AbsolutePath, "/PlayReady/", StringComparison.OrdinalIgnoreCase));
             }
             finally
             {
@@ -158,7 +158,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
                 contentKeyAuthorizationPolicy = CreateTestPolicy(_mediaContext, String.Empty, options, ref contentKey);
 
-                contentKey.GetKeyDeliveryUrl(ContentKeyDeliveryType.BaselineHttp);
+                Uri keyDeliveryServiceUri = contentKey.GetKeyDeliveryUrl(ContentKeyDeliveryType.BaselineHttp);
             }
             finally
             {

@@ -14,13 +14,7 @@
 // limitations under the License.
 // </license>
 
-using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Data.Services.Common;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 using Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
