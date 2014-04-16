@@ -37,9 +37,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption
         EnvelopeBaseKeyAcquisitionUrl,
         
         /// <summary>
-        /// The initialization vector to use for envelope encryption.
+        /// The initialization vector to use for envelope encryption in Base64 format.
         /// </summary>
-        EnvelopeEncryptionIV,
+        EnvelopeEncryptionIVAsBase64,
 
         /// <summary>
         /// The PlayReady License Acquisition Url to use for common encryption.
@@ -49,6 +49,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption
         /// <summary>
         /// The PlayReady Custom Attributes to add to the PlayReady Content Header
         /// </summary>
-        PlayReadyCustomAttributes
+        PlayReadyCustomAttributes,
+
+        /// <summary>
+        /// The initialization vector to use for envelope encryption.
+        /// </summary>
+        EnvelopeEncryptionIV,
     }
 }
