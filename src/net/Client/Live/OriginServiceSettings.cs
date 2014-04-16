@@ -33,15 +33,36 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Rest
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public OriginServiceSettings(OriginSettings settings) 
         {
-            if (settings != null && settings.Playback != null)
+            if (settings != null)
             {
-                Playback = new PlaybackEndpointSettings { Security = settings.Playback.Security };
+				if (settings.Playback != null)
+				{
+					Playback = new PlaybackEndpointSettings { Security = settings.Playback.Security };
 
-                if (settings.Playback.MaxCacheAge.HasValue)
-                {
-                    Playback.MaxCacheAge = (long)settings.Playback.MaxCacheAge.Value.TotalSeconds;
-                }
-            }
+					if (settings.Playback.MaxCacheAge.HasValue)
+					{
+						Playback.MaxCacheAge = (long)settings.Playback.MaxCacheAge.Value.TotalSeconds;
+					}
+				}
+
+				if(settings.ClientAccessPolicy != null)
+				{
+					ClientAccessPolicy = new CrossSiteAccessPolicy
+					{
+						Policy = settings.ClientAccessPolicy.Policy,
+						Version = settings.ClientAccessPolicy.Version
+					};
+				}
+
+				if (settings.CrossDomainPolicy != null)
+				{
+					CrossDomainPolicy = new CrossSiteAccessPolicy
+					{
+						Policy = settings.CrossDomainPolicy.Policy,
+						Version = settings.CrossDomainPolicy.Version
+					};
+				}
+			}
         }
 
         /// <summary>
@@ -49,6 +70,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Rest
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public PlaybackEndpointSettings Playback { get; set; }
+
+		/// <summary>
+		/// Gets or sets client access policy.
+		/// </summary>
+		public CrossSiteAccessPolicy ClientAccessPolicy { get; set; }
+
+		/// <summary>
+		/// Gets or sets cross domain access policy.
+		/// </summary>
+		public CrossSiteAccessPolicy CrossDomainPolicy { get; set; }
 
         /// <summary>
         /// Casts OriginServiceSettings to OriginSettings.
@@ -74,6 +105,28 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Rest
                 }
             }
 
+			var policy = settings.ClientAccessPolicy;
+
+			if(policy != null)
+			{
+				result.ClientAccessPolicy = new Client.CrossSiteAccessPolicy
+				{
+					Policy = policy.Policy,
+					Version = policy.Version
+				};
+			}
+
+			policy = settings.CrossDomainPolicy;
+
+			if (policy != null)
+			{
+				result.CrossDomainPolicy = new Client.CrossSiteAccessPolicy
+				{
+					Policy = policy.Policy,
+					Version = policy.Version
+				};
+			}
+
             return result;
         }
     }
@@ -95,4 +148,20 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Rest
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public PlaybackEndpointSecuritySettings Security { get; set; }
     }
+
+	/// <summary>
+	/// Cross site access policy.
+	/// </summary>
+	internal class CrossSiteAccessPolicy
+	{
+		/// <summary>
+		/// Policy.
+		/// </summary>
+		public string Policy { get; set; }
+
+		/// <summary>
+		/// Version.
+		/// </summary>
+		public string Version { get; set; }
+	}
 }
