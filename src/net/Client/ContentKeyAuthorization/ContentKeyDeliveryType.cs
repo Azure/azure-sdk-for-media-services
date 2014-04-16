@@ -27,13 +27,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
         None,
 
         /// <summary>
-        /// Use play ready key.
+        /// Use PlayReady License acquistion protocol
         /// </summary>
         PlayReadyLicense,
 
         /// <summary>
-        /// Use HLS key.
+        /// Use MPEG Baseline HTTP key protocol.
         /// </summary>
-        HlsKeyFile
+        BaselineHttp
     }
 }

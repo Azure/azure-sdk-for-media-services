@@ -97,6 +97,15 @@
     <SlowCheetah_NuGetImportPath Condition=" '$(SlowCheetah_NuGetImportPath)'=='' ">$([System.IO.Path]::GetFullPath( $(MSBuildProjectDirectory)\Properties\SlowCheetah\SlowCheetah.Transforms.targets ))</SlowCheetah_NuGetImportPath>
     <SlowCheetahTargets Condition=" '$(SlowCheetah_EnableImportFromNuGet)'=='true' and Exists('$(SlowCheetah_NuGetImportPath)') ">$(SlowCheetah_NuGetImportPath)</SlowCheetahTargets>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'LKG|AnyCPU'">
+    <OutputPath>bin\LKG\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'LKG|x86'">
+    <OutputPath>bin\x86\LKG\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'LKG|x64'">
+    <OutputPath>bin\x64\LKG\</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <CodeAnalysisDependentAssemblyPaths Condition=" '$(VS100COMNTOOLS)' != '' " Include="$(VS100COMNTOOLS)..\IDE\PrivateAssemblies">
       <Visible>False</Visible>
@@ -105,9 +114,12 @@
   <ItemGroup>
     <Compile Include="AccessPoliciesTests.cs" />
     <Compile Include="AssetFilesTests.cs" />
+    <Compile Include="DynamicEncryption\AssetDeliveryPolicyCollectionTest.cs" />
     <Compile Include="DynamicEncryption\ContentKeyAuthorizationPolicyOptionTests.cs" />
     <Compile Include="DynamicEncryption\ContentKeyAuthorizationPolicyTests.cs" />
     <Compile Include="DynamicEncryption\GetKeyDeliveryUrlTests.cs" />
+    <Compile Include="DynamicEncryption\KeyDeliveryClient.cs" />
+    <Compile Include="DynamicEncryption\TokenClient.cs" />
     <Compile Include="IngestManifestAssetTests.cs" />
     <Compile Include="LinkCollectionTest.cs" />
     <Compile Include="ContentKeyTests.cs" />
@@ -222,6 +234,10 @@
       <DependentUpon>App.config</DependentUpon>
       <IsTransformFile>True</IsTransformFile>
     </None>
+    <None Include="App.LKG.config">
+      <DependentUpon>App.config</DependentUpon>
+      <IsTransformFile>True</IsTransformFile>
+    </None>
     <None Include="App.Release.config">
       <DependentUpon>App.config</DependentUpon>
       <IsTransformFile>True</IsTransformFile>
@@ -274,10 +290,33 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
+    <Reference Include="System.IO">
+      <HintPath>..\..\..\packages\Microsoft.Bcl.1.1.8\lib\net40\System.IO.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http, Version=2.2.20.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\Microsoft.Net.Http.2.2.20\lib\net40\System.Net.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Extensions">
+      <HintPath>..\..\..\packages\Microsoft.Net.Http.2.2.20\lib\net40\System.Net.Http.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Primitives">
+      <HintPath>..\..\..\packages\Microsoft.Net.Http.2.2.20\lib\net40\System.Net.Http.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest, Version=2.2.20.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\Microsoft.Net.Http.2.2.20\lib\net40\System.Net.Http.WebRequest.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime">
+      <HintPath>..\..\..\packages\Microsoft.Bcl.1.1.8\lib\net40\System.Runtime.dll</HintPath>
+    </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Spatial">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\packages\System.Spatial.5.6.0\lib\net40\System.Spatial.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks">
+      <HintPath>..\..\..\packages\Microsoft.Bcl.1.1.8\lib\net40\System.Threading.Tasks.dll</HintPath>
     </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
@@ -302,4 +341,9 @@
   </Target>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Import Project="$(SlowCheetahTargets)" Condition="Exists('$(SlowCheetahTargets)')" Label="SlowCheetah" />
+  <Import Project="..\..\..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\..\..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
+  <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
+    <Error Condition="!Exists('..\..\..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
+    <Error Condition="Exists('..\..\..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
+  </Target>
 </Project>

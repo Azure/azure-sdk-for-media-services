@@ -110,7 +110,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 accessPolicy = this.GetMediaContext().AccessPolicies.Create("SdkDownload", TimeSpan.FromHours(12), AccessPermissions.Read);
                 locator = this.GetMediaContext().Locators.CreateSasLocator(this.Asset, accessPolicy);
 
-
                 BlobTransferClient blobTransfer = this.GetMediaContext().MediaServicesClassFactory.GetBlobTransferClient();
                 blobTransfer.NumberOfConcurrentTransfers = this.GetMediaContext().NumberOfConcurrentTransfers;
                 blobTransfer.ParallelTransferThreadCount = this.GetMediaContext().ParallelTransferThreadCount;
@@ -261,12 +260,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetBlobStorageClientRetryPolicy();
 
             return blobTransferClient.UploadBlob(
-                new Uri(locator.Path),
-                path,
-                null,
-                fileEncryption,
-                token,
-                retryPolicy.AsAzureStorageClientRetryPolicy())
+					new Uri(locator.BaseUri), 
+					path, 
+					null, 
+					fileEncryption, 
+					token, 
+					retryPolicy.AsAzureStorageClientRetryPolicy(), 
+					() => locator.ContentAccessComponent)
                 .ContinueWith(
                 ts=>
                 {
@@ -364,10 +364,20 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             {
                 cancellationToken.ThrowIfCancellationRequested(() => this.Cleanup(null, fileEncryption, null, null));
                 ulong iv = Convert.ToUInt64(this.InitializationVector, CultureInfo.InvariantCulture);
-                UriBuilder uriBuilder = new UriBuilder(locator.Path);
+                UriBuilder uriBuilder = new UriBuilder(locator.BaseUri);
                 uriBuilder.Path += String.Concat("/", Name);
                 blobTransferClient.TransferProgressChanged += this.OnDownloadBlobTransferProgressChanged;
-                blobTransferClient.DownloadBlob(uriBuilder.Uri, destinationPath, fileEncryption, iv, cancellationToken, retryPolicy).Wait(cancellationToken);
+
+                blobTransferClient.DownloadBlob(
+						uriBuilder.Uri, 
+						destinationPath, 
+						fileEncryption, 
+						iv, 
+						cancellationToken, 
+						retryPolicy, 
+						() => locator.ContentAccessComponent)
+					.Wait(cancellationToken);
+
                 cancellationToken.ThrowIfCancellationRequested(() => this.Cleanup(null, fileEncryption, null, null));
             },
                     cancellationToken)
@@ -552,13 +562,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                             t.ThrowIfFaulted(() => this.Cleanup(null, null, locator, accessPolicy));
                             cancellationToken.ThrowIfCancellationRequested(() => this.Cleanup(null, null, locator, accessPolicy));
 
-                           
-                            var blobTransfer = new BlobTransferClient
-                                               {
-                                                   NumberOfConcurrentTransfers = this.GetMediaContext().NumberOfConcurrentTransfers,
-                                                   ParallelTransferThreadCount = this.GetMediaContext().ParallelTransferThreadCount
-                                               };
-                            UploadAsync(path, blobTransfer, locator, cancellationToken).Wait();
+							var blobTransfer = GetMediaContext().MediaServicesClassFactory.GetBlobTransferClient();
+
+							blobTransfer.NumberOfConcurrentTransfers = this.GetMediaContext().NumberOfConcurrentTransfers;
+							blobTransfer.ParallelTransferThreadCount = this.GetMediaContext().ParallelTransferThreadCount;
+
+							UploadAsync(path, blobTransfer, locator, cancellationToken).Wait();
                             locator.Delete(); 
                             cancellationToken.ThrowIfCancellationRequested(() => this.Cleanup(null, null, null, accessPolicy));
                             accessPolicy.Delete();

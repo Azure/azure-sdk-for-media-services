@@ -70,6 +70,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [Ignore] // Bug 672266
         public void ContentKeyAuthorizationPolicyOptionTestEnumQuery()
         {
             var policyOptions = _mediaContext.ContentKeyAuthorizationPolicyOptions;
