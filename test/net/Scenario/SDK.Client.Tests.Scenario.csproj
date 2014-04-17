@@ -133,7 +133,6 @@
     <Compile Include="Live\OriginTests.cs" />
     <Compile Include="Live\ProgramTests.cs" />
     <Compile Include="Live\RestEntityTests.cs" />
-    <Compile Include="Live\SerializerTest.cs" />
     <Compile Include="MediaServicesCredentialsTest.cs" />
     <Compile Include="NotificationEndPointTests.cs" />
     <Compile Include="IngestManifestTests.cs" />

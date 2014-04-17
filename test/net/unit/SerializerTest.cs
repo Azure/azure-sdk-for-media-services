@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="AssetFilesTests.cs" company="Microsoft">Copyright 2012 Microsoft Corporation</copyright>
+// <copyright file="SerializerTest.cs" company="Microsoft">Copyright 2012 Microsoft Corporation</copyright>
 // <license>
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -75,7 +75,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
                             new Ipv4 { Name = "testName2", IP = "1.1.1.2" },
                         }
                     }
-                }
+                },
+
+				ClientAccessPolicy = new CrossSiteAccessPolicy { Policy = "test", Version = "1.0" },
+				CrossDomainPolicy = new CrossSiteAccessPolicy { Policy = "test2", Version = "2.0" }, 
             };
 
             var serialized = Serializer.Serialize<InternalRest.OriginServiceSettings>(new InternalRest.OriginServiceSettings(settings));
@@ -93,7 +96,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
 			                    {""Expiration"":""\/Date(1359532800000)\/"",""Identifier"":""id2"",""Base64Key"":""b64Key2""}
 		                    ]
 	                    }
-                    }
+                    },
+					""ClientAccessPolicy"":{""Policy"":""test"",""Version"":""1.0""},
+					""CrossDomainPolicy"":{""Policy"":""test2"",""Version"":""2.0""}
                 }";
 
             bool ok = expected.Where(c => !char.IsWhiteSpace(c)).SequenceEqual(serialized);
@@ -120,7 +125,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
 			                    {""Expiration"":""\/Date(1359532800000)\/"",""Identifier"":""id2"",""Base64Key"":""b64Key2""}
 		                    ]
 	                    }
-                    }
+                    },
+					""ClientAccessPolicy"":{""Policy"":""test"",""Version"":""1.0""},
+					""CrossDomainPolicy"":{""Policy"":""test2"",""Version"":""2.0""}
                 }";
 
             var deserialized = (OriginSettings)Serializer.Deserialize<InternalRest.OriginServiceSettings>(serialized);
@@ -131,6 +138,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
             Assert.AreEqual("1.1.1.2", deserialized.Playback.Security.IPv4AllowList[1].IP);
             Assert.AreEqual("testName2", deserialized.Playback.Security.IPv4AllowList[1].Name);
             Assert.AreEqual(10, deserialized.Playback.MaxCacheAge.Value.TotalSeconds);
-        }
+			Assert.AreEqual("test", deserialized.ClientAccessPolicy.Policy);
+			Assert.AreEqual("test2", deserialized.CrossDomainPolicy.Policy);
+		}
     }
 }

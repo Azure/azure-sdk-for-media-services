@@ -148,20 +148,4 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Rest
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public PlaybackEndpointSecuritySettings Security { get; set; }
     }
-
-	/// <summary>
-	/// Cross site access policy.
-	/// </summary>
-	internal class CrossSiteAccessPolicy
-	{
-		/// <summary>
-		/// Policy.
-		/// </summary>
-		public string Policy { get; set; }
-
-		/// <summary>
-		/// Version.
-		/// </summary>
-		public string Version { get; set; }
-	}
 }

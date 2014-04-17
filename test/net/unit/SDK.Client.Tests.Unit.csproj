@@ -92,6 +92,7 @@
     <Compile Include="QueryErrorDetectionStrategyTest.cs" />
     <Compile Include="QueryretryTest.cs" />
     <Compile Include="CollectionQueryTest.cs" />
+    <Compile Include="SerializerTest.cs" />
     <Compile Include="TestCloudMediaDataContext.cs" />
   </ItemGroup>
   <ItemGroup>
