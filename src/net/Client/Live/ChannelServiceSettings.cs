@@ -41,6 +41,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Rest
         /// </summary>
         public OutputSettings Output { get; set; }
 
+		/// <summary>
+		/// Gets or sets client access policy.
+		/// </summary>
+		public CrossSiteAccessPolicy ClientAccessPolicy { get; set; }
+
+		/// <summary>
+		/// Gets or sets cross domain access policy.
+		/// </summary>
+		public CrossSiteAccessPolicy CrossDomainPolicy { get; set; }
+
         /// <summary>
         /// Creates an instance of ChannelServiceSettings class.
         /// </summary>
@@ -65,7 +75,25 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Rest
                     FMp4FragmentDuration = settings.Input.FMp4FragmentDuration.Value.Ticks
                 };
             }
-        }
+
+			if (settings.ClientAccessPolicy != null)
+			{
+				ClientAccessPolicy = new CrossSiteAccessPolicy
+				{
+					Policy = settings.ClientAccessPolicy.Policy,
+					Version = settings.ClientAccessPolicy.Version
+				};
+			}
+
+			if (settings.CrossDomainPolicy != null)
+			{
+				CrossDomainPolicy = new CrossSiteAccessPolicy
+				{
+					Policy = settings.CrossDomainPolicy.Policy,
+					Version = settings.CrossDomainPolicy.Version
+				};
+			}
+		}
 
         /// <summary>
         /// Casts ChannelServiceSettings to ChannelSettings.
@@ -93,6 +121,28 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Rest
                     FMp4FragmentDuration = TimeSpan.FromTicks(settings.Input.FMp4FragmentDuration.Value)
                 };
             }
+
+			var policy = settings.ClientAccessPolicy;
+
+			if (policy != null)
+			{
+				result.ClientAccessPolicy = new Client.CrossSiteAccessPolicy
+				{
+					Policy = policy.Policy,
+					Version = policy.Version
+				};
+			}
+
+			policy = settings.CrossDomainPolicy;
+
+			if (policy != null)
+			{
+				result.CrossDomainPolicy = new Client.CrossSiteAccessPolicy
+				{
+					Policy = policy.Policy,
+					Version = policy.Version
+				};
+			}
 
             return result;
         }

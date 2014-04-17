@@ -73,26 +73,29 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
         {
             OriginData target = new OriginData();
 
-            var settings = new OriginSettings
-            {
-                Playback = new PlaybackEndpointSettings
-                {
-                    Security = new PlaybackEndpointSecuritySettings
-                    {
-                        AkamaiSignatureHeaderAuthentication = new List<AkamaiSignatureHeaderAuthenticationKey> 
+			var settings = new OriginSettings
+			{
+				Playback = new PlaybackEndpointSettings
+				{
+					Security = new PlaybackEndpointSecuritySettings
+					{
+						AkamaiSignatureHeaderAuthentication = new List<AkamaiSignatureHeaderAuthenticationKey> 
                         { 
                             new AkamaiSignatureHeaderAuthenticationKey { Base64Key = "b64Key1", Expiration = new DateTime(2013, 1, 30, 8, 0, 0, DateTimeKind.Utc), Identifier = "id1" },
                             new AkamaiSignatureHeaderAuthenticationKey { Base64Key = "b64Key2", Expiration = new DateTime(2013, 1, 30, 8, 0, 0, DateTimeKind.Utc), Identifier = "id2" },
                         },
 
-                        IPv4AllowList = new List<Ipv4>
+						IPv4AllowList = new List<Ipv4>
                         {
                             new Ipv4 { Name = "testName1", IP = "1.1.1.1" },
                             new Ipv4 { Name = "testName2", IP = "1.1.1.2" },
                         }
-                    }
-                }
-            };
+					}
+				},
+
+				ClientAccessPolicy = new CrossSiteAccessPolicy { Policy = "test", Version = "1.0" },
+				CrossDomainPolicy = new CrossSiteAccessPolicy { Policy = "test2", Version = "2.0" }, 
+			};
 
             ((IOrigin)target).Settings = settings;
 
@@ -109,7 +112,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
 			                    {""Expiration"":""\/Date(1359532800000)\/"",""Identifier"":""id2"",""Base64Key"":""b64Key2""}
 		                    ]
 	                    }
-                    }
+                    },
+					""ClientAccessPolicy"":{""Policy"":""test"",""Version"":""1.0""},
+					""CrossDomainPolicy"":{""Policy"":""test2"",""Version"":""2.0""}
                 }";
 
             bool ok = serialized.Where(c => !char.IsWhiteSpace(c)).SequenceEqual(target.Settings);

@@ -206,6 +206,7 @@
     <Compile Include="Live\ChannelSize.cs" />
     <Compile Include="Live\ChannelState.cs" />
     <Compile Include="Live\CloudMediaContext.cs" />
+    <Compile Include="Live\CrossSiteAccessPolicy.cs" />
     <Compile Include="Live\IChannel.cs" />
     <Compile Include="Live\IChannelMetric.cs" />
     <Compile Include="Live\IIngestMetric.cs" />

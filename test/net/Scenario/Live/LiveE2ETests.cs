@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
@@ -48,7 +49,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
         /// Creates everything needed for streaming.
         /// </summary>
         [TestMethod]
-        [Ignore] // enable when environment is ready
         public void CreateStreamingTest()
         {
             IOrigin origin = _dataContext.Origins.Create(_testOriginName, 2, MakeOriginSettings());
@@ -60,15 +60,130 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
             Assert.AreEqual(channel.Id, program.Channel.Id);
         }
 
-        private IOrigin GetTestOrigin()
+		[TestMethod]
+		public void OriginCrossDomain()
+		{
+			IOrigin origin = ObtainTestOrigin();
+
+			string clientPolicy = 
+				@"<?xml version=""1.0"" encoding=""utf-8""?>
+				<access-policy>
+				  <cross-domain-access>
+					<policy>
+					  <allow-from http-request-headers=""*"" http-methods=""*"">
+						<domain uri=""*""/>
+					  </allow-from>
+					  <grant-to>
+						<resource path=""/"" include-subpaths=""true""/>
+					  </grant-to>
+					</policy>
+				  </cross-domain-access>
+				</access-policy>";
+
+			origin.Settings.ClientAccessPolicy = new CrossSiteAccessPolicy
+			{
+				Version = "1.0",
+				Policy = clientPolicy					
+			};
+
+			string xdomainPolicy =
+			@"<?xml version=""1.0"" ?>
+			<cross-domain-policy>
+			  <allow-access-from domain=""*"" />
+			</cross-domain-policy>";
+
+			origin.Settings.CrossDomainPolicy = new CrossSiteAccessPolicy
+			{
+				Version = "1.0",
+				Policy = xdomainPolicy
+			};
+
+			origin.Update();
+
+			origin = GetTestOrigin();
+			Assert.AreEqual(clientPolicy, origin.Settings.ClientAccessPolicy.Policy);
+			Assert.AreEqual(xdomainPolicy, origin.Settings.CrossDomainPolicy.Policy);
+
+			origin.Delete();
+		}
+
+		[TestMethod]
+		public void ChannelCrossDomain()
+		{
+			var channel = ObtainTestChannel();
+
+			string clientPolicy =
+				@"<?xml version=""1.0"" encoding=""utf-8""?>
+				<access-policy>
+				  <cross-domain-access>
+					<policy>
+					  <allow-from http-request-headers=""*"" http-methods=""*"">
+						<domain uri=""*""/>
+					  </allow-from>
+					  <grant-to>
+						<resource path=""/"" include-subpaths=""true""/>
+					  </grant-to>
+					</policy>
+				  </cross-domain-access>
+				</access-policy>";
+
+			channel.Settings.ClientAccessPolicy = new CrossSiteAccessPolicy
+			{
+				Version = "1.0",
+				Policy = clientPolicy
+			};
+
+			string xdomainPolicy =
+			@"<?xml version=""1.0"" ?>
+			<cross-domain-policy>
+			  <allow-access-from domain=""*"" />
+			</cross-domain-policy>";
+
+			channel.Settings.CrossDomainPolicy = new CrossSiteAccessPolicy
+			{
+				Version = "1.0",
+				Policy = xdomainPolicy
+			};
+
+			channel.Update();
+
+			channel = GetTestChannel();
+			Assert.AreEqual(clientPolicy, channel.Settings.ClientAccessPolicy.Policy);
+			Assert.AreEqual(xdomainPolicy, channel.Settings.CrossDomainPolicy.Policy);
+
+			channel.Delete();
+		}
+
+        private IOrigin ObtainTestOrigin()
         {
-            return _dataContext.Origins.Where(o => o.Name == _testOriginName).FirstOrDefault();
+            var result = _dataContext.Origins.Where(o => o.Name == _testOriginName).FirstOrDefault();
+			if(result == null)
+			{
+				result = _dataContext.Origins.Create(_testOriginName, 2, MakeOriginSettings());
+			}
+
+			return result;
         }
+
+		private IOrigin GetTestOrigin()
+		{
+			return _dataContext.Origins.Where(o => o.Name == _testOriginName).FirstOrDefault();
+		}
 
         private IChannel GetTestChannel()
         {
             return _dataContext.Channels.Where(o => o.Name == _testChannelName).FirstOrDefault();
         }
+
+		private IChannel ObtainTestChannel()
+		{
+			var result = _dataContext.Channels.Where(o => o.Name == _testChannelName).FirstOrDefault();
+			if(result == null)
+			{
+				result = _dataContext.Channels.Create(_testChannelName, ChannelSize.Large, MakeChannelSettings());
+			}
+			return result;
+		}
 
         private IAsset GetTestAsset()
         {
@@ -90,11 +205,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
                 foreach (var program in channel.Programs)
                 {
                     asset = _dataContext.Assets.Where(o => o.Id == program.AssetId).FirstOrDefault();
-                    if (asset != null)
+					program.Delete();
+					if (asset != null)
                     {
                         asset.Delete();
                     }
-                    program.Delete();
                 }
 
                 channel.Delete();

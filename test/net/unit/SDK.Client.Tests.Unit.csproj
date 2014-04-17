@@ -87,10 +87,12 @@
     <Compile Include="LocatorTest.cs" />
     <Compile Include="MediaRetryPolicyTest.cs" />
     <Compile Include="NotificationEndPointTest.cs" />
+    <Compile Include="OriginDataTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryErrorDetectionStrategyTest.cs" />
     <Compile Include="QueryretryTest.cs" />
     <Compile Include="CollectionQueryTest.cs" />
+    <Compile Include="SerializerTest.cs" />
     <Compile Include="TestCloudMediaDataContext.cs" />
   </ItemGroup>
   <ItemGroup>

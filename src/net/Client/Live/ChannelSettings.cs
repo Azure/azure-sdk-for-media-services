@@ -40,7 +40,18 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Gets or sets output settings
         /// </summary>
         public OutputSettings Output { get; set; }
-    }
+
+
+		/// <summary>
+		/// Gets or sets client access policy.
+		/// </summary>
+		public CrossSiteAccessPolicy ClientAccessPolicy { get; set; }
+
+		/// <summary>
+		/// Gets or sets cross domain access policy.
+		/// </summary>
+		public CrossSiteAccessPolicy CrossDomainPolicy { get; set; }
+	}
 
     /// <summary>
     /// Describes Preview endpoint settings.
