@@ -169,7 +169,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
 
 			target = GetTestOrigin();
 			Assert.AreEqual("yahoo.com", target.Settings.CustomDomain.CustomDomainNames[0]);
-			Assert.AreEqual("microsoft.com", target.Settings.CustomDomain.CustomDomainNames[0]);
+			Assert.AreEqual("microsoft.com", target.Settings.CustomDomain.CustomDomainNames[1]);
 
 			target.Delete();
 		}
@@ -189,7 +189,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
 
 			target = GetTestChannel();
 			Assert.AreEqual("yahoo.com", target.Settings.CustomDomain.CustomDomainNames[0]);
-			Assert.AreEqual("microsoft.com", target.Settings.CustomDomain.CustomDomainNames[0]);
+			Assert.AreEqual("microsoft.com", target.Settings.CustomDomain.CustomDomainNames[1]);
 
 			target.Delete();
 		}
