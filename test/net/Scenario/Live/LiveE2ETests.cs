@@ -154,6 +154,46 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
 			channel.Delete();
 		}
 
+		[TestMethod]
+		[Ignore] // need valid domain names
+		public void OriginCustomDomain()
+		{
+			var target = ObtainTestOrigin();
+
+			target.Settings.CustomDomain = new CustomDomainSettings 
+			{ 
+				CustomDomainNames = new[] { "yahoo.com", "microsoft.com" }
+			};
+
+			target.Update();
+
+			target = GetTestOrigin();
+			Assert.AreEqual("yahoo.com", target.Settings.CustomDomain.CustomDomainNames[0]);
+			Assert.AreEqual("microsoft.com", target.Settings.CustomDomain.CustomDomainNames[0]);
+
+			target.Delete();
+		}
+
+		[TestMethod]
+		[Ignore] // need valid domain names
+		public void ChannelCustomDomain()
+		{
+			var target = ObtainTestChannel();
+
+			target.Settings.CustomDomain = new CustomDomainSettings
+			{
+				CustomDomainNames = new[] { "yahoo.com", "microsoft.com" }
+			};
+
+			target.Update();
+
+			target = GetTestChannel();
+			Assert.AreEqual("yahoo.com", target.Settings.CustomDomain.CustomDomainNames[0]);
+			Assert.AreEqual("microsoft.com", target.Settings.CustomDomain.CustomDomainNames[0]);
+
+			target.Delete();
+		}
+
         private IOrigin ObtainTestOrigin()
         {
             var result = _dataContext.Origins.Where(o => o.Name == _testOriginName).FirstOrDefault();

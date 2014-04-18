@@ -62,6 +62,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Rest
 						Version = settings.CrossDomainPolicy.Version
 					};
 				}
+
+				if (settings.CustomDomain != null)
+				{
+					CustomDomain = new CustomDomainSettings
+					{ 
+						CustomDomainNames = settings.CustomDomain.CustomDomainNames
+					};
+				}
 			}
         }
 
@@ -80,6 +88,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Rest
 		/// Gets or sets cross domain access policy.
 		/// </summary>
 		public CrossSiteAccessPolicy CrossDomainPolicy { get; set; }
+
+		/// <summary>
+		/// Gets or sets custom domain settings.
+		/// </summary>
+		public CustomDomainSettings CustomDomain { get; set; }
 
         /// <summary>
         /// Casts OriginServiceSettings to OriginSettings.
@@ -124,6 +137,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Rest
 				{
 					Policy = policy.Policy,
 					Version = policy.Version
+				};
+			}
+
+			var customDomain = settings.CustomDomain;
+
+			if (customDomain != null)
+			{
+				result.CustomDomain = new Client.CustomDomainSettings
+				{
+					CustomDomainNames = customDomain.CustomDomainNames
 				};
 			}
 

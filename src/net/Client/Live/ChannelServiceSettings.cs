@@ -51,6 +51,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Rest
 		/// </summary>
 		public CrossSiteAccessPolicy CrossDomainPolicy { get; set; }
 
+		/// <summary>
+		/// Gets or sets custom domain settings.
+		/// </summary>
+		public CustomDomainSettings CustomDomain { get; set; }
+
         /// <summary>
         /// Creates an instance of ChannelServiceSettings class.
         /// </summary>
@@ -91,6 +96,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Rest
 				{
 					Policy = settings.CrossDomainPolicy.Policy,
 					Version = settings.CrossDomainPolicy.Version
+				};
+			}
+
+			if (settings.CustomDomain != null)
+			{
+				CustomDomain = new CustomDomainSettings
+				{
+					CustomDomainNames = settings.CustomDomain.CustomDomainNames
 				};
 			}
 		}
@@ -144,17 +157,27 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Rest
 				};
 			}
 
+			var customDomain = settings.CustomDomain;
+
+			if (customDomain != null)
+			{
+				result.CustomDomain = new Client.CustomDomainSettings
+				{
+					CustomDomainNames = customDomain.CustomDomainNames
+				};
+			}
+
             return result;
         }
     }
 
     /// <summary>
-    /// Describes Channel input settings
+    /// Describes Channel input settings.
     /// </summary>
     internal class InputSettings
     {
         /// <summary>
-        /// Gets or sets FMp4 fragment duration
+        /// Gets or sets FMp4 fragment duration.
         /// </summary>
         public long? FMp4FragmentDuration { get; set; }
     }

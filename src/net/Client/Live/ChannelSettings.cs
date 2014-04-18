@@ -51,6 +51,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 		/// Gets or sets cross domain access policy.
 		/// </summary>
 		public CrossSiteAccessPolicy CrossDomainPolicy { get; set; }
+
+		/// <summary>
+		/// Gets or sets custom domain settings.
+		/// </summary>
+		public CustomDomainSettings CustomDomain { get; set; }
 	}
 
     /// <summary>

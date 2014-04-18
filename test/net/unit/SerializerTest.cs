@@ -78,8 +78,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
                 },
 
 				ClientAccessPolicy = new CrossSiteAccessPolicy { Policy = "test", Version = "1.0" },
-				CrossDomainPolicy = new CrossSiteAccessPolicy { Policy = "test2", Version = "2.0" }, 
-            };
+				CrossDomainPolicy = new CrossSiteAccessPolicy { Policy = "test2", Version = "2.0" },
+				CustomDomain = new CustomDomainSettings { CustomDomainNames = new[] { "name1", "name2" } }
+			};
 
             var serialized = Serializer.Serialize<InternalRest.OriginServiceSettings>(new InternalRest.OriginServiceSettings(settings));
 
@@ -98,7 +99,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
 	                    }
                     },
 					""ClientAccessPolicy"":{""Policy"":""test"",""Version"":""1.0""},
-					""CrossDomainPolicy"":{""Policy"":""test2"",""Version"":""2.0""}
+					""CrossDomainPolicy"":{""Policy"":""test2"",""Version"":""2.0""},
+					""CustomDomain"":{""CustomDomainNames"":[""name1"",""name2""]}
                 }";
 
             bool ok = expected.Where(c => !char.IsWhiteSpace(c)).SequenceEqual(serialized);
@@ -127,7 +129,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
 	                    }
                     },
 					""ClientAccessPolicy"":{""Policy"":""test"",""Version"":""1.0""},
-					""CrossDomainPolicy"":{""Policy"":""test2"",""Version"":""2.0""}
+					""CrossDomainPolicy"":{""Policy"":""test2"",""Version"":""2.0""},
+					""CustomDomain"":{""CustomDomainNames"":[""name1"",""name2""]}
                 }";
 
             var deserialized = (OriginSettings)Serializer.Deserialize<InternalRest.OriginServiceSettings>(serialized);
@@ -140,6 +143,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
             Assert.AreEqual(10, deserialized.Playback.MaxCacheAge.Value.TotalSeconds);
 			Assert.AreEqual("test", deserialized.ClientAccessPolicy.Policy);
 			Assert.AreEqual("test2", deserialized.CrossDomainPolicy.Policy);
+			Assert.AreEqual("name1", deserialized.CustomDomain.CustomDomainNames[0]);
+			Assert.AreEqual("name2", deserialized.CustomDomain.CustomDomainNames[1]);
 		}
     }
 }

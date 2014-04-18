@@ -50,7 +50,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
 			                    {""Expiration"":""\/Date(1359532800000)\/"",""Identifier"":""id2"",""Base64Key"":""b64Key2""}
 		                    ]
 	                    }
-                    }
+                    },
+					""CustomDomain"":{""CustomDomainNames"":[""name1"",""name2""]}
                 }";
 
             target.Settings = serialized;
@@ -62,8 +63,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
             Assert.AreEqual("1.1.1.2", actual.Playback.Security.IPv4AllowList[1].IP);
             Assert.AreEqual("testName2", actual.Playback.Security.IPv4AllowList[1].Name);
             Assert.AreEqual(0, actual.Playback.MaxCacheAge.Value.TotalSeconds);
-
-        }
+			Assert.AreEqual("name1", actual.CustomDomain.CustomDomainNames[0]);
+			Assert.AreEqual("name2", actual.CustomDomain.CustomDomainNames[1]);
+		}
 
         /// <summary>
         ///A test for Settings
@@ -94,7 +96,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
 				},
 
 				ClientAccessPolicy = new CrossSiteAccessPolicy { Policy = "test", Version = "1.0" },
-				CrossDomainPolicy = new CrossSiteAccessPolicy { Policy = "test2", Version = "2.0" }, 
+				CrossDomainPolicy = new CrossSiteAccessPolicy { Policy = "test2", Version = "2.0" },
+
+				CustomDomain = new CustomDomainSettings { CustomDomainNames = new[] { "name1", "name2" } }
 			};
 
             ((IOrigin)target).Settings = settings;
@@ -114,7 +118,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
 	                    }
                     },
 					""ClientAccessPolicy"":{""Policy"":""test"",""Version"":""1.0""},
-					""CrossDomainPolicy"":{""Policy"":""test2"",""Version"":""2.0""}
+					""CrossDomainPolicy"":{""Policy"":""test2"",""Version"":""2.0""},
+					""CustomDomain"":{""CustomDomainNames"":[""name1"",""name2""]}
                 }";
 
             bool ok = serialized.Where(c => !char.IsWhiteSpace(c)).SequenceEqual(target.Settings);
