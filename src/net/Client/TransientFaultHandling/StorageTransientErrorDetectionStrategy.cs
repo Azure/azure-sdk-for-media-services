@@ -35,6 +35,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling
     /// </summary>
     public class StorageTransientErrorDetectionStrategy : MediaErrorDetectionStrategy
     {
+        private static Regex c_ErrorCodeRegularExpression = new Regex(@"<code>(\w+)</code>", RegexOptions.IgnoreCase);
+
         /// <summary>
         /// Determines whether the specified exception represents a transient failure that can be compensated by a retry.
         /// </summary>
@@ -130,8 +132,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling
 
         private static string GetErrorCode(string message)
         {
-            var regEx = new Regex(@"<code>(\w+)</code>", RegexOptions.IgnoreCase);
-            var match = regEx.Match(message);
+            var match = c_ErrorCodeRegularExpression.Match(message);
 
             return match.Groups[1].Value;
         }
