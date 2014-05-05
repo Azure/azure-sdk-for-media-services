@@ -17,6 +17,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Net;
+using System.Net.Sockets;
 using Microsoft.Practices.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling
@@ -25,15 +26,17 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling
     {
         protected override bool CheckIsTransient(Exception ex)
         {
-            var webException = ex.FindInnerException<WebException>();
-
-            if (webException != null &&
-                CommonRetryableWebExceptions.Contains(webException.Status))
+            if (IsRetriableWebException(ex, operationIdempotentOnRetry: true, retryOnUnauthorizedErrors: false))
             {
                 return true;
             }
 
-            if (ex.FindInnerException<TimeoutException>() != null)
+            if (IsTimeoutException(ex))
+            {
+                return true;
+            }
+
+            if (IsSocketException(ex))
             {
                 return true;
             }

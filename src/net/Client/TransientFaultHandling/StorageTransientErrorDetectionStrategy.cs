@@ -47,25 +47,41 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling
 
         protected override bool CheckIsTransient(Exception ex)
         {
-            var webException = ex as WebException;
-
-            if (webException != null && 
-                (webException.Status == WebExceptionStatus.ProtocolError
-                 || webException.Status == WebExceptionStatus.ConnectionClosed
-                 || webException.Status == WebExceptionStatus.NameResolutionFailure
-                 || webException.Status == WebExceptionStatus.PipelineFailure
-                 || webException.Status == WebExceptionStatus.Timeout
-                 || webException.Status == WebExceptionStatus.ProxyNameResolutionFailure
-                 ))
+            if (IsRetriableWebException(ex, operationIdempotentOnRetry: true, retryOnUnauthorizedErrors: true))
             {
                 return true;
             }
 
-            var dataServiceException = ex as DataServiceRequestException;
+            DataServiceRequestException dataServiceException = ex as DataServiceRequestException;
 
             if (dataServiceException != null)
             {
                 if (IsErrorStringMatch(GetErrorCode(dataServiceException), StorageErrorCodeStrings.InternalError, StorageErrorCodeStrings.ServerBusy, StorageErrorCodeStrings.OperationTimedOut, TableErrorCodeStrings.TableServerOutOfMemory))
+                {
+                    return true;
+                }
+            }
+
+            DataServiceQueryException dataServiceQueryException = ex as DataServiceQueryException;
+
+            if (dataServiceQueryException != null)
+            {
+                if (IsErrorStringMatch(GetErrorCode(dataServiceQueryException), StorageErrorCodeStrings.InternalError, StorageErrorCodeStrings.ServerBusy, StorageErrorCodeStrings.OperationTimedOut, TableErrorCodeStrings.TableServerOutOfMemory))
+                {
+                    return true;
+                }
+            }
+
+            DataServiceClientException dataServiceClientException = ex.FindInnerException<DataServiceClientException>();
+
+            if (dataServiceClientException != null)
+            {
+                if (IsRetriableHttpStatusCode(dataServiceClientException.StatusCode, operationIdempotentOnRetry:true, retryOnUnauthorizedErrors:true))
+                {
+                    return true;
+                }
+
+                if (IsErrorStringMatch(dataServiceClientException.Message, StorageErrorCodeStrings.InternalError, StorageErrorCodeStrings.ServerBusy, StorageErrorCodeStrings.OperationTimedOut, TableErrorCodeStrings.TableServerOutOfMemory))
                 {
                     return true;
                 }
@@ -81,37 +97,43 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling
                 }
             }
 
-            if (ex is TimeoutException)
+            if (IsTimeoutException(ex))
             {
                 return true;
             }
 
-            if (ex is SocketException)
+            if (IsSocketException(ex))
             {
                 return true;
             }
 
-            if (ex is IOException)
+            if ((ex.FindInnerException<IOException>() != null) && !(ex is FileLoadException))
             {
                 return true;
             }
+
             return false;
         }
 
         #region Private members
-        private static string GetErrorCode(DataServiceRequestException ex)
+        private static string GetErrorCode(Exception ex)
         {
             if (ex != null && ex.InnerException != null)
             {
-                var regEx = new Regex(@"<code>(\w+)</code>", RegexOptions.IgnoreCase);
-                var match = regEx.Match(ex.InnerException.Message);
-
-                return match.Groups[1].Value;
+                return GetErrorCode(ex.InnerException.Message);
             }
             else
             {
                 return null;
             }
+        }
+
+        private static string GetErrorCode(string message)
+        {
+            var regEx = new Regex(@"<code>(\w+)</code>", RegexOptions.IgnoreCase);
+            var match = regEx.Match(message);
+
+            return match.Groups[1].Value;
         }
 
         private static bool IsErrorStringMatch(StorageException ex, params string[] errorStrings)
