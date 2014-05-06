@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="QueryErrorDetectionStrategyTest.cs" company="Microsoft">Copyright 2012 Microsoft Corporation</copyright>
+// <copyright file="SaveChangesErrorDetectionStrategyTest.cs" company="Microsoft">Copyright 2014 Microsoft Corporation</copyright>
 // <license>
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,102 +29,92 @@ using Moq;
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
 {
     [TestClass]
-    public class QueryErrorDetectionStrategyTest
+    public class SaveChangesErrorDetectionStrategyTest
     {
-        public static readonly ReadOnlyCollection<WebExceptionStatus> SupportedRetryableWebExceptions 
+        private static readonly ReadOnlyCollection<WebExceptionStatus> SupportedRetryableWebExceptions 
             = new ReadOnlyCollection<WebExceptionStatus>(new[]
                     {
                         WebExceptionStatus.ConnectFailure,
                         WebExceptionStatus.NameResolutionFailure,
                         WebExceptionStatus.ProxyNameResolutionFailure,
                         WebExceptionStatus.SendFailure,
-                        WebExceptionStatus.PipelineFailure,
-                        WebExceptionStatus.ConnectionClosed,
-                        WebExceptionStatus.KeepAliveFailure,
-                        WebExceptionStatus.UnknownError,
-                        WebExceptionStatus.ReceiveFailure,
-                        WebExceptionStatus.RequestCanceled,
-                        WebExceptionStatus.Timeout,
                     });
 
-        public static readonly ReadOnlyCollection<HttpStatusCode> SupportedRetryableHttpStatusCodes 
+        private static readonly ReadOnlyCollection<HttpStatusCode> SupportedRetryableHttpStatusCodes 
             = new ReadOnlyCollection<HttpStatusCode>(new[]
                     {
-                        HttpStatusCode.InternalServerError,
-                        HttpStatusCode.BadGateway,
-                        HttpStatusCode.GatewayTimeout,
                         HttpStatusCode.RequestTimeout,
                         HttpStatusCode.ServiceUnavailable,
                     });
 
         [TestMethod]
-        public void QueryErrorDetectionStrategyTestGeneralException()
+        public void SaveChangesErrorDetectionStrategyTestGeneralException()
         {
-            bool actual = new QueryErrorDetectionStrategy().IsTransient(new Exception());
+            bool actual = new SaveChangesErrorDetectionStrategy().IsTransient(new Exception());
 
             Assert.IsFalse(actual);
         }
 
         [TestMethod]
-        public void QueryErrorDetectionStrategyTestSocketException()
+        public void SaveChangesErrorDetectionStrategyTestSocketException()
         {
             var exception = new SocketException();
 
-            bool actual = new QueryErrorDetectionStrategy().IsTransient(exception);
+            bool actual = new SaveChangesErrorDetectionStrategy().IsTransient(exception);
 
             Assert.IsTrue(actual);
         }
 
         [TestMethod]
-        public void QueryErrorDetectionStrategyTestTimeoutException()
+        public void SaveChangesErrorDetectionStrategyTestTimeoutException()
         {
             var exception = new TimeoutException();
 
-            bool actual = new QueryErrorDetectionStrategy().IsTransient(exception);
-
-            Assert.IsTrue(actual);
-        }
-
-        [TestMethod]
-        public void QueryErrorDetectionStrategyTestIOException()
-        {
-            var exception = new System.IO.IOException();
-
-            bool actual = new QueryErrorDetectionStrategy().IsTransient(exception);
+            bool actual = new SaveChangesErrorDetectionStrategy().IsTransient(exception);
 
             Assert.IsFalse(actual);
         }
 
         [TestMethod]
-        public void QueryErrorDetectionStrategyTestDataServiceQueryException()
+        public void SaveChangesErrorDetectionStrategyTestIOException()
+        {
+            var exception = new System.IO.IOException();
+
+            bool actual = new SaveChangesErrorDetectionStrategy().IsTransient(exception);
+
+            Assert.IsFalse(actual);
+        }
+
+        [TestMethod]
+        public void SaveChangesErrorDetectionStrategyTestDataServiceQueryException()
         {
             // Unfortunately this exception isn't easy to Mock with an actual error code so just
             // do a basic test
             var exception = new DataServiceQueryException("Simulated DataServiceQueryException");
 
-            bool actual = new QueryErrorDetectionStrategy().IsTransient(exception);
+            bool actual = new SaveChangesErrorDetectionStrategy().IsTransient(exception);
 
-            Assert.IsTrue(actual);
+            Assert.IsFalse(actual);
         }
 
         [TestMethod]
-        public void QueryErrorDetectionStrategyTestDataServiceRequestException()
+        public void SaveChangesErrorDetectionStrategyTestDataServiceRequestException()
         {
             // Unfortunately this exception isn't easy to Mock with an actual error code so just
             // do a basic test
             var exception = new DataServiceRequestException("Simulated DataServiceRequestException");
 
-            bool actual = new QueryErrorDetectionStrategy().IsTransient(exception);
+            bool actual = new SaveChangesErrorDetectionStrategy().IsTransient(exception);
 
-            Assert.IsTrue(actual);
+            Assert.IsFalse(actual);
         }
 
         [TestMethod]
-        public void QueryErrorDetectionStrategyWebExceptionTest()
+        public void SaveChangesErrorDetectionStrategyWebExceptionTest()
         {
             WebExceptionStatus[] allWebExceptionStatusValues = (WebExceptionStatus[])Enum.GetValues(typeof(WebExceptionStatus));
 
-            QueryErrorDetectionStrategy strategy = new QueryErrorDetectionStrategy();
+            SaveChangesErrorDetectionStrategy strategy = new SaveChangesErrorDetectionStrategy();
 
             foreach (WebExceptionStatus status in allWebExceptionStatusValues)
             {
@@ -148,15 +138,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
         }
 
         [TestMethod]
-        public void QueryErrorDetectionStrategyWebExceptionProtocolErrorTest()
+        public void SaveChangesErrorDetectionStrategyWebExceptionProtocolErrorTest()
         {
             HttpStatusCode[] allHttpStatusCodeValues = (HttpStatusCode[])Enum.GetValues(typeof(HttpStatusCode));
 
-            QueryErrorDetectionStrategy strategy = new QueryErrorDetectionStrategy();
+            SaveChangesErrorDetectionStrategy strategy = new SaveChangesErrorDetectionStrategy();
 
             foreach (HttpStatusCode status in allHttpStatusCodeValues)
             {
-                WebException exception = GetMockedWebExceptionWithProtocolError(status);
+                WebException exception = QueryErrorDetectionStrategyTest.GetMockedWebExceptionWithProtocolError(status);
 
                 if (strategy.IsTransient(exception))
                 {
@@ -170,15 +160,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
         }
 
         [TestMethod]
-        public void QueryErrorDetectionStrategyDataServiceTransportExceptionTest()
+        public void SaveChangesErrorDetectionStrategyDataServiceTransportExceptionTest()
         {
             HttpStatusCode[] allHttpStatusCodeValues = (HttpStatusCode[])Enum.GetValues(typeof(HttpStatusCode));
 
-            QueryErrorDetectionStrategy strategy = new QueryErrorDetectionStrategy();
+            SaveChangesErrorDetectionStrategy strategy = new SaveChangesErrorDetectionStrategy();
 
             foreach (HttpStatusCode status in allHttpStatusCodeValues)
             {
-                DataServiceTransportException exception = GetMockedTransportException(status);
+                DataServiceTransportException exception = QueryErrorDetectionStrategyTest.GetMockedTransportException(status);
 
                 if (strategy.IsTransient(exception))
                 {
@@ -192,15 +182,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
         }
 
         [TestMethod]
-        public void QueryErrorDetectionStrategyDataServiceClientExceptionTest()
+        public void SaveChangesErrorDetectionStrategyDataServiceClientExceptionTest()
         {
             HttpStatusCode[] allHttpStatusCodeValues = (HttpStatusCode[])Enum.GetValues(typeof(HttpStatusCode));
 
-            QueryErrorDetectionStrategy strategy = new QueryErrorDetectionStrategy();
+            SaveChangesErrorDetectionStrategy strategy = new SaveChangesErrorDetectionStrategy();
 
             foreach (HttpStatusCode status in allHttpStatusCodeValues)
             {
-                DataServiceClientException exception = GetMockedClientException(status);
+                DataServiceClientException exception = QueryErrorDetectionStrategyTest.GetMockedClientException(status);
 
                 if (strategy.IsTransient(exception))
                 {
@@ -211,27 +201,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
                     Assert.IsFalse(SupportedRetryableHttpStatusCodes.Contains(status), status.ToString());
                 }
             }
-        }
-
-        public static DataServiceClientException GetMockedClientException(HttpStatusCode statusCode)
-        {
-            return new DataServiceClientException("Simulated WebException with " + statusCode.ToString(), (int)statusCode);
-        }
-
-        public static DataServiceTransportException GetMockedTransportException(HttpStatusCode statusCode)
-        {
-            var responseMessageMock = new Mock<Data.OData.IODataResponseMessage>();
-            responseMessageMock.SetupGet(x => x.StatusCode).Returns((int)statusCode);
-
-            return new DataServiceTransportException(responseMessageMock.Object, new Exception());
-        }
-
-        public static WebException GetMockedWebExceptionWithProtocolError(HttpStatusCode statusCode)
-        {
-            var httpWebResponseMock = new Mock<HttpWebResponse>();
-            httpWebResponseMock.SetupGet(x => x.StatusCode).Returns(statusCode);
-
-            return new WebException("Simulated WebException with ProtocolError", null, WebExceptionStatus.ProtocolError, httpWebResponseMock.Object);
         }
     }
 }

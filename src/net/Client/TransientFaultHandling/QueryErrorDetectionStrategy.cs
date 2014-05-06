@@ -24,25 +24,27 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling
     {
         protected override bool CheckIsTransient(Exception ex)
         {
-            var queryException = ex.FindInnerException<DataServiceQueryException>();
-
-            if ((queryException != null) && (queryException.Response != null))
+            if (IsRetriableWebException(ex, operationIdempotentOnRetry:true, retryOnUnauthorizedErrors: false))
             {
-                return CommonRetryableWebExceptionsIncludingTimeout.Any(s => (int)s == queryException.Response.StatusCode);
+                return true;
             }
-            else
-            {
-                var transportException = ex.FindInnerException<DataServiceTransportException>();
 
-                if ((transportException != null) && (transportException.Response != null))
-                {
-                    return CommonRetryableWebExceptionsIncludingTimeout.Any(s => (int)s == transportException.Response.StatusCode);
-                }
-                else
-                {
-                    return false;
-                }
+            if (IsRetriableDataServiceException(ex, operationIdempotentOnRetry:true, retryOnUnauthorizedErrors: false))
+            {
+                return true;
             }
+
+            if (IsTimeoutException(ex))
+            {
+                return true;
+            }
+
+            if (IsSocketException(ex))
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

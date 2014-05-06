@@ -219,16 +219,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         [TestCategory("DailyBvtRun")]
         [ExpectedException(typeof(DataServiceRequestException))]
-        public void ShouldThrowTryingToCreateOriginLocatorWithListPermissions()
-        {
-           const AccessPermissions accessPermissions = AccessPermissions.List;
-            CreateOriginLocatorWithSpecificPermission(accessPermissions);
-            Assert.Fail("Should not create AccessPermissions.List origin locator");
-        }
-        [TestMethod]
-        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("DailyBvtRun")]
-        [ExpectedException(typeof(DataServiceRequestException))]
         public void ShouldThrowTryingToCreateOriginLocatorWithWritePermissions()
         {
             const AccessPermissions accessPermissions = AccessPermissions.Write;

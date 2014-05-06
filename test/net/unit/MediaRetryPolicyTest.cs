@@ -76,7 +76,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
 
             int exceptionCount = 2;
             int expected = 10;
-            var fakeException = new WebException("test", WebExceptionStatus.RequestCanceled);
+            var fakeException = new WebException("test", WebExceptionStatus.TrustFailure);
 
             Func<int> func = () =>
             {
@@ -175,7 +175,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
 
             int exceptionCount = 2;
             int expected = 10;
-            var fakeException = new WebException("test", WebExceptionStatus.RequestCanceled);
+            var fakeException = new WebException("test", WebExceptionStatus.TrustFailure);
 
             Func<int> func = () =>
             {
