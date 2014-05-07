@@ -15,6 +15,7 @@
 // </license>
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
@@ -87,14 +88,22 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Live
         {
             foreach (var origin in _dataContext.Origins)
             {
-                var originName = origin.Name.Split('.')[0];
-                var metric1 = _dataContext.OriginMetrics.Where(m => m.OriginName.Contains(originName)).SingleOrDefault();
+                IOriginMetric metricFromNameQuery = null;
+                IOriginMetric metricFromOriginEntity = origin.GetMetric();
+                Assert.IsNotNull(metricFromOriginEntity);
 
-                if (metric1 == null) continue;
-                var metric2 = origin.GetMetric();
+                List<IOriginMetric> originMetricsByName = _dataContext.OriginMetrics.Where(m => m.OriginName == origin.Name).ToList();
 
-                Assert.IsNotNull(metric2);
-                Assert.AreEqual(metric1.EgressMetrics.Count, metric2.EgressMetrics.Count);
+                if (originMetricsByName.Count == 0)
+                {
+                    continue;
+                }
+                else
+                {
+                    metricFromNameQuery = originMetricsByName.Where(m => m.Id == metricFromOriginEntity.Id).SingleOrDefault();
+                }
+
+                Assert.AreEqual(metricFromOriginEntity.EgressMetrics.Count, metricFromNameQuery.EgressMetrics.Count);
             }
         }
 

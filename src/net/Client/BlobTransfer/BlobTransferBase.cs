@@ -7,6 +7,7 @@ using System.Net;
 using System.Threading;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -111,7 +112,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
             catch (Exception exception)
             {
-                WebException webEx = exception as WebException;
+                WebException webEx = exception.FindInnerException<WebException>();
 
                 if (webEx == null)
                 {
@@ -289,7 +290,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 				}
 				catch (StorageException x)
 				{
-					var webException = x.InnerException as WebException;
+                    WebException webException = x.FindInnerException<WebException>();
+
 					if (webException == null || !(webException.Response is HttpWebResponse))
 					{
 						throw;
