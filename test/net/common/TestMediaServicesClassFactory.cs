@@ -113,27 +113,57 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
         public override BlobTransferClient GetBlobTransferClient()
         {
             Mock<BlobTransferClient> mock = new Mock<BlobTransferClient>(default(TimeSpan));
-            mock.Setup(c => c.UploadBlob(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<FileEncryption>(), It.IsAny<CancellationToken>(), It.IsAny<IRetryPolicy>())).Returns((Uri url,
-            string localFile,
-            string contentType,
-            FileEncryption fileEncryption,
-            CancellationToken cancellationToken,
-            IRetryPolicy retryPolicy) => Task.Factory.StartNew(() =>
-            {
-                FileInfo info = new FileInfo(localFile);
-                if (fileEncryption != null)
-                {
-                    lock (fileEncryption)
-                    {
-                        using (FileEncryptionTransform encryptor = fileEncryption.GetTransform(info.Name,0))
-                        {
+			mock.Setup(c => c.UploadBlob(
+					It.IsAny<Uri>(),
+					It.IsAny<string>(),
+					It.IsAny<string>(),
+					It.IsAny<FileEncryption>(), 
+					It.IsAny<CancellationToken>(), 
+					It.IsAny<IRetryPolicy>(), 
+					It.IsAny<Func<string>>()))
+				.Returns((Uri url,
+							string localFile,
+							string contentType,
+							FileEncryption fileEncryption,
+							CancellationToken cancellationToken,
+							IRetryPolicy retryPolicy,
+							Func<string> sharedAccessSignature
+							) => Task.Factory.StartNew(() =>
+							{
+								FileInfo info = new FileInfo(localFile);
+								if (fileEncryption != null)
+								{
+									lock (fileEncryption)
+									{
+										using (FileEncryptionTransform encryptor = fileEncryption.GetTransform(info.Name,0))
+										{
                             
-                        }
-                    }
-                }
+										}
+									}
+								}
             }));
-            mock.Setup(c => c.DownloadBlob(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<FileEncryption>(), It.IsAny<ulong>(), It.IsAny<CancellationToken>(), It.IsAny<IRetryPolicy>())).Returns(() => Task.Factory.StartNew(() => { }));
-            mock.Setup(c => c.DownloadBlob(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<FileEncryption>(), It.IsAny<ulong>(),It.IsAny<CloudBlobClient>(), It.IsAny<CancellationToken>(), It.IsAny<IRetryPolicy>())).Returns(() => Task.Factory.StartNew(() => { }));
+            mock.Setup(c => c.DownloadBlob(
+				It.IsAny<Uri>(), 
+				It.IsAny<string>(), 
+				It.IsAny<FileEncryption>(), 
+				It.IsAny<ulong>(), 
+				It.IsAny<CancellationToken>(), 
+				It.IsAny<IRetryPolicy>(),
+				It.IsAny<Func<string>>() 
+			)).Returns(() => Task.Factory.StartNew(() => { }));
+
+            mock.Setup(c => c.DownloadBlob(
+				It.IsAny<Uri>(), 
+				It.IsAny<string>(), 
+				It.IsAny<FileEncryption>(), 
+				It.IsAny<ulong>(),
+				It.IsAny<CloudBlobClient>(), 
+				It.IsAny<CancellationToken>(),
+				It.IsAny<IRetryPolicy>(),
+				It.IsAny<Func<string>>(), 
+				It.IsAny<long>(), 
+				It.IsAny<long>()
+				)).Returns(() => Task.Factory.StartNew(() => { }));
            return mock.Object;
 
         }

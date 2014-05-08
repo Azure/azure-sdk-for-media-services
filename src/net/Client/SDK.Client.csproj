@@ -86,7 +86,7 @@
       <HintPath>..\..\..\packages\WindowsAzure.Storage.3.0.3.0\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\packages\Newtonsoft.Json.5.0.8\lib\net40\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\packages\Newtonsoft.Json.6.0.1\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -103,6 +103,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BlobTransferCompleteEventArgs.cs" />
+    <Compile Include="BlobTransferProgressChangedEventArgs.cs" />
+    <Compile Include="BlobTransferSpeedCalculator.cs" />
+    <Compile Include="BlobTransferType.cs" />
+    <Compile Include="BlobTransfer\BlobDownloader.cs" />
+    <Compile Include="BlobTransfer\BlobTransferBase.cs" />
+    <Compile Include="BlobTransfer\BlobTransferContext.cs" />
+    <Compile Include="BlobTransfer\BlobUploader.cs" />
+    <Compile Include="BlobTransfer\MemoryManagerFactory.cs" />
+    <Compile Include="BlobTransfer\MemoryManager.cs" />
+    <Compile Include="BlobTransfer\ServicePointModifier.cs" />
+    <Compile Include="DownloadProgressEventArgs.cs" />
     <Compile Include="Entities\AccessPermissions.cs" />
     <Compile Include="Collections\AccessPolicyBaseCollection.cs">
       <SubType>Code</SubType>
@@ -127,11 +139,7 @@
     <Compile Include="Entities\AssetState.cs" />
     <Compile Include="AzureMediaServicesClassFactory.cs" />
     <Compile Include="Entities\BaseEntity.cs" />
-    <Compile Include="BlobTransferClient.cs" />
-    <Compile Include="BlobTransferCompleteEventArgs.cs" />
-    <Compile Include="BlobTransferProgressChangedEventArgs.cs" />
-    <Compile Include="BlobTransferSpeedCalculator.cs" />
-    <Compile Include="BlobTransferType.cs" />
+    <Compile Include="BlobTransfer\BlobTransferClient.cs" />
     <Compile Include="BulkIngest\IIngestManifest.cs" />
     <Compile Include="BulkIngest\IIngestManifestAsset.cs" />
     <Compile Include="BulkIngest\IIngestManifestFile.cs" />
@@ -232,7 +240,6 @@
     <Compile Include="Entities\NotificationJobState.cs" />
     <Compile Include="Collections\OutputAssetCollection.cs" />
     <Compile Include="Entities\ITask.cs" />
-    <Compile Include="DownloadProgressEventArgs.cs" />
     <Compile Include="Entities\IAsset.cs" />
     <Compile Include="Entities\AssetData.cs" />
     <Compile Include="IMediaContextContainer.cs" />

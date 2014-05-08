@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Data.Services.Client;
+using System.Threading;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
 using System;
 using System.IO;
@@ -29,11 +30,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [DeploymentItem(@".\Resources\interview.wmv", "Content")]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
        
         public void ShouldReturnSameLocatorCollectionAfterAssetRequery()
         {
-            var asset = _mediaContext.Assets.Create("interview.wmv", AssetCreationOptions.StorageEncrypted);
+            var asset = _mediaContext.Assets.Create("SmallWmv.wmv", AssetCreationOptions.StorageEncrypted);
             Assert.IsNotNull(asset);
             Assert.AreEqual(0, asset.Locators.Count, "Unexpected locator count");
             var policy = _mediaContext.AccessPolicies.Create("Write", TimeSpan.FromMinutes(5), AccessPermissions.Write);
@@ -45,13 +46,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [DeploymentItem(@".\Resources\interview.wmv", "Content")]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
        public void ShouldReturnSameLocatorCollectionAfterAssetRequery2()
         {
             var asset = _mediaContext.Assets.Create(Guid.NewGuid().ToString(), AssetCreationOptions.StorageEncrypted);
-            FileInfo info = new FileInfo(@"Content\interview.wmv");
+            FileInfo info = new FileInfo(_smallWmv);
             var file = asset.AssetFiles.Create(info.Name);
-            file.Upload(@"Content\interview.wmv");
+            file.Upload(_smallWmv);
 
             Assert.AreEqual(0, asset.Locators.Count, "Unexpected locator count");
 
@@ -66,7 +67,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [DeploymentItem(@".\Resources\interview.wmv", "Content")]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         [ExpectedException(typeof (InvalidOperationException))]
         
         public void ShouldThrowUpdatingLocatorIfItsTypeIsNotOrigin()
@@ -84,14 +85,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [DeploymentItem(@".\Resources\interview.wmv", "Content")]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         [TestCategory("DailyBvtRun")]
         public void ShouldReturnLocatorWhenCreateOriginLocatorCalled()
         {
             // Arrange            
 
 
-            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.List | AccessPermissions.Read);
+            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10),  AccessPermissions.Read);
             var asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
 
             // Act
@@ -111,7 +112,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestCategory("DailyBvtRun")]
         public void ShouldCreateLocatorWithNameSync()
         {
-            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.List | AccessPermissions.Read);
+            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10),AccessPermissions.Read);
             var asset = _mediaContext.Assets.Create("ShouldCreateLocatorAndQueryItByName",AssetCreationOptions.None);
             var locator = _mediaContext.Locators.CreateLocator(LocatorType.OnDemandOrigin, asset, accessPolicy,DateTime.Now.AddDays(2),"ShouldCreateLocatorWithoutNameAndUpdateName_" + Guid.NewGuid().ToString());
             
@@ -140,7 +141,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestCategory("DailyBvtRun")]
         public void ShouldCreateLocatorWithNameASync()
         {
-            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.List | AccessPermissions.Read);
+            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10),AccessPermissions.Read);
             var asset = _mediaContext.Assets.Create("ShouldCreateLocatorAndQueryItByName", AssetCreationOptions.None);
             var locator = _mediaContext.Locators.CreateLocatorAsync(LocatorType.OnDemandOrigin, asset, accessPolicy, DateTime.Now.AddDays(2), "ShouldCreateLocatorWithoutNameAndUpdateName_" + Guid.NewGuid().ToString()).Result;
 
@@ -159,13 +160,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [DeploymentItem(@".\Resources\interview.wmv", "Content")]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldCreateLocatorWhenCreateOriginLocatorCalled()
         {
             // Arrange            
 
 
-            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.List | AccessPermissions.Read);
+            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.Read);
             var asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
 
             // Act
@@ -185,14 +186,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [DeploymentItem(@".\Resources\interview.wmv", "Content")]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         [TestCategory("DailyBvtRun")]
         public void ShouldCreateLocatorWhenCreateOriginLocatorAsyncCalled()
         {
             // Arrange         
 
 
-            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.List | AccessPermissions.Read);
+            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.Read);
             var asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
 
             // Act
@@ -215,7 +216,36 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [DeploymentItem(@".\Resources\interview.wmv", "Content")]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [TestCategory("DailyBvtRun")]
+        [ExpectedException(typeof(DataServiceRequestException))]
+        public void ShouldThrowTryingToCreateOriginLocatorWithWritePermissions()
+        {
+            const AccessPermissions accessPermissions = AccessPermissions.Write;
+            CreateOriginLocatorWithSpecificPermission(accessPermissions);
+            Assert.Fail("Should not create AccessPermissions.Write origin locator");
+        }
+
+        [TestMethod]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [TestCategory("DailyBvtRun")]
+        [ExpectedException(typeof(DataServiceRequestException))]
+        public void ShouldThrowTryingToCreateOriginLocatorWithDeletePermissions()
+        {
+            const AccessPermissions accessPermissions = AccessPermissions.Delete;
+            CreateOriginLocatorWithSpecificPermission(accessPermissions);
+            Assert.Fail("Should not create AccessPermissions.Delete origin locator");
+        }
+
+        private void CreateOriginLocatorWithSpecificPermission(AccessPermissions accessPermissions)
+        {
+            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), accessPermissions);
+            var asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
+            var locator = _mediaContext.Locators.CreateLocator(LocatorType.OnDemandOrigin, asset, accessPolicy);
+        }
+
+        [TestMethod]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         [TestCategory("DailyBvtRun")]
         public void ShouldReturnLocatorWhenCreateOriginLocatorWithStartDateCalled()
         {
@@ -223,7 +253,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
 
             var accessPolicyDuration = TimeSpan.FromMinutes(10);
-            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", accessPolicyDuration, AccessPermissions.List | AccessPermissions.Read);
+            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", accessPolicyDuration, AccessPermissions.Read);
             var asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
             var startDateTime = DateTime.UtcNow.AddDays(1);
             var expirationDateTime = startDateTime.Add(accessPolicyDuration);
@@ -244,7 +274,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
 
         [TestMethod]
-        [DeploymentItem(@".\Resources\interview.wmv", "Content")]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         [TestCategory("DailyBvtRun")]
         public void ShouldReturnLocatorWhenCreateSasLocatorCalled()
         {
@@ -267,7 +297,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [DeploymentItem(@".\Resources\interview.wmv", "Content")]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldCreateLocatorWhenCreateSasLocatorCalled()
         {
             // Arrange            
@@ -294,7 +324,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [TestCategory("DailyBvtRun")]
-        [DeploymentItem(@".\Resources\interview.wmv", "Content")]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ExpirationTimeOfCreatedLocatorShouldMatchLocatorStartTimePlusPolicyDuration()
         {
             // Arrange            
@@ -325,7 +355,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [DeploymentItem(@".\Resources\interview.wmv", "Content")]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldCreateLocatorWhenCreateSasLocatorAsyncCalled()
         {
             // Arrange            
@@ -355,7 +385,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
 
         [TestMethod]
-        [DeploymentItem(@".\Resources\interview.wmv", "Content")]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         [TestCategory("DailyBvtRun")]
         public void ShouldDeleteLocatorWhenDeleteLocatorCalled()
         {
@@ -376,7 +406,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [DeploymentItem(@".\Resources\interview.wmv", "Content")]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         [TestCategory("DailyBvtRun")]
         public void ShouldDeleteLocatorWhenDeleteLocatorAsyncCalled()
         {
@@ -399,14 +429,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [DeploymentItem(@".\Resources\interview.wmv", "Content")]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldUpdateExpiryTimeWhenUpdateLocatorCalledWithExpiryTime()
         {
             // Arrange            
             var accessPolicyDuration = TimeSpan.FromHours(2);
             var expectedExpiryTime = DateTime.UtcNow.Date.AddDays(2);
 
-            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", accessPolicyDuration, AccessPermissions.List | AccessPermissions.Read);
+            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", accessPolicyDuration, AccessPermissions.Read);
             var asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
             var locator = _mediaContext.Locators.CreateLocator(LocatorType.OnDemandOrigin, asset, accessPolicy);
 
@@ -422,7 +452,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [DeploymentItem(@".\Resources\interview.wmv", "Content")]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         [TestCategory("DailyBvtRun")]
         public void ShouldUpdateExpiryTimeWhenUpdateLocatorAsyncCalledWithExpiryTime()
         {
@@ -432,7 +462,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             var expectedExpiryTime = DateTime.UtcNow.Date.AddDays(1);
 
 
-            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", accessPolicyDuration, AccessPermissions.List | AccessPermissions.Read);
+            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", accessPolicyDuration, AccessPermissions.Read);
             var asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
             var locator = _mediaContext.Locators.CreateLocator(LocatorType.OnDemandOrigin, asset, accessPolicy);
 
@@ -449,7 +479,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [DeploymentItem(@".\Resources\interview.wmv", "Content")]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         
         public void ShouldUpdateExpiryTimeWhenUpdateLocatorCalledWithStartAndExpiryTime()
         {
@@ -459,7 +489,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             var expectedStartTime = DateTime.UtcNow.Date.AddDays(1);
 
 
-            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", accessPolicyDuration, AccessPermissions.List | AccessPermissions.Read);
+            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", accessPolicyDuration, AccessPermissions.Read);
             var asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
             var locator = _mediaContext.Locators.CreateLocator(LocatorType.OnDemandOrigin, asset, accessPolicy);
 
@@ -479,7 +509,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [DeploymentItem(@".\Resources\interview.wmv", "Content")]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         
         public void ShouldUpdateExpiryTimeWhenUpdateLocatorAsyncCalledWithStartAndExpiryTime()
         {
@@ -489,7 +519,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             var expectedExpiryTime = DateTime.UtcNow.Date.AddDays(2);
             var expectedStartTime = DateTime.UtcNow.Date.AddDays(1);
 
-            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", accessPolicyDuration, AccessPermissions.List | AccessPermissions.Read);
+            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", accessPolicyDuration, AccessPermissions.Read);
             var asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
             var locator = _mediaContext.Locators.CreateLocator(LocatorType.OnDemandOrigin, asset, accessPolicy);
 
@@ -507,28 +537,28 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [DeploymentItem(@".\Resources\interview.wmv", "Content")]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         [TestCategory("DailyBvtRun")]
         public void ShouldDeleteLocatorAfterSyncUpload()
         {
-            var asset = _mediaContext.Assets.Create("interview.wmv", AssetCreationOptions.None);
-            var file = asset.AssetFiles.Create("interview.wmv");
-            file.Upload(@"Content\interview.wmv");
+            var asset = _mediaContext.Assets.Create("SmallWmv", AssetCreationOptions.None);
+            var file = asset.AssetFiles.Create("SmallWmv.wmv");
+            file.Upload(_smallWmv);
             Assert.AreEqual(0, asset.Locators.Count, "No locators expected in asset locators collection after Upload");
             Assert.AreEqual(0, _mediaContext.Locators.Where(c => c.AssetId == asset.Id).Count(), "No locators expected in context queryable after Upload");
         }
 
         [TestMethod]
-        [DeploymentItem(@".\Resources\interview.wmv", "Content")]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         [TestCategory("DailyBvtRun")]
         public void ShouldNotDeleteLocatorAfterASyncUpload()
         {
-            var asset = _mediaContext.Assets.Create("interview.wmv", AssetCreationOptions.None);
-            var file = asset.AssetFiles.Create("interview.wmv");
+            var asset = _mediaContext.Assets.Create("SmallWmv.wmv", AssetCreationOptions.None);
+            var file = asset.AssetFiles.Create("SmallWmv.wmv");
             var policy = _mediaContext.AccessPolicies.Create("Write", TimeSpan.FromMinutes(5), AccessPermissions.Write);
             var locator = _mediaContext.Locators.CreateSasLocator(asset, policy);
 
-            file.UploadAsync(@"Content\interview.wmv", new BlobTransferClient(), locator, CancellationToken.None).Wait();
+            file.UploadAsync(_smallWmv, new BlobTransferClient(), locator, CancellationToken.None).Wait();
             Assert.AreEqual(1, asset.Locators.Count, "1 locator expected in asset locators collection after Upload");
             Assert.AreEqual(1, _mediaContext.Locators.Where(c => c.AssetId == asset.Id).Count(), "1 locator expected in context queryable after Upload");
         }

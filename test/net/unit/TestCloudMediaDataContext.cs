@@ -399,8 +399,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
 
                     if (state is LocatorData)
                     {
-                        ((LocatorData)state).Path = "http://contoso.com/" + Guid.NewGuid().ToString();
-                    }
+                        ((LocatorData)state).BaseUri = "http://contoso.com/" + Guid.NewGuid().ToString();
+						((LocatorData)state).Path = "http://contoso.com/" + Guid.NewGuid().ToString();
+						((LocatorData)state).ContentAccessComponent = Guid.NewGuid().ToString();
+					}
                     if (state is AssetData)
                     {
                         ((AssetData)state).Uri = "http://contoso.com/" + Guid.NewGuid().ToString();

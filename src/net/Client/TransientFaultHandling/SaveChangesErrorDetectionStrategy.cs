@@ -27,40 +27,22 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling
     {
         protected override bool CheckIsTransient(Exception ex)
         {
-            bool returnValue = false;
-
-            try
+            if (IsRetriableWebException(ex, operationIdempotentOnRetry: false, retryOnUnauthorizedErrors: false))
             {
-                var dataServiceException = ex.FindInnerException<DataServiceRequestException>();
-
-                if ((dataServiceException != null) && (dataServiceException.Response != null))
-                {
-                    if (dataServiceException.Response.IsBatchResponse)
-                    {
-                        returnValue = CommonRetryableWebExceptions.Any(s => (int)s == dataServiceException.Response.BatchStatusCode);
-                    }
-                    else
-                    {
-                        // If this isn't a batch response we have to check the StatusCode on the Response object itself
-                        var responses = dataServiceException.Response.ToList();
-
-                        if (responses.Count == 1)
-                        {
-                            returnValue = CommonRetryableWebExceptions.Any(s => (int)s == responses[0].StatusCode);
-                        }
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                // we don't want to hide the original exception with any errors we might generate here 
-                // so just swallow the exception and don't retry
-                returnValue = false;
+                return true;
             }
 
-            return returnValue;
+            if (IsRetriableDataServiceException(ex, operationIdempotentOnRetry: false, retryOnUnauthorizedErrors: false))
+            {
+                return true;
+            }
+
+            if (IsSocketException(ex))
+            {
+                return true;
+            }
+
+            return false;
         }
-
-
     }
 }
