@@ -160,16 +160,19 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
 		{
 			var target = ObtainTestOrigin();
 
-			target.Settings.CustomDomain = new CustomDomainSettings 
-			{ 
-				CustomDomainNames = new[] { "yahoo.com", "microsoft.com" }
+			var domains = new[] { "a", "b" }.Select(i =>
+				string.Format("{0}{1}.testingcustomdomain.com", i, new Random().Next(1000, 9999).ToString()))
+				.ToArray();
+
+			target.Settings.CustomDomain = new CustomDomainSettings
+			{
+				CustomDomainNames = domains
 			};
 
 			target.Update();
 
 			target = GetTestOrigin();
-			Assert.AreEqual("yahoo.com", target.Settings.CustomDomain.CustomDomainNames[0]);
-			Assert.AreEqual("microsoft.com", target.Settings.CustomDomain.CustomDomainNames[1]);
+			Assert.IsTrue(domains.SequenceEqual(target.Settings.CustomDomain.CustomDomainNames));
 
 			target.Delete();
 		}
@@ -180,16 +183,19 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
 		{
 			var target = ObtainTestChannel();
 
+			var domains = new[] { "a", "b" }.Select(i =>
+				string.Format("{0}{1}.testingcustomdomain.com", i, new Random().Next(1000, 9999).ToString()))
+				.ToArray();
+
 			target.Settings.CustomDomain = new CustomDomainSettings
 			{
-				CustomDomainNames = new[] { "yahoo.com", "microsoft.com" }
+				CustomDomainNames = domains
 			};
 
 			target.Update();
 
 			target = GetTestChannel();
-			Assert.AreEqual("yahoo.com", target.Settings.CustomDomain.CustomDomainNames[0]);
-			Assert.AreEqual("microsoft.com", target.Settings.CustomDomain.CustomDomainNames[1]);
+			Assert.IsTrue(domains.SequenceEqual(target.Settings.CustomDomain.CustomDomainNames));
 
 			target.Delete();
 		}
