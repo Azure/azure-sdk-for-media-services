@@ -35,9 +35,19 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption
         SmoothStreaming = 0x1,
 
         /// <summary>
+        /// MPEG Dynamic Adaptive Streaming over HTTP (DASH)
+        /// </summary>
+        Dash = 0x2,
+
+        /// <summary>
         /// Apple HTTP Live Streaming protocol.
         /// </summary>
         HLS = 0x4,
+
+        /// <summary>
+        /// Adobe HTTP Dynamic Streaming (HDS)
+        /// </summary>
+        Hds = 0x8,
 
         /// <summary>
         /// Include all protocols.
