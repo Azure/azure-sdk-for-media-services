@@ -1,6 +1,14 @@
-# Windows Azure Media Services SDK .NET 4 (3.0.0.3)
+# Windows Azure Media Services SDK .NET 4 (3.0.0.5)
 
 Windows Azure Media Services allows you to build a media distribution solution that can stream audio and video to Windows, iOS, Android, and other devices and platforms.To learn more, visit our [Developer Center](http://www.windowsazure.com/en-us/develop/media-services/).
+
+## Release Notes
+
+Sprint 14.4 SDK changes (NuGet and Github release of  .NET SDK 3.0.0.5):
+
+There is no APIs changes in this release but with the following improvement:
+•	Better speed and resilience for uploading/downloading media assets
+•	Retry logic and exception handling improvement  
 
 ## Getting Started
 
