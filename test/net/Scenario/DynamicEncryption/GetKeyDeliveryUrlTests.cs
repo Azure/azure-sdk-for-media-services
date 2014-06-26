@@ -91,6 +91,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 Uri keyDeliveryServiceUri = contentKey.GetKeyDeliveryUrl(ContentKeyDeliveryType.BaselineHttp);
 
                 Assert.IsNotNull(keyDeliveryServiceUri);
+
+                // Enable once all accounts are enabled for per customer Key Delivery Urls
+                //Assert.IsTrue(keyDeliveryServiceUri.Host.StartsWith(_mediaContext.Credentials.ClientId));
+                
                 KeyDeliveryServiceClient keyClient = new KeyDeliveryServiceClient(RetryPolicy.DefaultFixed);
                 string rawkey = EncryptionUtils.GetKeyIdAsGuid(contentKey.Id).ToString();
                 byte[] key = keyClient.AcquireHlsKey(keyDeliveryServiceUri, TokenServiceClient.GetAuthTokenForKey(rawkey));
