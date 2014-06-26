@@ -91,7 +91,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 Uri keyDeliveryServiceUri = contentKey.GetKeyDeliveryUrl(ContentKeyDeliveryType.BaselineHttp);
 
                 Assert.IsNotNull(keyDeliveryServiceUri);
-                Assert.IsTrue(0 == String.Compare(keyDeliveryServiceUri.AbsolutePath, "/HlsHandler.ashx", StringComparison.OrdinalIgnoreCase));
                 KeyDeliveryServiceClient keyClient = new KeyDeliveryServiceClient(RetryPolicy.DefaultFixed);
                 string rawkey = EncryptionUtils.GetKeyIdAsGuid(contentKey.Id).ToString();
                 byte[] key = keyClient.AcquireHlsKey(keyDeliveryServiceUri, TokenServiceClient.GetAuthTokenForKey(rawkey));
