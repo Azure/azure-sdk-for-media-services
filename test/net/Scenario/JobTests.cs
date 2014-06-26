@@ -23,6 +23,8 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Xml;
+using System.Xml.Linq;
+using System.Xml.XPath;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
 using Microsoft.WindowsAzure.Storage;
@@ -459,9 +461,71 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [DeploymentItem(@"Media\Small.ismc", "Media")]
         [DeploymentItem(@"Media\Small.ismv", "Media")]
         [Priority(0)]
-        public void ShouldSubmitAndFinishPlayReadyProtectionJob()
+        public void ShouldSubmitAndFinishPlayReadyProtectionJobWithSeed()
         {
             string configuration = File.ReadAllText(WindowsAzureMediaServicesTestConfiguration.PlayReadyConfig);
+
+            IAsset asset = CreateSmoothAsset();
+            IMediaProcessor mediaEncryptor = GetMediaProcessor(_mediaContext, WindowsAzureMediaServicesTestConfiguration.MpEncryptorName);
+            IJob job = CreateAndSubmitOneTaskJob(_mediaContext, GenerateName("ShouldSubmitAndFinishPlayReadyProtectionJob"), mediaEncryptor, configuration, asset, TaskOptions.None);
+            WaitForJob(job.Id, JobState.Finished, VerifyAllTasksFinished);
+        }
+
+        private static string UpdatePlayReadyConfigurationXML(Guid keyId, byte[] keyValue, Uri licenseAcquisitionUrl, string originalXmlConfiguration)
+        {
+            XNamespace xmlns = "http://schemas.microsoft.com/iis/media/v4/TM/TaskDefinition#";
+
+            StringReader stringReader = new StringReader(originalXmlConfiguration);
+            XmlReader reader = XmlReader.Create(stringReader, null);
+            XDocument doc = XDocument.Load(reader);
+
+            var licenseAcquisitionUrlEl = doc
+                    .Descendants(xmlns + "property")
+                    .Where(p => p.Attribute("name").Value == "licenseAcquisitionUrl")
+                    .FirstOrDefault();
+            var contentKeyEl = doc
+                    .Descendants(xmlns + "property")
+                    .Where(p => p.Attribute("name").Value == "contentKey")
+                    .FirstOrDefault();
+            var keyIdEl = doc
+                    .Descendants(xmlns + "property")
+                    .Where(p => p.Attribute("name").Value == "keyId")
+                    .FirstOrDefault();
+
+            // Update the "value" property.
+            if (licenseAcquisitionUrlEl != null)
+            {
+                licenseAcquisitionUrlEl.Attribute("value").SetValue(licenseAcquisitionUrl.ToString());
+            }
+
+            if (contentKeyEl != null)
+            {
+                contentKeyEl.Attribute("value").SetValue(Convert.ToBase64String(keyValue));
+            }
+
+            if (keyIdEl != null)
+            {
+                keyIdEl.Attribute("value").SetValue(keyId);
+            }
+
+            return doc.ToString();
+        }
+
+        [TestMethod]
+        [DeploymentItem(@"Configuration\PlayReady Protection_ContentKey.xml", "Configuration")]
+        [DeploymentItem(@"Media\Small.ism", "Media")]
+        [DeploymentItem(@"Media\Small.ismc", "Media")]
+        [DeploymentItem(@"Media\Small.ismv", "Media")]
+        [Priority(0)]
+        public void ShouldSubmitAndFinishPlayReadyProtectionJobWithKey()
+        {
+            // Use the published PlayReady Test Key Seed to generate a content key based on a randomly generated Guid.
+            // We could also use a cryptographically sound random number generator here like RNGCryptoServiceProvider.
+            byte[] keySeed = Convert.FromBase64String("XVBovsmzhP9gRIZxWfFta3VVRPzVEWmJsazEJ46I");
+            Guid keyId = Guid.NewGuid();
+            byte[] keyValue = CommonEncryption.GeneratePlayReadyContentKey(keySeed, keyId);
+            string configuration = File.ReadAllText(WindowsAzureMediaServicesTestConfiguration.PlayReadyConfigWithContentKey);
+            configuration = UpdatePlayReadyConfigurationXML(keyId, keyValue, new Uri("http://www.fakeurl.com"), configuration);
 
             IAsset asset = CreateSmoothAsset();
             IMediaProcessor mediaEncryptor = GetMediaProcessor(_mediaContext, WindowsAzureMediaServicesTestConfiguration.MpEncryptorName);
@@ -485,7 +549,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             WaitForJob(job.Id, JobState.Finished, VerifyAllTasksFinished);
         }
 
-
         [Priority(1)]
         [TestMethod]
         [DeploymentItem(@"Configuration\Smooth Streams to Encrypted Apple HTTP Live Streams.xml", "Configuration")]
@@ -500,6 +563,40 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             IMediaProcessor mediaPackager = GetMediaProcessor(_mediaContext, WindowsAzureMediaServicesTestConfiguration.MpPackagerName);
             IJob job = CreateAndSubmitOneTaskJob(_mediaContext, GenerateName("ShouldSubmitAndFinishSmoothToHlsEncryptedJob"), mediaPackager, configuration, asset, TaskOptions.ProtectedConfiguration);
+            WaitForJob(job.Id, JobState.Finished, VerifyAllTasksFinished);
+        }
+
+        [TestMethod]
+        [DeploymentItem(@"Configuration\Smooth Streams to Apple HTTP Live Streams.xml", "Configuration")]
+        [DeploymentItem(@"Configuration\PlayReady Protection_ContentKey.xml", "Configuration")]
+        [DeploymentItem(@"Media\Small.ism", "Media")]
+        [DeploymentItem(@"Media\Small.ismc", "Media")]
+        [DeploymentItem(@"Media\Small.ismv", "Media")]
+        [Priority(0)]
+        public void ShouldSubmitAndFinishPlayReadyProtectedHlsJob()
+        {
+            IAsset asset = CreateSmoothAsset();
+
+            // Use the published PlayReady Test Key Seed to generate a content key based on a randomly generated Guid.
+            // We could also use a cryptographically sound random number generator here like RNGCryptoServiceProvider.
+            byte[] keySeed = Convert.FromBase64String("XVBovsmzhP9gRIZxWfFta3VVRPzVEWmJsazEJ46I");
+            Guid keyId = Guid.NewGuid();
+            byte[] keyValue = CommonEncryption.GeneratePlayReadyContentKey(keySeed, keyId);
+            string encryptionConfiguration = File.ReadAllText(WindowsAzureMediaServicesTestConfiguration.PlayReadyConfigWithContentKey);
+            encryptionConfiguration = UpdatePlayReadyConfigurationXML(keyId, keyValue, new Uri("http://www.fakeurl.com"), encryptionConfiguration);
+
+            IJob job = _mediaContext.Jobs.Create("PlayReady Protected Hls Job");
+            IMediaProcessor mediaProcessor = GetMediaProcessor(_mediaContext, WindowsAzureMediaServicesTestConfiguration.MpEncryptorName);
+            ITask task = job.Tasks.AddNew("PlayReady Encryption Task", mediaProcessor, encryptionConfiguration, TaskOptions.ProtectedConfiguration);
+            task.InputAssets.Add(asset);
+            IAsset asset2 = task.OutputAssets.AddNew("PlayReady Protected Smooth");
+
+            string smoothToHlsConfiguration = File.ReadAllText(WindowsAzureMediaServicesTestConfiguration.SmoothToHlsConfig);
+            ITask task2 = job.Tasks.AddNew("Smooth to Hls conversion task", mediaProcessor, smoothToHlsConfiguration, TaskOptions.None);
+            task2.InputAssets.Add(asset2);
+            task2.OutputAssets.AddNew("JobOutput", options: AssetCreationOptions.CommonEncryptionProtected);
+            job.Submit();
+
             WaitForJob(job.Id, JobState.Finished, VerifyAllTasksFinished);
         }
 

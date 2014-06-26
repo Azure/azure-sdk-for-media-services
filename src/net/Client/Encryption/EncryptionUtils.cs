@@ -270,5 +270,20 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             return Convert.ToBase64String(retVal);
         }
+
+        /// <summary>
+        /// Overwrites the supplied byte array with RNG generated data which destroys the original contents.
+        /// </summary>
+        /// <param name="keyToErase">The content key to erase.</param>
+        public static void EraseKey(byte[] keyToErase)
+        {
+            if (keyToErase != null)
+            {
+                using (RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider())
+                {
+                    rng.GetBytes(keyToErase);
+                }
+            }
+        }
     }
 }

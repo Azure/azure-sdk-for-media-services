@@ -130,6 +130,21 @@
     <Compile Include="ContentKeyAuthorization\ContentKeyRestrictionType.cs" />
     <Compile Include="ContentKeyAuthorization\IContentKeyAuthorizationPolicy.cs" />
     <Compile Include="ContentKeyAuthorization\IContentKeyAuthorizationPolicyOption.cs" />
+    <Compile Include="ContentKeyAuthorization\Templates\AGCandColorStripeRestriction.cs" />
+    <Compile Include="ContentKeyAuthorization\Templates\ErrorMessages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ErrorMessages.resx</DependentUpon>
+    </Compile>
+    <Compile Include="ContentKeyAuthorization\Templates\ExplicitAnalogTelevisionRestriction.cs" />
+    <Compile Include="ContentKeyAuthorization\Templates\MediaServicesLicenseTemplateSerializer.cs" />
+    <Compile Include="ContentKeyAuthorization\Templates\PlayReadyContentKey.cs" />
+    <Compile Include="ContentKeyAuthorization\Templates\PlayReadyLicenseResponseTemplate.cs" />
+    <Compile Include="ContentKeyAuthorization\Templates\PlayReadyLicenseTemplate.cs" />
+    <Compile Include="ContentKeyAuthorization\Templates\PlayReadyLicenseType.cs" />
+    <Compile Include="ContentKeyAuthorization\Templates\PlayReadyPlayRight.cs" />
+    <Compile Include="ContentKeyAuthorization\Templates\ScmsRestriction.cs" />
+    <Compile Include="ContentKeyAuthorization\Templates\UnknownOutputPassingOptions.cs" />
     <Compile Include="DynamicEncryption\AssetData.cs" />
     <Compile Include="DynamicEncryption\AssetDeliveryPolicyCollection.cs" />
     <Compile Include="DynamicEncryption\AssetDeliveryPolicyConfigurationKeys.cs" />
@@ -363,6 +378,10 @@
     <Compile Include="Versioning\ServiceVersionAdapter.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="ContentKeyAuthorization\Templates\ErrorMessages.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ErrorMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources1.Designer.cs</LastGenOutput>

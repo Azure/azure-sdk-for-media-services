@@ -1,0 +1,101 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Serialization;
+using System.Text;
+using System.Threading.Tasks;
+using System.Xml;
+using Microsoft.WindowsAzure.MediaServices.Client;
+
+namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
+{
+    /// <summary>
+    /// Represents a license template for creating PlayReady licenses to return to clients.
+    /// </summary>
+    [DataContract(Namespace = "http://schemas.microsoft.com/Azure/MediaServices/KeyDelivery/PlayReadyTemplate/v1")]
+    public class PlayReadyLicenseTemplate
+    {
+        public PlayReadyLicenseTemplate()
+        {
+            ContentKey = new ContentEncryptionKeyFromHeader();
+            PlayRight = new PlayReadyPlayRight();
+        }
+
+        /// <summary>
+        /// Controls whether test devices can use the license or not.  If true, the MinimumSecurityLevel property of the license
+        /// is set to 150.  If false (the default), the MinimumSecurityLevel property of the license is set to 2000.
+        /// </summary>
+        [DataMember]
+        public bool AllowTestDevices { get; set; }
+
+        /// <summary>
+        /// Configures the starting DateTime that the license is valid.  Attempts to use the license before this date and time will
+        /// result in an error on the client.
+        /// </summary>
+        [DataMember(EmitDefaultValue = false)]
+        public DateTime? BeginDate { get; set; }
+
+        /// <summary>
+        /// Configures the DateTime value when the the license expires.  Attempts to use the license after this date and time will
+        /// result in an error on the client.
+        /// </summary>
+        [DataMember(EmitDefaultValue = false)]
+        public DateTime? ExpirationDate { get; set; }
+
+        /// <summary>
+        /// Configures the Grace Period setting of the PlayReady license.  This setting affects how DateTime based restrictions are
+        /// evaluated on certain devices in the situation that the devices secure clock becomes unset.
+        /// </summary>
+        [DataMember(EmitDefaultValue = false)]
+        public TimeSpan? GracePeriod
+        {
+            get { return _gracePeriod; }
+            set
+            {
+                if (value.HasValue && (LicenseType == PlayReadyLicenseType.Nonpersistent))
+                {
+                    throw new ArgumentException(ErrorMessages.GracePeriodCannotBeSetOnNonPersistentLicense);
+                }
+
+                _gracePeriod = value;
+            }
+        }
+        private TimeSpan? _gracePeriod;
+
+        /// <summary>
+        /// Configures the PlayRight of the PlayReady license.  This Right gives the client the ability to play back the content.
+        /// The PlayRight also allows configuring restrictions specific to playback.  This Right is required.
+        /// </summary>
+        [DataMember]
+        public PlayReadyPlayRight PlayRight { get; set; }
+
+        /// <summary>
+        /// Configures whether the license is persistent (saved in persistent storage on the client) or non-persistent (only held in
+        /// memory while the player is using the license).  Persistent licenses are typically used to allow offline playback of the
+        /// content.
+        /// </summary>
+        [DataMember]
+        public PlayReadyLicenseType LicenseType
+        {
+            get { return _licenseType; }
+            set
+            {
+                if ((value == PlayReadyLicenseType.Nonpersistent) && (GracePeriod.HasValue))
+                {
+                    throw new ArgumentException(ErrorMessages.GracePeriodCannotBeSetOnNonPersistentLicense);
+                }
+
+                _licenseType = value;                
+            }
+        }
+        private PlayReadyLicenseType _licenseType;
+
+        /// <summary>
+        /// Specifies the content key in the license.  This is typically set to an instance of the ContentEncryptionKeyFromHeader
+        /// object to allow the template to be applied to multiple content keys and have the content header tell the license
+        /// server the exact key to embed in the license issued to the client.
+        /// </summary>
+        [DataMember(IsRequired=true)]
+        public PlayReadyContentKey ContentKey { get; set; }
+    }
+}

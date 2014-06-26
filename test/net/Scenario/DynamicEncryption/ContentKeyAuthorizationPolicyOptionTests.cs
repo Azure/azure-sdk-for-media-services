@@ -35,10 +35,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         {
             _mediaContext = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
 
+            PlayReadyLicenseResponseTemplate responseTemplate = new PlayReadyLicenseResponseTemplate();
+            responseTemplate.LicenseTemplates.Add(new PlayReadyLicenseTemplate());
+
             string optionName = "integrationtest-crud-749";
             string requirements = "somerequirements";
-            string configuration = "someconfiguration";
-            ContentKeyRestrictionType restrictionType = ContentKeyRestrictionType.IPRestricted;
+            string configuration = MediaServicesLicenseTemplateSerializer.Serialize(responseTemplate);
+            ContentKeyRestrictionType restrictionType = ContentKeyRestrictionType.TokenRestricted;
 
             _testOption = CreateOption(_mediaContext, optionName, ContentKeyDeliveryType.PlayReadyLicense, requirements, configuration, restrictionType);
         }
@@ -70,7 +73,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [Ignore] // Bug 672266
         public void ContentKeyAuthorizationPolicyOptionTestEnumQuery()
         {
             var policyOptions = _mediaContext.ContentKeyAuthorizationPolicyOptions;
