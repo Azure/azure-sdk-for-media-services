@@ -146,11 +146,20 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestMethod]
         public void AddingOptionsToCreatedPolicy()
         {
-             string optionName = "integrationtest-crud-749";
-            string requirements = "somerequirements";
-            string configuration = "someconfiguration";
+            string optionName = "AddingOptionsToCreatedPolicy Test Option";
 
-            ContentKeyRestrictionType restrictionType = ContentKeyRestrictionType.IPRestricted;
+            PlayReadyLicenseResponseTemplate responseTemplate = new PlayReadyLicenseResponseTemplate();
+            responseTemplate.LicenseTemplates.Add(new PlayReadyLicenseTemplate());
+
+            TokenRestrictionTemplate tokenRestrictionTemplate = new TokenRestrictionTemplate();
+            tokenRestrictionTemplate.PrimaryVerificationKey = new SymmetricVerificationKey(); // the default constructor automatically generates a random key
+            tokenRestrictionTemplate.Audience = new Uri("urn:someaudience");
+            tokenRestrictionTemplate.Issuer = new Uri("http://someissuerurl");
+
+            string requirements = TokenRestrictionTemplateSerializer.Serialize(tokenRestrictionTemplate);
+            string configuration = MediaServicesLicenseTemplateSerializer.Serialize(responseTemplate);
+
+            ContentKeyRestrictionType restrictionType = ContentKeyRestrictionType.TokenRestricted;
 
             IContentKeyAuthorizationPolicy policy = _mediaContext.ContentKeyAuthorizationPolicies.CreateAsync(testRun).Result;
             var option1 = ContentKeyAuthorizationPolicyOptionTests.CreateOption(_mediaContext, optionName, ContentKeyDeliveryType.PlayReadyLicense, requirements, configuration, restrictionType);

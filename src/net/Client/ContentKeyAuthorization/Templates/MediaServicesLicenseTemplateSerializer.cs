@@ -25,6 +25,28 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
             return new DataContractSerializer(typeof(PlayReadyLicenseResponseTemplate), knownTypeList);
         }
 
+        internal static string SerializeToXml(object template, DataContractSerializer serializer)
+        {
+            //
+            // Setup the XmlWriter and underlying StringBuilder
+            //
+            StringBuilder builder = new StringBuilder();
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.OmitXmlDeclaration = true;
+
+            using (XmlWriter writer = XmlWriter.Create(builder, settings))
+            {
+                serializer.WriteObject(writer, template);
+
+                //
+                //  Flush the XmlWriter and return the string in the builder
+                //
+                writer.Flush();
+            }
+
+            return builder.ToString();
+        }
+
         /// <summary>
         /// Serializes a PlayReadyLicenseResponseTemplate to a string containing an xml representation of
         /// the license response template.
@@ -37,24 +59,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
 
             DataContractSerializer serializer = GetSerializer();
 
-            //
-            // Setup the XmlWriter and underlying StringBuilder
-            //
-            StringBuilder builder = new StringBuilder();
-            XmlWriterSettings settings = new XmlWriterSettings();
-            settings.OmitXmlDeclaration = true;
-
-            using (XmlWriter writer = XmlWriter.Create(builder, settings))
-            {
-                serializer.WriteObject(writer, responseTemplate);
-
-                //
-                //  Flush the XmlWriter and return the string in the builder
-                //
-                writer.Flush();
-            }
-
-            return builder.ToString();
+            return SerializeToXml(responseTemplate, serializer);
         }
 
         /// <summary>

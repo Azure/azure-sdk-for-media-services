@@ -14,11 +14,12 @@
 // limitations under the License.
 // </license>
 
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization;
-using System.Collections.Generic;
-using System.Net;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
 using Moq;
 
@@ -38,8 +39,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             PlayReadyLicenseResponseTemplate responseTemplate = new PlayReadyLicenseResponseTemplate();
             responseTemplate.LicenseTemplates.Add(new PlayReadyLicenseTemplate());
 
+            TokenRestrictionTemplate tokenRestrictionTemplate = new TokenRestrictionTemplate();
+            tokenRestrictionTemplate.PrimaryVerificationKey = new SymmetricVerificationKey(); // the default constructor automatically generates a random key
+            tokenRestrictionTemplate.Audience = new Uri("http://sampleIssuerUrl");
+            tokenRestrictionTemplate.Issuer = new Uri("http://sampleAudience");
+
             string optionName = "integrationtest-crud-749";
-            string requirements = "somerequirements";
+            string requirements = TokenRestrictionTemplateSerializer.Serialize(tokenRestrictionTemplate);
             string configuration = MediaServicesLicenseTemplateSerializer.Serialize(responseTemplate);
             ContentKeyRestrictionType restrictionType = ContentKeyRestrictionType.TokenRestricted;
 
@@ -78,9 +84,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             var policyOptions = _mediaContext.ContentKeyAuthorizationPolicyOptions;
 
             string optionName = "integrationtest-crud-746";
-            string requirements = "somerequirements";
+            string requirements = null;
             string configuration = "someconfiguration";
-            ContentKeyRestrictionType restrictionType = ContentKeyRestrictionType.IPRestricted;
+            ContentKeyRestrictionType restrictionType = ContentKeyRestrictionType.Open;
 
             IContentKeyAuthorizationPolicyOption option = CreateOption(_mediaContext, optionName, ContentKeyDeliveryType.PlayReadyLicense, requirements, configuration, restrictionType);
 

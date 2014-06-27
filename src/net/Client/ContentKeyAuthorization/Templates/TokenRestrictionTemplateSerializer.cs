@@ -31,32 +31,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
             return new DataContractSerializer(typeof(TokenRestrictionTemplate), knownTypeList);
         }
 
-        public static string Serialize(TokenRestrictionTemplate responseTemplate)
+        public static string Serialize(TokenRestrictionTemplate template)
         {
             DataContractSerializer serializer = GetSerializer();
 
-            //
-            // Setup the XmlWriter and underlying StringBuilder
-            //
-            StringBuilder builder = new StringBuilder();
-            XmlWriterSettings settings = new XmlWriterSettings();
-            settings.OmitXmlDeclaration = true;
-
-            using (XmlWriter writer = XmlWriter.Create(builder, settings))
-            {
-
-                //
-                //  Write out the object
-                //
-                serializer.WriteObject(writer, responseTemplate);
-
-                //
-                //  Flush the XmlWriter and return the string in the builder
-                //
-                writer.Flush();
-            }
-
-            return builder.ToString();
+            return MediaServicesLicenseTemplateSerializer.SerializeToXml(template, serializer);
         }
 
         private static XmlSchemaSet _cacheSchemaSet;
@@ -240,6 +219,5 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
 
             return builder.ToString();
         }
-
     }
 }

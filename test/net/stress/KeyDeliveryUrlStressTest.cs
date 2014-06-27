@@ -66,7 +66,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Stress
                 Uri keyDeliveryServiceUri = contentKey.GetKeyDeliveryUrl(ContentKeyDeliveryType.BaselineHttp);
 
                 Assert.IsNotNull(keyDeliveryServiceUri);
-                Assert.IsTrue(0 == String.Compare(keyDeliveryServiceUri.AbsolutePath, "/HlsHandler.ashx", StringComparison.OrdinalIgnoreCase));
                 string rawkey = EncryptionUtils.GetKeyIdAsGuid(contentKey.Id).ToString();
                 _testData.Add(new Tuple<Uri, string, string>(keyDeliveryServiceUri, TokenServiceClient.GetAuthTokenForKey(rawkey), GetKeyDeliveryUrlTests.GetString(expectedKey)));
             }
