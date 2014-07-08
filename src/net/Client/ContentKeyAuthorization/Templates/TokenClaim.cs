@@ -33,9 +33,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
             ClaimValue = claimValue;
         }
 
+        /// <summary>
+        /// Type of the Claim in the Token
+        /// </summary>
         [DataMember(IsRequired = true)]
         public string ClaimType { get; private set; }
 
+        /// <summary>
+        /// Value of the Claim in Token
+        /// </summary>
         [DataMember]
         public string ClaimValue { get; private set; }
     }

@@ -47,20 +47,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
         /// evaluated on certain devices in the situation that the devices secure clock becomes unset.
         /// </summary>
         [DataMember(EmitDefaultValue = false)]
-        public TimeSpan? GracePeriod
-        {
-            get { return _gracePeriod; }
-            set
-            {
-                if (value.HasValue && (LicenseType == PlayReadyLicenseType.Nonpersistent))
-                {
-                    throw new ArgumentException(ErrorMessages.GracePeriodCannotBeSetOnNonPersistentLicense);
-                }
-
-                _gracePeriod = value;
-            }
-        }
-        private TimeSpan? _gracePeriod;
+        public TimeSpan? GracePeriod  { get; set; }
 
         /// <summary>
         /// Configures the PlayRight of the PlayReady license.  This Right gives the client the ability to play back the content.
@@ -75,20 +62,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
         /// content.
         /// </summary>
         [DataMember]
-        public PlayReadyLicenseType LicenseType
-        {
-            get { return _licenseType; }
-            set
-            {
-                if ((value == PlayReadyLicenseType.Nonpersistent) && (GracePeriod.HasValue))
-                {
-                    throw new ArgumentException(ErrorMessages.GracePeriodCannotBeSetOnNonPersistentLicense);
-                }
-
-                _licenseType = value;                
-            }
-        }
-        private PlayReadyLicenseType _licenseType;
+        public PlayReadyLicenseType LicenseType { get; set; }
 
         /// <summary>
         /// Specifies the content key in the license.  This is typically set to an instance of the ContentEncryptionKeyFromHeader

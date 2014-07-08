@@ -128,19 +128,63 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
                 }
 
                 //
-                //  The PlayReady Rights Manager SDK will return an error if you try to specify a license
-                //  that is non-persistent and has a first play expiration set.  The event log message related
-                //  to the error will say "LicenseGenerationFailure: FirstPlayExpiration can not be set on Non 
-                //  Persistent license PlayRight."
+                //  Per the PlayReady Compliance rules (section 3.8 - Output Control for Unknown Outputs), passing content to 
+                //  unknown output is prohibited if the DigitalVideoOnlyContentRestriction is enabled.
                 //
+                if (template.PlayRight.DigitalVideoOnlyContentRestriction)
+                {
+                    if ((template.PlayRight.AllowPassingVideoContentToUnknownOutput == UnknownOutputPassingOption.Allowed) ||
+                        (template.PlayRight.AllowPassingVideoContentToUnknownOutput == UnknownOutputPassingOption.AllowedWithVideoConstriction))
+                    {
+                        throw new ArgumentException(ErrorMessages.DigitalVideoOnlyMutuallyExclusiveWithPassingToUnknownOutputError);
+                    }
+                }
+
                 if (template.LicenseType == PlayReadyLicenseType.Nonpersistent)
                 {
+                    //
+                    //  The PlayReady Rights Manager SDK will return an error if you try to specify a license
+                    //  that is non-persistent and has a first play expiration set.  The event log message related
+                    //  to the error will say "LicenseGenerationFailure: FirstPlayExpiration can not be set on Non 
+                    //  Persistent license PlayRight."
+                    //
                     if (template.PlayRight.FirstPlayExpiration.HasValue)
                     {
                         throw new ArgumentException(ErrorMessages.FirstPlayExpirationCannotBeSetOnNonPersistentLicense);
                     }
+
+                    //
+                    //  The PlayReady Rights Manager SDK will return an error if you try to specify a license
+                    //  that is non-persistent and has a GracePeriod set.
+                    //
+                    if (template.GracePeriod.HasValue)
+                    {
+                        throw new ArgumentException(ErrorMessages.GracePeriodCannotBeSetOnNonPersistentLicense);
+                    }
+
+                    //
+                    //  The PlayReady Rights Manager SDK will return an error if you try to specify a license
+                    //  that is non-persistent and has a GracePeriod set.  The event log message related
+                    //  to the error will say "LicenseGenerationFailure: BeginDate or ExpirationDate should not be set 
+                    //  on Non Persistent licenses"
+                    //
+                    if (template.BeginDate.HasValue)
+                    {
+                        throw new ArgumentException(ErrorMessages.BeginDateCannotBeSetOnNonPersistentLicense);
+                    }
+
+                    //
+                    //  The PlayReady Rights Manager SDK will return an error if you try to specify a license
+                    //  that is non-persistent and has a GracePeriod set.  The event log message related
+                    //  to the error will say "LicenseGenerationFailure: BeginDate or ExpirationDate should not be set 
+                    //  on Non Persistent licenses"
+                    //
+                    if (template.ExpirationDate.HasValue)
+                    {
+                        throw new ArgumentException(ErrorMessages.ExpirationCannotBeSetOnNonPersistentLicense);
+                    }
                 }
-            }        
+            }
         }
     }
 }

@@ -31,6 +31,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
             return new DataContractSerializer(typeof(TokenRestrictionTemplate), knownTypeList);
         }
 
+        /// <summary>
+        /// Serializes a TokenRestrictionTemplate to a string containing an xml representation of
+        /// the token restriction template.
+        /// </summary>
+        /// <param name="template">TokenRestrictionTemplate instance to serialize to a string</param>
+        /// <returns>An xml string representation of the TokenRestrictionTemplate instance</returns>
         public static string Serialize(TokenRestrictionTemplate template)
         {
             DataContractSerializer serializer = GetSerializer();
@@ -63,7 +69,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
             return _cacheSchemaSet;
         }
 
-        public static void ValidateAgainstOldTokenFormatSchema(string template)
+        private static void ValidateAgainstOldTokenFormatSchema(string template)
         {
             XmlSchemaSet schemaSets = GetOldTokenFormatSchemaSet();
 
@@ -72,7 +78,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
             templateDocument.Validate(schemaSets, null);
         }
 
-        public static bool IsOldTokenFormat(string template)
+        private static bool IsOldTokenFormat(string template)
         {
             bool returnValue = false;
             XDocument parsedTemplate = XDocument.Parse(template);
@@ -125,6 +131,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
             return templateToReturn;
         }
 
+        /// <summary>
+        /// Deserializes a string containing an Xml representation of a TokenRestrictionTemplate
+        /// back into a TokenRestrictionTemplate class instance.
+        /// </summary>
+        /// <param name="templateXml">A string containing the Xml representation of a TokenRestrictionTemplate</param>
+        /// <returns>TokenRestrictionTemplate instance</returns>
         public static TokenRestrictionTemplate Deserialize(string templateXml)
         {
             TokenRestrictionTemplate templateToReturn = null;
@@ -170,6 +182,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
             return ((long)expiry.Subtract(SwtBaseTime).TotalSeconds).ToString(CultureInfo.InvariantCulture);
         }
 
+        /// <summary>
+        /// Used to generate a test token based on the the data in the given TokenRestrictionTemplate.
+        /// </summary>
+        /// <param name="tokenTemplate">TokenRestrictionTemplate describing the token to generate</param>
+        /// <param name="signingKeyToUse">Specifies the specific signing key to use.  If null, the PrimaryVerificationKey from the template is used.</param>
+        /// <param name="keyIdForContentKeyIdentifierClaim">Key Identifier used as the value of the Content Key Identifier Claim.  Ignored if no TokenClaim with a ClaimType of TokenClaim.ContentKeyIdentifierClaimType is not present</param>
+        /// <param name="tokenExpiration">The Date and Time when the token expires.  Expired tokens are considered invalid by the Key Delivery Service.</param>
+        /// <returns>A Simple Web Token (SWT)</returns>
         public static string GenerateTestToken(TokenRestrictionTemplate tokenTemplate, TokenVerificationKey signingKeyToUse = null, Guid? keyIdForContentKeyIdentifierClaim = null, DateTime? tokenExpiration = null)
         {
             if (tokenTemplate == null)

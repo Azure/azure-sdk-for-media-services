@@ -47,23 +47,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
         /// details see the PlayReady Compliance Rules.
         /// </summary>
         [DataMember(EmitDefaultValue = false)]
-        public bool DigitalVideoOnlyContentRestriction
-        {
-            get { return _DigitalVideoOnlyContentRestriction; }
-            set
-            {
-                if (value)
-                {
-                    if ((AllowPassingVideoContentToUnknownOutput == UnknownOutputPassingOption.Allowed) || (AllowPassingVideoContentToUnknownOutput == UnknownOutputPassingOption.AllowedWithVideoConstriction))
-                    {
-                        throw new ArgumentException(ErrorMessages.DigitalVideoOnlyMutuallyExclusiveWithPassingToUnknownOutputError);
-                    }
-                }
-
-                _DigitalVideoOnlyContentRestriction = value;
-            }
-        }
-        private bool _DigitalVideoOnlyContentRestriction;
+        public bool DigitalVideoOnlyContentRestriction { get; set; }
 
         /// <summary>
         /// Enables the Image Constraint For Analog Component Video Restriction in the license.  This is a form of video output protection
@@ -86,22 +70,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
         /// how it should handle unknown video outputs.  For further details see the PlayReady Compliance Rules.
         /// </summary>
         [DataMember(EmitDefaultValue = false)]
-        public UnknownOutputPassingOption AllowPassingVideoContentToUnknownOutput
-        {
-            get { return _AllowPassingVideoContentToUnknownOutput; }
-            set
-            { 
-                if ((value == UnknownOutputPassingOption.Allowed) || (value == UnknownOutputPassingOption.AllowedWithVideoConstriction))
-                {
-                    if (DigitalVideoOnlyContentRestriction)
-                    {
-                        throw new ArgumentException(ErrorMessages.DigitalVideoOnlyMutuallyExclusiveWithPassingToUnknownOutputError);
-                    }
-                }
-                _AllowPassingVideoContentToUnknownOutput = value;
-            }
-        }
-        private UnknownOutputPassingOption _AllowPassingVideoContentToUnknownOutput;
+        public UnknownOutputPassingOption AllowPassingVideoContentToUnknownOutput  { get; set; }
 
         /// <summary>
         /// Specifies the output protection level for uncompressed digital video.  Valid values are null, 100, 250, 270, and 300.

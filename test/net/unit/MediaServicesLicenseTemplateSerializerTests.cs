@@ -43,6 +43,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
             PlayReadyLicenseTemplate licenseTemplate = new PlayReadyLicenseTemplate();
             responseTemplate.LicenseTemplates.Add(licenseTemplate);
 
+            licenseTemplate.LicenseType = PlayReadyLicenseType.Persistent;
             licenseTemplate.BeginDate = DateTime.Now.AddHours(-1);
             licenseTemplate.ExpirationDate = DateTime.Now.AddDays(30).ToUniversalTime();
 
@@ -62,34 +63,24 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
             Assert.IsFalse(String.IsNullOrWhiteSpace(serializedTemplate));
 
             PlayReadyLicenseResponseTemplate responseTemplate2 = MediaServicesLicenseTemplateSerializer.Deserialize(serializedTemplate);
-            Assert.IsNotNull(responseTemplate2);        
+            Assert.IsNotNull(responseTemplate2);
         }
 
         [TestMethod]
-        public void ValidateNonPersistentLicenseCannotHaveGracePeriodOrFirstPlayExpiration()
+        public void ValidateNonPersistentLicenseConstraints()
         {
+            string serializedTemplate = null;
+            PlayReadyLicenseResponseTemplate responseTemplate = new PlayReadyLicenseResponseTemplate();
             PlayReadyLicenseTemplate licenseTemplate = new PlayReadyLicenseTemplate();
+            responseTemplate.LicenseTemplates.Add(licenseTemplate);
 
             // Part 1: Make sure we cannot set GracePeriod on a NonPersistent license
             licenseTemplate.LicenseType = PlayReadyLicenseType.Nonpersistent;
-
-            try
-            {
-                licenseTemplate.GracePeriod = TimeSpan.FromDays(1);
-                Assert.Fail("Expected ArgumentException");
-            }
-            catch (ArgumentException ae)
-            {
-                Assert.AreEqual(ErrorMessages.GracePeriodCannotBeSetOnNonPersistentLicense, ae.Message);
-            }
-
-            licenseTemplate.LicenseType = PlayReadyLicenseType.Persistent;
             licenseTemplate.GracePeriod = TimeSpan.FromDays(1);
 
-            // Part 2: Make sure we cannot set a license to be NonPersistent if GracePeriod is set
             try
             {
-                licenseTemplate.LicenseType = PlayReadyLicenseType.Nonpersistent;
+                serializedTemplate = MediaServicesLicenseTemplateSerializer.Serialize(responseTemplate);
                 Assert.Fail("Expected ArgumentException");
             }
             catch (ArgumentException ae)
@@ -97,40 +88,65 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
                 Assert.AreEqual(ErrorMessages.GracePeriodCannotBeSetOnNonPersistentLicense, ae.Message);
             }
 
-            // Part 3: Make sure we cannot set a FirstPlayExpiration on a NonPersistent license.
-            //         Since these properties are on different objects, we will check for this at
-            //         serialization time.
+            // Part 2: Make sure we cannot set a FirstPlayExpiration on a NonPersistent license.
             licenseTemplate.GracePeriod = null;
-            licenseTemplate.LicenseType = PlayReadyLicenseType.Nonpersistent;
             licenseTemplate.PlayRight.FirstPlayExpiration = TimeSpan.FromDays(1);
-
-            PlayReadyLicenseResponseTemplate responseTemplate = new PlayReadyLicenseResponseTemplate();
-            responseTemplate.LicenseTemplates.Add(licenseTemplate);
 
             try
             {
-                MediaServicesLicenseTemplateSerializer.Serialize(responseTemplate);
+                serializedTemplate = MediaServicesLicenseTemplateSerializer.Serialize(responseTemplate);
                 Assert.Fail("Expected ArgumentException");
             }
             catch (ArgumentException ae)
             {
                 Assert.AreEqual(ErrorMessages.FirstPlayExpirationCannotBeSetOnNonPersistentLicense, ae.Message);
             }
-        }
 
+            // Part 3: Make sure we cannot set a BeginDate on a NonPersistent license.
+            licenseTemplate.PlayRight.FirstPlayExpiration = null;
+            licenseTemplate.BeginDate = DateTime.UtcNow;
+
+            try
+            {
+                serializedTemplate = MediaServicesLicenseTemplateSerializer.Serialize(responseTemplate);
+                Assert.Fail("Expected ArgumentException");
+            }
+            catch (ArgumentException ae)
+            {
+                Assert.AreEqual(ErrorMessages.BeginDateCannotBeSetOnNonPersistentLicense, ae.Message);
+            }
+
+            // Part 4: Make sure we cannot set an ExpirationDate on a NonPersistent license.
+            licenseTemplate.BeginDate = null;
+            licenseTemplate.ExpirationDate = DateTime.UtcNow;
+
+            try
+            {
+                serializedTemplate = MediaServicesLicenseTemplateSerializer.Serialize(responseTemplate);
+                Assert.Fail("Expected ArgumentException");
+            }
+            catch (ArgumentException ae)
+            {
+                Assert.AreEqual(ErrorMessages.ExpirationCannotBeSetOnNonPersistentLicense, ae.Message);
+            }
+        }
 
         [TestMethod]
         public void DigitalVideoOnlyContentRestrictionAndAllowPassingVideoContentToUnknownOutputMutuallyExclusive()
         {
+            string serializedTemplate = null;
+            PlayReadyLicenseResponseTemplate responseTemplate = new PlayReadyLicenseResponseTemplate();
             PlayReadyLicenseTemplate licenseTemplate = new PlayReadyLicenseTemplate();
+            responseTemplate.LicenseTemplates.Add(licenseTemplate);
 
             // Part 1: Make sure we cannot set DigitalVideoOnlyContentRestriction to true if 
             //         UnknownOutputPassingOption.Allowed is set
             licenseTemplate.PlayRight.AllowPassingVideoContentToUnknownOutput = UnknownOutputPassingOption.Allowed;
+            licenseTemplate.PlayRight.DigitalVideoOnlyContentRestriction = true;
 
             try
             {
-                licenseTemplate.PlayRight.DigitalVideoOnlyContentRestriction = true;
+                serializedTemplate = MediaServicesLicenseTemplateSerializer.Serialize(responseTemplate);
                 Assert.Fail("Expected ArgumentException");
             }
             catch (ArgumentException ae)
@@ -138,13 +154,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
                 Assert.AreEqual(ErrorMessages.DigitalVideoOnlyMutuallyExclusiveWithPassingToUnknownOutputError, ae.Message);
             }
 
+            // Part 2: Make sure we cannot set UnknownOutputPassingOption.AllowedWithVideoConstriction
+            //         if DigitalVideoOnlyContentRestriction is true
             licenseTemplate.PlayRight.AllowPassingVideoContentToUnknownOutput = UnknownOutputPassingOption.AllowedWithVideoConstriction;
 
-            // Part 2: Make sure we cannot set DigitalVideoOnlyContentRestriction to true if 
-            //         UnknownOutputPassingOption.AllowedWithVideoConstriction is set
             try
             {
-                licenseTemplate.PlayRight.DigitalVideoOnlyContentRestriction = true;
+                serializedTemplate = MediaServicesLicenseTemplateSerializer.Serialize(responseTemplate);
                 Assert.Fail("Expected ArgumentException");
             }
             catch (ArgumentException ae)
@@ -157,29 +173,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
             licenseTemplate.PlayRight.AllowPassingVideoContentToUnknownOutput = UnknownOutputPassingOption.NotAllowed;
             licenseTemplate.PlayRight.DigitalVideoOnlyContentRestriction = true;
 
-            // Part 4: Make sure we cannot set UnknownOutputPassingOption.AllowedWithVideoConstriction
-            //         if DigitalVideoOnlyContentRestriction is true
-            try
-            {
-                licenseTemplate.PlayRight.AllowPassingVideoContentToUnknownOutput = UnknownOutputPassingOption.AllowedWithVideoConstriction;
-                Assert.Fail("Expected ArgumentException");
-            }
-            catch (ArgumentException ae)
-            {
-                Assert.AreEqual(ErrorMessages.DigitalVideoOnlyMutuallyExclusiveWithPassingToUnknownOutputError, ae.Message);
-            }
+            serializedTemplate = MediaServicesLicenseTemplateSerializer.Serialize(responseTemplate);
+            Assert.IsNotNull(serializedTemplate);
 
-            // Part 5: Make sure we cannot set UnknownOutputPassingOption.Allowed
-            //         if DigitalVideoOnlyContentRestriction is true
-            try
-            {
-                licenseTemplate.PlayRight.AllowPassingVideoContentToUnknownOutput = UnknownOutputPassingOption.Allowed;
-                Assert.Fail("Expected ArgumentException");
-            }
-            catch (ArgumentException ae)
-            {
-                Assert.AreEqual(ErrorMessages.DigitalVideoOnlyMutuallyExclusiveWithPassingToUnknownOutputError, ae.Message);
-            }
+            Assert.IsNotNull(MediaServicesLicenseTemplateSerializer.Deserialize(serializedTemplate));
         }
 
         [TestMethod]

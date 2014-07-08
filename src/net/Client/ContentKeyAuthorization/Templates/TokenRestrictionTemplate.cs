@@ -10,6 +10,10 @@ using Microsoft.WindowsAzure.MediaServices.Client;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
 {
+    /// <summary>
+    /// Represents a token template for validating tokens that are presented by clients to the Key Delivery Service.
+    /// The data within the template instructs the Key Delivery Service on whether a token should be considered valid or not.
+    /// </summary>
     [DataContract(Namespace = "http://schemas.microsoft.com/Azure/MediaServices/KeyDelivery/TokenRestrictionTemplate/v1")]
     public class TokenRestrictionTemplate
     {
@@ -34,6 +38,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
             AlternateVerificationKeys = new List<TokenVerificationKey>();
         }
 
+        /// <summary>
+        /// A Uri describing the issuer of the token.  Must match the value in the token for the token to be considered valid.
+        /// </summary>
         [DataMember(IsRequired = true)]
         public Uri Issuer
         {
@@ -50,6 +57,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
         }
         private Uri _issuer;
 
+        /// <summary>
+        /// The Audience or Scope of the token.  Must match the value in the token for the token to be considered valid.
+        /// </summary>
         [DataMember(IsRequired = true)]
         public Uri Audience
         {
@@ -66,6 +76,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
         }
         private Uri _audience;
 
+        /// <summary>
+        /// The first key tried to validate the signature of an incoming token.
+        /// </summary>
         [DataMember(IsRequired = true)]
         public TokenVerificationKey PrimaryVerificationKey
         {
@@ -83,10 +96,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
         }
         private TokenVerificationKey _primaryVerificationKey;
 
+        /// <summary>
+        /// A list of additional token keys that will be tried if the token signature cannot be validted with the PrimaryVerificationKey 
+        /// </summary>
         [DataMember]
         public IList<TokenVerificationKey> AlternateVerificationKeys {get; private set;}
 
-
+        /// <summary>
+        /// A list of claims that MUST be present in the token for the token to be considered valid.
+        /// </summary>
         [DataMember]
         public IList<TokenClaim> RequiredClaims { get; private set;}
 

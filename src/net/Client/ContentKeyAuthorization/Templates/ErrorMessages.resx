@@ -123,6 +123,9 @@
   <data name="AtLeastOneLicenseTemplateRequired" xml:space="preserve">
     <value>A PlayReadyLicenseResponseTemplate must have at least one PlayReadyLicenseTemplate</value>
   </data>
+  <data name="BeginDateCannotBeSetOnNonPersistentLicense" xml:space="preserve">
+    <value>BeginDate cannot be set on Non Persistent licenses.</value>
+  </data>
   <data name="CompressedDigitalAudioOplValueError" xml:space="preserve">
     <value>The value can only be set to null, 100, 150, 200, 250, or 300.</value>
   </data>
@@ -131,6 +134,9 @@
   </data>
   <data name="DigitalVideoOnlyMutuallyExclusiveWithPassingToUnknownOutputError" xml:space="preserve">
     <value>PlayReady does not allow passing to unknown outputs if the DigitalVideoOnlyContentRestriction is enabled.</value>
+  </data>
+  <data name="ExpirationCannotBeSetOnNonPersistentLicense" xml:space="preserve">
+    <value>ExpirationDate cannot be set on Non Persistent licenses.</value>
   </data>
   <data name="FirstPlayExpirationCannotBeSetOnNonPersistentLicense" xml:space="preserve">
     <value>FirstPlayExpiration cannot be set on the PlayRight of a Non Persistent license.</value>
