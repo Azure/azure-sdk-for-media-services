@@ -102,6 +102,7 @@
     <Compile Include="StorageTransientErrorDetectionStrategyTests.cs" />
     <Compile Include="SerializerTest.cs" />
     <Compile Include="TestCloudMediaDataContext.cs" />
+    <Compile Include="TokenRestrictionTemplateSerializerTests.cs" />
     <Compile Include="WebRequestTransientErrorDetectionStrategyTests.cs" />
   </ItemGroup>
   <ItemGroup>
