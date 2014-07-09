@@ -18,19 +18,21 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
 {
     [TestClass]
+    [Ignore]
     public class LiveE2ETests
     {
         private CloudMediaContext _dataContext;
-        private string _testOriginName = "e2etestorigin-fd3a8745-3a03";
-        private string _testChannelName = "e2etestchannel-fd3a8745-3a03";
-        private string _testAssetlName = "e2etestasset-fd3a8745-3a03";
-        private string _testProgramlName = "e2etestprogram-fd3a8745-3a03";
+        private const string TestStreamingEndpointName = "e2eteststreamingendpoint-fd3a8745-3a03";
+        private const string TestChannelName = "e2etestchannel-fd3a8745-3a03";
+        private const string TestAssetlName = "e2etestasset-fd3a8745-3a03";
+        private const string TestProgramlName = "e2etestprogram-fd3a8745-3a03";
 
         [TestInitialize]
         public void SetupTest()
@@ -51,22 +53,30 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
         [TestMethod]
         public void CreateStreamingTest()
         {
-            IOrigin origin = _dataContext.Origins.Create(_testOriginName, 2, MakeOriginSettings());
-            IChannel channel = _dataContext.Channels.Create(_testChannelName, ChannelSize.Large, MakeChannelSettings());
-            IAsset asset = _dataContext.Assets.Create(_testAssetlName, AssetCreationOptions.None);
-            IProgram program = channel.Programs.Create(_testProgramlName, false, TimeSpan.FromHours(1), TimeSpan.FromHours(1), asset.Id);
+            IStreamingEndpoint streamingEndpoint = _dataContext.StreamingEndpoints.Create(
+                TestStreamingEndpointName,
+                null, 
+                null, 
+                2, 
+                GetAccessPolicies(), 
+                GetAccessControl(), 
+                GetCacheControl());
+
+            IChannel channel = _dataContext.Channels.Create(TestChannelName, ChannelSize.Large, MakeChannelSettings());
+            IAsset asset = _dataContext.Assets.Create(TestAssetlName, AssetCreationOptions.None);
+            IProgram program = channel.Programs.Create(TestProgramlName, false, TimeSpan.FromHours(1), TimeSpan.FromHours(1), asset.Id);
 
             Assert.AreEqual(asset.Id, program.AssetId);
             Assert.AreEqual(channel.Id, program.Channel.Id);
         }
 
 		[TestMethod]
-		public void OriginCrossDomain()
+		public void StreamingEndpointCrossDomain()
 		{
-			IOrigin origin = ObtainTestOrigin();
-
-			string clientPolicy = 
-				@"<?xml version=""1.0"" encoding=""utf-8""?>
+			var streamingEndpoint = ObtainTestStreamingEndpoint();
+		    
+            var clientPolicy =
+		        @"<?xml version=""1.0"" encoding=""utf-8""?>
 				<access-policy>
 				  <cross-domain-access>
 					<policy>
@@ -79,32 +89,22 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
 					</policy>
 				  </cross-domain-access>
 				</access-policy>";
+		    var xdomainPolicy =
+		        @"<?xml version=""1.0"" ?>
+			    <cross-domain-policy>
+			      <allow-access-from domain=""*"" />
+			    </cross-domain-policy>";
 
-			origin.Settings.ClientAccessPolicy = new CrossSiteAccessPolicy
-			{
-				Version = "1.0",
-				Policy = clientPolicy					
-			};
+		    streamingEndpoint.CrossSiteAccessPolicies.ClientAccessPolicy = clientPolicy;
+		    streamingEndpoint.CrossSiteAccessPolicies.CrossDomainPolicy = xdomainPolicy;
 
-			string xdomainPolicy =
-			@"<?xml version=""1.0"" ?>
-			<cross-domain-policy>
-			  <allow-access-from domain=""*"" />
-			</cross-domain-policy>";
+            streamingEndpoint.Update();
 
-			origin.Settings.CrossDomainPolicy = new CrossSiteAccessPolicy
-			{
-				Version = "1.0",
-				Policy = xdomainPolicy
-			};
+            streamingEndpoint = GetTestStreamingEndpoint();
+            Assert.AreEqual(clientPolicy, streamingEndpoint.CrossSiteAccessPolicies.ClientAccessPolicy);
+            Assert.AreEqual(xdomainPolicy, streamingEndpoint.CrossSiteAccessPolicies.CrossDomainPolicy);
 
-			origin.Update();
-
-			origin = GetTestOrigin();
-			Assert.AreEqual(clientPolicy, origin.Settings.ClientAccessPolicy.Policy);
-			Assert.AreEqual(xdomainPolicy, origin.Settings.CrossDomainPolicy.Policy);
-
-			origin.Delete();
+            streamingEndpoint.Delete();
 		}
 
 		[TestMethod]
@@ -156,23 +156,20 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
 
 		[TestMethod]
 		[Ignore] // need valid domain names
-		public void OriginCustomDomain()
+		public void StreamingEndpointCustomDomain()
 		{
-			var target = ObtainTestOrigin();
+			var target = ObtainTestStreamingEndpoint();
 
 			var domains = new[] { "a", "b" }.Select(i =>
 				string.Format("{0}{1}.testingcustomdomain.com", i, new Random().Next(1000, 9999).ToString()))
-				.ToArray();
+				.ToList();
 
-			target.Settings.CustomDomain = new CustomDomainSettings
-			{
-				CustomDomainNames = domains
-			};
+			target.CustomHostNames = domains;
 
 			target.Update();
 
-			target = GetTestOrigin();
-			Assert.IsTrue(domains.SequenceEqual(target.Settings.CustomDomain.CustomDomainNames));
+			target = GetTestStreamingEndpoint();
+		    Assert.IsTrue(domains.SequenceEqual(target.CustomHostNames));
 
 			target.Delete();
 		}
@@ -200,48 +197,55 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
 			target.Delete();
 		}
 
-        private IOrigin ObtainTestOrigin()
+        private IStreamingEndpoint ObtainTestStreamingEndpoint()
         {
-            var result = _dataContext.Origins.Where(o => o.Name == _testOriginName).FirstOrDefault();
+            var result = _dataContext.StreamingEndpoints.Where(o => o.Name == TestStreamingEndpointName).FirstOrDefault();
 			if(result == null)
 			{
-				result = _dataContext.Origins.Create(_testOriginName, 2, MakeOriginSettings());
+				result = _dataContext.StreamingEndpoints.Create(
+                    TestStreamingEndpointName, 
+                    null, 
+                    null, 
+                    2, 
+                    GetAccessPolicies(), 
+                    GetAccessControl(), 
+                    GetCacheControl());
 			}
 
 			return result;
         }
 
-		private IOrigin GetTestOrigin()
+		private IStreamingEndpoint GetTestStreamingEndpoint()
 		{
-			return _dataContext.Origins.Where(o => o.Name == _testOriginName).FirstOrDefault();
+			return _dataContext.StreamingEndpoints.Where(o => o.Name == TestStreamingEndpointName).FirstOrDefault();
 		}
 
         private IChannel GetTestChannel()
         {
-            return _dataContext.Channels.Where(o => o.Name == _testChannelName).FirstOrDefault();
+            return _dataContext.Channels.Where(o => o.Name == TestChannelName).FirstOrDefault();
         }
 
 		private IChannel ObtainTestChannel()
 		{
-			var result = _dataContext.Channels.Where(o => o.Name == _testChannelName).FirstOrDefault();
+			var result = _dataContext.Channels.Where(o => o.Name == TestChannelName).FirstOrDefault();
 			if(result == null)
 			{
-				result = _dataContext.Channels.Create(_testChannelName, ChannelSize.Large, MakeChannelSettings());
+				result = _dataContext.Channels.Create(TestChannelName, ChannelSize.Large, MakeChannelSettings());
 			}
 			return result;
 		}
 
         private IAsset GetTestAsset()
         {
-            return _dataContext.Assets.Where(o => o.Name == _testAssetlName).FirstOrDefault();
+            return _dataContext.Assets.Where(o => o.Name == TestAssetlName).FirstOrDefault();
         }
 
         private void Cleanup()
         {
-            IOrigin testOrigin = GetTestOrigin();
-            if (testOrigin != null)
+            IStreamingEndpoint testStreamingEndpoint = GetTestStreamingEndpoint();
+            if (testStreamingEndpoint != null)
             {
-                testOrigin.Delete();
+                testStreamingEndpoint.Delete();
             }
 
             IAsset asset;
@@ -268,30 +272,71 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
             }
         }
 
-        static OriginSettings MakeOriginSettings()
+        private static CrossSiteAccessPolicies GetAccessPolicies()
         {
-            var settings = new OriginSettings
+            return new CrossSiteAccessPolicies
             {
-                Playback = new PlaybackEndpointSettings
-                {
-                    Security = new PlaybackEndpointSecuritySettings
-                    {
-                        AkamaiSignatureHeaderAuthentication = new List<AkamaiSignatureHeaderAuthenticationKey> 
-                        { 
-                            new AkamaiSignatureHeaderAuthenticationKey { Base64Key = "vUeuvDU3MIgHuFZCU3cX+24wWg6r4qho594cRcEr5fU=", Expiration = new DateTime(2030, 10, 30), Identifier = "id1" },
-                        },
+                CrossDomainPolicy = File.ReadAllText(@".\crossdomain.xml"),
+                ClientAccessPolicy = File.ReadAllText(@".\clientaccesspolicy.xml")
+            };
+        }
 
-                        IPv4AllowList = new List<Ipv4>
-                        {
-                            new Ipv4 { Name = "testName1", IP = "1.1.1.1" },
-                            new Ipv4 { Name = "testName2", IP = "1.1.1.2" },
-                        }
+        private static StreamingEndpointCacheControl GetCacheControl()
+        {
+            return new StreamingEndpointCacheControl
+            {
+                MaxAge = TimeSpan.FromMinutes(30)
+            };
+        }
+
+        private static StreamingEndpointAccessControl GetAccessControl()
+        {
+            return new StreamingEndpointAccessControl
+            {
+                IPAllowList = new List<IPAddress>
+                {
+                    new IPAddress
+                    {
+                        Name = "IP List 1",
+                        Address = System.Net.IPAddress.Parse("131.107.0.0"),
+                        SubnetPrefixLength = 16
+                    },
+                    new IPAddress
+                    {
+                        Name = "IP List 2",
+                        Address = System.Net.IPAddress.Parse("131.107.192.0"),
+                        SubnetPrefixLength = 24
                     }
                 },
-            };
 
-            return settings;
+                AkamaiSignatureHeaderAuthenticationKeyList = new List<AkamaiSignatureHeaderAuthenticationKey>
+                {
+                    new AkamaiSignatureHeaderAuthenticationKey
+                    {
+                        Identifier = "a1",
+                        Expiration = DateTime.UtcNow + TimeSpan.FromDays(365),
+                        Base64Key = Convert.ToBase64String(GenerateRandomBytes(16))
+                    },
+                    new AkamaiSignatureHeaderAuthenticationKey
+                    {
+                        Identifier = "a2",
+                        Expiration = DateTime.UtcNow + TimeSpan.FromDays(365),
+                        Base64Key = Convert.ToBase64String(GenerateRandomBytes(16))
+                    }
+                }
+            };
         }
+
+        private static byte[] GenerateRandomBytes(int length)
+        {
+            var bytes = new byte[length];
+            using (var rng = new RNGCryptoServiceProvider())
+            {
+                rng.GetBytes(bytes);
+            }
+
+            return bytes;
+        } 
 
         static ChannelSettings MakeChannelSettings()
         {

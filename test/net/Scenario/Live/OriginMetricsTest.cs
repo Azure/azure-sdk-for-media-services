@@ -45,12 +45,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Live
         public void GetAllMetricsTest()
         {
             var metricCount = _dataContext.OriginMetrics.Count();
-            var originCount = _dataContext.Origins.Count();
+            var originCount = _dataContext.StreamingEndpoints.Count();
 
             Assert.IsTrue(metricCount >= 0);
             Assert.IsTrue(originCount >= 0);
         }
 
+#if METRIC
         /// <summary>
         /// Get single origin metrics
         /// </summary>
@@ -61,7 +62,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Live
                 m => MetricsMonitor<IOriginMetric>.GetGuidString(m.Id), 
                 m => m);
 
-            foreach (var origin in _dataContext.Origins)
+            foreach (var origin in _dataContext.StreamingEndpoints)
             {
                 var id = MetricsMonitor<IOriginMetric>.GetGuidString(origin.Id);
 
@@ -86,7 +87,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Live
         [TestMethod]
         public void QueryMetricUsingOriginNameTest()
         {
-            foreach (var origin in _dataContext.Origins)
+            foreach (var origin in _dataContext.StreamingEndpoints)
             {
                 IOriginMetric metricFromNameQuery = null;
                 IOriginMetric metricFromOriginEntity = origin.GetMetric();
@@ -134,12 +135,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Live
         [Ignore]
         public void SubscribeSingleMetricMonitorTest()
         {
-            var origins = _dataContext.Origins.ToList();
+            var origins = _dataContext.StreamingEndpoints.ToList();
             if (origins.Count < 1) return;
             
             var origin = origins[origins.Count-1];
 
-            origin.MetricsReceived += OnMetricsReceived;
+            //origin.MetricsReceived += OnMetricsReceived;
 
             System.Threading.Thread.Sleep(TimeSpan.FromSeconds(61));
 
@@ -158,5 +159,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Live
             Assert.IsTrue(eventArgs.Metrics.Count > 0);
             _notificationCount ++;
         }
+#endif
+
     }
 }

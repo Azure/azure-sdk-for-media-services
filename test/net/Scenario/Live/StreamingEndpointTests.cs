@@ -23,7 +23,8 @@ using Moq;
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 {
     [TestClass]
-    public class OriginTests
+    [Ignore] // enable when the nimbus REST is updated
+    public class StreamingEndpointTests
     {
         private CloudMediaContext _mediaContext;
         [TestInitialize]
@@ -34,30 +35,30 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(0)]
-        public void TestOriginCreate()
+        public void TestStreamingEndpointCreate()
         {
-            string testOriginName = Guid.NewGuid().ToString().Substring(0, 30);
-            var actual = _mediaContext.Origins.Create(testOriginName, 0);
-            Assert.AreEqual(testOriginName, actual.Name);
+            string testStreamingEndpointName = Guid.NewGuid().ToString().Substring(0, 30);
+            var actual = _mediaContext.StreamingEndpoints.Create(testStreamingEndpointName, 0);
+            Assert.AreEqual(testStreamingEndpointName, actual.Name);
         }
 
         #region Retry Logic tests
 
         [TestMethod]
         [Priority(0)]
-        public void TestOriginCreateRetry()
+        public void TestStreamingEndpointCreateRetry()
         {
             var expected = new ChannelData { Name = "testData" };
             var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
             var dataContextMock = TestMediaServicesClassFactory.CreateSaveChangesMock(fakeException, 2, expected);
 
-            dataContextMock.Setup((ctxt) => ctxt.AddObject("Origins", It.IsAny<object>()));
+            dataContextMock.Setup((ctxt) => ctxt.AddObject("StreamingEndpoints", It.IsAny<object>()));
 
             _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
 
             try
             {
-                var actual = _mediaContext.Origins.Create("unittest", 0);
+                var actual = _mediaContext.StreamingEndpoints.Create("unittest", 0);
             }
             catch (NotImplementedException x)
             {
@@ -69,19 +70,19 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestMethod]
         [Priority(0)]
         [ExpectedException(typeof(WebException))]
-        public void TestOriginCreateFailedRetry()
+        public void TestStreamingEndpointCreateFailedRetry()
         {
             var expected = new ChannelData { Name = "testData" };
             var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
             var dataContextMock = TestMediaServicesClassFactory.CreateSaveChangesMock(fakeException, 10, expected);
 
-            dataContextMock.Setup((ctxt) => ctxt.AddObject("Origins", It.IsAny<object>()));
+            dataContextMock.Setup((ctxt) => ctxt.AddObject("StreamingEndpoints", It.IsAny<object>()));
 
             _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
 
             try
             {
-                var actual = _mediaContext.Origins.Create("unittest", 0);
+                var actual = _mediaContext.StreamingEndpoints.Create("unittest", 0);
             }
             catch (WebException x)
             {
@@ -97,13 +98,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [Priority(0)]
         public void TestDeleteRetry()
         {
-            var data = new OriginData { Name = "testData", Id = "1" };
+            var data = new StreamingEndpointData { Name = "testData", Id = "1" };
 
             var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
 
             var dataContextMock = TestMediaServicesClassFactory.CreateSaveChangesMock(fakeException, 2, data);
 
-            dataContextMock.Setup((ctxt) => ctxt.AttachTo("Origins", data));
+            dataContextMock.Setup((ctxt) => ctxt.AttachTo("StreamingEndpoints", data));
             dataContextMock.Setup((ctxt) => ctxt.DeleteObject(data));
 
             _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
@@ -126,13 +127,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [Priority(0)]
         public void TestSendDeleteOperationRetry()
         {
-            var data = new OriginData { Name = "testData", Id = "1" };
+            var data = new StreamingEndpointData { Name = "testData", Id = "1" };
 
             var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
 
             var dataContextMock = TestMediaServicesClassFactory.CreateSaveChangesMock(fakeException, 2, data);
 
-            dataContextMock.Setup((ctxt) => ctxt.AttachTo("Origins", data));
+            dataContextMock.Setup((ctxt) => ctxt.AttachTo("StreamingEndpoints", data));
             dataContextMock.Setup((ctxt) => ctxt.DeleteObject(data));
 
             _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
@@ -151,17 +152,18 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             dataContextMock.Verify((ctxt) => ctxt.SaveChanges(), Times.Exactly(2));
         }
 
+#if METRIC
         [TestMethod]
         [Priority(0)]
         public void TestGetMetric()
         {
-            var data = new OriginData { Name = "testData", Id = "1" };
+            var data = new StreamingEndpointData { Name = "testData", Id = "1" };
 
             var dataContextMock = new Mock<IMediaDataServiceContext>();
 
             var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
 
-            var fakeResponse = new OriginMetricData[] { new OriginMetricData() { OriginName = "test"} };
+            var fakeResponse = new[] { new OriginMetricData() { OriginName = "test"} };
             int exceptionCount = 2;
 
             dataContextMock.Setup((ctxt) => ctxt
@@ -181,7 +183,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             dataContextMock.Verify((ctxt) => ctxt.Execute<OriginMetricData>(It.IsAny<Uri>()), Times.Exactly(2));
         }
-
+#endif
         #endregion Retry Logic tests
     }
 }

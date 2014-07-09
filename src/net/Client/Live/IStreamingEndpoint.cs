@@ -74,11 +74,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         StreamingEndpointState State { get; }
 
         /// <summary>
-        /// Check weather the streaming point has an integrated CDN
-        /// </summary>
-        bool CdnEnabled { get; }
-
-        /// <summary>
         /// Gets or sets cross site access policies.
         /// </summary>
         CrossSiteAccessPolicies CrossSiteAccessPolicies { get; set; }

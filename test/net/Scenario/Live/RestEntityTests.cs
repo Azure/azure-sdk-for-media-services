@@ -22,7 +22,7 @@ using Moq;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 {
-    class TestRestEntity : RestEntity<OriginData>
+    class TestRestEntity : RestEntity<StreamingEndpointData>
     {
         public TestRestEntity(MediaContextBase context)
         {
@@ -46,7 +46,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         protected override string EntitySetName
         {
-            get { return "Origins"; }
+            get { return "StreamingEndpoints"; }
         }
     }
 
@@ -66,13 +66,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [Priority(0)]
         public void TestRestEntityUpdateRetry()
         {
-            RestEntity<OriginData> data = new OriginData { Name = "testData" };
+            RestEntity<StreamingEndpointData> data = new StreamingEndpointData { Name = "testData" };
 
             var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
 
             var dataContextMock = TestMediaServicesClassFactory.CreateSaveChangesMock(fakeException, 2, data);
 
-            dataContextMock.Setup((ctxt) => ctxt.AttachTo("Origins", data));
+            dataContextMock.Setup((ctxt) => ctxt.AttachTo("StreamingEndpoints", data));
             dataContextMock.Setup((ctxt) => ctxt.UpdateObject(data));
 
             _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
@@ -155,11 +155,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             var dataContextMock = new Mock<IMediaDataServiceContext>();
 
             var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
-            var fakeResponse = new OriginData[] { new OriginData() { Name = "test"} };
+            var fakeResponse = new[] {new StreamingEndpointData {Name = "test"}};
             int exceptionCount = 2;
 
             dataContextMock.Setup((ctxt) => ctxt
-                .Execute<OriginData>(It.IsAny<Uri>()))
+                .Execute<StreamingEndpointData>(It.IsAny<Uri>()))
                 .Returns(() =>
                 {
                     if (--exceptionCount > 0) throw fakeException;
@@ -172,7 +172,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             target.Refresh();
 
-            dataContextMock.Verify((ctxt) => ctxt.Execute<OriginData>(It.IsAny<Uri>()), Times.Exactly(2));
+            dataContextMock.Verify((ctxt) => ctxt.Execute<StreamingEndpointData>(It.IsAny<Uri>()), Times.Exactly(2));
         }
 
         [TestMethod]
