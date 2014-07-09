@@ -1,4 +1,4 @@
-﻿// Copyright 2012 Microsoft Corporation
+﻿// Copyright 2014 Microsoft Corporation
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,95 +13,93 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
-    /// Describes an Origin.
+    /// Describes a Streaming Endpoint.
     /// </summary>
-    public interface IOrigin
+    public interface IStreamingEndpoint
     {
         /// <summary>
-        /// Gets Unique identifier of the origin.
+        /// Gets Unique identifier of the streaming endpoint.
         /// </summary>
         string Id { get; }
 
         /// <summary>
-        /// Gets or sets name of the origin.
+        /// Gets the name of the streaming endpoint.
         /// </summary>
-        string Name { get; set; }
+        string Name { get; }
 
         /// <summary>
-        /// Gets or sets description of the origin.
+        /// Gets or sets description of the streaming endpoint.
         /// </summary>
         string Description { get; set; }
 
         /// <summary>
-        /// Gets host name of the origin.
+        /// Gets host name of the streaming endpoint.
         /// </summary>
         string HostName { get; }
 
         /// <summary>
-        /// Gets or sets origin settings.
+        /// Gets or sets custom host names
         /// </summary>
-        OriginSettings Settings { get; set; }
+        List<string> CustomHostNames { get; set; }
 
         /// <summary>
-        /// Gets origin creation date.
+        /// Get the streaming point availability set name
+        /// </summary>
+        string AvailabilitySetName { get; }
+
+        /// <summary>
+        /// Gets streaming endpoint creation date.
         /// </summary>
         DateTime Created { get; }
 
         /// <summary>
-        /// Gets origin last modification date.
+        /// Gets streaming endpoint last modification date.
         /// </summary>
         DateTime LastModified { get; }
 
         /// <summary>
-        /// Gets or sets the number of Reserved Units of the origin.
+        /// Gets the number of scale Units of the streaming endpoint.
         /// </summary>
-        int ReservedUnits { get; set; }
+        int? ScaleUnits { get; }
 
         /// <summary>
-        /// Gets origin state.
+        /// Gets streaming endpoint state.
         /// </summary>
-        OriginState State { get; }
+        StreamingEndpointState State { get; }
 
         /// <summary>
-        /// Adds or removes origin metrics recevied event handler
+        /// Check weather the streaming point has an integrated CDN
         /// </summary>
-        event EventHandler<MetricsEventArgs<IOriginMetric>> MetricsReceived;
+        bool CdnEnabled { get; }
 
         /// <summary>
-        /// Deletes the origin.
+        /// Gets or sets cross site access policies.
         /// </summary>
-        void Delete();
+        CrossSiteAccessPolicies CrossSiteAccessPolicies { get; set; }
 
         /// <summary>
-        /// Deletes the origin asynchronously.
+        /// Gets or sets streaming endpoint access control
         /// </summary>
-        /// <returns>Task to wait on for operation completion.</returns>
-        Task DeleteAsync();
+        StreamingEndpointAccessControl AccessControl { get; set; }
 
         /// <summary>
-        /// Sends delete operation to the service and returns. Use Operations collection to get operation's status.
+        /// Cache control
         /// </summary>
-        /// <returns>Operation info that can be used to track the operation.</returns>
-        IOperation SendDeleteOperation();
-
+        StreamingEndpointCacheControl CacheControl { get; set; }
+        
         /// <summary>
-        /// Sends delete operation to the service asynchronously. Use Operations collection to get operation's status.
-        /// </summary>
-        /// <returns>Task to wait on for operation sending completion.</returns>
-        Task<IOperation> SendDeleteOperationAsync();
-
-        /// <summary>
-        /// Starts the origin.
+        /// Starts the streaming endpoint.
         /// </summary>
         void Start();
 
         /// <summary>
-        /// Starts the origin asynchronously.
+        /// Starts the streaming endpoint asynchronously.
         /// </summary>
         /// <returns>Task to wait on for operation completion.</returns>
         Task StartAsync();
@@ -119,12 +117,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         Task<IOperation> SendStartOperationAsync();
 
         /// <summary>
-        /// Stops the origin.
+        /// Stops the streaming endpoint.
         /// </summary>
         void Stop();
 
         /// <summary>
-        /// Stops the origin asynchronously.
+        /// Stops the streaming endpoint asynchronously.
         /// </summary>
         /// <returns>Task to wait on for operation completion.</returns>
         Task StopAsync();
@@ -142,15 +140,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         Task<IOperation> SendStopOperationAsync();
 
         /// <summary>
-        /// Asynchronously updates this origin instance.
+        /// Updates this streaming endpoint instance.
+        /// </summary>        
+        void Update();
+
+        /// <summary>
+        /// Asynchronously updates this streaming endpoint instance.
         /// </summary>
         /// <returns>Task to wait on for operation completion.</returns>
         Task UpdateAsync();
-
-        /// <summary>
-        /// Updates this origin instance.
-        /// </summary>        
-        void Update();
 
         /// <summary>
         /// Sends update request to the service and returns. Use Operations collection to get operation's status.
@@ -165,34 +163,51 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         Task<IOperation> SendUpdateOperationAsync();
 
         /// <summary>
-        /// Scales the origin.
+        /// Deletes the streaming endpoint.
         /// </summary>
-        /// <param name="reservedUnits">New reserved units.</param>
-        void Scale(int reservedUnits);
+        void Delete();
 
         /// <summary>
-        /// Scales the origin.
+        /// Deletes the streaming endpoint asynchronously.
         /// </summary>
-        /// <param name="reservedUnits">New reserved units.</param>
         /// <returns>Task to wait on for operation completion.</returns>
-        Task ScaleAsync(int reservedUnits);
+        Task DeleteAsync();
+
+        /// <summary>
+        /// Sends delete operation to the service and returns. Use Operations collection to get operation's status.
+        /// </summary>
+        /// <returns>Operation info that can be used to track the operation.</returns>
+        IOperation SendDeleteOperation();
+
+        /// <summary>
+        /// Sends delete operation to the service asynchronously. Use Operations collection to get operation's status.
+        /// </summary>
+        /// <returns>Task to wait on for operation sending completion.</returns>
+        Task<IOperation> SendDeleteOperationAsync();
+
+        /// <summary>
+        /// Scales the streaming endpoint.
+        /// </summary>
+        /// <param name="scaleUnits">New scale units.</param>
+        void Scale(int scaleUnits);
+
+        /// <summary>
+        /// Scales the streaming endpoint.
+        /// </summary>
+        /// <param name="scaleUnits">New scale units.</param>
+        /// <returns>Task to wait on for operation completion.</returns>
+        Task ScaleAsync(int scaleUnits);
 
         /// <summary>
         /// Sends scale operation to the service and returns. Use Operations collection to get operation's status.
         /// </summary>
         /// <returns>Operation info that can be used to track the operation.</returns>
-        IOperation SendScaleOperation(int reservedUnits);
+        IOperation SendScaleOperation(int scaleUnits);
 
         /// <summary>
         /// Sends scale operation to the service asynchronously. Use Operations collection to get operation's status.
         /// </summary>
         /// <returns>Task to wait on for operation sending completion.</returns>
-        Task<IOperation> SendScaleOperationAsync(int reservedUnits);
-
-        /// <summary>
-        /// Get the latest origin metric.
-        /// </summary>
-        /// <returns>The latest OriginMetrics entity of this origin service</returns>
-        IOriginMetric GetMetric();
+        Task<IOperation> SendScaleOperationAsync(int scaleUnits);
     }
 }

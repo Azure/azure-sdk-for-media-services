@@ -31,7 +31,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     {
         private ChannelBaseCollection _channels;
         private ProgramBaseCollection _programs;
-        private OriginBaseCollection _origins;
+        private StreamingEndpointBaseCollection _streamingEndpoints;
         private OperationBaseCollection _operations;
         private OriginMetricBaseCollection _originMetrics;
         private ChannelMetricBaseCollection _channelMetrics;
@@ -68,17 +68,17 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
         /// <summary>
-        /// Gets the collection of origins in the system.
+        /// Gets the collection of streaming endpoints in the system.
         /// </summary>
-        public override OriginBaseCollection Origins
+        public override StreamingEndpointBaseCollection StreamingEndpoints
         {
             get
             {
-                if (_origins == null)
+                if (_streamingEndpoints == null)
                 {
-                    Interlocked.CompareExchange(ref _origins, new OriginBaseCollection(this), null);
+                    Interlocked.CompareExchange(ref _streamingEndpoints, new StreamingEndpointBaseCollection(this), null);
                 }
-                return _origins;
+                return _streamingEndpoints;
             }
         }
 

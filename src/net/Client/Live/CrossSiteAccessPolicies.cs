@@ -14,39 +14,16 @@
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
-    /// <summary>
-    /// Describes the state of an Origin.
-    /// </summary>
-    public enum OriginState
+    public class CrossSiteAccessPolicies
     {
         /// <summary>
-        /// Origin is stopped.
+        /// For Microsoft silver light
         /// </summary>
-        Stopped = 0,
+        public string ClientAccessPolicy { get; set; }
 
         /// <summary>
-        /// Origin is starting.
+        /// For Adobe flash
         /// </summary>
-        Starting = 1,
-
-        /// <summary>
-        /// Origin is running.
-        /// </summary>
-        Running = 2,
-
-        /// <summary>
-        /// Origin is stopping.
-        /// </summary>
-        Stopping = 3,
-
-        /// <summary>
-        /// Origin is scaling.
-        /// </summary>
-        Scaling = 4,
-
-        /// <summary>
-        /// Origin is being deleted
-        /// </summary>
-        Deleting = 5,
+        public string CrossDomainPolicy { get; set; }
     }
 }

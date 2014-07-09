@@ -222,6 +222,7 @@
     <Compile Include="Live\ChannelSize.cs" />
     <Compile Include="Live\ChannelState.cs" />
     <Compile Include="Live\CloudMediaContext.cs" />
+    <Compile Include="Live\CrossSiteAccessPolicies.cs" />
     <Compile Include="Live\CrossSiteAccessPolicy.cs" />
     <Compile Include="Live\CustomDomainSettings.cs" />
     <Compile Include="Live\IChannel.cs" />
@@ -231,11 +232,12 @@
     <Compile Include="Live\IMetricsMonitor.cs" />
     <Compile Include="Live\IngestMetricData.cs" />
     <Compile Include="Live\IOperation.cs" />
-    <Compile Include="Live\IOrigin.cs" />
     <Compile Include="Live\IOriginMetric.cs" />
+    <Compile Include="Live\IPAddress.cs" />
     <Compile Include="Live\IProgram.cs" />
     <Compile Include="Live\IProgramMetric.cs" />
     <Compile Include="Live\Ipv4.cs" />
+    <Compile Include="Live\IStreamingEndpoint.cs" />
     <Compile Include="Live\IStreamingMonitor.cs" />
     <Compile Include="Live\MediaContextBase.cs" />
     <Compile Include="Live\Metric.cs" />
@@ -245,13 +247,8 @@
     <Compile Include="Live\OperationBaseCollection.cs" />
     <Compile Include="Live\OperationData.cs" />
     <Compile Include="Live\OperationState.cs" />
-    <Compile Include="Live\OriginBaseCollection.cs" />
-    <Compile Include="Live\OriginData.cs" />
     <Compile Include="Live\OriginMetricBaseCollection.cs" />
     <Compile Include="Live\OriginMetricData.cs" />
-    <Compile Include="Live\OriginServiceSettings.cs" />
-    <Compile Include="Live\OriginSettings.cs" />
-    <Compile Include="Live\OriginState.cs" />
     <Compile Include="Live\ProgramBaseCollection.cs" />
     <Compile Include="Live\ProgramData.cs" />
     <Compile Include="Live\ProgramMetricData.cs" />
@@ -259,6 +256,11 @@
     <Compile Include="Live\RestEntity.cs" />
     <Compile Include="Live\Serializer.cs" />
     <Compile Include="Live\StreamingConstants.cs" />
+    <Compile Include="Live\StreamingEndpointAccessControl.cs" />
+    <Compile Include="Live\StreamingEndpointBaseCollection.cs" />
+    <Compile Include="Live\StreamingEndpointCacheControl.cs" />
+    <Compile Include="Live\StreamingEndpointData.cs" />
+    <Compile Include="Live\StreamingEndpointState.cs" />
     <Compile Include="Live\StreamingMonitor.cs" />
     <Compile Include="MediaQueryable.cs" />
     <Compile Include="MediaQueryProvider.cs" />

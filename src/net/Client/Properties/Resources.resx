@@ -121,26 +121,26 @@
     <value>Create channel operation {0}, operation id: {1}, {2}</value>
     <comment>{0} - failed/etc {2} - text message</comment>
   </data>
-  <data name="ErrorCreateOriginFailedFormat" xml:space="preserve">
-    <value>Create origin operation {0}, operation id: {1}, {2}</value>
+  <data name="ErrorCreateStreamingEndpointFailedFormat" xml:space="preserve">
+    <value>Create streaming endpoint operation {0}, operation id: {1}, {2}</value>
     <comment>{0} - failed/etc {2} - text message</comment>
   </data>
   <data name="ErrorDeleteChannelFailedFormat" xml:space="preserve">
     <value>Delete channel operation {0}, operation id: {1}, {2}</value>
     <comment>{0} - failed/etc {2} - text message</comment>
   </data>
-  <data name="ErrorDeleteOriginFailedFormat" xml:space="preserve">
-    <value>Delete origin operation {0}, operation id: {1}, {2}</value>
+  <data name="ErrorDeleteStreamingEndpointFailedFormat" xml:space="preserve">
+    <value>Delete streaming endpoint operation {0}, operation id: {1}, {2}</value>
     <comment>{0} - failed/etc {2} - text message</comment>
   </data>
   <data name="ErrorEmptyChannelName" xml:space="preserve">
     <value>Channel name must not be empty.</value>
   </data>
-  <data name="ErrorEmptyOriginName" xml:space="preserve">
-    <value>Origin name must not be empty.</value>
-  </data>
   <data name="ErrorEmptyProgramName" xml:space="preserve">
     <value>Program name must not be empty.</value>
+  </data>
+  <data name="ErrorEmptyStreamingEndpointName" xml:space="preserve">
+    <value>Streaming endpoint name must not be empty.</value>
   </data>
   <data name="ErrorEntityWithoutId" xml:space="preserve">
     <value>Entity doesn't have Id</value>
