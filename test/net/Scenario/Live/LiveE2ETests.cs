@@ -25,7 +25,7 @@ using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
 namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
 {
     [TestClass]
-    [Ignore]
+    [Ignore] //TODO: enable when the streaming endpoint is deployed in the test environment
     public class LiveE2ETests
     {
         private CloudMediaContext _dataContext;

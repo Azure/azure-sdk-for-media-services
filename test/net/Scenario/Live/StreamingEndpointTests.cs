@@ -23,7 +23,7 @@ using Moq;
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 {
     [TestClass]
-    [Ignore] // enable when the nimbus REST is updated
+    [Ignore] //TODO: enable when the streaming endpoint is deployed in the test environment
     public class StreamingEndpointTests
     {
         private CloudMediaContext _mediaContext;

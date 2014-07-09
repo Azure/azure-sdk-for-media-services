@@ -24,7 +24,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
     ///to contain all StreamingEndpointDataTest Unit Tests
     ///</summary>
     [TestClass]
-    [Ignore]
+    [Ignore] //TODO: enable when the streaming endpoint is deployed in the test environment
     public class StreamingEndpointDataTest
     {
         /// <summary>

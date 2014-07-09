@@ -51,6 +51,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
     }
 
     [TestClass]
+    [Ignore] //TODO: enable when the streaming endpoint is deployed in the test environment
     public class RestEntityTests
     {
         private CloudMediaContext _mediaContext;

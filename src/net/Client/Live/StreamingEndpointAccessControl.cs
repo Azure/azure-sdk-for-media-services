@@ -18,7 +18,7 @@ using System.Linq;
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
-    /// Describes Ingest endpoint security settings.
+    /// Describes Streaming Endpoint Ingest access control.
     /// </summary>
     public class StreamingEndpointAccessControl
     {
@@ -36,7 +36,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     }
 
     /// <summary>
-    /// Describes Ingest endpoint security settings.
+    /// Describes Streaming Endpoint Ingest access control.
     /// </summary>
     internal class StreamingEndpointServiceAccessControl
     {
