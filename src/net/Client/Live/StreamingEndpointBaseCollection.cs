@@ -46,7 +46,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Creates a new streaming endpoint.
         /// </summary>
-        /// <param name="name">Name of the streaming endpoint.</param>
+        /// <param name="name">streaming endpoint service name.</param>
         /// <returns>The created streaming endpoint.</returns>
         public IStreamingEndpoint Create(string name)
         {
@@ -56,7 +56,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Creates a new streaming endpoint asynchronously.
         /// </summary>
-        /// <param name="name">Name of the streaming endpoint.</param>
+        /// <param name="name">streaming endpoint service name.</param>
         /// <returns>The created streaming endpoint.</returns>
         public Task<IStreamingEndpoint> CreateAsync(string name)
         {
@@ -66,8 +66,30 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Creates a new streaming endpoint.
         /// </summary>
-        /// <param name="name">Name of the streaming endpoint.</param>
-        /// <param name="scaleUnits">scale units.</param>
+        /// <param name="name">streaming endpoint service name.</param>
+        /// <param name="description">streaming endpoint description or friendly name.</param>
+        /// <returns>The created streaming endpoint (for standard account using the SDK).</returns>
+        public IStreamingEndpoint Create(string name, string description)
+        {
+            return Create(name, description, null, null, null, null, null);
+        }
+
+        /// <summary>
+        /// Creates a new streaming endpoint asynchronously.
+        /// </summary>
+        /// <param name="name">streaming endpoint service name.</param>
+        /// <param name="description">streaming endpoint description or friendly name.</param>
+        /// <returns>The created streaming endpoint (for standard account using the SDK).</returns>
+        public Task<IStreamingEndpoint> CreateAsync(string name, string description)
+        {
+            return CreateAsync(name, description, null, null, null, null, null);
+        }
+
+        /// <summary>
+        /// Creates a new streaming endpoint.
+        /// </summary>
+        /// <param name="name">streaming endpoint service name.</param>
+        /// <param name="scaleUnits">the streaming endpoint scale units, can only be set for legacy and premium accounts</param>
         /// <returns>The created streaming endpoint (for legacy account using the SDK).</returns>
         public IStreamingEndpoint Create(string name, int scaleUnits)
         {
@@ -77,8 +99,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Creates a new streaming endpoint asynchronously.
         /// </summary>
-        /// <param name="name">Name of the streaming endpoint.</param>
-        /// <param name="scaleUnits">scale units.</param>
+        /// <param name="name">streaming endpoint service name.</param>
+        /// <param name="scaleUnits">the streaming endpoint scale units, can only be set for legacy and premium accounts</param>
         /// <returns>The created streaming endpoint (for legacy account using the SDK).</returns>
         public Task<IStreamingEndpoint> CreateAsync(string name, int scaleUnits)
         {
@@ -88,9 +110,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Creates a new streaming endpoint.
         /// </summary>
-        /// <param name="name">Name of the streaming endpoint.</param>
-        /// <param name="description">Description of the streaming endpoint.</param>
-        /// <param name="scaleUnits">scale units.</param>
+        /// <param name="name">streaming endpoint service name.</param>
+        /// <param name="description">streaming endpoint description or friendly name.</param>
+        /// <param name="scaleUnits">the streaming endpoint scale units, can only be set for legacy and premium accounts</param>
         /// <returns>The created streaming endpoint (for legacy account using the SDK).</returns>
         public IStreamingEndpoint Create(string name, string description, int scaleUnits)
         {
@@ -100,9 +122,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Creates a new streaming endpoint asynchronously.
         /// </summary>
-        /// <param name="name">Name of the streaming endpoint.</param>
-        /// <param name="description">Description of the streaming endpoint.</param>
-        /// <param name="scaleUnits">scale units.</param>
+        /// <param name="name">streaming endpoint service name.</param>
+        /// <param name="description">streaming endpoint description or friendly name.</param>
+        /// <param name="scaleUnits">the streaming endpoint scale units, can only be set for legacy and premium accounts</param>
         /// <returns>The created streaming endpoint (for legacy account using the SDK).</returns>
         public Task<IStreamingEndpoint> CreateAsync(string name, string description, int scaleUnits)
         {
@@ -112,34 +134,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Creates a new streaming endpoint.
         /// </summary>
-        /// <param name="name">Name of the streaming endpoint.</param>
-        /// <param name="description">Description of the streaming endpoint.</param>
-        /// <param name="customHostNames">a list of custom host names.</param>
-        /// <returns>The created streaming endpoint (for standard account using the SDK).</returns>
-        public IStreamingEndpoint Create(string name, string description, List<string> customHostNames)
-        {
-            return Create(name, description, customHostNames, null, null, null, null);
-        }
-
-        /// <summary>
-        /// Creates a new streaming endpoint asynchronously.
-        /// </summary>
-        /// <param name="name">Name of the streaming endpoint.</param>
-        /// <param name="description">Description of the streaming endpoint.</param>
-        /// <param name="customHostNames">a list of custom host names.</param>
-        /// <returns>The created streaming endpoint (for standard account using the SDK).</returns>
-        public Task<IStreamingEndpoint> CreateAsync(string name, string description, List<string> customHostNames)
-        {
-            return CreateAsync(name, description, customHostNames, null, null, null, null);
-        }
-
-        /// <summary>
-        /// Creates a new streaming endpoint.
-        /// </summary>
-        /// <param name="name">Name of the streaming endpoint.</param>
-        /// <param name="description">Description of the streaming endpoint.</param>
-        /// <param name="customHostNames">a list of custom host names.</param>
-        /// <param name="scaleUnits">scale units</param>
+        /// <param name="name">streaming endpoint service name.</param>
+        /// <param name="description">streaming endpoint description or friendly name.</param>
+        /// <param name="customHostNames">one or more "vanity" host names to be accepted by the streaming endpoint in addition to default endpoint name. (only by premium account</param>
+        /// <param name="scaleUnits">the streaming endpoint scale units, can only be set for legacy and premium accounts</param>
         /// <returns>The created streaming endpoint (for premium account using the SDK).</returns>
         public IStreamingEndpoint Create(
             string name, 
@@ -153,10 +151,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Creates a new streaming endpoint asynchronously.
         /// </summary>
-        /// <param name="name">Name of the streaming endpoint.</param>
-        /// <param name="description">Description of the streaming endpoint.</param>
-        /// <param name="customHostNames">a list of custom host names.</param>
-        /// <param name="scaleUnits">scale units</param>
+        /// <param name="name">streaming endpoint service name.</param>
+        /// <param name="description">streaming endpoint description or friendly name.</param>
+        /// <param name="customHostNames">one or more "vanity" host names to be accepted by the streaming endpoint in addition to default endpoint name. (only by premium account</param>
+        /// <param name="scaleUnits">the streaming endpoint scale units, can only be set for legacy and premium accounts</param>
         /// <returns>The created streaming endpoint (for premium account using the SDK).</returns>
         public Task<IStreamingEndpoint> CreateAsync(
             string name,
@@ -170,13 +168,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Creates a new streaming endpoint.
         /// </summary>
-        /// <param name="name">Name of the streaming endpoint.</param>
-        /// <param name="description">description of the streaming endpoint</param>
-        /// <param name="customHostNames">customer host names</param>
-        /// <param name="scaleUnits">the scale units, can only be set for legacy and premium accounts</param>
-        /// <param name="accessPolicies">cross site access policies</param>
-        /// <param name="accessControl">access control</param>
-        /// <param name="cacheControl">cache control</param>
+        /// <param name="name">streaming endpoint service name.</param>
+        /// <param name="description">streaming endpoint description or friendly name.</param>
+        /// <param name="customHostNames">one or more "vanity" host names to be accepted by the streaming endpoint in addition to default endpoint name. (only by premium account</param>
+        /// <param name="scaleUnits">the streaming endpoint scale units, can only be set for legacy and premium accounts</param>
+        /// <param name="accessPolicies">cross site access policies policies to the streaming endpoint such as client access policy and cross domain access policy</param>
+        /// <param name="accessControl">access control policies to the streaming endpoint such as IP Allow List, Akamai G2O authentication keys, etc.</param>
+        /// <param name="cacheControl">custom asset cache lifetime for assets served through the streaming endpoint.</param>
         /// <returns>The created streaming endpoint.</returns>
         public IStreamingEndpoint Create(
             string name,
@@ -198,17 +196,265 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
         /// <summary>
-        /// Creates a new streaming endpoint.
+        /// Creates a new streaming endpoint asynchronously.
         /// </summary>
-        /// <param name="name">Name of the streaming endpoint.</param>
-        /// <param name="description">description of the streaming endpoint</param>
-        /// <param name="customHostNames">customer host names</param>
-        /// <param name="scaleUnits">the scale units, can only be set for legacy and premium accounts</param>
-        /// <param name="accessPolicies">cross site access policies</param>
-        /// <param name="accessControl">access control</param>
-        /// <param name="cacheControl">cache control</param>
+        /// <param name="name">streaming endpoint service name.</param>
+        /// <param name="description">streaming endpoint description or friendly name.</param>
+        /// <param name="customHostNames">one or more "vanity" host names to be accepted by the streaming endpoint in addition to default endpoint name. (only by premium account</param>
+        /// <param name="scaleUnits">the streaming endpoint scale units, can only be set for legacy and premium accounts</param>
+        /// <param name="accessPolicies">cross site access policies policies to the streaming endpoint such as client access policy and cross domain access policy</param>
+        /// <param name="accessControl">access control policies to the streaming endpoint such as IP Allow List, Akamai G2O authentication keys, etc.</param>
+        /// <param name="cacheControl">custom asset cache lifetime for assets served through the streaming endpoint.</param>
         /// <returns>The created streaming endpoint.</returns>
         public Task<IStreamingEndpoint> CreateAsync(
+            string name,
+            string description,
+            List<string> customHostNames,
+            int? scaleUnits,
+            CrossSiteAccessPolicies accessPolicies,
+            StreamingEndpointAccessControl accessControl,
+            StreamingEndpointCacheControl cacheControl)
+        {
+            var response = CreateStreamingEndpointAsync(
+                name,
+                description,
+                customHostNames,
+                scaleUnits,
+                accessPolicies,
+                accessControl,
+                cacheControl);
+
+            return response.ContinueWith<IStreamingEndpoint>(t =>
+                {
+                    t.ThrowIfFaulted();
+
+                    string operationId = t.Result.Single().Headers[StreamingConstants.OperationIdHeader];
+
+                    IOperation operation = AsyncHelper.WaitOperationCompletion(
+                        MediaContext,
+                        operationId,
+                        StreamingConstants.CreateStreamingEndpointPollInterval);
+
+                    string messageFormat = Resources.ErrorCreateStreamingEndpointFailedFormat;
+                    string message;
+
+                    switch (operation.State)
+                    {
+                        case OperationState.Succeeded:
+                            var result = (StreamingEndpointData)t.Result.AsyncState;
+                            result.Refresh();
+                            return result;
+                        case OperationState.Failed:
+                            message = string.Format(CultureInfo.CurrentCulture, messageFormat, Resources.Failed, operationId, operation.ErrorMessage);
+                            throw new InvalidOperationException(message);
+                        default: // can never happen unless state enum is extended
+                            message = string.Format(CultureInfo.CurrentCulture, messageFormat, Resources.InInvalidState, operationId, operation.State);
+                            throw new InvalidOperationException(message);
+                    }
+                }); 
+        }
+
+
+        /// <summary>
+        /// Sends create streaming endpoint operation to the service and returns. Use Operations collection to get operation's status.
+        /// </summary>
+        /// <param name="name">streaming endpoint service name.</param>
+        /// <returns>The created streaming endpoint.</returns>
+        public IOperation SendCreateOperation(string name)
+        {
+            return SendCreateOperation(name, null, null, null, null, null, null);
+        }
+
+        /// <summary>
+        /// Sends create streaming endpoint operation to the service asynchronously. Use Operations collection to get operation's status.
+        /// </summary>
+        /// <param name="name">streaming endpoint service name.</param>
+        /// <returns>The created streaming endpoint.</returns>
+        public Task<IOperation> SendCreateOperationAync(string name)
+        {
+            return SendCreateOperationAsync(name, null, null, null, null, null, null);
+        }
+
+        /// <summary>
+        /// Sends create streaming endpoint operation to the service and returns. Use Operations collection to get operation's status.
+        /// </summary>
+        /// <param name="name">streaming endpoint service name.</param>
+        /// <param name="description">streaming endpoint description or friendly name.</param>
+        /// <returns>The created streaming endpoint (for standard account using the SDK).</returns>
+        public IOperation SendCreateOperation(string name, string description)
+        {
+            return SendCreateOperation(name, description, null, null, null, null, null);
+        }
+
+        /// <summary>
+        /// Sends create streaming endpoint operation to the service asynchronously. Use Operations collection to get operation's status.
+        /// </summary>
+        /// <param name="name">streaming endpoint service name.</param>
+        /// <param name="description">streaming endpoint description or friendly name.</param>
+        /// <returns>The created streaming endpoint (for standard account using the SDK).</returns>
+        public Task<IOperation> SendCreateOperationAync(string name, string description)
+        {
+            return SendCreateOperationAsync(name, description, null, null, null, null, null);
+        }
+
+        /// <summary>
+        /// Sends create streaming endpoint operation to the service and returns. Use Operations collection to get operation's status.
+        /// </summary>
+        /// <param name="name">streaming endpoint service name.</param>
+        /// <param name="scaleUnits">the streaming endpoint scale units, can only be set for legacy and premium accounts</param>
+        /// <returns>The created streaming endpoint (for legacy account using the SDK).</returns>
+        public IOperation SendCreateOperation(string name, int scaleUnits)
+        {
+            return SendCreateOperation(name, null, null, scaleUnits, null, null, null);
+        }
+
+        /// <summary>
+        /// Sends create streaming endpoint operation to the service asynchronously. Use Operations collection to get operation's status.
+        /// </summary>
+        /// <param name="name">streaming endpoint service name.</param>
+        /// <param name="scaleUnits">the streaming endpoint scale units, can only be set for legacy and premium accounts</param>
+        /// <returns>The created streaming endpoint (for legacy account using the SDK).</returns>
+        public Task<IOperation> SendCreateOperationAync(string name, int scaleUnits)
+        {
+            return SendCreateOperationAsync(name, null, null, scaleUnits, null, null, null);
+        }
+
+        /// <summary>
+        /// Sends create streaming endpoint operation to the service and returns. Use Operations collection to get operation's status.
+        /// </summary>
+        /// <param name="name">streaming endpoint service name.</param>
+        /// <param name="description">streaming endpoint description or friendly name.</param>
+        /// <param name="scaleUnits">the streaming endpoint scale units, can only be set for legacy and premium accounts</param>
+        /// <returns>The created streaming endpoint (for legacy account using the SDK).</returns>
+        public IOperation SendCreateOperation(string name, string description, int scaleUnits)
+        {
+            return SendCreateOperation(name, description, null, scaleUnits, null, null, null);
+        }
+
+        /// <summary>
+        /// Sends create streaming endpoint operation to the service asynchronously. Use Operations collection to get operation's status.
+        /// </summary>
+        /// <param name="name">streaming endpoint service name.</param>
+        /// <param name="description">streaming endpoint description or friendly name.</param>
+        /// <param name="scaleUnits">the streaming endpoint scale units, can only be set for legacy and premium accounts</param>
+        /// <returns>The created streaming endpoint (for legacy account using the SDK).</returns>
+        public Task<IOperation> SendCreateOperationAync(string name, string description, int scaleUnits)
+        {
+            return SendCreateOperationAsync(name, description, null, scaleUnits, null, null, null);
+        }
+
+        /// <summary>
+        /// Sends create streaming endpoint operation to the service and returns. Use Operations collection to get operation's status.
+        /// </summary>
+        /// <param name="name">streaming endpoint service name.</param>
+        /// <param name="description">streaming endpoint description or friendly name.</param>
+        /// <param name="customHostNames">one or more "vanity" host names to be accepted by the streaming endpoint in addition to default endpoint name. (only by premium account</param>
+        /// <param name="scaleUnits">the streaming endpoint scale units, can only be set for legacy and premium accounts</param>
+        /// <returns>The created streaming endpoint (for premium account using the SDK).</returns>
+        public IOperation SendCreateOperation(
+            string name,
+            string description,
+            List<string> customHostNames,
+            int scaleUnits)
+        {
+            return SendCreateOperation(name, description, customHostNames, scaleUnits, null, null, null);
+        }
+
+        /// <summary>
+        /// Sends create streaming endpoint operation to the service asynchronously. Use Operations collection to get operation's status.
+        /// </summary>
+        /// <param name="name">streaming endpoint service name.</param>
+        /// <param name="description">streaming endpoint description or friendly name.</param>
+        /// <param name="customHostNames">one or more "vanity" host names to be accepted by the streaming endpoint in addition to default endpoint name. (only by premium account</param>
+        /// <param name="scaleUnits">the streaming endpoint scale units, can only be set for legacy and premium accounts</param>
+        /// <returns>The created streaming endpoint (for premium account using the SDK).</returns>
+        public Task<IOperation> SendCreateOperationAync(
+            string name,
+            string description,
+            List<string> customHostNames,
+            int scaleUnits)
+        {
+            return SendCreateOperationAsync(name, description, customHostNames, scaleUnits, null, null, null);
+        }
+
+        /// <summary>
+        /// Sends create streaming endpoint operation to the service and returns. Use Operations collection to get operation's status.
+        /// </summary>
+        /// <param name="name">streaming endpoint service name.</param>
+        /// <param name="description">streaming endpoint description or friendly name.</param>
+        /// <param name="customHostNames">one or more "vanity" host names to be accepted by the streaming endpoint in addition to default endpoint name. (only by premium account</param>
+        /// <param name="scaleUnits">the streaming endpoint scale units, can only be set for legacy and premium accounts</param>
+        /// <param name="accessPolicies">cross site access policies policies to the streaming endpoint such as client access policy and cross domain access policy</param>
+        /// <param name="accessControl">access control policies to the streaming endpoint such as IP Allow List, Akamai G2O authentication keys, etc.</param>
+        /// <param name="cacheControl">custom asset cache lifetime for assets served through the streaming endpoint.</param>
+        /// <returns>The created streaming endpoint.</returns>
+        public IOperation SendCreateOperation(
+            string name,
+            string description,
+            List<string> customHostNames,
+            int? scaleUnits,
+            CrossSiteAccessPolicies accessPolicies,
+            StreamingEndpointAccessControl accessControl,
+            StreamingEndpointCacheControl cacheControl)
+        {
+            return AsyncHelper.Wait(SendCreateOperationAsync(
+                name,
+                description,
+                customHostNames,
+                scaleUnits,
+                accessPolicies,
+                accessControl,
+                cacheControl));
+        }
+
+        /// <summary>
+        /// Sends create streaming endpoint operation to the service asynchronously. Use Operations collection to get operation's status.
+        /// </summary>
+        /// <param name="name">streaming endpoint service name.</param>
+        /// <param name="description">streaming endpoint description or friendly name.</param>
+        /// <param name="customHostNames">one or more "vanity" host names to be accepted by the streaming endpoint in addition to default endpoint name. (only by premium account</param>
+        /// <param name="scaleUnits">the streaming endpoint scale units, can only be set for legacy and premium accounts</param>
+        /// <param name="accessPolicies">cross site access policies policies to the streaming endpoint such as client access policy and cross domain access policy</param>
+        /// <param name="accessControl">access control policies to the streaming endpoint such as IP Allow List, Akamai G2O authentication keys, etc.</param>
+        /// <param name="cacheControl">custom asset cache lifetime for assets served through the streaming endpoint.</param>
+        /// <returns>The created streaming endpoint.</returns>
+        public Task<IOperation> SendCreateOperationAsync(
+            string name,
+            string description,
+            List<string> customHostNames,
+            int? scaleUnits,
+            CrossSiteAccessPolicies accessPolicies,
+            StreamingEndpointAccessControl accessControl,
+            StreamingEndpointCacheControl cacheControl)
+        {
+            var response = CreateStreamingEndpointAsync(
+                name,
+                description,
+                customHostNames,
+                scaleUnits,
+                accessPolicies,
+                accessControl,
+                cacheControl);
+
+            return response.ContinueWith(t =>
+            {
+                t.ThrowIfFaulted();
+
+                string operationId = t.Result.Single().Headers[StreamingConstants.OperationIdHeader];
+
+                IOperation result = new OperationData
+                {
+                    ErrorCode = null,
+                    ErrorMessage = null,
+                    Id = operationId,
+                    State = OperationState.InProgress.ToString(),
+                };
+
+                return result;
+            });
+        }
+
+        private Task<IMediaDataServiceResponse> CreateStreamingEndpointAsync(
             string name,
             string description,
             List<string> customHostNames,
@@ -253,250 +499,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             MediaRetryPolicy retryPolicy = MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
 
-            return retryPolicy.ExecuteAsync(() => dataContext.SaveChangesAsync(streamingEndpoint))
-                .ContinueWith<IStreamingEndpoint>(t =>
-                {
-                    t.ThrowIfFaulted();
-
-                    string operationId = t.Result.Single().Headers[StreamingConstants.OperationIdHeader];
-
-                    IOperation operation = AsyncHelper.WaitOperationCompletion(
-                        MediaContext,
-                        operationId,
-                        StreamingConstants.CreateStreamingEndpointPollInterval);
-
-                    string messageFormat = Resources.ErrorCreateStreamingEndpointFailedFormat;
-                    string message;
-
-                    switch (operation.State)
-                    {
-                        case OperationState.Succeeded:
-                            var result = (StreamingEndpointData)t.Result.AsyncState;
-                            result.Refresh();
-                            return result;
-                        case OperationState.Failed:
-                            message = string.Format(CultureInfo.CurrentCulture, messageFormat, Resources.Failed, operationId, operation.ErrorMessage);
-                            throw new InvalidOperationException(message);
-                        default: // can never happen unless state enum is extended
-                            message = string.Format(CultureInfo.CurrentCulture, messageFormat, Resources.InInvalidState, operationId, operation.State);
-                            throw new InvalidOperationException(message);
-                    }
-                }); 
-        }
-
-
-        /// <summary>
-        /// Sends create streaming endpoint operation to the service and returns. Use Operations collection to get operation's status.
-        /// </summary>
-        /// <param name="name">Name of the streaming endpoint.</param>
-        /// <returns>The created streaming endpoint.</returns>
-        public IOperation SendCreateOperation(string name)
-        {
-            return SendCreateOperation(name, null, null, null, null, null, null);
-        }
-
-        /// <summary>
-        /// Sends create streaming endpoint operation to the service asynchronously. Use Operations collection to get operation's status.
-        /// </summary>
-        /// <param name="name">Name of the streaming endpoint.</param>
-        /// <returns>The created streaming endpoint.</returns>
-        public Task<IOperation> SendCreateOperationAync(string name)
-        {
-            return SendCreateOperationAsync(name, null, null, null, null, null, null);
-        }
-
-        /// <summary>
-        /// Sends create streaming endpoint operation to the service and returns. Use Operations collection to get operation's status.
-        /// </summary>
-        /// <param name="name">Name of the streaming endpoint.</param>
-        /// <param name="scaleUnit">Scale units</param>
-        /// <returns>The created streaming endpoint (for legacy account using the SDK).</returns>
-        public IOperation SendCreateOperation(string name, int scaleUnit)
-        {
-            return SendCreateOperation(name, null, null, scaleUnit, null, null, null);
-        }
-
-        /// <summary>
-        /// Sends create streaming endpoint operation to the service asynchronously. Use Operations collection to get operation's status.
-        /// </summary>
-        /// <param name="name">Name of the streaming endpoint.</param>
-        /// <param name="scaleUnit">Scale units</param>
-        /// <returns>The created streaming endpoint (for legacy account using the SDK).</returns>
-        public Task<IOperation> SendCreateOperationAync(string name, int scaleUnit)
-        {
-            return SendCreateOperationAsync(name, null, null, scaleUnit, null, null, null);
-        }
-
-        /// <summary>
-        /// Sends create streaming endpoint operation to the service and returns. Use Operations collection to get operation's status.
-        /// </summary>
-        /// <param name="name">Name of the streaming endpoint.</param>
-        /// <param name="description">Description of the streaming endpoint.</param>
-        /// <param name="scaleUnit">Scale units</param>
-        /// <returns>The created streaming endpoint (for legacy account using the SDK).</returns>
-        public IOperation SendCreateOperation(string name, string description, int scaleUnit)
-        {
-            return SendCreateOperation(name, description, null, scaleUnit, null, null, null);
-        }
-
-        /// <summary>
-        /// Sends create streaming endpoint operation to the service asynchronously. Use Operations collection to get operation's status.
-        /// </summary>
-        /// <param name="name">Name of the streaming endpoint.</param>
-        /// <param name="description">Description of the streaming endpoint.</param>
-        /// <param name="scaleUnit">Scale units</param>
-        /// <returns>The created streaming endpoint (for legacy account using the SDK).</returns>
-        public Task<IOperation> SendCreateOperationAync(string name, string description, int scaleUnit)
-        {
-            return SendCreateOperationAsync(name, description, null, scaleUnit, null, null, null);
-        }
-
-        /// <summary>
-        /// Sends create streaming endpoint operation to the service and returns. Use Operations collection to get operation's status.
-        /// </summary>
-        /// <param name="name">Name of the streaming endpoint.</param>
-        /// <param name="description">Description of the streaming endpoint.</param>
-        /// <param name="customHostNames">a list of custom host names.</param>
-        /// <returns>The created streaming endpoint (for standard account using the SDK).</returns>
-        public IOperation SendCreateOperation(string name, string description, List<string> customHostNames)
-        {
-            return SendCreateOperation(name, description, customHostNames, null, null, null, null);
-        }
-
-        /// <summary>
-        /// Sends create streaming endpoint operation to the service asynchronously. Use Operations collection to get operation's status.
-        /// </summary>
-        /// <param name="name">Name of the streaming endpoint.</param>
-        /// <param name="description">Description of the streaming endpoint.</param>
-        /// <param name="customHostNames">a list of custom host names.</param>
-        /// <returns>The created streaming endpoint (for standard account using the SDK).</returns>
-        public Task<IOperation> SendCreateOperationAync(string name, string description, List<string> customHostNames)
-        {
-            return SendCreateOperationAsync(name, description, customHostNames, null, null, null, null);
-        }
-
-        /// <summary>
-        /// Sends create streaming endpoint operation to the service and returns. Use Operations collection to get operation's status.
-        /// </summary>
-        /// <param name="name">Name of the streaming endpoint.</param>
-        /// <param name="description">Description of the streaming endpoint.</param>
-        /// <param name="customHostNames">a list of custom host names.</param>
-        /// <param name="scaleUnits">scale units</param>
-        /// <returns>The created streaming endpoint (for premium account using the SDK).</returns>
-        public IOperation SendCreateOperation(
-            string name,
-            string description,
-            List<string> customHostNames,
-            int scaleUnits)
-        {
-            return SendCreateOperation(name, description, customHostNames, scaleUnits, null, null, null);
-        }
-
-        /// <summary>
-        /// Sends create streaming endpoint operation to the service asynchronously. Use Operations collection to get operation's status.
-        /// </summary>
-        /// <param name="name">Name of the streaming endpoint.</param>
-        /// <param name="description">Description of the streaming endpoint.</param>
-        /// <param name="customHostNames">a list of custom host names.</param>
-        /// <param name="scaleUnits">scale units</param>
-        /// <returns>The created streaming endpoint (for premium account using the SDK).</returns>
-        public Task<IOperation> SendCreateOperationAync(
-            string name,
-            string description,
-            List<string> customHostNames,
-            int scaleUnits)
-        {
-            return SendCreateOperationAsync(name, description, customHostNames, scaleUnits, null, null, null);
-        }
-
-        /// <summary>
-        /// Sends create streaming endpoint operation to the service and returns. Use Operations collection to get operation's status.
-        /// </summary>
-        /// <param name="name">Name of the streaming endpoint.</param>
-        /// <param name="description">description of the streaming endpoint</param>
-        /// <param name="customHostNames">customer host names</param>
-        /// <param name="scaleUnits">the scale units, can only be set for legacy and premium accounts</param>
-        /// <param name="accessPolicies">cross site access policies</param>
-        /// <param name="accessControl">access control</param>
-        /// <param name="cacheControl">cache control</param>
-        /// <returns>The created streaming endpoint.</returns>
-        public IOperation SendCreateOperation(
-            string name,
-            string description,
-            List<string> customHostNames,
-            int? scaleUnits,
-            CrossSiteAccessPolicies accessPolicies,
-            StreamingEndpointAccessControl accessControl,
-            StreamingEndpointCacheControl cacheControl)
-        {
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ArgumentException(Resources.ErrorEmptyStreamingEndpointName);
-            }
-
-            var streamingEndpoint = new StreamingEndpointData
-            {
-                Name = name,
-                Description = description,
-                CustomHostNames = customHostNames ?? new List<string>(),
-                ScaleUnits = scaleUnits,
-                CrossSiteAccessPolicies = accessPolicies
-            };
-
-            ((IStreamingEndpoint)streamingEndpoint).AccessControl = accessControl;
-            ((IStreamingEndpoint)streamingEndpoint).CacheControl = cacheControl;
-            
-            streamingEndpoint.SetMediaContext(MediaContext);
-
-            IMediaDataServiceContext dataContext = MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
-            dataContext.AddObject(StreamingEndpointSet, streamingEndpoint);
-
-            MediaRetryPolicy retryPolicy = MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
-
-            var response = retryPolicy.ExecuteAction(() => dataContext.SaveChanges());
-
-            string operationId = response.Single().Headers[StreamingConstants.OperationIdHeader];
-
-            IOperation result = new OperationData
-            {
-                ErrorCode = null,
-                ErrorMessage = null,
-                Id = operationId,
-                State = OperationState.InProgress.ToString(),
-            };
-
-            return result;
-        }
-
-        /// <summary>
-        /// Sends create streaming endpoint operation to the service asynchronously. Use Operations collection to get operation's status.
-        /// </summary>
-        /// <param name="name">Name of the streaming endpoint.</param>
-        /// <param name="description">description of the streaming endpoint</param>
-        /// <param name="customHostNames">customer host names</param>
-        /// <param name="scaleUnits">the scale units, can only be set for legacy and premium accounts</param>
-        /// <param name="accessPolicies">cross site access policies</param>
-        /// <param name="accessControl">access control</param>
-        /// <param name="cacheControl">cache control</param>
-        /// <returns>The created streaming endpoint.</returns>
-        public Task<IOperation> SendCreateOperationAsync(
-            string name,
-            string description,
-            List<string> customHostNames,
-            int? scaleUnits,
-            CrossSiteAccessPolicies accessPolicies,
-            StreamingEndpointAccessControl accessControl,
-            StreamingEndpointCacheControl cacheControl)
-        {
-            return Task.Factory.StartNew(() =>
-                SendCreateOperation(
-                    name,
-                    description,
-                    customHostNames,
-                    scaleUnits,
-                    accessPolicies,
-                    accessControl,
-                    cacheControl));
+            return retryPolicy.ExecuteAsync(() => dataContext.SaveChangesAsync(streamingEndpoint));
         }
     }
 }

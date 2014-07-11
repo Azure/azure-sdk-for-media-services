@@ -1,4 +1,4 @@
-﻿// Copyright 2012 Microsoft Corporation
+﻿// Copyright 2014 Microsoft Corporation
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,23 +15,13 @@
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
-    /// Specifies the size of a channel
+    /// Interface of the channel output
     /// </summary>
-    public enum ChannelSize
+    public interface IChannelOutput
     {
         /// <summary>
-        /// Small channel
+        /// Gets or sets the HLS specific settings.
         /// </summary>
-        Small = 0,
-
-        /// <summary>
-        /// Medium channel
-        /// </summary>
-        Medium = 1,
-
-        /// <summary>
-        /// Large channel
-        /// </summary>
-        Large = 2 
+        ChannelOutputHls Hls { get; set; }
     }
 }

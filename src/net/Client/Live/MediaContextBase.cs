@@ -14,9 +14,6 @@
 // limitations under the License.
 // </license>
 
-using Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization;
-using Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption;
-
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
@@ -43,15 +40,5 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Gets the collection of operation in the system.
         /// </summary>
         public abstract OperationBaseCollection Operations { get; }
-
-        /// <summary>
-        /// Gets the collection of origin metrics in the system.
-        /// </summary>
-        public abstract OriginMetricBaseCollection OriginMetrics { get; }
-
-        /// <summary>
-        /// Gets the collection of channel metrics in the system.
-        /// </summary>
-        public abstract ChannelMetricBaseCollection ChannelMetrics { get; }
     }
 }

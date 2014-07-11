@@ -52,11 +52,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public List<string> CustomHostNames { get; set; }
 
         /// <summary>
-        /// Get the streaming point availability set name
-        /// </summary>
-        public string AvailabilitySetName { get; set; }
-
-        /// <summary>
         /// Gets streaming endpoint creation date.
         /// </summary>
         public DateTime Created { get; set; }
@@ -68,6 +63,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
         /// <summary>
         /// Gets or sets the number of scale Units of the streaming endpoint.
+        /// If the ScaleUnits is not set, default value based on the account type is used.
+        /// Standard users cannot set this value and default 
         /// </summary>
         public int? ScaleUnits { get; set; }
 

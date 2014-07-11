@@ -14,13 +14,7 @@
 // limitations under the License.
 // </license>
 
-using System;
-using System.Linq;
 using System.Threading;
-using Microsoft.WindowsAzure.MediaServices.Client.OAuth;
-using Microsoft.WindowsAzure.MediaServices.Client.Versioning;
-using Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization;
-using Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -33,8 +27,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private ProgramBaseCollection _programs;
         private StreamingEndpointBaseCollection _streamingEndpoints;
         private OperationBaseCollection _operations;
-        private OriginMetricBaseCollection _originMetrics;
-        private ChannelMetricBaseCollection _channelMetrics;
 
         /// <summary>
         /// Gets the collection of channels in the system.
@@ -94,36 +86,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     Interlocked.CompareExchange(ref _operations, new OperationBaseCollection(this), null);
                 }
                 return _operations;
-            }
-        }
-
-        /// <summary>
-        /// Gets the collection of origin metrics in the system.
-        /// </summary>
-        public override OriginMetricBaseCollection OriginMetrics
-        {
-           get
-            {
-                if (_originMetrics == null)
-                {
-                    Interlocked.CompareExchange(ref _originMetrics, new OriginMetricBaseCollection(this), null);
-                }
-                return _originMetrics;
-            }
-        }
-
-        /// <summary>
-        /// Gets the collection of channel metrics in the system.
-        /// </summary>
-        public override ChannelMetricBaseCollection ChannelMetrics
-        {
-            get
-            {
-                if (_channelMetrics == null)
-                {
-                    Interlocked.CompareExchange(ref _channelMetrics, new ChannelMetricBaseCollection(this), null);
-                }
-                return _channelMetrics;
             }
         }
     }

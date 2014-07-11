@@ -62,7 +62,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
                 GetAccessControl(), 
                 GetCacheControl());
 
-            IChannel channel = _dataContext.Channels.Create(TestChannelName, ChannelSize.Large, MakeChannelSettings());
+            IChannel channel = _dataContext.Channels.Create(
+                TestChannelName, 
+                MakeChannelInput(),
+                MakeChannelPreview(),
+                MakeChannelOutput());
             IAsset asset = _dataContext.Assets.Create(TestAssetlName, AssetCreationOptions.None);
             IProgram program = channel.Programs.Create(TestProgramlName, false, TimeSpan.FromHours(1), TimeSpan.FromHours(1), asset.Id);
 
@@ -111,7 +115,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
 		public void ChannelCrossDomain()
 		{
 			var channel = ObtainTestChannel();
-
+            
 			string clientPolicy =
 				@"<?xml version=""1.0"" encoding=""utf-8""?>
 				<access-policy>
@@ -127,29 +131,23 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
 				  </cross-domain-access>
 				</access-policy>";
 
-			channel.Settings.ClientAccessPolicy = new CrossSiteAccessPolicy
-			{
-				Version = "1.0",
-				Policy = clientPolicy
-			};
+		    string xdomainPolicy =
+		        @"<?xml version=""1.0"" ?>
+			    <cross-domain-policy>
+			      <allow-access-from domain=""*"" />
+			    </cross-domain-policy>";
 
-			string xdomainPolicy =
-			@"<?xml version=""1.0"" ?>
-			<cross-domain-policy>
-			  <allow-access-from domain=""*"" />
-			</cross-domain-policy>";
-
-			channel.Settings.CrossDomainPolicy = new CrossSiteAccessPolicy
-			{
-				Version = "1.0",
-				Policy = xdomainPolicy
-			};
+		    channel.CrossSiteAccessPolicies = new CrossSiteAccessPolicies
+		    {
+		        ClientAccessPolicy = clientPolicy,
+		        CrossDomainPolicy = xdomainPolicy
+		    };
 
 			channel.Update();
 
 			channel = GetTestChannel();
-			Assert.AreEqual(clientPolicy, channel.Settings.ClientAccessPolicy.Policy);
-			Assert.AreEqual(xdomainPolicy, channel.Settings.CrossDomainPolicy.Policy);
+			Assert.AreEqual(clientPolicy, channel.CrossSiteAccessPolicies.ClientAccessPolicy);
+			Assert.AreEqual(xdomainPolicy, channel.CrossSiteAccessPolicies.CrossDomainPolicy);
 
 			channel.Delete();
 		}
@@ -170,29 +168,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
 
 			target = GetTestStreamingEndpoint();
 		    Assert.IsTrue(domains.SequenceEqual(target.CustomHostNames));
-
-			target.Delete();
-		}
-
-		[TestMethod]
-		[Ignore] // need valid domain names
-		public void ChannelCustomDomain()
-		{
-			var target = ObtainTestChannel();
-
-			var domains = new[] { "a", "b" }.Select(i =>
-				string.Format("{0}{1}.testingcustomdomain.com", i, new Random().Next(1000, 9999).ToString()))
-				.ToArray();
-
-			target.Settings.CustomDomain = new CustomDomainSettings
-			{
-				CustomDomainNames = domains
-			};
-
-			target.Update();
-
-			target = GetTestChannel();
-			Assert.IsTrue(domains.SequenceEqual(target.Settings.CustomDomain.CustomDomainNames));
 
 			target.Delete();
 		}
@@ -230,7 +205,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
 			var result = _dataContext.Channels.Where(o => o.Name == TestChannelName).FirstOrDefault();
 			if(result == null)
 			{
-				result = _dataContext.Channels.Create(TestChannelName, ChannelSize.Large, MakeChannelSettings());
+				result = _dataContext.Channels.Create(
+                    TestChannelName, 
+                    MakeChannelInput(),
+                    MakeChannelPreview(),
+                    MakeChannelOutput());
 			}
 			return result;
 		}
@@ -336,26 +315,57 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
             }
 
             return bytes;
-        } 
+        }
 
-        static ChannelSettings MakeChannelSettings()
+        static IChannelInput MakeChannelInput()
         {
-            var settings = new ChannelSettings
-            {
-                Ingest = new IngestEndpointSettings
-                {
-                    Security = new IngestEndpointSecuritySettings
-                    {
-                        IPv4AllowList = new List<Ipv4>
-                        {
-                            new Ipv4 { Name = "testName1", IP = "1.1.1.1" },
-                        }
+            IChannelInput input = new ChannelInput();
 
+            input.KeyFrameDistanceHns = 19000000;
+            input.StreamingProtocol = StreamingProtocol.Smooth;
+            input.AccessControl = new ChannelAccessControl
+            {
+                IPAllowList = new List<IPAddress>
+                {
+                    new IPAddress
+                    {
+                        Name = "testName1",
+                        Address = System.Net.IPAddress.Parse("1.1.1.1"),
+                        SubnetPrefixLength = 24
                     }
-                },
+                }
             };
 
-            return settings;
+            return input;
+        }
+
+        static IChannelPreview MakeChannelPreview()
+        {
+            IChannelPreview preview = new ChannelPreview();
+
+            preview.AccessControl = new ChannelAccessControl
+            {
+                IPAllowList = new List<IPAddress>
+                {
+                    new IPAddress
+                    {
+                        Name = "testName1",
+                        Address = System.Net.IPAddress.Parse("1.1.1.1"),
+                        SubnetPrefixLength = 24
+                    }
+                }
+            };
+
+            return preview;
+        }
+
+        static IChannelOutput MakeChannelOutput()
+        {
+            IChannelOutput output = new ChannelOutput();
+
+            output.Hls = new ChannelOutputHls { FragmentsPerSegment = 1 };
+
+            return output;
         }
     }
 }

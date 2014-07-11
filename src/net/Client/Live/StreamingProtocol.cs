@@ -1,6 +1,5 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="CrossSiteAccessPolicy.cs" company="Microsoft">Copyright 2012 Microsoft Corporation</copyright>
-// <license>
+﻿// Copyright 2012 Microsoft Corporation
+// 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -12,24 +11,23 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-// </license>
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
+    /// <summary>
+    /// The ingest streaming protocol.
+    /// </summary>
+    public enum StreamingProtocol
+    {
+        /// <summary>
+        /// Smooth Streaming.
+        /// </summary>
+        Smooth = 0,
 
-	/// <summary>
-	/// Cross site access policy.
-	/// </summary>
-	public class CrossSiteAccessPolicy
-	{
-		/// <summary>
-		/// Policy.
-		/// </summary>
-		public string Policy { get; set; }
-
-		/// <summary>
-		/// Version.
-		/// </summary>
-		public string Version { get; set; }
-	}
+        /// <summary>
+        /// RTMP.
+        /// </summary>
+        // ReSharper disable once InconsistentNaming
+        RTMP = 1,
+    }
 }

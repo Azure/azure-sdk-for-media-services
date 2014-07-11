@@ -15,6 +15,8 @@
 // </license>
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
@@ -53,16 +55,17 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
         {
             IChannel target = new ChannelData();
 
-            var settings = new ChannelSettings
+            var input = new ChannelInput()
             {
-                 Ingest = new IngestEndpointSettings()
+                 AccessControl = new ChannelServiceAccessControl
+                 {
+                     IPAllowList = new List<ServiceIPAddress> {new ServiceIPAddress {Address = "192.168.0.1/24", SubnetPrefixLength = 24} }
+                 }
             };
 
-            target.Settings = settings;
+            target.Input = input;
 
-            target.Settings.Ingest.Security = new IngestEndpointSecuritySettings();
-
-            Assert.IsNotNull(target.Settings.Ingest.Security);
+            Assert.IsNotNull(target.Input.AccessControl.IPAllowList.FirstOrDefault());
         }
     }
 }

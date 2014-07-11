@@ -1,4 +1,4 @@
-﻿// Copyright 2012 Microsoft Corporation
+﻿// Copyright 2014 Microsoft Corporation
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,11 +19,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
     /// Describes Streaming Endpoint Ingest access control.
+    /// This is the public class exposed to SDK interfaces and used by users
     /// </summary>
     public class StreamingEndpointAccessControl
     {
         /// <summary>
         /// Gets or sets the list of IP-s allowed.
+        /// This is the public class exposed to SDK interfaces and used by users
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public IList<IPAddress> IPAllowList { get; set; }
@@ -37,6 +39,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
     /// <summary>
     /// Describes Streaming Endpoint Ingest access control.
+    /// This is the internal class for the communication to the REST and must match the REST metadata
     /// </summary>
     internal class StreamingEndpointServiceAccessControl
     {
@@ -65,7 +68,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             if (accessControl == null) return;
 
-            AkamaiSignatureHeaderAuthenticationKeyList = accessControl.AkamaiSignatureHeaderAuthenticationKeyList.ToList();
+            if (accessControl.AkamaiSignatureHeaderAuthenticationKeyList != null)
+            {
+                AkamaiSignatureHeaderAuthenticationKeyList =
+                    accessControl.AkamaiSignatureHeaderAuthenticationKeyList.ToList();
+            }
 
             if (accessControl.IPAllowList != null)
             {

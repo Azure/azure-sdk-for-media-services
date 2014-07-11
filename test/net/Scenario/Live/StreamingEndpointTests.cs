@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="ChannelTests.cs" company="Microsoft">Copyright 2012 Microsoft Corporation</copyright>
+// <copyright file="StreamingEndpointTests.cs" company="Microsoft">Copyright 2014 Microsoft Corporation</copyright>
 // <license>
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -152,38 +152,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             dataContextMock.Verify((ctxt) => ctxt.SaveChanges(), Times.Exactly(2));
         }
 
-#if METRIC
-        [TestMethod]
-        [Priority(0)]
-        public void TestGetMetric()
-        {
-            var data = new StreamingEndpointData { Name = "testData", Id = "1" };
-
-            var dataContextMock = new Mock<IMediaDataServiceContext>();
-
-            var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
-
-            var fakeResponse = new[] { new OriginMetricData() { OriginName = "test"} };
-            int exceptionCount = 2;
-
-            dataContextMock.Setup((ctxt) => ctxt
-                .Execute<OriginMetricData>(It.IsAny<Uri>()))
-                .Returns(() => 
-                {
-                    if (--exceptionCount > 0) throw fakeException;
-                    return fakeResponse;
-                });
-
-            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
-
-            data.SetMediaContext(_mediaContext);
-
-            var result = data.GetMetric();
-            Assert.AreEqual("test", result.OriginName);
-
-            dataContextMock.Verify((ctxt) => ctxt.Execute<OriginMetricData>(It.IsAny<Uri>()), Times.Exactly(2));
-        }
-#endif
         #endregion Retry Logic tests
     }
 }

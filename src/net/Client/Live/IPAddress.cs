@@ -16,6 +16,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
     /// Represents an IP Address
+    /// This is the public class exposed to SDK interfaces and used by users
     /// </summary>
     /// ReSharper disable once InconsistentNaming
     public class IPAddress
@@ -38,6 +39,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
     /// <summary>
     /// Represents an IP Address
+    /// This is the internal class for the communication to the REST and must match the REST metadata
     /// </summary>
     /// ReSharper disable once InconsistentNaming
     internal class ServiceIPAddress
@@ -58,7 +60,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public int? SubnetPrefixLength { get; set; }
 
         /// <summary>
-        /// Creates an instance of StreamingEndpointServiceAccessControl class.
+        /// Creates an instance of ServiceIPAddress class.
         /// </summary>
         public ServiceIPAddress() { }
 
@@ -91,10 +93,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 return null;
             }
 
-            var result = new IPAddress();
-
-            result.Name = ipAddress.Name;
-            result.SubnetPrefixLength = ipAddress.SubnetPrefixLength;
+            var result = new IPAddress {Name = ipAddress.Name, SubnetPrefixLength = ipAddress.SubnetPrefixLength};
 
             System.Net.IPAddress address;
             if (!string.IsNullOrEmpty(ipAddress.Address) &&

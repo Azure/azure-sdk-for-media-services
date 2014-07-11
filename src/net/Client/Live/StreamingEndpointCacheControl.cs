@@ -1,4 +1,4 @@
-﻿// Copyright 2012 Microsoft Corporation
+﻿// Copyright 2014 Microsoft Corporation
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
     /// Describes streaming endpoint cache control.
+    /// This is the public class exposed to SDK interfaces and used by users
     /// </summary>
     public class StreamingEndpointCacheControl
     {
@@ -29,6 +30,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
     /// <summary>
     /// Describes streaming endpoint cache control object in the REST.
+    /// This is the internal class for the communication to the REST and must match the REST metadata
     /// </summary>
     internal class StreamingEndpointServiceCacheControl
     {
