@@ -81,6 +81,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssetEncryptionStateUnitTests.cs" />
     <Compile Include="AssetUnitTest.cs" />
     <Compile Include="CacheTest.cs" />
     <Compile Include="CommonEncryptionTest.cs" />
@@ -122,6 +123,9 @@
     <None Include="app.config" />
     <None Include="packages.config" />
     <Content Include="UnitTest.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\AssetEncryptionStateTestCases.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

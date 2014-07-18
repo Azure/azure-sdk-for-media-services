@@ -157,6 +157,7 @@
     <Compile Include="DynamicEncryption\AssetDeliveryPolicyType.cs" />
     <Compile Include="DynamicEncryption\AssetDeliveryProtocol.cs" />
     <Compile Include="DynamicEncryption\CloudMediaContext.cs" />
+    <Compile Include="DynamicEncryption\AssetEncryptionState.cs" />
     <Compile Include="DynamicEncryption\IAsset.cs" />
     <Compile Include="DynamicEncryption\IAssetDeliveryPolicy.cs" />
     <Compile Include="DynamicEncryption\MediaContextBase.cs" />
@@ -184,6 +185,7 @@
     <Compile Include="AssetPlaceholderToInstanceResolver.cs" />
     <Compile Include="Entities\AssetState.cs" />
     <Compile Include="AzureMediaServicesClassFactory.cs" />
+    <Compile Include="Entities\AssetType.cs" />
     <Compile Include="Entities\BaseEntity.cs" />
     <Compile Include="BlobTransferCompleteEventArgs.cs" />
     <Compile Include="BlobTransferProgressChangedEventArgs.cs" />

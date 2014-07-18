@@ -22,7 +22,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption
     public enum AssetDeliveryPolicyType
     {
         /// <summary>
-        /// Do not apply dynamic encryption to the asset.
+        /// Delivery Policy Type not set.  An invalid value.
         /// </summary>
         None,
 

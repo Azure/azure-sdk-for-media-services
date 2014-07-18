@@ -113,6 +113,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccessPoliciesTests.cs" />
+    <Compile Include="DynamicEncryption\AssetEncryptionStateTests.cs" />
     <Compile Include="AssetFilesTests.cs" />
     <Compile Include="DynamicEncryption\AssetDeliveryPolicyCollectionTest.cs" />
     <Compile Include="DynamicEncryption\ContentKeyAuthorizationPolicyOptionTests.cs" />

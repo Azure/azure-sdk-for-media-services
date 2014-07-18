@@ -471,7 +471,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             WaitForJob(job.Id, JobState.Finished, VerifyAllTasksFinished);
         }
 
-        private static string UpdatePlayReadyConfigurationXML(Guid keyId, byte[] keyValue, Uri licenseAcquisitionUrl, string originalXmlConfiguration)
+        internal static string UpdatePlayReadyConfigurationXML(Guid keyId, byte[] keyValue, Uri licenseAcquisitionUrl, string originalXmlConfiguration)
         {
             XNamespace xmlns = "http://schemas.microsoft.com/iis/media/v4/TM/TaskDefinition#";
 
@@ -839,9 +839,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         private IAsset CreateSmoothAsset(string[] filePaths)
         {
-            IAsset asset = _mediaContext.Assets.Create(Guid.NewGuid().ToString(), AssetCreationOptions.StorageEncrypted);
-            IAccessPolicy policy = _mediaContext.AccessPolicies.Create("Write", TimeSpan.FromMinutes(5), AccessPermissions.Write);
-            ILocator locator = _mediaContext.Locators.CreateSasLocator(asset, policy);
+            return CreateSmoothAsset(_mediaContext, filePaths, AssetCreationOptions.StorageEncrypted);
+        }
+
+        internal static IAsset CreateSmoothAsset(CloudMediaContext mediaContext, string[] filePaths, AssetCreationOptions options)
+        {
+            IAsset asset = mediaContext.Assets.Create(Guid.NewGuid().ToString(), options);
+            IAccessPolicy policy = mediaContext.AccessPolicies.Create("Write", TimeSpan.FromMinutes(5), AccessPermissions.Write);
+            ILocator locator = mediaContext.Locators.CreateSasLocator(asset, policy);
             var blobclient = new BlobTransferClient
             {
                 NumberOfConcurrentTransfers = 5,

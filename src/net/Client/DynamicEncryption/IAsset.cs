@@ -33,5 +33,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <value>A collection of <see cref="IAssetDeliveryPolicy"/> associated with the Asset.</value>
         IList<IAssetDeliveryPolicy> DeliveryPolicies { get; }
+
+        AssetEncryptionState GetEncryptionState(AssetDeliveryProtocol protocolsToCheck);
+
+        AssetType AssetType { get; }
+
+        bool IsStreamable { get; }
+
+        bool SupportsDynamicEncryption { get; }
     }
 }

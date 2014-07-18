@@ -83,9 +83,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         {
             var policyOptions = _mediaContext.ContentKeyAuthorizationPolicyOptions;
 
+            PlayReadyLicenseResponseTemplate responseTemplate = new PlayReadyLicenseResponseTemplate();
+            responseTemplate.LicenseTemplates.Add(new PlayReadyLicenseTemplate());
+
             string optionName = "integrationtest-crud-746";
             string requirements = null;
-            string configuration = "someconfiguration";
+            string configuration = MediaServicesLicenseTemplateSerializer.Serialize(responseTemplate);
             ContentKeyRestrictionType restrictionType = ContentKeyRestrictionType.Open;
 
             IContentKeyAuthorizationPolicyOption option = CreateOption(_mediaContext, optionName, ContentKeyDeliveryType.PlayReadyLicense, requirements, configuration, restrictionType);

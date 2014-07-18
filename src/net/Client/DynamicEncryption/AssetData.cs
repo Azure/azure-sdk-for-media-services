@@ -14,8 +14,15 @@
 // limitations under the License.
 // </license>
 
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Data.Services.Common;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -59,6 +66,247 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             this.DeliveryPolicies.Clear();
             this._deliveryPolicyCollection = null;
+        }
+
+        AssetEncryptionState IAsset.GetEncryptionState(AssetDeliveryProtocol protocolsToCheck)
+        {
+            IAsset asset = (IAsset)this;
+
+            AssetEncryptionState returnValue = AssetEncryptionState.Unsupported;
+
+            if (asset.IsStreamable)
+            {
+                if (asset.DeliveryPolicies.Count == 0)
+                {
+                    if ((asset.Options == AssetCreationOptions.EnvelopeEncryptionProtected) &&
+                        (asset.AssetType == AssetType.MediaServicesHLS))
+                    {
+                        returnValue = AssetEncryptionState.StaticEnvelopeEncryption;
+                    }
+                    else if (asset.Options == AssetCreationOptions.CommonEncryptionProtected &&
+                             (asset.AssetType == AssetType.MediaServicesHLS || asset.AssetType == AssetType.SmoothStreaming))
+                    {
+                        returnValue = AssetEncryptionState.StaticCommonEncryption;
+                    }
+                    else if (asset.Options == AssetCreationOptions.None)
+                    {
+                        returnValue = AssetEncryptionState.ClearOutput;
+                    }
+                    else if (asset.Options == AssetCreationOptions.StorageEncrypted)
+                    {
+                        returnValue = AssetEncryptionState.StorageEncryptedWithNoDeliveryPolicy;
+                    }
+                }
+                else
+                {
+                    IAssetDeliveryPolicy policy = asset.DeliveryPolicies.Where(p => p.AssetDeliveryProtocol.HasFlag(protocolsToCheck)).FirstOrDefault();
+
+                    if (policy == null)
+                    {
+                        List<AssetDeliveryProtocol> individualProtocols = GetIndividualProtocols(protocolsToCheck);
+
+                        bool partialMatch = false;
+
+                        foreach (AssetDeliveryProtocol protocol in individualProtocols)
+                        {
+                            if (asset.DeliveryPolicies.Any(p => p.AssetDeliveryProtocol.HasFlag(protocol)))
+                            {
+                                partialMatch = true;
+                                break;
+                            }
+                        }
+
+                        if (partialMatch)
+                        {
+                            returnValue = AssetEncryptionState.NoSinglePolicyApplies;
+                        }
+                        else
+                        {
+                            returnValue = AssetEncryptionState.BlockedByPolicy;
+                        }
+                    }
+                    else
+                    {
+                        if (policy.AssetDeliveryPolicyType == AssetDeliveryPolicyType.Blocked)
+                        {
+                            returnValue = AssetEncryptionState.BlockedByPolicy;
+                        }
+                        else if (policy.AssetDeliveryPolicyType == AssetDeliveryPolicyType.NoDynamicEncryption)
+                        {
+                            returnValue = AssetEncryptionState.NoDynamicEncryption;
+                        }
+                        else if (policy.AssetDeliveryPolicyType == AssetDeliveryPolicyType.DynamicCommonEncryption)
+                        {
+                            if (((asset.AssetType == AssetType.SmoothStreaming) || (asset.AssetType == AssetType.MultiBitrateMP4)) &&
+                                ((asset.Options == AssetCreationOptions.StorageEncrypted) || (asset.Options == AssetCreationOptions.None)))
+                            {
+                                returnValue = AssetEncryptionState.DynamicCommonEncryption;
+                            }
+                        }
+                        else if (policy.AssetDeliveryPolicyType == AssetDeliveryPolicyType.DynamicEnvelopeEncryption)
+                        {
+                            if (((asset.AssetType == AssetType.SmoothStreaming) || (asset.AssetType == AssetType.MultiBitrateMP4)) &&
+                                ((asset.Options == AssetCreationOptions.StorageEncrypted) || (asset.Options == AssetCreationOptions.None)))
+                            {
+                                returnValue = AssetEncryptionState.DynamicEnvelopeEncryption;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return returnValue;
+        }
+
+        bool IAsset.IsStreamable
+        {
+            get
+            {
+                return IsStreamable(((IAsset)this).AssetType);
+            }
+        }
+
+        bool IAsset.SupportsDynamicEncryption
+        {
+            get
+            {
+                return SupportsDynamicEncryption(((IAsset)this).AssetType);
+            }
+        }
+
+        private static bool SupportsDynamicEncryption(AssetType assetType)
+        {
+            switch (assetType)
+            {
+                case AssetType.MP4:
+                case AssetType.Unknown:
+                case AssetType.MediaServicesHLS:
+                    return false;
+
+                default:
+                    return true;
+            }
+        }
+
+        private static bool IsStreamable(AssetType assetType)
+        { 
+            switch (assetType)
+            {
+                case AssetType.MP4:
+                case AssetType.Unknown:
+                    return false;
+
+                default:
+                    return true;
+            }
+        }
+
+        AssetType IAsset.AssetType
+        {
+            get
+            {
+                return GetAssetType((IAsset)this);
+            }
+        }
+
+        private static IAssetFile GetPrimaryFile(IAsset asset)
+        {
+            if (asset == null)
+            {
+                throw new ArgumentNullException("asset");
+            }
+
+            return asset.AssetFiles.Where(af => af.IsPrimary == true).SingleOrDefault();
+        }
+
+        private static bool IsExtension(string filepath, string extensionToCheck)
+        {
+            string extension = Path.GetExtension(filepath);
+
+            return (0 == String.Compare(extension, extensionToCheck, StringComparison.OrdinalIgnoreCase));
+        }
+
+        private static AssetType GetAssetType(IAsset asset)
+        {
+            AssetType assetType = AssetType.Unknown;
+
+            IAssetFile primaryFile = GetPrimaryFile(asset);
+
+            if (IsExtension(primaryFile.Name, ".mp4"))
+            {
+                if (asset.Options.HasFlag(AssetCreationOptions.EnvelopeEncryptionProtected) ||
+                    asset.Options.HasFlag(AssetCreationOptions.CommonEncryptionProtected))
+                {
+                    // We have no supported cases where Encryption is statically applied to an MBR MP4 fileset.
+                    assetType = AssetType.Unknown;
+                }
+                else
+                {
+                    assetType = AssetType.MP4;
+                }
+            }
+            else if (IsExtension(primaryFile.Name, ".ism"))
+            {
+                IAssetFile[] assetFiles = asset.AssetFiles.ToArray();
+
+                if (assetFiles.Where(af => IsExtension(af.Name, ".m3u8")).Any())
+                {
+                    assetType = AssetType.MediaServicesHLS;
+                }
+                else if (assetFiles.Where(af => IsExtension(af.Name, ".ismc")).Any())
+                {
+                    if (asset.Options.HasFlag(AssetCreationOptions.EnvelopeEncryptionProtected))
+                    {
+                        // We have no supported cases where Envelope Encryption is statically applied to a smooth streaming file.
+                        assetType = AssetType.Unknown;
+                    }
+                    else
+                    {
+                        assetType = AssetType.SmoothStreaming;
+                    }
+                }
+                else if (assetFiles.Where(af => IsExtension(af.Name, ".mp4")).Any())
+                {
+                    if (asset.Options.HasFlag(AssetCreationOptions.EnvelopeEncryptionProtected) ||
+                        asset.Options.HasFlag(AssetCreationOptions.CommonEncryptionProtected))
+                    {
+                        // We have no supported cases where Encryption is statically applied to an MBR MP4 fileset.
+                        assetType = AssetType.Unknown;
+                    }
+                    else
+                    {
+                        assetType = AssetType.MultiBitrateMP4;
+                    }
+                }
+            }
+
+            return assetType;
+        }
+
+        static AssetDeliveryProtocol[] _allValues = null;
+        internal static List<AssetDeliveryProtocol> GetIndividualProtocols(AssetDeliveryProtocol protocolsToSplit)
+        {
+            List<AssetDeliveryProtocol> protocolList = new List<AssetDeliveryProtocol>();
+
+            if (_allValues == null)
+            {
+                _allValues = (AssetDeliveryProtocol[])Enum.GetValues(typeof(AssetDeliveryProtocol));
+            }
+
+            foreach (AssetDeliveryProtocol protocol in _allValues)
+            {
+                if ((protocol == AssetDeliveryProtocol.None) || (protocol == AssetDeliveryProtocol.All))
+                {
+                    continue;
+                }
+
+                if (protocolsToSplit.HasFlag(protocol))
+                {
+                    protocolList.Add(protocol);
+                }
+            }
+
+            return protocolList;
         }
     }
 }

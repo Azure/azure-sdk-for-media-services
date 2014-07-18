@@ -37,5 +37,25 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             get { throw new NotSupportedException(); }
         }
+
+        AssetType IAsset.AssetType
+        {
+            get { throw new NotSupportedException(); }
+        }
+
+        bool IAsset.IsStreamable
+        {
+            get { throw new NotSupportedException(); }
+        }
+
+        bool IAsset.SupportsDynamicEncryption
+        {
+            get { throw new NotSupportedException(); }
+        }
+
+        AssetEncryptionState IAsset.GetEncryptionState(AssetDeliveryProtocol protocol)
+        {
+            throw new NotSupportedException();
+        }
     }
 }

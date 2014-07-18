@@ -47,7 +47,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             {
                 contentKey = CreateTestKey(_mediaContext, ContentKeyType.CommonEncryption);
 
-                policyOption = ContentKeyAuthorizationPolicyOptionTests.CreateOption(_mediaContext, String.Empty, ContentKeyDeliveryType.PlayReadyLicense, null, "fake configuration", ContentKeyRestrictionType.Open);
+                PlayReadyLicenseResponseTemplate responseTemplate = new PlayReadyLicenseResponseTemplate();
+                responseTemplate.LicenseTemplates.Add(new PlayReadyLicenseTemplate());
+                string licenseTemplate = MediaServicesLicenseTemplateSerializer.Serialize(responseTemplate);
+
+                policyOption = ContentKeyAuthorizationPolicyOptionTests.CreateOption(_mediaContext, String.Empty, ContentKeyDeliveryType.PlayReadyLicense, null, licenseTemplate, ContentKeyRestrictionType.Open);
 
                 List<IContentKeyAuthorizationPolicyOption> options = new List<IContentKeyAuthorizationPolicyOption>
                 {
@@ -148,11 +152,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             IContentKeyAuthorizationPolicy contentKeyAuthorizationPolicy = null;
             IContentKeyAuthorizationPolicyOption policyOption = null;
 
+            PlayReadyLicenseResponseTemplate responseTemplate = new PlayReadyLicenseResponseTemplate();
+            responseTemplate.LicenseTemplates.Add(new PlayReadyLicenseTemplate());
+            string licenseTemplate = MediaServicesLicenseTemplateSerializer.Serialize(responseTemplate);
+
             try
             {
                 contentKey = CreateTestKey(_mediaContext, ContentKeyType.CommonEncryption);
 
-                policyOption = ContentKeyAuthorizationPolicyOptionTests.CreateOption(_mediaContext, String.Empty, ContentKeyDeliveryType.PlayReadyLicense, null, "fake configuration", ContentKeyRestrictionType.Open);
+                policyOption = ContentKeyAuthorizationPolicyOptionTests.CreateOption(_mediaContext, String.Empty, ContentKeyDeliveryType.PlayReadyLicense, null, licenseTemplate, ContentKeyRestrictionType.Open);
 
                 List<IContentKeyAuthorizationPolicyOption> options = new List<IContentKeyAuthorizationPolicyOption>
                 {
