@@ -70,17 +70,17 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets or sets the channel input properties.
         /// </summary>
-        IChannelInput Input { get; set; }
+        ChannelInput Input { get; set; }
 
         /// <summary>
         /// Gets or sets the channel preview properties.
         /// </summary>
-        IChannelPreview Preview { get; set; }
+        ChannelPreview Preview { get; set; }
 
         /// <summary>
         /// Gets or sets the channel output properties.
         /// </summary>
-        IChannelOutput Output { get; set; }
+        ChannelOutput Output { get; set; }
 
         /// <summary>
         /// Collection of programs associated with the channel.

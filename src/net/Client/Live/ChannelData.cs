@@ -28,6 +28,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     [DataServiceKey("Id")]
     internal class ChannelData : RestEntity<ChannelData>, IChannel
     {
+        private ChannelInput _input;
+        private ChannelPreview _preview;
+
         /// <summary>
         /// Gets or sets the name of the channel.
         /// </summary>
@@ -53,14 +56,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Gets the preview Url.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public Uri PreviewUrl
+        Uri IChannel.PreviewUrl
         {
             get
             {
-                IChannelPreview preview = Preview;
-                if (preview == null || preview.Endpoints == null) return null;
+                if (_preview == null || _preview.Endpoints == null) return null;
 
-                var endpoint = preview.Endpoints.FirstOrDefault();
+                var endpoint = _preview.Endpoints.FirstOrDefault();
 
                 return endpoint == null ? null : endpoint.Url;
             }
@@ -70,14 +72,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Gets the ingest Url.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public Uri IngestUrl
+        Uri IChannel.IngestUrl
         {
             get
             {
-                IChannelInput input = Input;
-                if (input == null || input.Endpoints == null) return null;
+                if (_input == null || _input.Endpoints == null) return null;
 
-                var endpoint = input.Endpoints.FirstOrDefault();
+                var endpoint = _input.Endpoints.FirstOrDefault();
 
                 return endpoint == null ? null : endpoint.Url;
             }
@@ -108,44 +109,43 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets or sets the channel input properties.
         /// </summary>
-        public ChannelInput Input { get; set; }
+        public ChannelServiceInput Input
+        {
+            get { return _input == null ? null : new ChannelServiceInput(_input); }
+            set { _input = (ChannelInput) value; }
+        }
 
         /// <summary>
         /// Gets or sets the channel input properties.
         /// </summary>
-        IChannelInput IChannel.Input
+        ChannelInput IChannel.Input
         {
-            get { return Input; }
-            set { Input = new ChannelInput(value); }
+            get { return _input; }
+            set { _input = value; }
         }
 
         /// <summary>
         /// Gets or sets the channel preview properties.
         /// </summary>
-        public ChannelPreview Preview { get; set; }
+        public ChannelServicePreview Preview
+        {
+            get { return _preview == null ? null : new ChannelServicePreview(_preview);}
+            set { _preview = (ChannelPreview) value; }
+        }
 
         /// <summary>
         /// Gets or sets the channel input properties.
         /// </summary>
-        IChannelPreview IChannel.Preview
+        ChannelPreview IChannel.Preview
         {
-            get { return Preview; }
-            set { Preview = new ChannelPreview(value); }
+            get { return _preview; }
+            set { _preview = value; }
         }
 
         /// <summary>
         /// Gets or sets the channel output properties.
         /// </summary>
         public ChannelOutput Output { get; set; }
-
-        /// <summary>
-        /// Gets or sets the channel output properties.
-        /// </summary>
-        IChannelOutput IChannel.Output
-        {
-            get { return Output; }
-            set { Output = new ChannelOutput(value); }
-        }
 
         /// <summary>
         /// Collection of programs associated with the channel.
@@ -178,7 +178,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>Task to wait on for operation completion.</returns>
         public Task StartAsync()
         {
-            Uri uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Channels('{0}')/Start", Id), UriKind.Relative);
+            var uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Channels('{0}')/Start", Id), UriKind.Relative);
 
             return ExecuteActionAsync(uri, StreamingConstants.StartChannelPollInterval);
         }
@@ -189,7 +189,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>Operation info that can be used to track the operation.</returns>
         public IOperation SendStartOperation()
         {
-            Uri uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Channels('{0}')/Start", Id), UriKind.Relative);
+            var uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Channels('{0}')/Start", Id), UriKind.Relative);
 
             return SendOperation(uri);
         }
@@ -217,7 +217,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>Task to wait on for operation completion.</returns>
         public Task ResetAsync()
         {
-            Uri uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Channels('{0}')/Reset", Id), UriKind.Relative);
+            var uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Channels('{0}')/Reset", Id), UriKind.Relative);
 
             return ExecuteActionAsync(uri, StreamingConstants.StartChannelPollInterval);
         }
@@ -228,7 +228,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>Operation info that can be used to track the operation.</returns>
         public IOperation SendResetOperation()
         {
-            Uri uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Channels('{0}')/Reset", Id), UriKind.Relative);
+            var uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Channels('{0}')/Reset", Id), UriKind.Relative);
 
             return SendOperation(uri);
         }
@@ -256,7 +256,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>Task to wait on for operation completion.</returns>
         public Task StopAsync()
         {
-            Uri uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Channels('{0}')/Stop", Id), UriKind.Relative);
+            var uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Channels('{0}')/Stop", Id), UriKind.Relative);
 
             return ExecuteActionAsync(uri, StreamingConstants.StopChannelPollInterval);
         }
@@ -267,7 +267,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>Operation info that can be used to track the operation.</returns>
         public IOperation SendStopOperation()
         {
-            Uri uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Channels('{0}')/Stop", Id), UriKind.Relative);
+            var uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Channels('{0}')/Stop", Id), UriKind.Relative);
 
             return SendOperation(uri);
         }

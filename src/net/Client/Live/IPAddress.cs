@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
@@ -70,7 +72,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="ipAddress">IP address to copy into newly created instance.</param>
         public ServiceIPAddress(IPAddress ipAddress)
         {
-            if (ipAddress == null) return;
+            if (ipAddress == null)
+            {
+                throw new ArgumentNullException("ipAddress");
+            }
 
             Name = ipAddress.Name;
             SubnetPrefixLength = ipAddress.SubnetPrefixLength;

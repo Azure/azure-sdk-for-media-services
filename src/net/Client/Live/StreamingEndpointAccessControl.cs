@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -66,7 +67,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="accessControl">streaming endpoint access control to copy into newly created instance.</param>
         public StreamingEndpointServiceAccessControl(StreamingEndpointAccessControl accessControl)
         {
-            if (accessControl == null) return;
+            if (accessControl == null)
+            {
+                throw new ArgumentNullException("accessControl");
+            }
 
             if (accessControl.AkamaiSignatureHeaderAuthenticationKeyList != null)
             {
@@ -80,7 +84,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
                 foreach (var ipAddress in accessControl.IPAllowList)
                 {
-                    IPAllowList.Add(new ServiceIPAddress(ipAddress));
+                    IPAllowList.Add(ipAddress == null ? null : new ServiceIPAddress(ipAddress));
                 }
             }
         }

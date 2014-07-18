@@ -52,6 +52,30 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public string Url { get; set; }
 
         /// <summary>
+        /// Creates an instance of ChannelServiceEndpoint class.
+        /// </summary>
+        public ChannelServiceEndpoint() { }
+
+        /// <summary>
+        /// Creates an instance of ChannelServiceEndpoint class from an instance of ChannelEndpoint.
+        /// </summary>
+        /// <param name="endpoint">Channel endpoint to copy into newly created instance.</param>
+        public ChannelServiceEndpoint(ChannelEndpoint endpoint)
+        {
+            if (endpoint == null)
+            {
+                throw new ArgumentNullException("endpoint");
+            }
+
+            if (endpoint.Url != null)
+            {
+                Url = endpoint.Url.AbsoluteUri;
+            }
+
+            Protocol = endpoint.Protocol.ToString();
+        }
+
+        /// <summary>
         /// Casts ChannelServiceEndpoint to ChannelEndpoint.
         /// </summary>
         /// <param name="endpoint">Object to cast.</param>

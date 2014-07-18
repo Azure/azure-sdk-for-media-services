@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Collections.Generic;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
@@ -39,7 +40,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// The list of IP addresses that are allowed to connect to channel endpoint.
         /// </summary>
         // ReSharper disable once InconsistentNaming
-        public IList<ServiceIPAddress> IPAllowList { get; set; }
+        public List<ServiceIPAddress> IPAllowList { get; set; }
 
         /// <summary>
         /// Creates an instance of StreamingEndpointServiceAccessControl class.
@@ -52,7 +53,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="accessControl">ChannelAccessControl object to copy into newly created instance.</param>
         public ChannelServiceAccessControl(ChannelAccessControl accessControl)
         {
-            if (accessControl == null) return;
+            if (accessControl == null)
+            {
+                throw new ArgumentNullException("accessControl");
+            }
 
             if (accessControl.IPAllowList != null)
             {

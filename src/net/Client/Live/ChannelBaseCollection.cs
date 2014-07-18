@@ -50,9 +50,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>The created channel.</returns>
         public IChannel Create(
             string name,
-            IChannelInput input,
-            IChannelPreview preview,
-            IChannelOutput output)
+            ChannelInput input,
+            ChannelPreview preview,
+            ChannelOutput output)
         {
             return Create(name, null, input, preview, output);
         }
@@ -67,9 +67,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>The created channel.</returns>
         public Task<IChannel> CreateAsync(
             string name,  
-            IChannelInput input,
-            IChannelPreview preview,
-            IChannelOutput output)
+            ChannelInput input,
+            ChannelPreview preview,
+            ChannelOutput output)
         {
             return CreateAsync(name, null, input, preview, output);
         }
@@ -86,9 +86,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public IChannel Create(
             string name, 
             string description, 
-            IChannelInput input,
-            IChannelPreview preview,
-            IChannelOutput output)
+            ChannelInput input,
+            ChannelPreview preview,
+            ChannelOutput output)
         {
             return AsyncHelper.Wait(CreateAsync(name, description, input, preview, output));
         }
@@ -105,9 +105,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public Task<IChannel> CreateAsync(
             string name, 
             string description, 
-            IChannelInput input,
-            IChannelPreview preview,
-            IChannelOutput output)
+            ChannelInput input,
+            ChannelPreview preview,
+            ChannelOutput output)
         {
             var response = CreateChannelAsync(name, description, input, preview, output);
 
@@ -152,9 +152,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>Operation info that can be used to track the operation.</returns>
         public IOperation SendCreateOperation(
             string name,
-            IChannelInput input,
-            IChannelPreview preview,
-            IChannelOutput output)
+            ChannelInput input,
+            ChannelPreview preview,
+            ChannelOutput output)
         {
             return SendCreateOperation(name, null, input, preview, output);
         }
@@ -169,9 +169,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>Task to wait on for operation sending completion.</returns>
         public Task<IOperation> SendCreateOperationAsync(
             string name,
-            IChannelInput input,
-            IChannelPreview preview,
-            IChannelOutput output)
+            ChannelInput input,
+            ChannelPreview preview,
+            ChannelOutput output)
         {
             return SendCreateOperationAsync(name, null, input, preview, output);
         }
@@ -188,9 +188,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public IOperation SendCreateOperation(
             string name,
             string description,
-            IChannelInput input,
-            IChannelPreview preview,
-            IChannelOutput output)
+            ChannelInput input,
+            ChannelPreview preview,
+            ChannelOutput output)
         {
             return AsyncHelper.Wait(SendCreateOperationAsync(name, description, input, preview, output));
         }
@@ -207,9 +207,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public Task<IOperation> SendCreateOperationAsync(
             string name,
             string description,
-            IChannelInput input,
-            IChannelPreview preview,
-            IChannelOutput output)
+            ChannelInput input,
+            ChannelPreview preview,
+            ChannelOutput output)
         {
             var response = CreateChannelAsync(name, description, input, preview, output);
 
@@ -236,24 +236,26 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private Task<IMediaDataServiceResponse> CreateChannelAsync(
             string name,
             string description,
-            IChannelInput input,
-            IChannelPreview preview,
-            IChannelOutput output)
+            ChannelInput input,
+            ChannelPreview preview,
+            ChannelOutput output)
         {
             if (string.IsNullOrEmpty(name))
             {
                 throw new ArgumentException(Resources.ErrorEmptyChannelName);
             }
 
-            var channel = new ChannelData
+            var channelData = new ChannelData
             {
                 Name = name,
-                Description = description,
+                Description = description
             };
 
-            channel.Input = new ChannelInput(input);
-            channel.Preview = new ChannelPreview(preview);
-            channel.Output = new ChannelOutput(output);
+            IChannel channel = channelData;
+
+            channel.Input = input;
+            channel.Preview = preview;
+            channel.Output = output;
 
             if (channel.Input == null)
             {
@@ -261,15 +263,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
             if (channel.Input.Endpoints == null)
             {
-                channel.Input.Endpoints = new List<ChannelServiceEndpoint>();
+                channel.Input.Endpoints = new List<ChannelEndpoint>().AsReadOnly();
             }
             if (channel.Input.AccessControl == null)
             {
-                channel.Input.AccessControl = new ChannelServiceAccessControl();
+                channel.Input.AccessControl = new ChannelAccessControl();
             }
             if (channel.Input.AccessControl.IPAllowList == null)
             {
-                channel.Input.AccessControl.IPAllowList = new List<ServiceIPAddress>();
+                channel.Input.AccessControl.IPAllowList = new List<IPAddress>();
             }
 
             if (channel.Preview == null)
@@ -278,18 +280,18 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
             if (channel.Preview.Endpoints == null)
             {
-                channel.Preview.Endpoints = new List<ChannelServiceEndpoint>();
+                channel.Preview.Endpoints = new List<ChannelEndpoint>().AsReadOnly();
             }
             if (channel.Preview.AccessControl == null)
             {
-                channel.Preview.AccessControl = new ChannelServiceAccessControl();
+                channel.Preview.AccessControl = new ChannelAccessControl();
             }
             if (channel.Preview.AccessControl.IPAllowList == null)
             {
-                channel.Preview.AccessControl.IPAllowList = new List<ServiceIPAddress>();
+                channel.Preview.AccessControl.IPAllowList = new List<IPAddress>();
             }
 
-            channel.SetMediaContext(MediaContext);
+            channelData.SetMediaContext(MediaContext);
 
             IMediaDataServiceContext dataContext = MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AddObject(ChannelSet, channel);

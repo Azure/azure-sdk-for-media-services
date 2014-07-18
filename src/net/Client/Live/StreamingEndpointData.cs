@@ -91,7 +91,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         public StreamingEndpointServiceAccessControl AccessControl
         {
-            get { return new StreamingEndpointServiceAccessControl(_accessControl); }
+            get { return _accessControl == null ? null : new StreamingEndpointServiceAccessControl(_accessControl); }
             set { _accessControl = (StreamingEndpointAccessControl) value; }
         }
 
@@ -109,7 +109,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         public StreamingEndpointServiceCacheControl CacheControl
         {
-            get { return new StreamingEndpointServiceCacheControl(_cacheControl); }
+            get { return _cacheControl == null ? null : new StreamingEndpointServiceCacheControl(_cacheControl); }
             set { _cacheControl = (StreamingEndpointCacheControl) value; }
         }
 

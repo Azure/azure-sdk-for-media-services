@@ -317,55 +317,52 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
             return bytes;
         }
 
-        static IChannelInput MakeChannelInput()
+        static ChannelInput MakeChannelInput()
         {
-            IChannelInput input = new ChannelInput();
-
-            input.KeyFrameDistanceHns = 19000000;
-            input.StreamingProtocol = StreamingProtocol.Smooth;
-            input.AccessControl = new ChannelAccessControl
+            return new ChannelInput
             {
-                IPAllowList = new List<IPAddress>
+                KeyFrameDistanceHns = 19000000,
+                StreamingProtocol = StreamingProtocol.Smooth,
+                AccessControl = new ChannelAccessControl
                 {
-                    new IPAddress
+                    IPAllowList = new List<IPAddress>
                     {
-                        Name = "testName1",
-                        Address = System.Net.IPAddress.Parse("1.1.1.1"),
-                        SubnetPrefixLength = 24
+                        new IPAddress
+                        {
+                            Name = "testName1",
+                            Address = System.Net.IPAddress.Parse("1.1.1.1"),
+                            SubnetPrefixLength = 24
+                        }
                     }
                 }
             };
-
-            return input;
         }
 
-        static IChannelPreview MakeChannelPreview()
+        static ChannelPreview MakeChannelPreview()
         {
-            IChannelPreview preview = new ChannelPreview();
-
-            preview.AccessControl = new ChannelAccessControl
+            return new ChannelPreview
             {
-                IPAllowList = new List<IPAddress>
+                AccessControl = new ChannelAccessControl
                 {
-                    new IPAddress
+                    IPAllowList = new List<IPAddress>
                     {
-                        Name = "testName1",
-                        Address = System.Net.IPAddress.Parse("1.1.1.1"),
-                        SubnetPrefixLength = 24
+                        new IPAddress
+                        {
+                            Name = "testName1",
+                            Address = System.Net.IPAddress.Parse("1.1.1.1"),
+                            SubnetPrefixLength = 24
+                        }
                     }
                 }
             };
-
-            return preview;
         }
 
-        static IChannelOutput MakeChannelOutput()
+        static ChannelOutput MakeChannelOutput()
         {
-            IChannelOutput output = new ChannelOutput();
-
-            output.Hls = new ChannelOutputHls { FragmentsPerSegment = 1 };
-
-            return output;
+            return new ChannelOutput
+            {
+                Hls = new ChannelOutputHls { FragmentsPerSegment = 1 }
+            };
         }
     }
 }

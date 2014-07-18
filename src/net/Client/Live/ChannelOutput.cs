@@ -15,13 +15,13 @@
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
-    /// Interface of the channel output
+    /// Describe the channel output
     /// </summary>
-    public interface IChannelOutput
+    public class ChannelOutput
     {
         /// <summary>
         /// Gets or sets the HLS specific settings.
         /// </summary>
-        ChannelOutputHls Hls { get; set; }
+        public ChannelOutputHls Hls { get; set; }
     }
 }

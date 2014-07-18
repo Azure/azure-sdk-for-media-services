@@ -50,7 +50,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="cacheControl">StreamingEndpointCacheControl to copy into newly created instance.</param>
         public StreamingEndpointServiceCacheControl(StreamingEndpointCacheControl cacheControl)
         {
-            if (cacheControl == null) return;
+            if (cacheControl == null)
+            {
+                throw new ArgumentNullException("cacheControl");
+            }
 
             if (cacheControl.MaxAge.HasValue)
             {

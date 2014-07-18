@@ -55,11 +55,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
         {
             IChannel target = new ChannelData();
 
-            var input = new ChannelInput()
+            var input = new ChannelInput
             {
-                 AccessControl = new ChannelServiceAccessControl
+                 AccessControl = new ChannelAccessControl
                  {
-                     IPAllowList = new List<ServiceIPAddress> {new ServiceIPAddress {Address = "192.168.0.1/24", SubnetPrefixLength = 24} }
+                     IPAllowList = new List<IPAddress> {new IPAddress {Address = System.Net.IPAddress.Parse("192.168.0.1/24"), SubnetPrefixLength = 24} }
                  }
             };
 
