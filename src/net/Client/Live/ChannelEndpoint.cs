@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -32,63 +31,5 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Gets or sets the endpoint URL.
         /// </summary>
         public Uri Url { get; set; }
-    }
-
-    /// <summary>
-    /// Represents a channel streaming endpoint (ingest or preview)
-    /// This is the internal class for the communication to the REST and must match the REST metadata
-    /// </summary>
-    internal class ChannelServiceEndpoint
-    {
-        /// <summary>
-        /// Gets or sets the endpoint protocol
-        /// </summary>
-        public string Protocol { get; set; }
-
-        /// <summary>
-        /// Gets or sets the endpoint URL.
-        /// </summary>
-        [SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings", Justification = "OData layer compatibility.")]
-        public string Url { get; set; }
-
-        /// <summary>
-        /// Creates an instance of ChannelServiceEndpoint class.
-        /// </summary>
-        public ChannelServiceEndpoint() { }
-
-        /// <summary>
-        /// Creates an instance of ChannelServiceEndpoint class from an instance of ChannelEndpoint.
-        /// </summary>
-        /// <param name="endpoint">Channel endpoint to copy into newly created instance.</param>
-        public ChannelServiceEndpoint(ChannelEndpoint endpoint)
-        {
-            if (endpoint == null)
-            {
-                throw new ArgumentNullException("endpoint");
-            }
-
-            if (endpoint.Url != null)
-            {
-                Url = endpoint.Url.AbsoluteUri;
-            }
-
-            Protocol = endpoint.Protocol.ToString();
-        }
-
-        /// <summary>
-        /// Casts ChannelServiceEndpoint to ChannelEndpoint.
-        /// </summary>
-        /// <param name="endpoint">Object to cast.</param>
-        /// <returns>Casted object.</returns>
-        public static explicit operator ChannelEndpoint(ChannelServiceEndpoint endpoint)
-        {
-            if (endpoint == null) return null;
-
-            return new ChannelEndpoint
-            {
-                Protocol = (StreamingProtocol) Enum.Parse(typeof (StreamingProtocol), endpoint.Protocol, true),
-                Url = new Uri(endpoint.Url)
-            };
-        }
     }
 }

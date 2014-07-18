@@ -60,8 +60,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
         /// <summary>
         /// Gets the number of scale Units of the streaming endpoint.
-        /// If the ScaleUnits is not set, default value based on the account type is used.
-        /// Standard users cannot set this value and default 
         /// </summary>
         int? ScaleUnits { get; }
 

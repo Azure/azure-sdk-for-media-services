@@ -17,7 +17,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     public class CrossSiteAccessPolicies
     {
         /// <summary>
-        /// For Microsoft silver light
+        /// For Microsoft Silverlight
         /// </summary>
         public string ClientAccessPolicy { get; set; }
 

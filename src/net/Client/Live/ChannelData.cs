@@ -53,38 +53,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public DateTime LastModified { get; set; }
 
         /// <summary>
-        /// Gets the preview Url.
-        /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        Uri IChannel.PreviewUrl
-        {
-            get
-            {
-                if (_preview == null || _preview.Endpoints == null) return null;
-
-                var endpoint = _preview.Endpoints.FirstOrDefault();
-
-                return endpoint == null ? null : endpoint.Url;
-            }
-        }
-
-        /// <summary>
-        /// Gets the ingest Url.
-        /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        Uri IChannel.IngestUrl
-        {
-            get
-            {
-                if (_input == null || _input.Endpoints == null) return null;
-
-                var endpoint = _input.Endpoints.FirstOrDefault();
-
-                return endpoint == null ? null : endpoint.Url;
-            }
-        }
-
-        /// <summary>
         /// Gets or sets state of the channel.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
@@ -109,9 +77,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets or sets the channel input properties.
         /// </summary>
-        public ChannelServiceInput Input
+        public ChannelInputData Input
         {
-            get { return _input == null ? null : new ChannelServiceInput(_input); }
+            get { return _input == null ? null : new ChannelInputData(_input); }
             set { _input = (ChannelInput) value; }
         }
 
@@ -127,9 +95,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets or sets the channel preview properties.
         /// </summary>
-        public ChannelServicePreview Preview
+        public ChannelPreviewData Preview
         {
-            get { return _preview == null ? null : new ChannelServicePreview(_preview);}
+            get { return _preview == null ? null : new ChannelPreviewData(_preview);}
             set { _preview = (ChannelPreview) value; }
         }
 

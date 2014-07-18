@@ -43,6 +43,46 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Create a new channel.
         /// </summary>
+        /// <param name="options"> Channel creation options </param>
+        public IChannel Create(ChannelCreationOptions options)
+        {
+            if (options == null)
+            {
+                throw new ArgumentNullException("options");
+            }
+
+            return Create(
+                options.Name,
+                options.Description,
+                options.CrossSiteAccessPolicies,
+                options.Input,
+                options.Preview,
+                options.Output);
+        }
+
+        /// <summary>
+        /// Asynchronously create a new channel.
+        /// </summary>
+        /// <param name="options"> Channel creation options </param>
+        public Task<IChannel> CreateAync(ChannelCreationOptions options)
+        {
+            if (options == null)
+            {
+                throw new ArgumentNullException("options");
+            }
+
+            return CreateAsync(
+                options.Name,
+                options.Description,
+                options.CrossSiteAccessPolicies,
+                options.Input,
+                options.Preview,
+                options.Output);
+        }
+
+        /// <summary>
+        /// Create a new channel.
+        /// </summary>
         /// <param name="name">Unique name of the channel.</param>
         /// <param name="input">The channel input endpoint properties.</param>
         /// <param name="preview">The channel preview endpoint properties.</param>
@@ -54,7 +94,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             ChannelPreview preview,
             ChannelOutput output)
         {
-            return Create(name, null, input, preview, output);
+            return Create(name, null, null, input, preview, output);
         }
 
         /// <summary>
@@ -71,7 +111,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             ChannelPreview preview,
             ChannelOutput output)
         {
-            return CreateAsync(name, null, input, preview, output);
+            return CreateAsync(name, null, null, input, preview, output);
         }
 
         /// <summary>
@@ -79,6 +119,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <param name="name">Unique name of the channel.</param>
         /// <param name="description">Description of the channel or friendly name.</param>
+        /// <param name="policies">Channel cross site access policies, e.g. cross domain policy or client access policy</param>
         /// <param name="input">The channel input endpoint properties.</param>
         /// <param name="preview">The channel preview endpoint properties.</param>
         /// <param name="output">The channel output endpoint properties.</param>
@@ -86,11 +127,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public IChannel Create(
             string name, 
             string description, 
+            CrossSiteAccessPolicies policies,
             ChannelInput input,
             ChannelPreview preview,
             ChannelOutput output)
         {
-            return AsyncHelper.Wait(CreateAsync(name, description, input, preview, output));
+            return AsyncHelper.Wait(CreateAsync(name, description, policies, input, preview, output));
         }
 
         /// <summary>
@@ -98,6 +140,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <param name="name">Unique name of the channel.</param>
         /// <param name="description">Description of the channel or friendly name.</param>
+        /// <param name="policies">Channel cross site access policies, e.g. cross domain policy or client access policy</param>
         /// <param name="input">The channel input endpoint properties.</param>
         /// <param name="preview">The channel preview endpoint properties.</param>
         /// <param name="output">The channel output endpoint properties.</param>
@@ -105,11 +148,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public Task<IChannel> CreateAsync(
             string name, 
             string description, 
+            CrossSiteAccessPolicies policies,
             ChannelInput input,
             ChannelPreview preview,
             ChannelOutput output)
         {
-            var response = CreateChannelAsync(name, description, input, preview, output);
+            var response = CreateChannelAsync(name, description, policies, input, preview, output);
 
             return response.ContinueWith<IChannel>(t =>
                 {
@@ -156,7 +200,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             ChannelPreview preview,
             ChannelOutput output)
         {
-            return SendCreateOperation(name, null, input, preview, output);
+            return SendCreateOperation(name, null, null, input, preview, output);
         }
 
         /// <summary>
@@ -173,7 +217,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             ChannelPreview preview,
             ChannelOutput output)
         {
-            return SendCreateOperationAsync(name, null, input, preview, output);
+            return SendCreateOperationAsync(name, null, null, input, preview, output);
         }
 
         /// <summary>
@@ -181,6 +225,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <param name="name">Unique name of the channel.</param>
         /// <param name="description">Description of the channel or friendly name.</param>
+        /// <param name="policies">Channel cross site access policies, e.g. cross domain policy or client access policy</param>
         /// <param name="input">The channel input endpoint properties.</param>
         /// <param name="preview">The channel preview endpoint properties.</param>
         /// <param name="output">The channel output endpoint properties.</param>
@@ -188,11 +233,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public IOperation SendCreateOperation(
             string name,
             string description,
+            CrossSiteAccessPolicies policies,
             ChannelInput input,
             ChannelPreview preview,
             ChannelOutput output)
         {
-            return AsyncHelper.Wait(SendCreateOperationAsync(name, description, input, preview, output));
+            return AsyncHelper.Wait(SendCreateOperationAsync(name, description, policies, input, preview, output));
         }
 
         /// <summary>
@@ -200,6 +246,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <param name="name">Unique name of the channel.</param>
         /// <param name="description">Description of the channel or friendly name.</param>
+        /// <param name="policies">Channel cross site access policies, e.g. cross domain policy or client access policy</param>
         /// <param name="input">The channel input endpoint properties.</param>
         /// <param name="preview">The channel preview endpoint properties.</param>
         /// <param name="output">The channel output endpoint properties.</param>
@@ -207,11 +254,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public Task<IOperation> SendCreateOperationAsync(
             string name,
             string description,
+            CrossSiteAccessPolicies policies,
             ChannelInput input,
             ChannelPreview preview,
             ChannelOutput output)
         {
-            var response = CreateChannelAsync(name, description, input, preview, output);
+            var response = CreateChannelAsync(name, description, policies, input, preview, output);
 
             return response.ContinueWith(t =>
             {
@@ -236,6 +284,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private Task<IMediaDataServiceResponse> CreateChannelAsync(
             string name,
             string description,
+            CrossSiteAccessPolicies policies,
             ChannelInput input,
             ChannelPreview preview,
             ChannelOutput output)
@@ -248,7 +297,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             var channelData = new ChannelData
             {
                 Name = name,
-                Description = description
+                Description = description,
+                CrossSiteAccessPolicies = policies
             };
 
             IChannel channel = channelData;

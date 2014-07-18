@@ -48,16 +48,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         DateTime LastModified { get; set; }
 
         /// <summary>
-        /// Gets Url of the preview.
-        /// </summary>
-        Uri PreviewUrl { get; }
-
-        /// <summary>
-        /// Gets ingest Url.
-        /// </summary>
-        Uri IngestUrl { get; }
-
-        /// <summary>
         /// Gets state of the channel.
         /// </summary>
         ChannelState State { get; }

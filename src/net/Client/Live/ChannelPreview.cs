@@ -12,15 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
     /// Specifies channel preview settings.
+    /// This is the public class exposed to SDK interfaces and used by users
     /// </summary>
     public class ChannelPreview
     {
@@ -33,76 +31,5 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Gets the list of the channel preview endpoints.
         /// </summary>
         public ReadOnlyCollection<ChannelEndpoint> Endpoints { get; internal set; }
-    }
-
-    /// <summary>
-    /// Specifies channel preview settings.
-    /// </summary>
-    internal class ChannelServicePreview
-    {
-        /// <summary>
-        /// Gets or sets channel preview access control (for REST)
-        /// </summary>
-        public ChannelServiceAccessControl AccessControl { get; set; }
-        
-        /// <summary>
-        /// Gets the list of the channel preview endpoints.
-        /// </summary>
-        public List<ChannelServiceEndpoint> Endpoints { get; set; }
-
-        /// <summary>
-        /// Creates an instance of ChannelServicePreview class.
-        /// </summary>
-        public ChannelServicePreview() { }
-
-        /// <summary>
-        /// Creates an instance of ChannelServicePreview class from an instance of ChannelPreview.
-        /// </summary>
-        /// <param name="preview">Channel Preview to copy into newly created instance.</param>
-        public ChannelServicePreview(ChannelPreview preview)
-        {
-            if (preview == null)
-            {
-                throw new ArgumentNullException("preview");
-            }
-
-            AccessControl = preview.AccessControl == null
-                ? null
-                : new ChannelServiceAccessControl(preview.AccessControl);
-
-            if (preview.Endpoints != null)
-            {
-                Endpoints = new List<ChannelServiceEndpoint>(preview.Endpoints.Count);
-                foreach (var endpoint in preview.Endpoints)
-                {
-                    Endpoints.Add(endpoint == null ? null : new ChannelServiceEndpoint(endpoint));
-                }
-            }
-        }
-
-        /// <summary>
-        /// Casts ChannelServicePreview to ChannelPreview.
-        /// </summary>
-        /// <param name="preview">Object to cast.</param>
-        /// <returns>Casted object.</returns>
-        public static explicit operator ChannelPreview(ChannelServicePreview preview)
-        {
-            if (preview == null)
-            {
-                return null;
-            }
-
-            var result = new ChannelPreview
-            {
-                AccessControl = (ChannelAccessControl)preview.AccessControl
-            };
-
-            if (preview.Endpoints != null)
-            {
-                result.Endpoints = preview.Endpoints.Select(e => ((ChannelEndpoint)e)).ToList().AsReadOnly();
-            }
-
-            return result;
-        }
     }
 }

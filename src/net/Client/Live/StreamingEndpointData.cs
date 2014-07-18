@@ -63,8 +63,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
         /// <summary>
         /// Gets or sets the number of scale Units of the streaming endpoint.
-        /// If the ScaleUnits is not set, default value based on the account type is used.
-        /// Standard users cannot set this value and default 
         /// </summary>
         public int? ScaleUnits { get; set; }
 
@@ -89,9 +87,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets or sets streaming endpoint access control
         /// </summary>
-        public StreamingEndpointServiceAccessControl AccessControl
+        public StreamingEndpointAccessControlData AccessControl
         {
-            get { return _accessControl == null ? null : new StreamingEndpointServiceAccessControl(_accessControl); }
+            get { return _accessControl == null ? null : new StreamingEndpointAccessControlData(_accessControl); }
             set { _accessControl = (StreamingEndpointAccessControl) value; }
         }
 
@@ -107,9 +105,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Cache control
         /// </summary>
-        public StreamingEndpointServiceCacheControl CacheControl
+        public StreamingEndpointCacheControlData CacheControl
         {
-            get { return _cacheControl == null ? null : new StreamingEndpointServiceCacheControl(_cacheControl); }
+            get { return _cacheControl == null ? null : new StreamingEndpointCacheControlData(_cacheControl); }
             set { _cacheControl = (StreamingEndpointCacheControl) value; }
         }
 

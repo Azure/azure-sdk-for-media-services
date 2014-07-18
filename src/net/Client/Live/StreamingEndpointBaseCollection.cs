@@ -47,50 +47,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Creates a new streaming endpoint.
         /// </summary>
         /// <param name="name">streaming endpoint service name.</param>
-        /// <returns>The created streaming endpoint.</returns>
-        public IStreamingEndpoint Create(string name)
-        {
-            return Create(name, null, null, null, null, null, null);
-        }
-
-        /// <summary>
-        /// Creates a new streaming endpoint asynchronously.
-        /// </summary>
-        /// <param name="name">streaming endpoint service name.</param>
-        /// <returns>The created streaming endpoint.</returns>
-        public Task<IStreamingEndpoint> CreateAsync(string name)
-        {
-            return CreateAsync(name, null, null, null, null, null, null);
-        }
-
-        /// <summary>
-        /// Creates a new streaming endpoint.
-        /// </summary>
-        /// <param name="name">streaming endpoint service name.</param>
-        /// <param name="description">streaming endpoint description or friendly name.</param>
-        /// <returns>The created streaming endpoint (for standard account using the SDK).</returns>
-        public IStreamingEndpoint Create(string name, string description)
-        {
-            return Create(name, description, null, null, null, null, null);
-        }
-
-        /// <summary>
-        /// Creates a new streaming endpoint asynchronously.
-        /// </summary>
-        /// <param name="name">streaming endpoint service name.</param>
-        /// <param name="description">streaming endpoint description or friendly name.</param>
-        /// <returns>The created streaming endpoint (for standard account using the SDK).</returns>
-        public Task<IStreamingEndpoint> CreateAsync(string name, string description)
-        {
-            return CreateAsync(name, description, null, null, null, null, null);
-        }
-
-        /// <summary>
-        /// Creates a new streaming endpoint.
-        /// </summary>
-        /// <param name="name">streaming endpoint service name.</param>
         /// <param name="scaleUnits">the streaming endpoint scale units, can only be set for legacy and premium accounts</param>
-        /// <returns>The created streaming endpoint (for legacy account using the SDK).</returns>
+        /// <returns>The created streaming endpoint.</returns>
         public IStreamingEndpoint Create(string name, int scaleUnits)
         {
             return Create(name, null, null, scaleUnits, null, null, null);
@@ -101,7 +59,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <param name="name">streaming endpoint service name.</param>
         /// <param name="scaleUnits">the streaming endpoint scale units, can only be set for legacy and premium accounts</param>
-        /// <returns>The created streaming endpoint (for legacy account using the SDK).</returns>
+        /// <returns>The created streaming endpoint.</returns>
         public Task<IStreamingEndpoint> CreateAsync(string name, int scaleUnits)
         {
             return CreateAsync(name, null, null, scaleUnits, null, null, null);
@@ -113,7 +71,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="name">streaming endpoint service name.</param>
         /// <param name="description">streaming endpoint description or friendly name.</param>
         /// <param name="scaleUnits">the streaming endpoint scale units, can only be set for legacy and premium accounts</param>
-        /// <returns>The created streaming endpoint (for legacy account using the SDK).</returns>
+        /// <returns>The created streaming endpoint.</returns>
         public IStreamingEndpoint Create(string name, string description, int scaleUnits)
         {
             return Create(name, description, null, scaleUnits, null, null, null);
@@ -125,7 +83,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="name">streaming endpoint service name.</param>
         /// <param name="description">streaming endpoint description or friendly name.</param>
         /// <param name="scaleUnits">the streaming endpoint scale units, can only be set for legacy and premium accounts</param>
-        /// <returns>The created streaming endpoint (for legacy account using the SDK).</returns>
+        /// <returns>The created streaming endpoint.</returns>
         public Task<IStreamingEndpoint> CreateAsync(string name, string description, int scaleUnits)
         {
             return CreateAsync(name, description, null, scaleUnits, null, null, null);
@@ -138,7 +96,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="description">streaming endpoint description or friendly name.</param>
         /// <param name="customHostNames">one or more "vanity" host names to be accepted by the streaming endpoint in addition to default endpoint name. (only by premium account</param>
         /// <param name="scaleUnits">the streaming endpoint scale units, can only be set for legacy and premium accounts</param>
-        /// <returns>The created streaming endpoint (for premium account using the SDK).</returns>
+        /// <returns>The created streaming endpoint.</returns>
         public IStreamingEndpoint Create(
             string name, 
             string description, 
@@ -155,7 +113,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="description">streaming endpoint description or friendly name.</param>
         /// <param name="customHostNames">one or more "vanity" host names to be accepted by the streaming endpoint in addition to default endpoint name. (only by premium account</param>
         /// <param name="scaleUnits">the streaming endpoint scale units, can only be set for legacy and premium accounts</param>
-        /// <returns>The created streaming endpoint (for premium account using the SDK).</returns>
+        /// <returns>The created streaming endpoint.</returns>
         public Task<IStreamingEndpoint> CreateAsync(
             string name,
             string description,
@@ -180,7 +138,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             string name,
             string description,
             List<string> customHostNames,
-            int? scaleUnits,
+            int scaleUnits,
             CrossSiteAccessPolicies accessPolicies,
             StreamingEndpointAccessControl accessControl,
             StreamingEndpointCacheControl cacheControl)
@@ -210,7 +168,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             string name,
             string description,
             List<string> customHostNames,
-            int? scaleUnits,
+            int scaleUnits,
             CrossSiteAccessPolicies accessPolicies,
             StreamingEndpointAccessControl accessControl,
             StreamingEndpointCacheControl cacheControl)
@@ -259,50 +217,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Sends create streaming endpoint operation to the service and returns. Use Operations collection to get operation's status.
         /// </summary>
         /// <param name="name">streaming endpoint service name.</param>
-        /// <returns>The created streaming endpoint.</returns>
-        public IOperation SendCreateOperation(string name)
-        {
-            return SendCreateOperation(name, null, null, null, null, null, null);
-        }
-
-        /// <summary>
-        /// Sends create streaming endpoint operation to the service asynchronously. Use Operations collection to get operation's status.
-        /// </summary>
-        /// <param name="name">streaming endpoint service name.</param>
-        /// <returns>The created streaming endpoint.</returns>
-        public Task<IOperation> SendCreateOperationAync(string name)
-        {
-            return SendCreateOperationAsync(name, null, null, null, null, null, null);
-        }
-
-        /// <summary>
-        /// Sends create streaming endpoint operation to the service and returns. Use Operations collection to get operation's status.
-        /// </summary>
-        /// <param name="name">streaming endpoint service name.</param>
-        /// <param name="description">streaming endpoint description or friendly name.</param>
-        /// <returns>The created streaming endpoint (for standard account using the SDK).</returns>
-        public IOperation SendCreateOperation(string name, string description)
-        {
-            return SendCreateOperation(name, description, null, null, null, null, null);
-        }
-
-        /// <summary>
-        /// Sends create streaming endpoint operation to the service asynchronously. Use Operations collection to get operation's status.
-        /// </summary>
-        /// <param name="name">streaming endpoint service name.</param>
-        /// <param name="description">streaming endpoint description or friendly name.</param>
-        /// <returns>The created streaming endpoint (for standard account using the SDK).</returns>
-        public Task<IOperation> SendCreateOperationAync(string name, string description)
-        {
-            return SendCreateOperationAsync(name, description, null, null, null, null, null);
-        }
-
-        /// <summary>
-        /// Sends create streaming endpoint operation to the service and returns. Use Operations collection to get operation's status.
-        /// </summary>
-        /// <param name="name">streaming endpoint service name.</param>
         /// <param name="scaleUnits">the streaming endpoint scale units, can only be set for legacy and premium accounts</param>
-        /// <returns>The created streaming endpoint (for legacy account using the SDK).</returns>
+        /// <returns>The created streaming endpoint.</returns>
         public IOperation SendCreateOperation(string name, int scaleUnits)
         {
             return SendCreateOperation(name, null, null, scaleUnits, null, null, null);
@@ -313,7 +229,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <param name="name">streaming endpoint service name.</param>
         /// <param name="scaleUnits">the streaming endpoint scale units, can only be set for legacy and premium accounts</param>
-        /// <returns>The created streaming endpoint (for legacy account using the SDK).</returns>
+        /// <returns>The created streaming endpoint.</returns>
         public Task<IOperation> SendCreateOperationAync(string name, int scaleUnits)
         {
             return SendCreateOperationAsync(name, null, null, scaleUnits, null, null, null);
@@ -325,7 +241,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="name">streaming endpoint service name.</param>
         /// <param name="description">streaming endpoint description or friendly name.</param>
         /// <param name="scaleUnits">the streaming endpoint scale units, can only be set for legacy and premium accounts</param>
-        /// <returns>The created streaming endpoint (for legacy account using the SDK).</returns>
+        /// <returns>The created streaming endpoint.</returns>
         public IOperation SendCreateOperation(string name, string description, int scaleUnits)
         {
             return SendCreateOperation(name, description, null, scaleUnits, null, null, null);
@@ -337,7 +253,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="name">streaming endpoint service name.</param>
         /// <param name="description">streaming endpoint description or friendly name.</param>
         /// <param name="scaleUnits">the streaming endpoint scale units, can only be set for legacy and premium accounts</param>
-        /// <returns>The created streaming endpoint (for legacy account using the SDK).</returns>
+        /// <returns>The created streaming endpoint.</returns>
         public Task<IOperation> SendCreateOperationAync(string name, string description, int scaleUnits)
         {
             return SendCreateOperationAsync(name, description, null, scaleUnits, null, null, null);
@@ -350,7 +266,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="description">streaming endpoint description or friendly name.</param>
         /// <param name="customHostNames">one or more "vanity" host names to be accepted by the streaming endpoint in addition to default endpoint name. (only by premium account</param>
         /// <param name="scaleUnits">the streaming endpoint scale units, can only be set for legacy and premium accounts</param>
-        /// <returns>The created streaming endpoint (for premium account using the SDK).</returns>
+        /// <returns>The created streaming endpoint.</returns>
         public IOperation SendCreateOperation(
             string name,
             string description,
@@ -367,7 +283,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="description">streaming endpoint description or friendly name.</param>
         /// <param name="customHostNames">one or more "vanity" host names to be accepted by the streaming endpoint in addition to default endpoint name. (only by premium account</param>
         /// <param name="scaleUnits">the streaming endpoint scale units, can only be set for legacy and premium accounts</param>
-        /// <returns>The created streaming endpoint (for premium account using the SDK).</returns>
+        /// <returns>The created streaming endpoint.</returns>
         public Task<IOperation> SendCreateOperationAync(
             string name,
             string description,
@@ -392,7 +308,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             string name,
             string description,
             List<string> customHostNames,
-            int? scaleUnits,
+            int scaleUnits,
             CrossSiteAccessPolicies accessPolicies,
             StreamingEndpointAccessControl accessControl,
             StreamingEndpointCacheControl cacheControl)
@@ -422,7 +338,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             string name,
             string description,
             List<string> customHostNames,
-            int? scaleUnits,
+            int scaleUnits,
             CrossSiteAccessPolicies accessPolicies,
             StreamingEndpointAccessControl accessControl,
             StreamingEndpointCacheControl cacheControl)
@@ -458,7 +374,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             string name,
             string description,
             List<string> customHostNames,
-            int? scaleUnits,
+            int scaleUnits,
             CrossSiteAccessPolicies accessPolicies,
             StreamingEndpointAccessControl accessControl,
             StreamingEndpointCacheControl cacheControl)

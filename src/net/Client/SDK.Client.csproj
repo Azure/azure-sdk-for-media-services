@@ -214,22 +214,25 @@
     <Compile Include="Live\AkamaiSignatureHeaderAuthenticationKey.cs" />
     <Compile Include="Live\AsyncHelper.cs" />
     <Compile Include="Live\ChannelAccessControl.cs" />
+    <Compile Include="Live\ChannelAccessControlData.cs" />
     <Compile Include="Live\ChannelBaseCollection.cs" />
+    <Compile Include="Live\ChannelCreationOptions.cs" />
     <Compile Include="Live\ChannelData.cs" />
     <Compile Include="Live\ChannelEndpoint.cs" />
+    <Compile Include="Live\ChannelEndpointData.cs" />
     <Compile Include="Live\ChannelInput.cs" />
+    <Compile Include="Live\ChannelInputData.cs" />
     <Compile Include="Live\ChannelOutput.cs" />
     <Compile Include="Live\ChannelOutputHls.cs" />
     <Compile Include="Live\ChannelPreview.cs" />
+    <Compile Include="Live\ChannelPreviewData.cs" />
     <Compile Include="Live\ChannelState.cs" />
     <Compile Include="Live\CloudMediaContext.cs" />
     <Compile Include="Live\CrossSiteAccessPolicies.cs" />
     <Compile Include="Live\IChannel.cs" />
-    <Compile Include="Live\IChannelInput.cs" />
-    <Compile Include="Live\IChannelOutput.cs" />
-    <Compile Include="Live\IChannelPreview.cs" />
     <Compile Include="Live\IOperation.cs" />
     <Compile Include="Live\IPAddress.cs" />
+    <Compile Include="Live\IPAddressData.cs" />
     <Compile Include="Live\IProgram.cs" />
     <Compile Include="Live\IStreamingEndpoint.cs" />
     <Compile Include="Live\MediaContextBase.cs" />
@@ -242,8 +245,10 @@
     <Compile Include="Live\RestEntity.cs" />
     <Compile Include="Live\StreamingConstants.cs" />
     <Compile Include="Live\StreamingEndpointAccessControl.cs" />
+    <Compile Include="Live\StreamingEndpointAccessControlData.cs" />
     <Compile Include="Live\StreamingEndpointBaseCollection.cs" />
     <Compile Include="Live\StreamingEndpointCacheControl.cs" />
+    <Compile Include="Live\StreamingEndpointCacheControlData.cs" />
     <Compile Include="Live\StreamingEndpointData.cs" />
     <Compile Include="Live\StreamingEndpointState.cs" />
     <Compile Include="Live\StreamingProtocol.cs" />
@@ -417,4 +422,7 @@
   </Target>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Import Project="$(SlowCheetahTargets)" Condition="Exists('$(SlowCheetahTargets)')" Label="SlowCheetah" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy $(TargetPath) "D:\Nimbus\Rel147-LivePreview\references\WAMS_VOD_NET_SDK\LivePreview2.7" /Y</PostBuildEvent>
+  </PropertyGroup>
 </Project>
