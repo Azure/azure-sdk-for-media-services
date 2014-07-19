@@ -103,20 +103,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
                     if (policy == null)
                     {
-                        List<AssetDeliveryProtocol> individualProtocols = GetIndividualProtocols(protocolsToCheck);
-
-                        bool partialMatch = false;
-
-                        foreach (AssetDeliveryProtocol protocol in individualProtocols)
-                        {
-                            if (asset.DeliveryPolicies.Any(p => p.AssetDeliveryProtocol.HasFlag(protocol)))
-                            {
-                                partialMatch = true;
-                                break;
-                            }
-                        }
-
-                        if (partialMatch)
+                        if (asset.DeliveryPolicies.Any(p => ((p.AssetDeliveryProtocol & protocolsToCheck) != 0)))
                         {
                             returnValue = AssetEncryptionState.NoSinglePolicyApplies;
                         }
@@ -183,21 +170,30 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 case AssetType.MediaServicesHLS:
                     return false;
 
-                default:
+                case AssetType.SmoothStreaming:
+                case AssetType.MultiBitrateMP4:
                     return true;
+
+                default:
+                    throw new ArgumentException("Unsupported AssetType");
             }
         }
 
         private static bool IsStreamable(AssetType assetType)
-        { 
+        {
             switch (assetType)
             {
                 case AssetType.MP4:
                 case AssetType.Unknown:
                     return false;
 
-                default:
+                case AssetType.SmoothStreaming:
+                case AssetType.MultiBitrateMP4:
+                case AssetType.MediaServicesHLS:
                     return true;
+
+                default:
+                    throw new ArgumentException("Unsupported AssetType");
             }
         }
 
@@ -281,32 +277,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
 
             return assetType;
-        }
-
-        static AssetDeliveryProtocol[] _allValues = null;
-        internal static List<AssetDeliveryProtocol> GetIndividualProtocols(AssetDeliveryProtocol protocolsToSplit)
-        {
-            List<AssetDeliveryProtocol> protocolList = new List<AssetDeliveryProtocol>();
-
-            if (_allValues == null)
-            {
-                _allValues = (AssetDeliveryProtocol[])Enum.GetValues(typeof(AssetDeliveryProtocol));
-            }
-
-            foreach (AssetDeliveryProtocol protocol in _allValues)
-            {
-                if ((protocol == AssetDeliveryProtocol.None) || (protocol == AssetDeliveryProtocol.All))
-                {
-                    continue;
-                }
-
-                if (protocolsToSplit.HasFlag(protocol))
-                {
-                    protocolList.Add(protocol);
-                }
-            }
-
-            return protocolList;
         }
     }
 }

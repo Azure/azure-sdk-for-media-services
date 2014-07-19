@@ -615,7 +615,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             //  then return a list with two entries ([0] = AssetDeliveryProtocol.Dash, [1] = AssetDeliveryProtocol.HLS).  Used as input to create
             //  all of the combinations with
             //
-            List<AssetDeliveryProtocol> protocolsToCombineList = AssetData.GetIndividualProtocols(protocols);
+            List<AssetDeliveryProtocol> protocolsToCombineList = GetIndividualProtocols(protocols);
             Stack<AssetDeliveryProtocol> workingStack = new Stack<AssetDeliveryProtocol>();
 
             List<AssetDeliveryProtocol> returnValue = new List<AssetDeliveryProtocol>();
@@ -642,9 +642,30 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             return testCases;
         }
 
+        static AssetDeliveryProtocol[] _allValues = (AssetDeliveryProtocol[])Enum.GetValues(typeof(AssetDeliveryProtocol));
+        internal static List<AssetDeliveryProtocol> GetIndividualProtocols(AssetDeliveryProtocol protocolsToSplit)
+        {
+            List<AssetDeliveryProtocol> protocolList = new List<AssetDeliveryProtocol>();
+
+            foreach (AssetDeliveryProtocol protocol in _allValues)
+            {
+                if ((protocol == AssetDeliveryProtocol.None) || (protocol == AssetDeliveryProtocol.All))
+                {
+                    continue;
+                }
+
+                if (protocolsToSplit.HasFlag(protocol))
+                {
+                    protocolList.Add(protocol);
+                }
+            }
+
+            return protocolList;
+        }
+
         private AssetEncryptionState DecideBetweenBlockedOrMultiplePolicies(AssetDeliveryProtocol protocolsToCheck, IList<IAssetDeliveryPolicy> policies)
         {
-            List<AssetDeliveryProtocol> individualProtocols = AssetData.GetIndividualProtocols(protocolsToCheck);
+            List<AssetDeliveryProtocol> individualProtocols = GetIndividualProtocols(protocolsToCheck);
 
             bool partialMatch = false;
 
