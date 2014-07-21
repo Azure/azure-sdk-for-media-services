@@ -54,19 +54,21 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
         public void CreateStreamingTest()
         {
             IStreamingEndpoint streamingEndpoint = _dataContext.StreamingEndpoints.Create(
-                TestStreamingEndpointName,
-                null, 
-                null, 
-                2, 
-                GetAccessPolicies(), 
-                GetAccessControl(), 
-                GetCacheControl());
+                new StreamingEndpointCreationOptions(TestStreamingEndpointName, 2)
+                {
+                    CrossSiteAccessPolicies = GetAccessPolicies(),
+                    AccessControl = GetAccessControl(),
+                    CacheControl = GetCacheControl()
+                });
 
             IChannel channel = _dataContext.Channels.Create(
-                TestChannelName, 
-                MakeChannelInput(),
-                MakeChannelPreview(),
-                MakeChannelOutput());
+                new ChannelCreationOptions
+                {
+                    Name = TestChannelName,
+                    Input = MakeChannelInput(),
+                    Preview = MakeChannelPreview(),
+                    Output = MakeChannelOutput()
+                });
             IAsset asset = _dataContext.Assets.Create(TestAssetlName, AssetCreationOptions.None);
             IProgram program = channel.Programs.Create(TestProgramlName, false, TimeSpan.FromHours(1), TimeSpan.FromHours(1), asset.Id);
 
@@ -177,14 +179,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
             var result = _dataContext.StreamingEndpoints.Where(o => o.Name == TestStreamingEndpointName).FirstOrDefault();
 			if(result == null)
 			{
-				result = _dataContext.StreamingEndpoints.Create(
-                    TestStreamingEndpointName, 
-                    null, 
-                    null, 
-                    2, 
-                    GetAccessPolicies(), 
-                    GetAccessControl(), 
-                    GetCacheControl());
+			    result = _dataContext.StreamingEndpoints.Create(
+			        new StreamingEndpointCreationOptions(TestStreamingEndpointName, 2)
+			        {
+			            CrossSiteAccessPolicies = GetAccessPolicies(),
+			            AccessControl = GetAccessControl(),
+			            CacheControl = GetCacheControl()
+			        });
 			}
 
 			return result;
@@ -205,11 +206,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
 			var result = _dataContext.Channels.Where(o => o.Name == TestChannelName).FirstOrDefault();
 			if(result == null)
 			{
-				result = _dataContext.Channels.Create(
-                    TestChannelName, 
-                    MakeChannelInput(),
-                    MakeChannelPreview(),
-                    MakeChannelOutput());
+			    result = _dataContext.Channels.Create(
+			        new ChannelCreationOptions
+			        {
+			            Name = TestChannelName,
+			            Input = MakeChannelInput(),
+			            Preview = MakeChannelPreview(),
+			            Output = MakeChannelOutput()
+			        });
 			}
 			return result;
 		}
