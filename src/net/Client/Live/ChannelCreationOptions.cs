@@ -17,6 +17,10 @@ using System.Collections.Generic;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
+    /// <summary>
+    /// The helper class to create a channel, which contains
+    /// all parameters and settings to configure a channel
+    /// </summary>
     public class ChannelCreationOptions
     {
         /// <summary>

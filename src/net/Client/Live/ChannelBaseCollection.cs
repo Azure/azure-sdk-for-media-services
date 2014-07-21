@@ -16,7 +16,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.MediaServices.Client.Properties;
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
@@ -43,145 +42,73 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Create a new channel.
         /// </summary>
+        /// <param name="name">Unique name of the channel.</param>
+        /// <param name="inputProtocol">Channel input streaming protocol</param>
+        /// <param name="inputIPAllowList">Channel input IP allow list</param>
+        /// <returns>The created channel.</returns>
+        public IChannel Create(string name, StreamingProtocol inputProtocol, IList<IPAddress> inputIPAllowList)
+        {
+            return Create(new ChannelCreationOptions(name, inputProtocol, inputIPAllowList));
+        }
+
+        /// <summary>
+        /// Asynchronously create a new channel.
+        /// </summary>
+        /// <param name="name">Unique name of the channel.</param>
+        /// <param name="inputProtocol">Channel input streaming protocol</param>
+        /// <param name="inputIPAllowList">Channel input IP allow list</param>
+        /// <returns>The channel creation task.</returns>
+        public Task<IChannel> CreateAsync(string name, StreamingProtocol inputProtocol, IList<IPAddress> inputIPAllowList)
+        {
+            return CreateAsync(new ChannelCreationOptions(name, inputProtocol, inputIPAllowList));
+        }
+
+        /// <summary>
+        /// Create a new channel.
+        /// </summary>
         /// <param name="options"> Channel creation options </param>
+        /// <returns>The created channel.</returns>
         public IChannel Create(ChannelCreationOptions options)
         {
-            if (options == null)
-            {
-                throw new ArgumentNullException("options");
-            }
-
-            return Create(
-                options.Name,
-                options.Description,
-                options.CrossSiteAccessPolicies,
-                options.Input,
-                options.Preview,
-                options.Output);
+            return AsyncHelper.Wait(CreateAsync(options));
         }
 
         /// <summary>
         /// Asynchronously create a new channel.
         /// </summary>
         /// <param name="options"> Channel creation options </param>
-        public Task<IChannel> CreateAync(ChannelCreationOptions options)
+        /// <returns>The channel creation task.</returns>
+        public Task<IChannel> CreateAsync(ChannelCreationOptions options)
         {
-            if (options == null)
-            {
-                throw new ArgumentNullException("options");
-            }
-
-            return CreateAsync(
-                options.Name,
-                options.Description,
-                options.CrossSiteAccessPolicies,
-                options.Input,
-                options.Preview,
-                options.Output);
-        }
-
-        /// <summary>
-        /// Create a new channel.
-        /// </summary>
-        /// <param name="name">Unique name of the channel.</param>
-        /// <param name="input">The channel input endpoint properties.</param>
-        /// <param name="preview">The channel preview endpoint properties.</param>
-        /// <param name="output">The channel output endpoint properties.</param>
-        /// <returns>The created channel.</returns>
-        public IChannel Create(
-            string name,
-            ChannelInput input,
-            ChannelPreview preview,
-            ChannelOutput output)
-        {
-            return Create(name, null, null, input, preview, output);
-        }
-
-        /// <summary>
-        /// Asynchronously create a new channel.
-        /// </summary>
-        /// <param name="name">Unique name of the channel.</param>
-        /// <param name="input">The channel input endpoint properties.</param>
-        /// <param name="preview">The channel preview endpoint properties.</param>
-        /// <param name="output">The channel output endpoint properties.</param>
-        /// <returns>The created channel.</returns>
-        public Task<IChannel> CreateAsync(
-            string name,  
-            ChannelInput input,
-            ChannelPreview preview,
-            ChannelOutput output)
-        {
-            return CreateAsync(name, null, null, input, preview, output);
-        }
-
-        /// <summary>
-        /// Create a new channel.
-        /// </summary>
-        /// <param name="name">Unique name of the channel.</param>
-        /// <param name="description">Description of the channel or friendly name.</param>
-        /// <param name="policies">Channel cross site access policies, e.g. cross domain policy or client access policy</param>
-        /// <param name="input">The channel input endpoint properties.</param>
-        /// <param name="preview">The channel preview endpoint properties.</param>
-        /// <param name="output">The channel output endpoint properties.</param>
-        /// <returns>The created channel.</returns>
-        public IChannel Create(
-            string name, 
-            string description, 
-            CrossSiteAccessPolicies policies,
-            ChannelInput input,
-            ChannelPreview preview,
-            ChannelOutput output)
-        {
-            return AsyncHelper.Wait(CreateAsync(name, description, policies, input, preview, output));
-        }
-
-        /// <summary>
-        /// Asynchronously create a new channel.
-        /// </summary>
-        /// <param name="name">Unique name of the channel.</param>
-        /// <param name="description">Description of the channel or friendly name.</param>
-        /// <param name="policies">Channel cross site access policies, e.g. cross domain policy or client access policy</param>
-        /// <param name="input">The channel input endpoint properties.</param>
-        /// <param name="preview">The channel preview endpoint properties.</param>
-        /// <param name="output">The channel output endpoint properties.</param>
-        /// <returns>The created channel.</returns>
-        public Task<IChannel> CreateAsync(
-            string name, 
-            string description, 
-            CrossSiteAccessPolicies policies,
-            ChannelInput input,
-            ChannelPreview preview,
-            ChannelOutput output)
-        {
-            var response = CreateChannelAsync(name, description, policies, input, preview, output);
+            var response = CreateChannelAsync(options);
 
             return response.ContinueWith<IChannel>(t =>
+            {
+                t.ThrowIfFaulted();
+                string operationId = t.Result.Single().Headers[StreamingConstants.OperationIdHeader];
+
+                IOperation operation = AsyncHelper.WaitOperationCompletion(
+                    MediaContext,
+                    operationId,
+                    StreamingConstants.CreateChannelPollInterval);
+
+                string messageFormat = Resources.ErrorCreateChannelFailedFormat;
+                string message;
+
+                switch (operation.State)
                 {
-                    t.ThrowIfFaulted();
-                    string operationId = t.Result.Single().Headers[StreamingConstants.OperationIdHeader];
-
-                    IOperation operation = AsyncHelper.WaitOperationCompletion(
-                        MediaContext,
-                        operationId,
-                        StreamingConstants.CreateChannelPollInterval);
-
-                    string messageFormat = Resources.ErrorCreateChannelFailedFormat;
-                    string message;
-
-                    switch (operation.State)
-                    {
-                        case OperationState.Succeeded:
-                            var result = (ChannelData)t.Result.AsyncState;
-                            result.Refresh();
-                            return result;
-                        case OperationState.Failed:
-                            message = string.Format(CultureInfo.CurrentCulture, messageFormat, Resources.Failed, operationId, operation.ErrorMessage);
-                            throw new InvalidOperationException(message);
-                        default: // can never happen unless state enum is extended
-                            message = string.Format(CultureInfo.CurrentCulture, messageFormat, Resources.InInvalidState, operationId, operation.State);
-                            throw new InvalidOperationException(message);
-                    }
-                });
+                    case OperationState.Succeeded:
+                        var result = (ChannelData)t.Result.AsyncState;
+                        result.Refresh();
+                        return result;
+                    case OperationState.Failed:
+                        message = string.Format(CultureInfo.CurrentCulture, messageFormat, Resources.Failed, operationId, operation.ErrorMessage);
+                        throw new InvalidOperationException(message);
+                    default: // can never happen unless state enum is extended
+                        message = string.Format(CultureInfo.CurrentCulture, messageFormat, Resources.InInvalidState, operationId, operation.State);
+                        throw new InvalidOperationException(message);
+                }
+            });
         }
 
         #region Non-polling asyncs
@@ -190,76 +117,44 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Sends create channel operation to the service and returns. Use Operations collection to get operation's status.
         /// </summary>
         /// <param name="name">Unique name of the channel.</param>
-        /// <param name="input">The channel input endpoint properties.</param>
-        /// <param name="preview">The channel preview endpoint properties.</param>
-        /// <param name="output">The channel output endpoint properties.</param>
+        /// <param name="inputProtocol">Channel input streaming protocol</param>
+        /// <param name="inputIPAllowList">Channel input IP allow list</param>
         /// <returns>Operation info that can be used to track the operation.</returns>
-        public IOperation SendCreateOperation(
-            string name,
-            ChannelInput input,
-            ChannelPreview preview,
-            ChannelOutput output)
+        public IOperation SendCreateOperation(string name, StreamingProtocol inputProtocol, IList<IPAddress> inputIPAllowList)
         {
-            return SendCreateOperation(name, null, null, input, preview, output);
+            return SendCreateOperation(new ChannelCreationOptions(name, inputProtocol, inputIPAllowList));
         }
 
         /// <summary>
         /// Sends create channel operation to the service asynchronously. Use Operations collection to get operation's status.
         /// </summary>
         /// <param name="name">Unique name of the channel.</param>
-        /// <param name="input">The channel input endpoint properties.</param>
-        /// <param name="preview">The channel preview endpoint properties.</param>
-        /// <param name="output">The channel output endpoint properties.</param>
+        /// <param name="inputProtocol">Channel input streaming protocol</param>
+        /// <param name="inputIPAllowList">Channel input IP allow list</param>
         /// <returns>Task to wait on for operation sending completion.</returns>
-        public Task<IOperation> SendCreateOperationAsync(
-            string name,
-            ChannelInput input,
-            ChannelPreview preview,
-            ChannelOutput output)
+        public Task<IOperation> SendCreateOperationAsync(string name, StreamingProtocol inputProtocol, IList<IPAddress> inputIPAllowList)
         {
-            return SendCreateOperationAsync(name, null, null, input, preview, output);
+            return SendCreateOperationAsync(new ChannelCreationOptions(name, inputProtocol, inputIPAllowList));
         }
 
         /// <summary>
         /// Sends create channel operation to the service and returns. Use Operations collection to get operation's status.
         /// </summary>
-        /// <param name="name">Unique name of the channel.</param>
-        /// <param name="description">Description of the channel or friendly name.</param>
-        /// <param name="policies">Channel cross site access policies, e.g. cross domain policy or client access policy</param>
-        /// <param name="input">The channel input endpoint properties.</param>
-        /// <param name="preview">The channel preview endpoint properties.</param>
-        /// <param name="output">The channel output endpoint properties.</param>
+        /// <param name="options"> Channel creation options </param>
         /// <returns>Operation info that can be used to track the operation.</returns>
-        public IOperation SendCreateOperation(
-            string name,
-            string description,
-            CrossSiteAccessPolicies policies,
-            ChannelInput input,
-            ChannelPreview preview,
-            ChannelOutput output)
+        public IOperation SendCreateOperation(ChannelCreationOptions options)
         {
-            return AsyncHelper.Wait(SendCreateOperationAsync(name, description, policies, input, preview, output));
+            return AsyncHelper.Wait(SendCreateOperationAsync(options));
         }
 
         /// <summary>
         /// Sends create channel operation to the service asynchronously. Use Operations collection to get operation's status.
         /// </summary>
-        /// <param name="name">Unique name of the channel.</param>
-        /// <param name="description">Description of the channel or friendly name.</param>
-        /// <param name="policies">Channel cross site access policies, e.g. cross domain policy or client access policy</param>
-        /// <param name="input">The channel input endpoint properties.</param>
-        /// <param name="preview">The channel preview endpoint properties.</param>
-        /// <param name="output">The channel output endpoint properties.</param>
+        /// <param name="options"> Channel creation options </param>
         /// <returns>Task to wait on for operation sending completion.</returns>
-        public Task<IOperation> SendCreateOperationAsync(
-            string name,
-            string description,
-            CrossSiteAccessPolicies policies,
-            ChannelInput input,
-            ChannelPreview preview,
-            ChannelOutput output)
+        public Task<IOperation> SendCreateOperationAsync(ChannelCreationOptions options)
         {
-            var response = CreateChannelAsync(name, description, policies, input, preview, output);
+            var response = CreateChannelAsync(options);
 
             return response.ContinueWith(t =>
             {
@@ -281,47 +176,42 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
         #endregion Non-polling asyncs
 
-        private Task<IMediaDataServiceResponse> CreateChannelAsync(
-            string name,
-            string description,
-            CrossSiteAccessPolicies policies,
-            ChannelInput input,
-            ChannelPreview preview,
-            ChannelOutput output)
+        private Task<IMediaDataServiceResponse> CreateChannelAsync(ChannelCreationOptions options)
         {
-            if (string.IsNullOrEmpty(name))
+            if (options == null)
+            {
+                throw new ArgumentNullException("options");
+            }
+
+            if (string.IsNullOrEmpty(options.Name))
             {
                 throw new ArgumentException(Resources.ErrorEmptyChannelName);
             }
 
+            if (options.Input == null ||
+                options.Input.AccessControl == null ||
+                options.Input.AccessControl.IPAllowList == null ||
+                options.Input.AccessControl.IPAllowList.Count == 0)
+            {
+                throw new ArgumentException(Resources.ErrorEmptyChannelInputIPAllowList);
+            }
+
             var channelData = new ChannelData
             {
-                Name = name,
-                Description = description,
-                CrossSiteAccessPolicies = policies
+                Name = options.Name,
+                Description = options.Description,
+                CrossSiteAccessPolicies = options.CrossSiteAccessPolicies
             };
 
             IChannel channel = channelData;
 
-            channel.Input = input;
-            channel.Preview = preview;
-            channel.Output = output;
+            channel.Input = options.Input;
+            channel.Preview = options.Preview;
+            channel.Output = options.Output;
 
-            if (channel.Input == null)
-            {
-                channel.Input = new ChannelInput();
-            }
             if (channel.Input.Endpoints == null)
             {
                 channel.Input.Endpoints = new List<ChannelEndpoint>().AsReadOnly();
-            }
-            if (channel.Input.AccessControl == null)
-            {
-                channel.Input.AccessControl = new ChannelAccessControl();
-            }
-            if (channel.Input.AccessControl.IPAllowList == null)
-            {
-                channel.Input.AccessControl.IPAllowList = new List<IPAddress>();
             }
 
             if (channel.Preview == null)

@@ -97,6 +97,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Channel input IP allow list must be set..
+        /// </summary>
+        internal static string ErrorEmptyChannelInputIPAllowList {
+            get {
+                return ResourceManager.GetString("ErrorEmptyChannelInputIPAllowList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Channel name must not be empty..
         /// </summary>
         internal static string ErrorEmptyChannelName {
@@ -129,6 +138,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Properties {
         internal static string ErrorEntityWithoutId {
             get {
                 return ResourceManager.GetString("ErrorEntityWithoutId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Streaming endpoint scale units must be a positive number.
+        /// </summary>
+        internal static string ErrorInvalidStreamingEndpointScaleUnits {
+            get {
+                return ResourceManager.GetString("ErrorInvalidStreamingEndpointScaleUnits", resourceCulture);
             }
         }
         
