@@ -1,4 +1,4 @@
-﻿// Copyright 2012 Microsoft Corporation
+﻿// Copyright 2014 Microsoft Corporation
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,41 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.ObjectModel;
+
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
-    /// Describes the state of an Origin.
+    /// Specifies channel preview settings.
+    /// This is the public class exposed to SDK interfaces and used by users
     /// </summary>
-    public enum OriginState
+    public class ChannelPreview
     {
         /// <summary>
-        /// Origin is stopped.
+        /// Gets or sets channel preview access control
         /// </summary>
-        Stopped = 0,
+        public ChannelAccessControl AccessControl { get; set; }
 
         /// <summary>
-        /// Origin is starting.
+        /// Gets the list of the channel preview endpoints.
         /// </summary>
-        Starting = 1,
-
-        /// <summary>
-        /// Origin is running.
-        /// </summary>
-        Running = 2,
-
-        /// <summary>
-        /// Origin is stopping.
-        /// </summary>
-        Stopping = 3,
-
-        /// <summary>
-        /// Origin is scaling.
-        /// </summary>
-        Scaling = 4,
-
-        /// <summary>
-        /// Origin is being deleted
-        /// </summary>
-        Deleting = 5,
+        public ReadOnlyCollection<ChannelEndpoint> Endpoints { get; internal set; }
     }
 }

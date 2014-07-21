@@ -14,24 +14,16 @@
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
-    /// <summary>
-    /// Specifies the size of a channel
-    /// </summary>
-    public enum ChannelSize
+    public class CrossSiteAccessPolicies
     {
         /// <summary>
-        /// Small channel
+        /// For Microsoft Silverlight
         /// </summary>
-        Small = 0,
+        public string ClientAccessPolicy { get; set; }
 
         /// <summary>
-        /// Medium channel
+        /// For Adobe flash
         /// </summary>
-        Medium = 1,
-
-        /// <summary>
-        /// Large channel
-        /// </summary>
-        Large = 2 
+        public string CrossDomainPolicy { get; set; }
     }
 }

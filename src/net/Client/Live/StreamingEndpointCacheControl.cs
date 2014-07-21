@@ -1,4 +1,4 @@
-﻿// Copyright 2012 Microsoft Corporation
+﻿// Copyright 2014 Microsoft Corporation
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,21 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
-    /// IP v. 4 element of allow list.
+    /// Describes streaming endpoint cache control.
+    /// This is the public class exposed to SDK interfaces and used by users
     /// </summary>
-    public class Ipv4
+    public class StreamingEndpointCacheControl
     {
         /// <summary>
-        /// Friendly name.
+        /// Gets or sets maximum age of the cache.
         /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// IP of the host.
-        /// </summary>
-        public string IP { get; set; }
+        public TimeSpan? MaxAge { get; set; }
     }
 }

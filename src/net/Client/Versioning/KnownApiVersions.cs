@@ -35,13 +35,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Versioning
         public static readonly Version Version2_4 = new Version(major: 2, minor: 4);
         public static readonly Version Version2_5 = new Version(major: 2, minor: 5);
         public static readonly Version Version2_6 = new Version(major: 2, minor: 6);
+        public static readonly Version Version2_7 = new Version(major: 2, minor: 7);
 
         /// <summary>
         /// Gets the Media Service API version.
         /// </summary>
         public static Version Current
         {
-            get { return Version2_6; }
+            get { return Version2_7; }
         }
     }
 }

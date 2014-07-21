@@ -39,17 +39,17 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Specifies infinite DVR window for a program.
         /// </summary>
         public static readonly TimeSpan? InfiniteDvrLenth = null;
+        
+        #region Streaming Endpoint constants
+        internal static readonly TimeSpan CreateStreamingEndpointPollInterval = TimeSpan.FromSeconds(15);
 
-        #region Origin constants
-        internal static readonly TimeSpan CreateOriginPollInterval = TimeSpan.FromSeconds(15);
+        internal static readonly TimeSpan DeleteStreamingEndpointPollInterval = TimeSpan.FromSeconds(5);
 
-        internal static readonly TimeSpan DeleteOriginPollInterval = TimeSpan.FromSeconds(5);
+        internal static readonly TimeSpan StartStreamingEndpointPollInterval = TimeSpan.FromMinutes(1);
 
-        internal static readonly TimeSpan StartOriginPollInterval = TimeSpan.FromMinutes(1);
+        internal static readonly TimeSpan StopStreamingEndpointPollInterval = TimeSpan.FromSeconds(15);
 
-        internal static readonly TimeSpan StopOriginPollInterval = TimeSpan.FromSeconds(15);
-
-        internal static readonly TimeSpan ScaleOriginPollInterval = TimeSpan.FromSeconds(15);
-        #endregion Origin constants
+        internal static readonly TimeSpan ScaleStreamingEndpointPollInterval = TimeSpan.FromSeconds(15);
+        #endregion Streaming Endpoint constants
     }
 }
