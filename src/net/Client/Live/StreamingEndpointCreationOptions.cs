@@ -83,6 +83,4 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             ScaleUnits = scaleUnits;
         }
     }
-
-
 }
