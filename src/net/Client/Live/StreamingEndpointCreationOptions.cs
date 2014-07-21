@@ -18,7 +18,7 @@ using System.Collections.Generic;
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
-    /// The helper class to create a streaming endpoint, which contains
+    /// The options to create a streaming endpoint, which contains
     /// all parameters and settings to configure a streaming endpoint
     /// </summary>
     public class StreamingEndpointCreationOptions
@@ -68,7 +68,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <param name="name">Name of the streaming endpoint to be created</param>
         /// <param name="scaleUnits">The streaming endpoint scale units.</param>
-        public StreamingEndpointCreationOptions(string name, int scaleUnits)
+        internal StreamingEndpointCreationOptions(string name, int scaleUnits)
         {
             if (string.IsNullOrWhiteSpace(name))
             {

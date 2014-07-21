@@ -18,7 +18,7 @@ using System.Collections.Generic;
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
-    /// The helper class to create a channel, which contains
+    /// The options to create a channel, which contains
     /// all parameters and settings to configure a channel
     /// </summary>
     public class ChannelCreationOptions
@@ -64,7 +64,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="name">Name of the channel to be created</param>
         /// <param name="inputStreamingProtocol">the Streaming Protocol of the channel input</param>
         /// <param name="inputIPAllowList">the IP allow list for the channel input access control</param>
-        public ChannelCreationOptions(
+        internal ChannelCreationOptions(
             string name, 
             StreamingProtocol inputStreamingProtocol,
             IList<IPAddress> inputIPAllowList)
