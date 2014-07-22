@@ -27,7 +27,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// This is the public class exposed to SDK interfaces and used by users
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public IList<IPAddress> IPAllowList { get; set; }
+        public IList<IPRange> IPAllowList { get; set; }
 
         /// <summary>
         /// Gets or sets the list of Akamai Signature Header Authentication keys.

@@ -67,7 +67,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         internal ChannelCreationOptions(
             string name, 
             StreamingProtocol inputStreamingProtocol,
-            IList<IPAddress> inputIPAllowList)
+            IList<IPRange> inputIPAllowList)
         {
             if (string.IsNullOrWhiteSpace(name))
             {

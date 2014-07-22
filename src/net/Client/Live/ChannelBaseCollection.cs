@@ -46,7 +46,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="inputProtocol">Channel input streaming protocol</param>
         /// <param name="inputIPAllowList">Channel input IP allow list</param>
         /// <returns>The created channel.</returns>
-        public IChannel Create(string name, StreamingProtocol inputProtocol, IList<IPAddress> inputIPAllowList)
+        public IChannel Create(string name, StreamingProtocol inputProtocol, IList<IPRange> inputIPAllowList)
         {
             return Create(new ChannelCreationOptions(name, inputProtocol, inputIPAllowList));
         }
@@ -58,7 +58,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="inputProtocol">Channel input streaming protocol</param>
         /// <param name="inputIPAllowList">Channel input IP allow list</param>
         /// <returns>The channel creation task.</returns>
-        public Task<IChannel> CreateAsync(string name, StreamingProtocol inputProtocol, IList<IPAddress> inputIPAllowList)
+        public Task<IChannel> CreateAsync(string name, StreamingProtocol inputProtocol, IList<IPRange> inputIPAllowList)
         {
             return CreateAsync(new ChannelCreationOptions(name, inputProtocol, inputIPAllowList));
         }
@@ -120,7 +120,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="inputProtocol">Channel input streaming protocol</param>
         /// <param name="inputIPAllowList">Channel input IP allow list</param>
         /// <returns>Operation info that can be used to track the operation.</returns>
-        public IOperation SendCreateOperation(string name, StreamingProtocol inputProtocol, IList<IPAddress> inputIPAllowList)
+        public IOperation SendCreateOperation(string name, StreamingProtocol inputProtocol, IList<IPRange> inputIPAllowList)
         {
             return SendCreateOperation(new ChannelCreationOptions(name, inputProtocol, inputIPAllowList));
         }
@@ -132,7 +132,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="inputProtocol">Channel input streaming protocol</param>
         /// <param name="inputIPAllowList">Channel input IP allow list</param>
         /// <returns>Task to wait on for operation sending completion.</returns>
-        public Task<IOperation> SendCreateOperationAsync(string name, StreamingProtocol inputProtocol, IList<IPAddress> inputIPAllowList)
+        public Task<IOperation> SendCreateOperationAsync(string name, StreamingProtocol inputProtocol, IList<IPRange> inputIPAllowList)
         {
             return SendCreateOperationAsync(new ChannelCreationOptions(name, inputProtocol, inputIPAllowList));
         }
@@ -228,7 +228,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
             if (channel.Preview.AccessControl.IPAllowList == null)
             {
-                channel.Preview.AccessControl.IPAllowList = new List<IPAddress>();
+                channel.Preview.AccessControl.IPAllowList = new List<IPRange>();
             }
 
             channelData.SetMediaContext(MediaContext);

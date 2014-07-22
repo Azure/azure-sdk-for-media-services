@@ -201,7 +201,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
             if (options.AccessControl.IPAllowList == null)
             {
-                options.AccessControl.IPAllowList = new List<IPAddress>();
+                options.AccessControl.IPAllowList = new List<IPRange>();
             }
 
             var streamingEndpoint = new StreamingEndpointData

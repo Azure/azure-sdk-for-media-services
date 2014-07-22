@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
@@ -59,7 +60,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
             {
                  AccessControl = new ChannelAccessControl
                  {
-                     IPAllowList = new List<IPAddress> {new IPAddress {Address = System.Net.IPAddress.Parse("192.168.0.1/24"), SubnetPrefixLength = 24} }
+                     IPAllowList = new List<IPRange> {new IPRange {Address = IPAddress.Parse("192.168.0.1/24"), SubnetPrefixLength = 24} }
                  }
             };
 

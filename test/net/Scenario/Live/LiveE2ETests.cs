@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Security.Cryptography;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
@@ -70,7 +71,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
                     Output = MakeChannelOutput()
                 });
             IAsset asset = _dataContext.Assets.Create(TestAssetlName, AssetCreationOptions.None);
-            IProgram program = channel.Programs.Create(TestProgramlName, false, TimeSpan.FromHours(1), TimeSpan.FromHours(1), asset.Id);
+            IProgram program = channel.Programs.Create(TestProgramlName, TimeSpan.FromHours(1), asset.Id);
 
             Assert.AreEqual(asset.Id, program.AssetId);
             Assert.AreEqual(channel.Id, program.Channel.Id);
@@ -276,18 +277,18 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
         {
             return new StreamingEndpointAccessControl
             {
-                IPAllowList = new List<IPAddress>
+                IPAllowList = new List<IPRange>
                 {
-                    new IPAddress
+                    new IPRange
                     {
                         Name = "IP List 1",
-                        Address = System.Net.IPAddress.Parse("131.107.0.0"),
+                        Address = IPAddress.Parse("131.107.0.0"),
                         SubnetPrefixLength = 16
                     },
-                    new IPAddress
+                    new IPRange
                     {
                         Name = "IP List 2",
-                        Address = System.Net.IPAddress.Parse("131.107.192.0"),
+                        Address = IPAddress.Parse("131.107.192.0"),
                         SubnetPrefixLength = 24
                     }
                 },
@@ -329,12 +330,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
                 StreamingProtocol = StreamingProtocol.Smooth,
                 AccessControl = new ChannelAccessControl
                 {
-                    IPAllowList = new List<IPAddress>
+                    IPAllowList = new List<IPRange>
                     {
-                        new IPAddress
+                        new IPRange
                         {
                             Name = "testName1",
-                            Address = System.Net.IPAddress.Parse("1.1.1.1"),
+                            Address = IPAddress.Parse("1.1.1.1"),
                             SubnetPrefixLength = 24
                         }
                     }
@@ -348,12 +349,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
             {
                 AccessControl = new ChannelAccessControl
                 {
-                    IPAllowList = new List<IPAddress>
+                    IPAllowList = new List<IPRange>
                     {
-                        new IPAddress
+                        new IPRange
                         {
                             Name = "testName1",
-                            Address = System.Net.IPAddress.Parse("1.1.1.1"),
+                            Address = IPAddress.Parse("1.1.1.1"),
                             SubnetPrefixLength = 24
                         }
                     }

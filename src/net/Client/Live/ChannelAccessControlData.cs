@@ -28,7 +28,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// The list of IP addresses that are allowed to connect to channel endpoint.
         /// </summary>
         // ReSharper disable once InconsistentNaming
-        public List<IPAddressData> IPAllowList { get; set; }
+        public List<IPRangeData> IPAllowList { get; set; }
 
         /// <summary>
         /// Creates an instance of ChannelAccessControlData class.
@@ -49,7 +49,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             if (accessControl.IPAllowList != null)
             {
                 IPAllowList = accessControl.IPAllowList
-                    .Select(a => a == null ? null : new IPAddressData(a))
+                    .Select(a => a == null ? null : new IPRangeData(a))
                     .ToList();
             }
         }
@@ -71,7 +71,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             if (accessControl.IPAllowList != null)
             {
                 result.IPAllowList = accessControl.IPAllowList
-                    .Select(a => (IPAddress)a)
+                    .Select(a => (IPRange)a)
                     .ToList();
             }
 
