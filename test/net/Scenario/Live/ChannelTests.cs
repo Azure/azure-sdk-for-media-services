@@ -39,10 +39,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         public void ChannelTestReset()
         {
             IChannel channel = _mediaContext.Channels.Create(
-                Guid.NewGuid().ToString().Substring(0, 30),
-                MakeChannelInput(), 
-                MakeChannelPreview(), 
-                MakeChannelOutput());
+                new ChannelCreationOptions
+                {
+                    Name = Guid.NewGuid().ToString().Substring(0, 30),
+                    Input = MakeChannelInput(),
+                    Preview = MakeChannelPreview(),
+                    Output = MakeChannelOutput()
+                });
             channel.Reset();
         }
 
@@ -52,10 +55,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         public void ChannelTestCreateTrivial()
         {
             IChannel channel = _mediaContext.Channels.Create(
-                Guid.NewGuid().ToString().Substring(0, 30),
-                MakeChannelInput(),
-                MakeChannelPreview(),
-                MakeChannelOutput());
+                new ChannelCreationOptions
+                {
+                    Name = Guid.NewGuid().ToString().Substring(0, 30),
+                    Input = MakeChannelInput(),
+                    Preview = MakeChannelPreview(),
+                    Output = MakeChannelOutput()
+                });
             channel.Delete();
         }
 
@@ -76,10 +82,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             try
             {
                 var actual = _mediaContext.Channels.Create(
-                    "unittest",
-                    MakeChannelInput(),
-                    MakeChannelPreview(),
-                    MakeChannelOutput());
+                    new ChannelCreationOptions
+                    {
+                        Name = "unittest",
+                        Input = MakeChannelInput(),
+                        Preview = MakeChannelPreview(),
+                        Output = MakeChannelOutput()
+                    });
             }
             catch (NotImplementedException x)
             {
@@ -105,10 +114,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             try
             {
                 var actual = _mediaContext.Channels.Create(
-                    "unittest",
-                    MakeChannelInput(),
-                    MakeChannelPreview(),
-                    MakeChannelOutput());
+                    new ChannelCreationOptions
+                    {
+                        Name = "unittest",
+                        Input = MakeChannelInput(),
+                        Preview = MakeChannelPreview(),
+                        Output = MakeChannelOutput()
+                    });
             }
             catch (WebException x)
             {
@@ -220,10 +232,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             try
             {
                 var actual = _mediaContext.Channels.SendCreateOperation(
-                    "unittest",
-                    MakeChannelInput(),
-                    MakeChannelPreview(),
-                    MakeChannelOutput());
+                    new ChannelCreationOptions
+                    {
+                        Name = "unittest",
+                        Input = MakeChannelInput(),
+                        Preview = MakeChannelPreview(),
+                        Output = MakeChannelOutput()
+                    });
             }
             catch (NotImplementedException x)
             {

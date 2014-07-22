@@ -79,7 +79,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         StreamingEndpointAccessControl AccessControl { get; set; }
 
         /// <summary>
-        /// Cache control
+        /// Gets or sets streaming endpoint cache control
         /// </summary>
         StreamingEndpointCacheControl CacheControl { get; set; }
         

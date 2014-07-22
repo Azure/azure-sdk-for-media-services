@@ -249,6 +249,7 @@
     <Compile Include="Live\StreamingEndpointBaseCollection.cs" />
     <Compile Include="Live\StreamingEndpointCacheControl.cs" />
     <Compile Include="Live\StreamingEndpointCacheControlData.cs" />
+    <Compile Include="Live\StreamingEndpointCreationOptions.cs" />
     <Compile Include="Live\StreamingEndpointData.cs" />
     <Compile Include="Live\StreamingEndpointState.cs" />
     <Compile Include="Live\StreamingProtocol.cs" />
