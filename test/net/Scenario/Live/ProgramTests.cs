@@ -49,7 +49,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             IChannel channel = new ChannelData();
             ProgramBaseCollection programs = new ProgramBaseCollection(_mediaContext, channel);
 
-            var actual = programs.Create(expected.Name, false, null, TimeSpan.FromHours(1), "");
+            var actual = programs.Create(expected.Name, TimeSpan.FromHours(1), Guid.NewGuid().ToString());
 
             Assert.AreEqual(expected.Name, actual.Name);
 

@@ -29,7 +29,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Gets or sets the list of IP-s allowed.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public List<IPAddressData> IPAllowList { get; set; }
+        public List<IPRangeData> IPAllowList { get; set; }
 
         /// <summary>
         /// Gets or sets the list of Akamai Signature Header Authentication keys.
@@ -62,7 +62,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             if (accessControl.IPAllowList != null)
             {
                 IPAllowList = accessControl.IPAllowList
-                    .Select(a => a == null ? null : new IPAddressData(a))
+                    .Select(a => a == null ? null : new IPRangeData(a))
                     .ToList();
             }
         }
@@ -87,7 +87,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             if (accessControl.IPAllowList != null)
             {
                 result.IPAllowList = accessControl.IPAllowList
-                    .Select(a => (IPAddress)a)
+                    .Select(a => (IPRange)a)
                     .ToList();
             }
 

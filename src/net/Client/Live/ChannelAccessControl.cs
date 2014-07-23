@@ -26,6 +26,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// The list of IP addresses that are allowed to connect to channel endpoint.
         /// </summary>
         // ReSharper disable once InconsistentNaming
-        public IList<IPAddress> IPAllowList { get; set; }
+        public IList<IPRange> IPAllowList { get; set; }
     }
 }

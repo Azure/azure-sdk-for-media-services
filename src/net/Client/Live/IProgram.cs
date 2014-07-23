@@ -58,29 +58,29 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         string AssetId { get; set; }
 
         /// <summary>
-        /// Gets or sets the streaming manifest name. 
+        /// Gets the streaming manifest name. 
         /// </summary>
-        string ManifestName { get; set; }
+        string ManifestName { get; }
 
         /// <summary>
-        /// Gets or sets the length of the DVR window.
+        /// Gets or sets the archive window length.
         /// </summary>
-        TimeSpan? DvrWindowLength { get; set; }
-
-        /// <summary>
-        /// Gets or sets the estimated length of the program duration.
-        /// </summary>
-        TimeSpan EstimatedDuration { get; set; }
-
-        /// <summary>
-        /// Enables or disables archiving.
-        /// </summary>
-        bool EnableArchive { get; set; }
+        TimeSpan ArchiveWindowLength { get; set; }
 
         /// <summary>
         /// Gets program state.
         /// </summary>
         ProgramState State { get; }
+
+        /// <summary>
+        /// Gets the channel associated with the program.
+        /// </summary>
+        IChannel Channel { get; }
+
+        /// <summary>
+        /// Gets the asset associated with the program.
+        /// </summary>
+        IAsset Asset { get; }
 
         /// <summary>
         /// Deletes the program.
@@ -138,12 +138,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <returns>Task to wait on for operation sending completion.</returns>
         Task<IOperation> SendStopOperationAsync();
-
-        /// <summary>
-        /// Gets the channel associated with the program.
-        /// </summary>
-        IChannel Channel { get; }
-
+        
         /// <summary>
         /// Updates this program instance asynchronously.
         /// </summary>

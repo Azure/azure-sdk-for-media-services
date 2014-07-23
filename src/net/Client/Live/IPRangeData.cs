@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Net;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -21,7 +22,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// This is the internal class for the communication to the REST and must match the REST metadata
     /// </summary>
     /// ReSharper disable once InconsistentNaming
-    internal class IPAddressData
+    internal class IPRangeData
     {
         /// <summary>
         /// Gets or sets a friendly name for this IP address.
@@ -41,45 +42,45 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Creates an instance of IPAddressData class.
         /// </summary>
-        public IPAddressData() { }
+        public IPRangeData() { }
 
         /// <summary>
         /// Creates an instance of IPAddressData class from an instance of IPAddress.
         /// </summary>
-        /// <param name="ipAddress">IP address to copy into newly created instance.</param>
-        public IPAddressData(IPAddress ipAddress)
+        /// <param name="ipRange">IP address to copy into newly created instance.</param>
+        public IPRangeData(IPRange ipRange)
         {
-            if (ipAddress == null)
+            if (ipRange == null)
             {
-                throw new ArgumentNullException("ipAddress");
+                throw new ArgumentNullException("ipRange");
             }
 
-            Name = ipAddress.Name;
-            SubnetPrefixLength = ipAddress.SubnetPrefixLength;
+            Name = ipRange.Name;
+            SubnetPrefixLength = ipRange.SubnetPrefixLength;
 
-            if (ipAddress.Address != null)
+            if (ipRange.Address != null)
             {
-                Address = ipAddress.Address.ToString();
+                Address = ipRange.Address.ToString();
             }
         }
 
         /// <summary>
         /// Casts IPAddressData to IPAddress.
         /// </summary>
-        /// <param name="ipAddress">Object to cast.</param>
+        /// <param name="ipRange">Object to cast.</param>
         /// <returns>Casted object.</returns>
-        public static explicit operator IPAddress(IPAddressData ipAddress)
+        public static explicit operator IPRange(IPRangeData ipRange)
         {
-            if (ipAddress == null)
+            if (ipRange == null)
             {
                 return null;
             }
 
-            var result = new IPAddress { Name = ipAddress.Name, SubnetPrefixLength = ipAddress.SubnetPrefixLength };
+            var result = new IPRange { Name = ipRange.Name, SubnetPrefixLength = ipRange.SubnetPrefixLength };
 
-            System.Net.IPAddress address;
-            if (!string.IsNullOrEmpty(ipAddress.Address) &&
-                System.Net.IPAddress.TryParse(ipAddress.Address, out address))
+            IPAddress address;
+            if (!string.IsNullOrEmpty(ipRange.Address) &&
+                IPAddress.TryParse(ipRange.Address, out address))
             {
                 result.Address = address;
             }

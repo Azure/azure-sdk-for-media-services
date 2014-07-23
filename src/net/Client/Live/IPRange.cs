@@ -12,24 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Net;
+
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
-    /// Represents an IP Address
+    /// Represents an IP Range
     /// This is the public class exposed to SDK interfaces and used by users
     /// </summary>
     /// ReSharper disable once InconsistentNaming
-    public class IPAddress
+    public class IPRange
     {
         /// <summary>
-        /// Gets or sets a friendly name for this IP address.
+        /// Gets or sets a friendly name for this IP Range.
         /// </summary>
         public string Name { get; set; }
 
         /// <summary>
-        /// The IP address represented by this instance.
+        /// The base IP address for this CIDR range.
         /// </summary>
-        public System.Net.IPAddress Address { get; set; }
+        public IPAddress Address { get; set; }
 
         /// <summary>
         /// The subnet mask prefix length (see CIDR notation).

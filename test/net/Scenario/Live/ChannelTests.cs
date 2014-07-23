@@ -260,12 +260,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 StreamingProtocol = StreamingProtocol.Smooth,
                 AccessControl = new ChannelAccessControl
                 {
-                    IPAllowList = new List<IPAddress>
+                    IPAllowList = new List<IPRange>
                     {
-                        new IPAddress
+                        new IPRange
                         {
                             Name = "testName1",
-                            Address = System.Net.IPAddress.Parse("1.1.1.1"),
+                            Address = IPAddress.Parse("1.1.1.1"),
                             SubnetPrefixLength = 24
                         }
                     }
@@ -279,12 +279,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             {
                 AccessControl = new ChannelAccessControl
                 {
-                    IPAllowList = new List<IPAddress>
+                    IPAllowList = new List<IPRange>
                     {
-                        new IPAddress
+                        new IPRange
                         {
                             Name = "testName1",
-                            Address = System.Net.IPAddress.Parse("1.1.1.1"),
+                            Address = IPAddress.Parse("1.1.1.1"),
                             SubnetPrefixLength = 24
                         }
                     }
