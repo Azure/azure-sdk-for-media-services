@@ -17,19 +17,19 @@ using System.Net;
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
-    /// Represents an IP Address
+    /// Represents an IP Range
     /// This is the public class exposed to SDK interfaces and used by users
     /// </summary>
     /// ReSharper disable once InconsistentNaming
     public class IPRange
     {
         /// <summary>
-        /// Gets or sets a friendly name for this IP address.
+        /// Gets or sets a friendly name for this IP Range.
         /// </summary>
         public string Name { get; set; }
 
         /// <summary>
-        /// The IP address represented by this instance.
+        /// The base IP address for this CIDR range.
         /// </summary>
         public IPAddress Address { get; set; }
 

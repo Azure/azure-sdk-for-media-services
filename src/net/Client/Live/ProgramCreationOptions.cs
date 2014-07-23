@@ -65,11 +65,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new ArgumentNullException("name");
             }
 
-            if (archiveWindowLength <= TimeSpan.Zero)
-            {
-                throw new ArgumentOutOfRangeException("archiveWindowLength");
-            }
-
             if (string.IsNullOrEmpty(assetId))
             {
                 throw new ArgumentNullException("assetId");
