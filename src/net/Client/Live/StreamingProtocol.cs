@@ -22,7 +22,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Smooth Streaming.
         /// </summary>
-        Smooth = 0,
+        FragmentedMP4 = 0,
 
         /// <summary>
         /// RTMP.

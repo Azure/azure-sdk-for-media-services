@@ -309,5 +309,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             return Task.Factory.StartNew(() => SendScaleOperation(scaleUnits));
         }
+
+        internal override void Refresh()
+        {
+            _accessControl = null;
+            _cacheControl = null;
+            base.Refresh();
+        }
     }
 }

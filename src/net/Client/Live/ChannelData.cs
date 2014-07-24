@@ -31,6 +31,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private ChannelInput _input;
         private ChannelPreview _preview;
 
+        private ProgramBaseCollection _programCollection;
+
+        protected override string EntitySetName { get { return ChannelBaseCollection.ChannelSet; } }
+
         /// <summary>
         /// Gets or sets the name of the channel.
         /// </summary>
@@ -344,6 +348,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             base.SetMediaContext(value);
         }
 
+        internal override void Refresh()
+        {
+            _input = null;
+            _preview = null;
+            base.Refresh();
+        }
+
         /// <summary>
         /// Invalidates collections to force them to be reloaded from server.
         /// </summary>
@@ -351,9 +362,5 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             _programCollection = null;
         }
-
-        protected override string EntitySetName { get { return ChannelBaseCollection.ChannelSet; } }
-
-        private ProgramBaseCollection _programCollection;
     }
 }
