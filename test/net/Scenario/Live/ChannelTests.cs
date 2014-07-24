@@ -257,7 +257,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             return new ChannelInput
             {
                 KeyFrameDistanceHns = 19000000,
-                StreamingProtocol = StreamingProtocol.FragmentedMp4,
+                StreamingProtocol = StreamingProtocol.FragmentedMP4,
                 AccessControl = new ChannelAccessControl
                 {
                     IPAllowList = new List<IPRange>
