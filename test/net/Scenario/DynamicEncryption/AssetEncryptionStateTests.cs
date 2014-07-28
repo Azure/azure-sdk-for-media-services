@@ -85,6 +85,18 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        public void ValidateEncryptionStatusOfEmptyAsset()
+        {
+            IAsset asset = _mediaContext.Assets.Create("Empty Asset", AssetCreationOptions.None);
+            Assert.AreEqual(0, asset.AssetFiles.Count());
+            Assert.AreEqual(false, asset.IsStreamable);
+            Assert.AreEqual(AssetType.Unknown, asset.AssetType);
+            Assert.AreEqual(AssetCreationOptions.None, asset.Options);
+
+            CleanupAsset(asset);
+        }
+
+        [TestMethod]
         [DeploymentItem(@"Media\SmallMp41.mp4", "Media")]
         public void ValidateEffectiveEncryptionStatusOfMP4()
         {
