@@ -212,7 +212,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new ArgumentNullException("asset");
             }
 
-            return asset.AssetFiles.Where(af => af.IsPrimary == true).SingleOrDefault();
+            // Take the first asset file marked as primary (do not force a single one to avoid a potential runtime exception).
+            return asset.AssetFiles.Where(af => af.IsPrimary).FirstOrDefault();
         }
 
         private static bool IsExtension(string filepath, string extensionToCheck)
@@ -224,44 +225,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
         private static AssetType GetAssetType(IAsset asset)
         {
+            // If there is no primary asset file then default to AssetType.Unknown. 
             AssetType assetType = AssetType.Unknown;
 
             IAssetFile primaryFile = GetPrimaryFile(asset);
 
-            if (IsExtension(primaryFile.Name, ".mp4"))
+            // Adding null check to prevent NullReferenceException.
+            if (primaryFile != null)
             {
-                if (asset.Options.HasFlag(AssetCreationOptions.EnvelopeEncryptionProtected) ||
-                    asset.Options.HasFlag(AssetCreationOptions.CommonEncryptionProtected))
-                {
-                    // We have no supported cases where Encryption is statically applied to an MBR MP4 fileset.
-                    assetType = AssetType.Unknown;
-                }
-                else
-                {
-                    assetType = AssetType.MP4;
-                }
-            }
-            else if (IsExtension(primaryFile.Name, ".ism"))
-            {
-                IAssetFile[] assetFiles = asset.AssetFiles.ToArray();
-
-                if (assetFiles.Where(af => IsExtension(af.Name, ".m3u8")).Any())
-                {
-                    assetType = AssetType.MediaServicesHLS;
-                }
-                else if (assetFiles.Where(af => IsExtension(af.Name, ".ismc")).Any())
-                {
-                    if (asset.Options.HasFlag(AssetCreationOptions.EnvelopeEncryptionProtected))
-                    {
-                        // We have no supported cases where Envelope Encryption is statically applied to a smooth streaming file.
-                        assetType = AssetType.Unknown;
-                    }
-                    else
-                    {
-                        assetType = AssetType.SmoothStreaming;
-                    }
-                }
-                else if (assetFiles.Where(af => IsExtension(af.Name, ".mp4")).Any())
+                if (IsExtension(primaryFile.Name, ".mp4"))
                 {
                     if (asset.Options.HasFlag(AssetCreationOptions.EnvelopeEncryptionProtected) ||
                         asset.Options.HasFlag(AssetCreationOptions.CommonEncryptionProtected))
@@ -271,7 +243,41 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     }
                     else
                     {
-                        assetType = AssetType.MultiBitrateMP4;
+                        assetType = AssetType.MP4;
+                    }
+                }
+                else if (IsExtension(primaryFile.Name, ".ism"))
+                {
+                    IAssetFile[] assetFiles = asset.AssetFiles.ToArray();
+
+                    if (assetFiles.Where(af => IsExtension(af.Name, ".m3u8")).Any())
+                    {
+                        assetType = AssetType.MediaServicesHLS;
+                    }
+                    else if (assetFiles.Where(af => IsExtension(af.Name, ".ismc")).Any())
+                    {
+                        if (asset.Options.HasFlag(AssetCreationOptions.EnvelopeEncryptionProtected))
+                        {
+                            // We have no supported cases where Envelope Encryption is statically applied to a smooth streaming file.
+                            assetType = AssetType.Unknown;
+                        }
+                        else
+                        {
+                            assetType = AssetType.SmoothStreaming;
+                        }
+                    }
+                    else if (assetFiles.Where(af => IsExtension(af.Name, ".mp4")).Any())
+                    {
+                        if (asset.Options.HasFlag(AssetCreationOptions.EnvelopeEncryptionProtected) ||
+                            asset.Options.HasFlag(AssetCreationOptions.CommonEncryptionProtected))
+                        {
+                            // We have no supported cases where Encryption is statically applied to an MBR MP4 fileset.
+                            assetType = AssetType.Unknown;
+                        }
+                        else
+                        {
+                            assetType = AssetType.MultiBitrateMP4;
+                        }
                     }
                 }
             }
