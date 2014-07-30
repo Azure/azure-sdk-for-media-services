@@ -568,11 +568,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         {
             AssetEncryptionState actualState = asset.GetEncryptionState(protocolsToTest);
 
-            if (expectedState != actualState)
-            {
-                string foo = "bad";
-            }
-
             Assert.AreEqual(expectedState, actualState);        
         }
 
