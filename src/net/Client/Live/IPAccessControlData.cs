@@ -17,15 +17,15 @@ using System.Collections.Generic;
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
-    /// Specifies access control properties on the channel endpoints.
-    /// This is the public class exposed to SDK interfaces and used by users
+    /// Specifies IP access control properties.
+    /// This is the internal class for the communication to the REST and must match the REST metadata.
     /// </summary>
-    public class ChannelAccessControl
+    internal class IPAccessControlData
     {
         /// <summary>
         /// The list of IP addresses that are allowed to connect to channel endpoint.
         /// </summary>
         // ReSharper disable once InconsistentNaming
-        public IEnumerable<IPRange> IPAllowList { get; set; }
+        public IEnumerable<IPRangeData> Allow { get; set; }
     }
 }

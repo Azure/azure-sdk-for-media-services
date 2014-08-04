@@ -211,6 +211,7 @@
     <Compile Include="DataServiceAsyncExtensions.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Live\AkamaiAccessControl.cs" />
     <Compile Include="Live\AkamaiSignatureHeaderAuthenticationKey.cs" />
     <Compile Include="Live\AsyncHelper.cs" />
     <Compile Include="Live\ChannelAccessControl.cs" />
@@ -231,6 +232,7 @@
     <Compile Include="Live\CrossSiteAccessPolicies.cs" />
     <Compile Include="Live\IChannel.cs" />
     <Compile Include="Live\IOperation.cs" />
+    <Compile Include="Live\IPAccessControlData.cs" />
     <Compile Include="Live\IPRange.cs" />
     <Compile Include="Live\IPRangeData.cs" />
     <Compile Include="Live\IProgram.cs" />

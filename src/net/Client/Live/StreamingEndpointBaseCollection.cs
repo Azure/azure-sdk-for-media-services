@@ -186,24 +186,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new ArgumentException(Resources.ErrorEmptyStreamingEndpointName);
             }
 
-            if (options.ScaleUnits <= 0)
-            {
-                throw new ArgumentException(Resources.ErrorInvalidStreamingEndpointScaleUnits);
-            }
-
-            if (options.AccessControl == null)
-            {
-                options.AccessControl = new StreamingEndpointAccessControl();
-            }
-            if (options.AccessControl.AkamaiSignatureHeaderAuthenticationKeyList == null)
-            {
-                options.AccessControl.AkamaiSignatureHeaderAuthenticationKeyList = new List<AkamaiSignatureHeaderAuthenticationKey>();
-            }
-            if (options.AccessControl.IPAllowList == null)
-            {
-                options.AccessControl.IPAllowList = new List<IPRange>();
-            }
-
             var streamingEndpoint = new StreamingEndpointData
             {
                 Name = options.Name,

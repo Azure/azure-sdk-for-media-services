@@ -49,7 +49,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets or sets custom host names
         /// </summary>
-        public List<string> CustomHostNames { get; set; }
+        public IEnumerable<string> CustomHostNames { get; set; }
 
         /// <summary>
         /// Gets streaming endpoint creation date.
@@ -283,7 +283,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             var uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/StreamingEndpoints('{0}')/Scale", Id), UriKind.Relative);
 
-            var ruParameter = new BodyOperationParameter("ScaleUnits", scaleUnits);
+            var ruParameter = new BodyOperationParameter("scaleUnits", scaleUnits);
 
             return ExecuteActionAsync(uri, StreamingConstants.ScaleStreamingEndpointPollInterval, ruParameter);
         }
@@ -296,7 +296,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             var uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/StreamingEndpoints('{0}')/Scale", Id), UriKind.Relative);
 
-            var ruParameter = new BodyOperationParameter("ScaleUnits", scaleUnits);
+            var ruParameter = new BodyOperationParameter("scaleUnits", scaleUnits);
 
             return SendOperation(uri, ruParameter);
         }

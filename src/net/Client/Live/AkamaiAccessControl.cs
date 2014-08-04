@@ -17,15 +17,13 @@ using System.Collections.Generic;
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
-    /// Specifies access control properties on the channel endpoints.
-    /// This is the public class exposed to SDK interfaces and used by users
+    /// Describes Akamai access control.
     /// </summary>
-    public class ChannelAccessControl
+    public class AkamaiAccessControl
     {
         /// <summary>
-        /// The list of IP addresses that are allowed to connect to channel endpoint.
+        /// Gets or sets the list of Akamai Signature Header Authentication keys.
         /// </summary>
-        // ReSharper disable once InconsistentNaming
-        public IEnumerable<IPRange> IPAllowList { get; set; }
+        public IEnumerable<AkamaiSignatureHeaderAuthenticationKey> AkamaiSignatureHeaderAuthenticationKeyList { get; set; }
     }
 }

@@ -67,13 +67,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         internal ChannelCreationOptions(
             string name, 
             StreamingProtocol inputStreamingProtocol,
-            IList<IPRange> inputIPAllowList)
+            IEnumerable<IPRange> inputIPAllowList)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
                 throw new ArgumentNullException("name");
             }
-            if (inputIPAllowList == null || inputIPAllowList.Count == 0)
+            if (inputIPAllowList == null)
             {
                 throw new ArgumentNullException("inputIPAllowList");
             }
