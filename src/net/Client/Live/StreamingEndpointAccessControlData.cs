@@ -57,7 +57,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 Akamai = new AkamaiAccessControl
                 {
                     AkamaiSignatureHeaderAuthenticationKeyList =
-                        accessControl.AkamaiSignatureHeaderAuthenticationKeyList
+                        accessControl.AkamaiSignatureHeaderAuthenticationKeyList.ToList()
+
                 };
             }
 
@@ -67,6 +68,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 {
                     Allow = accessControl.IPAllowList
                         .Select(a => a == null ? null : new IPRangeData(a))
+                        .ToList()
                 };
             }
         }
