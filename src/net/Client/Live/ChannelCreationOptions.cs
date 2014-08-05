@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -82,7 +83,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             Input = new ChannelInput
             {
                 StreamingProtocol = inputStreamingProtocol,
-                AccessControl = new ChannelAccessControl {IPAllowList = inputIPAllowList}
+                AccessControl = new ChannelAccessControl
+                {
+                    IPAllowList = (inputIPAllowList as IList<IPRange>) ?? inputIPAllowList.ToList()
+                }
             };
         }
     }

@@ -73,7 +73,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             if (accessControl.IP != null && accessControl.IP.Allow != null)
             {
                 result.IPAllowList = accessControl.IP.Allow
-                    .Select(a => (IPRange) a);
+                    .Select(a => (IPRange) a)
+                    .ToList();
             }
 
             return result;

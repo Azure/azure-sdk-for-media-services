@@ -19,11 +19,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// <summary>
     /// Describes Akamai access control.
     /// </summary>
-    public class AkamaiAccessControl
+    public class AkamaiAccessControlData
     {
         /// <summary>
         /// Gets or sets the list of Akamai Signature Header Authentication keys.
+        /// This is the internal class for the communication to the REST and must match the REST metadata.
         /// </summary>
-        public IEnumerable<AkamaiSignatureHeaderAuthenticationKey> AkamaiSignatureHeaderAuthenticationKeyList { get; set; }
+        public IList<AkamaiSignatureHeaderAuthenticationKey> AkamaiSignatureHeaderAuthenticationKeyList { get; set; }
     }
 }

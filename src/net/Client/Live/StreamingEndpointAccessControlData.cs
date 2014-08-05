@@ -28,7 +28,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Gets or sets the Akamai access control.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public AkamaiAccessControl Akamai { get; set; }
+        public AkamaiAccessControlData Akamai { get; set; }
         
         /// <summary>
         /// Gets or sets the IP access control.
@@ -54,7 +54,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             if (accessControl.AkamaiSignatureHeaderAuthenticationKeyList != null)
             {
-                Akamai = new AkamaiAccessControl
+                Akamai = new AkamaiAccessControlData
                 {
                     AkamaiSignatureHeaderAuthenticationKeyList =
                         accessControl.AkamaiSignatureHeaderAuthenticationKeyList.ToList()
@@ -96,7 +96,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             if (accessControl.IP != null && accessControl.IP.Allow != null)
             {
                 result.IPAllowList = accessControl.IP.Allow
-                    .Select(a => (IPRange)a);
+                    .Select(a => (IPRange)a)
+                    .ToList();
             }
 
             return result;

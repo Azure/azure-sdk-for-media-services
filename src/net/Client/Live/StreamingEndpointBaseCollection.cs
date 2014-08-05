@@ -186,11 +186,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new ArgumentException(Resources.ErrorEmptyStreamingEndpointName);
             }
 
+            if (options.CustomHostNames == null)
+            {
+                options.CustomHostNames = Enumerable.Empty<string>();
+            }
+
             var streamingEndpoint = new StreamingEndpointData
             {
                 Name = options.Name,
                 Description = options.Description,
-                CustomHostNames = options.CustomHostNames ?? new List<string>(),
+                CustomHostNames = (options.CustomHostNames as IList<string>) ?? options.CustomHostNames.ToList(),
                 ScaleUnits = options.ScaleUnits,
                 CrossSiteAccessPolicies = options.CrossSiteAccessPolicies
             };

@@ -26,7 +26,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     [DataServiceKey("Id")]
     internal class StreamingEndpointData : RestEntity<StreamingEndpointData>, IStreamingEndpoint
     {
-        private IEnumerable<string> _customHostNames;
         private StreamingEndpointAccessControl _accessControl;
         private StreamingEndpointCacheControl _cacheControl;
 
@@ -50,22 +49,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets or sets custom host names
         /// </summary>
-        public IList<string> CustomHostNames
-        {
-            get
-            {
-                return _customHostNames == null
-                    ? null
-                    : (_customHostNames as IList<string>) ?? _customHostNames.ToList();
-            }
-            set { _customHostNames = value; }
-        }
-
-        IEnumerable<string> IStreamingEndpoint.CustomHostNames
-        {
-            get { return _customHostNames; }
-            set { _customHostNames = value; }
-        }
+        public IList<string> CustomHostNames { get; set; }
 
         /// <summary>
         /// Gets streaming endpoint creation date.
@@ -328,7 +312,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
         internal override void Refresh()
         {
-            _customHostNames = null;
             _accessControl = null;
             _cacheControl = null;
             base.Refresh();

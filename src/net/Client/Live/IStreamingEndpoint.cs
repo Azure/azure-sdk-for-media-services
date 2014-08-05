@@ -46,7 +46,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets or sets custom host names
         /// </summary>
-        IEnumerable<string> CustomHostNames { get; set; }
+        IList<string> CustomHostNames { get; set; }
 
         /// <summary>
         /// Gets streaming endpoint creation date.
