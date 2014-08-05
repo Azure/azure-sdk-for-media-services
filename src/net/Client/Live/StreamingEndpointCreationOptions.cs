@@ -36,7 +36,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets or sets one or more "vanity" host names to be accepted by the streaming endpoint in addition to default endpoint name.
         /// </summary>
-        public List<string> CustomHostNames { get; set; }
+        public IEnumerable<string> CustomHostNames { get; set; }
 
         /// <summary>
         /// Gets or sets the streaming endpoint scale units.

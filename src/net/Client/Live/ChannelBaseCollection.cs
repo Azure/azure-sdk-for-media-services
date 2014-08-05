@@ -46,7 +46,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="inputProtocol">Channel input streaming protocol</param>
         /// <param name="inputIPAllowList">Channel input IP allow list</param>
         /// <returns>The created channel.</returns>
-        public IChannel Create(string name, StreamingProtocol inputProtocol, IList<IPRange> inputIPAllowList)
+        public IChannel Create(string name, StreamingProtocol inputProtocol, IEnumerable<IPRange> inputIPAllowList)
         {
             return Create(new ChannelCreationOptions(name, inputProtocol, inputIPAllowList));
         }
@@ -58,7 +58,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="inputProtocol">Channel input streaming protocol</param>
         /// <param name="inputIPAllowList">Channel input IP allow list</param>
         /// <returns>The channel creation task.</returns>
-        public Task<IChannel> CreateAsync(string name, StreamingProtocol inputProtocol, IList<IPRange> inputIPAllowList)
+        public Task<IChannel> CreateAsync(string name, StreamingProtocol inputProtocol, IEnumerable<IPRange> inputIPAllowList)
         {
             return CreateAsync(new ChannelCreationOptions(name, inputProtocol, inputIPAllowList));
         }
@@ -120,7 +120,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="inputProtocol">Channel input streaming protocol</param>
         /// <param name="inputIPAllowList">Channel input IP allow list</param>
         /// <returns>Operation info that can be used to track the operation.</returns>
-        public IOperation SendCreateOperation(string name, StreamingProtocol inputProtocol, IList<IPRange> inputIPAllowList)
+        public IOperation SendCreateOperation(string name, StreamingProtocol inputProtocol, IEnumerable<IPRange> inputIPAllowList)
         {
             return SendCreateOperation(new ChannelCreationOptions(name, inputProtocol, inputIPAllowList));
         }
@@ -132,7 +132,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="inputProtocol">Channel input streaming protocol</param>
         /// <param name="inputIPAllowList">Channel input IP allow list</param>
         /// <returns>Task to wait on for operation sending completion.</returns>
-        public Task<IOperation> SendCreateOperationAsync(string name, StreamingProtocol inputProtocol, IList<IPRange> inputIPAllowList)
+        public Task<IOperation> SendCreateOperationAsync(string name, StreamingProtocol inputProtocol, IEnumerable<IPRange> inputIPAllowList)
         {
             return SendCreateOperationAsync(new ChannelCreationOptions(name, inputProtocol, inputIPAllowList));
         }
@@ -190,8 +190,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             if (options.Input == null ||
                 options.Input.AccessControl == null ||
-                options.Input.AccessControl.IPAllowList == null ||
-                options.Input.AccessControl.IPAllowList.Count == 0)
+                options.Input.AccessControl.IPAllowList == null)
             {
                 throw new ArgumentException(Resources.ErrorEmptyChannelInputIPAllowList);
             }
@@ -208,27 +207,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             channel.Input = options.Input;
             channel.Preview = options.Preview;
             channel.Output = options.Output;
-
+            
             if (channel.Input.Endpoints == null)
             {
                 channel.Input.Endpoints = new List<ChannelEndpoint>().AsReadOnly();
             }
 
-            if (channel.Preview == null)
-            {
-                channel.Preview = new ChannelPreview();
-            }
-            if (channel.Preview.Endpoints == null)
+            if (channel.Preview != null && channel.Preview.Endpoints == null)
             {
                 channel.Preview.Endpoints = new List<ChannelEndpoint>().AsReadOnly();
-            }
-            if (channel.Preview.AccessControl == null)
-            {
-                channel.Preview.AccessControl = new ChannelAccessControl();
-            }
-            if (channel.Preview.AccessControl.IPAllowList == null)
-            {
-                channel.Preview.AccessControl.IPAllowList = new List<IPRange>();
             }
 
             channelData.SetMediaContext(MediaContext);

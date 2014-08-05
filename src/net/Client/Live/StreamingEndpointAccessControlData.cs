@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
@@ -26,16 +25,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     internal class StreamingEndpointAccessControlData
     {
         /// <summary>
-        /// Gets or sets the list of IP-s allowed.
+        /// Gets or sets the Akamai access control.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public List<IPRangeData> IPAllowList { get; set; }
-
+        public AkamaiAccessControlData Akamai { get; set; }
+        
         /// <summary>
-        /// Gets or sets the list of Akamai Signature Header Authentication keys.
+        /// Gets or sets the IP access control.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public List<AkamaiSignatureHeaderAuthenticationKey> AkamaiSignatureHeaderAuthenticationKeyList { get; set; }
+        public IPAccessControlData IP { get; set; }
 
         /// <summary>
         /// Creates an instance of StreamingEndpointAccessControlData class.
@@ -55,15 +54,22 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             if (accessControl.AkamaiSignatureHeaderAuthenticationKeyList != null)
             {
-                AkamaiSignatureHeaderAuthenticationKeyList =
-                    accessControl.AkamaiSignatureHeaderAuthenticationKeyList.ToList();
+                Akamai = new AkamaiAccessControlData
+                {
+                    AkamaiSignatureHeaderAuthenticationKeyList =
+                        accessControl.AkamaiSignatureHeaderAuthenticationKeyList.ToList()
+
+                };
             }
 
             if (accessControl.IPAllowList != null)
             {
-                IPAllowList = accessControl.IPAllowList
-                    .Select(a => a == null ? null : new IPRangeData(a))
-                    .ToList();
+                IP = new IPAccessControlData
+                {
+                    Allow = accessControl.IPAllowList
+                        .Select(a => a == null ? null : new IPRangeData(a))
+                        .ToList()
+                };
             }
         }
 
@@ -79,14 +85,17 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 return null;
             }
 
-            var result = new StreamingEndpointAccessControl
-            {
-                AkamaiSignatureHeaderAuthenticationKeyList = accessControl.AkamaiSignatureHeaderAuthenticationKeyList
-            };
+            var result = new StreamingEndpointAccessControl();
 
-            if (accessControl.IPAllowList != null)
+            if (accessControl.Akamai != null)
             {
-                result.IPAllowList = accessControl.IPAllowList
+                result.AkamaiSignatureHeaderAuthenticationKeyList =
+                    accessControl.Akamai.AkamaiSignatureHeaderAuthenticationKeyList;
+            }
+
+            if (accessControl.IP != null && accessControl.IP.Allow != null)
+            {
+                result.IPAllowList = accessControl.IP.Allow
                     .Select(a => (IPRange)a)
                     .ToList();
             }
