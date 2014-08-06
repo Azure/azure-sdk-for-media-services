@@ -214,7 +214,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         Task<OperationResponse> ExecuteAsync(Uri requestUri, object state, string httpMethod);
 
         /// <summary>
-        /// Executes the batch operation asynchronously.
+        /// Executes the url method asynchronously.
+        /// </summary>
+        /// <param name="requestUri">The request URI.</param>
+        /// <param name="httpMethod">The HTTP method.</param>
+        /// <param name="singleResult">Whether a single result is expected or not.</param>
+        /// <param name="parameters">OperationParameters to be sent with the Execute request.</param>
+        /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
+        Task<IEnumerable<string>> ExecuteAsync(Uri requestUri, string httpMethod, bool singleResult, params OperationParameter[] parameter);
+        /// 
+        /// <summary>Executes the batch operation asynchronously.
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="state">The state.</param>

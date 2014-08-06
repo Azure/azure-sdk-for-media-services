@@ -64,7 +64,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
             return new WebRequestTransientErrorDetectionStrategy();
         }
 
-        public static Mock<IMediaDataServiceContext> CreateSaveChangesMock<T>(Exception fakeException, int failCount,  BaseEntity<T> returnedData)
+        public static Mock<IMediaDataServiceContext> CreateSaveChangesMock<T>(Exception fakeException, int failCount, BaseEntity<T> returnedData)
         {
             var dataContextMock = new Mock<IMediaDataServiceContext>();
             var fakeResponse = new TestMediaDataServiceResponse { AsyncState = returnedData };
@@ -80,7 +80,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
 
             dataContextMock.Setup((ctxt) => ctxt
                 .SaveChanges())
-                .Returns(() => 
+                .Returns(() =>
                 {
                     if (--exceptionCount > 0) throw fakeException;
                     return fakeResponse;
@@ -122,25 +122,25 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
 					It.IsAny<IRetryPolicy>(), 
 					It.IsAny<Func<string>>()))
 				.Returns((Uri url,
-							string localFile,
-							string contentType,
-							FileEncryption fileEncryption,
-							CancellationToken cancellationToken,
-							IRetryPolicy retryPolicy,
-							Func<string> sharedAccessSignature
-							) => Task.Factory.StartNew(() =>
-							{
-								FileInfo info = new FileInfo(localFile);
-								if (fileEncryption != null)
-								{
-									lock (fileEncryption)
-									{
-										using (FileEncryptionTransform encryptor = fileEncryption.GetTransform(info.Name,0))
-										{
-                            
-										}
-									}
-								}
+					string localFile,
+					string contentType,
+					FileEncryption fileEncryption,
+					CancellationToken cancellationToken,
+					IRetryPolicy retryPolicy,
+					Func<string> sharedAccessSignature
+					) => Task.Factory.StartNew(() =>
+            {
+                FileInfo info = new FileInfo(localFile);
+                if (fileEncryption != null)
+                {
+                    lock (fileEncryption)
+                    {
+                        using (FileEncryptionTransform encryptor = fileEncryption.GetTransform(info.Name, 0))
+                        {
+
+                        }
+                    }
+                }
             }));
             mock.Setup(c => c.DownloadBlob(
 				It.IsAny<Uri>(), 
@@ -164,7 +164,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
 				It.IsAny<long>(), 
 				It.IsAny<long>()
 				)).Returns(() => Task.Factory.StartNew(() => { }));
-           return mock.Object;
+            return mock.Object;
 
         }
     }

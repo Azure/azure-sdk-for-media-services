@@ -15,9 +15,6 @@
 // </license>
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Net;
 using System.Globalization;
 using System.Collections.Specialized;
@@ -48,7 +45,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// The access control endpoint to authenticate against.
         /// </summary>
-        public string AcsBaseAddress {get; set; }
+        public string AcsBaseAddress { get; set; }
 
         /// <summary>
         /// The Microsoft WindowsAzure Media Services account key to authenticate with.
@@ -59,7 +56,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// The Microsoft WindowsAzure Media Services account name to authenticate with.
         /// </summary>
         public string ClientId { get; set; }
-        
+
         /// <summary>
         /// The scope of authorization.
         /// </summary>

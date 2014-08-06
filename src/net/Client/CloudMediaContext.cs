@@ -39,19 +39,19 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
         private static readonly Uri _mediaServicesUri = new Uri("https://media.windows.net/");
 
-        private  AssetCollection _assets;
-        private  AssetFileCollection _files;
-        private  AccessPolicyBaseCollection _accessPolicies;
-        private  ContentKeyCollection _contentKeys;
-        private  JobBaseCollection _jobs;
-        private  JobTemplateBaseCollection _jobTemplates;
-        private  NotificationEndPointCollection _notificationEndPoints;
-        private  MediaProcessorBaseCollection _mediaProcessors;
-        private  LocatorBaseCollection _locators;
-        private  IngestManifestCollection _ingestManifests;
-        private  IngestManifestAssetCollection _ingestManifestAssets;
-        private  IngestManifestFileCollection _ingestManifestFiles;
-        private  StorageAccountBaseCollection _storageAccounts;
+        private AssetCollection _assets;
+        private AssetFileCollection _files;
+        private AccessPolicyBaseCollection _accessPolicies;
+        private ContentKeyCollection _contentKeys;
+        private JobBaseCollection _jobs;
+        private JobTemplateBaseCollection _jobTemplates;
+        private NotificationEndPointCollection _notificationEndPoints;
+        private MediaProcessorBaseCollection _mediaProcessors;
+        private LocatorBaseCollection _locators;
+        private IngestManifestCollection _ingestManifests;
+        private IngestManifestAssetCollection _ingestManifestAssets;
+        private IngestManifestFileCollection _ingestManifestFiles;
+        private StorageAccountBaseCollection _storageAccounts;
         private MediaServicesClassFactory _classFactory;
         private OAuthDataServiceAdapter dataServiceAdapter;
         private ServiceVersionAdapter versionAdapter;
@@ -130,7 +130,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             {
                 _classFactory = value;
             }
-        } 
+        }
 
         /// <summary>
         /// Gets the collection of assets in the system.
@@ -144,7 +144,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     Interlocked.CompareExchange(ref _assets, new AssetCollection(this), null);
                 }
                 return this._assets;
-                
+
             }
         }
 
@@ -160,7 +160,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     Interlocked.CompareExchange(ref _files, new AssetFileCollection(this), null);
                 }
                 return this._files;
-                
+
             }
         }
 
@@ -176,7 +176,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     Interlocked.CompareExchange(ref _accessPolicies, new AccessPolicyBaseCollection(this), null);
                 }
                 return this._accessPolicies;
-               
+
             }
         }
 
@@ -192,7 +192,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     Interlocked.CompareExchange(ref _contentKeys, new ContentKeyCollection(this), null);
                 }
                 return this._contentKeys;
-                
+
             }
         }
 
@@ -221,7 +221,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 if (_jobTemplates == null)
                 {
                     Interlocked.CompareExchange(ref _jobTemplates, new JobTemplateBaseCollection(this), null);
-                } 
+                }
                 return this._jobTemplates;
             }
         }
@@ -236,9 +236,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 if (_mediaProcessors == null)
                 {
                     Interlocked.CompareExchange(ref _mediaProcessors, new MediaProcessorBaseCollection(this), null);
-                }    
+                }
                 return this._mediaProcessors;
-                
+
             }
         }
 
@@ -256,7 +256,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     Interlocked.CompareExchange(ref _storageAccounts, new StorageAccountBaseCollection(this), null);
                 }
                 return this._storageAccounts;
-               
+
             }
         }
 
@@ -265,9 +265,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         public override IStorageAccount DefaultStorageAccount
         {
-            get 
-            { 
-                return this.StorageAccounts.Where(c=>c.IsDefault == true).FirstOrDefault(); 
+            get
+            {
+                return this.StorageAccounts.Where(c => c.IsDefault == true).FirstOrDefault();
             }
         }
 
@@ -283,7 +283,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     Interlocked.CompareExchange(ref _notificationEndPoints, new NotificationEndPointCollection(this), null);
                 }
                 return this._notificationEndPoints;
-                
+
             }
         }
 
@@ -297,9 +297,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 if (_locators == null)
                 {
                     Interlocked.CompareExchange(ref _locators, new LocatorBaseCollection(this), null);
-                }    
+                }
                 return this._locators;
-                
+
             }
         }
 
@@ -313,16 +313,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 if (_ingestManifests == null)
                 {
                     Interlocked.CompareExchange(ref _ingestManifests, new IngestManifestCollection(this), null);
-                }   
+                }
                 return this._ingestManifests;
-                
+
             }
         }
 
         /// <summary>
         /// Gets the collection of manifest asset files in the system
         /// </summary>
-        public  override IngestManifestFileCollection IngestManifestFiles
+        public override IngestManifestFileCollection IngestManifestFiles
         {
             get
             {
@@ -331,7 +331,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     Interlocked.CompareExchange(ref _ingestManifestFiles, new IngestManifestFileCollection(this, null), null);
                 }
                 return this._ingestManifestFiles;
-                
+
             }
         }
 
@@ -344,7 +344,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             {
                 if (_ingestManifestAssets == null)
                 {
-                    Interlocked.CompareExchange(ref _ingestManifestAssets, new IngestManifestAssetCollection(this,null), null);
+                    Interlocked.CompareExchange(ref _ingestManifestAssets, new IngestManifestAssetCollection(this, null), null);
                 }
                 return this._ingestManifestAssets;
             }
