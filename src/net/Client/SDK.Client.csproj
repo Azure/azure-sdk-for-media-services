@@ -9,15 +9,6 @@
     <RestorePackages>true</RestorePackages>
     <SigningFlag Condition="$(SigningFlag) == '' Or $(SigningFlag) == '*Undefined*'">NOTSIGNED</SigningFlag>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'LKG|x64'">
-    <OutputPath>bin\x64\LKG\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'LKG|AnyCPU'">
-    <OutputPath>bin\LKG\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'LKG|x86'">
-    <OutputPath>bin\x86\LKG\</OutputPath>
-  </PropertyGroup>
   <Import Project="..\..\..\Build\Common.Build.settings" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -94,8 +85,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\packages\WindowsAzure.Storage.3.1.0.0\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\packages\Newtonsoft.Json.6.0.1\lib\net40\Newtonsoft.Json.dll</HintPath>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\packages\Newtonsoft.Json.6.0.3\lib\net40\Newtonsoft.Json.dll</HintPath>
@@ -436,6 +425,7 @@
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Import Project="$(SlowCheetahTargets)" Condition="Exists('$(SlowCheetahTargets)')" Label="SlowCheetah" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy $(TargetPath) "D:\Nimbus\Rel147-LivePreview\references\WAMS_VOD_NET_SDK\LivePreview2.7" /Y</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>
