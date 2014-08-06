@@ -38,7 +38,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [Ignore] // enable when environment is ready
         public void ChannelTestReset()
         {
-            IChannel channel = _mediaContext.Channels.Create(Guid.NewGuid().ToString().Substring(0, 30), ChannelSize.Large, MakeChannelSettings());
+            IChannel channel = _mediaContext.Channels.Create(
+                new ChannelCreationOptions
+                {
+                    Name = Guid.NewGuid().ToString().Substring(0, 30),
+                    Input = MakeChannelInput(),
+                    Preview = MakeChannelPreview(),
+                    Output = MakeChannelOutput()
+                });
             channel.Reset();
         }
 
@@ -47,7 +54,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [Ignore] // enable when environment is ready
         public void ChannelTestCreateTrivial()
         {
-            IChannel channel = _mediaContext.Channels.Create(Guid.NewGuid().ToString().Substring(0, 30), ChannelSize.Large, MakeChannelSettings());
+            IChannel channel = _mediaContext.Channels.Create(
+                new ChannelCreationOptions
+                {
+                    Name = Guid.NewGuid().ToString().Substring(0, 30),
+                    Input = MakeChannelInput(),
+                    Preview = MakeChannelPreview(),
+                    Output = MakeChannelOutput()
+                });
             channel.Delete();
         }
 
@@ -67,7 +81,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             try
             {
-                var actual = _mediaContext.Channels.Create("unittest", ChannelSize.Large, MakeChannelSettings());
+                var actual = _mediaContext.Channels.Create(
+                    new ChannelCreationOptions
+                    {
+                        Name = "unittest",
+                        Input = MakeChannelInput(),
+                        Preview = MakeChannelPreview(),
+                        Output = MakeChannelOutput()
+                    });
             }
             catch (NotImplementedException x)
             {
@@ -92,7 +113,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             try
             {
-                var actual = _mediaContext.Channels.Create("unittest", ChannelSize.Large, MakeChannelSettings());
+                var actual = _mediaContext.Channels.Create(
+                    new ChannelCreationOptions
+                    {
+                        Name = "unittest",
+                        Input = MakeChannelInput(),
+                        Preview = MakeChannelPreview(),
+                        Output = MakeChannelOutput()
+                    });
             }
             catch (WebException x)
             {
@@ -191,79 +219,85 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(0)]
-        public void TestChannelGetMetric()
-        {
-            var data = new ChannelData { Name = "testData", Id = "1" };
-
-            var dataContextMock = new Mock<IMediaDataServiceContext>();
-
-            var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
-
-            var fakeResponse = new ChannelMetricData[] { new ChannelMetricData() { ChannelName = "test" } };
-            int exceptionCount = 2;
-
-            dataContextMock.Setup((ctxt) => ctxt
-                .Execute<ChannelMetricData>(It.IsAny<Uri>()))
-                .Returns(() =>
-                {
-                    if (--exceptionCount > 0) throw fakeException;
-                    return fakeResponse;
-                });
-
-            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
-
-            data.SetMediaContext(_mediaContext);
-
-            var result = data.GetMetric();
-            Assert.AreEqual("test", result.ChannelName);
-
-            dataContextMock.Verify((ctxt) => ctxt.Execute<ChannelMetricData>(It.IsAny<Uri>()), Times.Exactly(2));
-        }
-
-        [TestMethod]
-        [Priority(0)]
         public void TestChannelSendCreateOperation()
         {
             var expected = new ChannelData { Name = "testData" };
             var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
             var dataContextMock = TestMediaServicesClassFactory.CreateSaveChangesMock(fakeException, 2, expected);
 
-            dataContextMock.Setup((ctxt) => ctxt.AddObject("Channels", It.IsAny<object>()));
+            dataContextMock.Setup(ctxt => ctxt.AddObject("Channels", It.IsAny<object>()));
 
             _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
 
             try
             {
-                var actual = _mediaContext.Channels.SendCreateOperation("unittest", ChannelSize.Large, MakeChannelSettings());
+                var actual = _mediaContext.Channels.SendCreateOperation(
+                    new ChannelCreationOptions
+                    {
+                        Name = "unittest",
+                        Input = MakeChannelInput(),
+                        Preview = MakeChannelPreview(),
+                        Output = MakeChannelOutput()
+                    });
             }
             catch (NotImplementedException x)
             {
                 Assert.AreEqual(TestMediaDataServiceResponse.TestMediaDataServiceResponseExceptionMessage, x.Message);
             }
 
-            dataContextMock.Verify((ctxt) => ctxt.SaveChanges(), Times.Exactly(2));
+            dataContextMock.Verify(ctxt => ctxt.SaveChanges(), Times.Exactly(2));
         }
         #endregion Retry Logic tests
 
 
         #region Helper/utility methods
 
-        static ChannelSettings MakeChannelSettings()
+        static ChannelInput MakeChannelInput()
         {
-            var ipList = new List<Ipv4>
-                {
-                    new Ipv4 { Name = "testName1", IP = "1.1.1.1" },
-                };
-
-            var settings = new ChannelSettings
+            return new ChannelInput
             {
-                Ingest = new IngestEndpointSettings { Security = new IngestEndpointSecuritySettings { IPv4AllowList = ipList } },
-                Preview = new PreviewEndpointSettings { Security = new PreviewEndpointSecuritySettings { IPv4AllowList = ipList } },
-                Input = new InputSettings { FMp4FragmentDuration = null },
-                Output = new OutputSettings { FragmentsPerHlsSegment = null }
+                KeyFrameDistanceHns = 19000000,
+                StreamingProtocol = StreamingProtocol.FragmentedMP4,
+                AccessControl = new ChannelAccessControl
+                {
+                    IPAllowList = new List<IPRange>
+                    {
+                        new IPRange
+                        {
+                            Name = "testName1",
+                            Address = IPAddress.Parse("1.1.1.1"),
+                            SubnetPrefixLength = 24
+                        }
+                    }
+                }
             };
+        }
 
-            return settings;
+        static ChannelPreview MakeChannelPreview()
+        {
+            return new ChannelPreview
+            {
+                AccessControl = new ChannelAccessControl
+                {
+                    IPAllowList = new List<IPRange>
+                    {
+                        new IPRange
+                        {
+                            Name = "testName1",
+                            Address = IPAddress.Parse("1.1.1.1"),
+                            SubnetPrefixLength = 24
+                        }
+                    }
+                }
+            };
+        }
+
+        static ChannelOutput MakeChannelOutput()
+        {
+            return new ChannelOutput
+            {
+                Hls = new ChannelOutputHls {FragmentsPerSegment = 1}
+            };
         }
 
         #endregion

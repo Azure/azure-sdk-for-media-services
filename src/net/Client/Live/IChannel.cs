@@ -48,29 +48,34 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         DateTime LastModified { get; set; }
 
         /// <summary>
-        /// Gets Url of the preview.
-        /// </summary>
-        Uri PreviewUrl { get; }
-
-        /// <summary>
-        /// Gets ingest Url.
-        /// </summary>
-        Uri IngestUrl { get; }
-
-        /// <summary>
         /// Gets state of the channel.
         /// </summary>
         ChannelState State { get; }
 
         /// <summary>
-        /// Gets or sets size of the channel.
+        /// Gets or sets the cross site access policies for the channel.
         /// </summary>
-        ChannelSize Size { get; set; }
+        CrossSiteAccessPolicies CrossSiteAccessPolicies { get; set; }
 
         /// <summary>
-        /// Gets or sets channel settings.
+        /// Gets or sets the channel input properties.
         /// </summary>
-        ChannelSettings Settings { get; set; }
+        ChannelInput Input { get; set; }
+
+        /// <summary>
+        /// Gets or sets the channel preview properties.
+        /// </summary>
+        ChannelPreview Preview { get; set; }
+
+        /// <summary>
+        /// Gets or sets the channel output properties.
+        /// </summary>
+        ChannelOutput Output { get; set; }
+
+        /// <summary>
+        /// Collection of programs associated with the channel.
+        /// </summary>
+        ProgramBaseCollection Programs { get; }
 
         /// <summary>
         /// Deletes the channel.
@@ -93,16 +98,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <returns>Task to wait on for operation sending completion.</returns>
         Task<IOperation> SendDeleteOperationAsync();
-
-        /// <summary>
-        /// Collection of programs associated with the channel.
-        /// </summary>
-        ProgramBaseCollection Programs { get; }
-
-        /// <summary>
-        /// Adds or removes channel metrics recevied event handler
-        /// </summary>
-        event EventHandler<MetricsEventArgs<IChannelMetric>> MetricsReceived;
 
         /// <summary>
         /// Starts the channel.
@@ -195,11 +190,5 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <returns>Task to wait on for operation sending completion.</returns>
         Task<IOperation> SendUpdateOperationAsync();
-
-        /// <summary>
-        /// Get the latest channel metric.
-        /// </summary>
-        /// <returns>The latest ChannelMetrics entity of this channel service</returns>
-        IChannelMetric GetMetric();
     }
 }
