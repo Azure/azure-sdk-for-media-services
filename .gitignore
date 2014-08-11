@@ -60,3 +60,7 @@ build/version
 src\SDK\packages
 /test/net/client/App.Debug.config
 /test/net/Scenario/App.Debug.config
+test/net/Scenario/App.IncrementVersion.config
+test/net/Scenario/App.IncrementVersion.config
+test/net/Scenario/App.Coverage.config
+test/net/Scenario/App.Release.config

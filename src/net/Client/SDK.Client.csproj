@@ -81,12 +81,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\packages\Microsoft.WindowsAzure.ConfigurationManager.2.0.3\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.WindowsAzure.Storage, Version=3.0.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="Microsoft.WindowsAzure.Storage, Version=3.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\WindowsAzure.Storage.3.0.3.0\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
+      <HintPath>..\..\..\packages\WindowsAzure.Storage.3.1.0.0\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\packages\Newtonsoft.Json.6.0.1\lib\net40\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\Newtonsoft.Json.6.0.3\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -103,18 +104,55 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BlobTransferCompleteEventArgs.cs" />
-    <Compile Include="BlobTransferProgressChangedEventArgs.cs" />
-    <Compile Include="BlobTransferSpeedCalculator.cs" />
-    <Compile Include="BlobTransferType.cs" />
     <Compile Include="BlobTransfer\BlobDownloader.cs" />
     <Compile Include="BlobTransfer\BlobTransferBase.cs" />
+    <Compile Include="BlobTransfer\BlobTransferClient.cs" />
     <Compile Include="BlobTransfer\BlobTransferContext.cs" />
     <Compile Include="BlobTransfer\BlobUploader.cs" />
-    <Compile Include="BlobTransfer\MemoryManagerFactory.cs" />
     <Compile Include="BlobTransfer\MemoryManager.cs" />
+    <Compile Include="BlobTransfer\MemoryManagerFactory.cs" />
     <Compile Include="BlobTransfer\ServicePointModifier.cs" />
-    <Compile Include="DownloadProgressEventArgs.cs" />
+    <Compile Include="ContentKeyAuthorization\ContentKeyAuthorizationPolicyCollection.cs" />
+    <Compile Include="ContentKeyAuthorization\ContentKeyAuthorizationPolicyData.cs" />
+    <Compile Include="ContentKeyAuthorization\ContentKeyAuthorizationPolicyOptionCollection.cs" />
+    <Compile Include="ContentKeyAuthorization\ContentKeyAuthorizationPolicyOptionData.cs" />
+    <Compile Include="ContentKeyAuthorization\ContentKeyAuthorizationPolicyRestriction.cs" />
+    <Compile Include="ContentKeyAuthorization\ContentKeyDeliveryType.cs" />
+    <Compile Include="ContentKeyAuthorization\ContentKeyRestrictionType.cs" />
+    <Compile Include="ContentKeyAuthorization\IContentKeyAuthorizationPolicy.cs" />
+    <Compile Include="ContentKeyAuthorization\IContentKeyAuthorizationPolicyOption.cs" />
+    <Compile Include="ContentKeyAuthorization\Templates\AGCandColorStripeRestriction.cs" />
+    <Compile Include="ContentKeyAuthorization\Templates\ErrorMessages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ErrorMessages.resx</DependentUpon>
+    </Compile>
+    <Compile Include="ContentKeyAuthorization\Templates\ExplicitAnalogTelevisionRestriction.cs" />
+    <Compile Include="ContentKeyAuthorization\Templates\MediaServicesLicenseTemplateSerializer.cs" />
+    <Compile Include="ContentKeyAuthorization\Templates\OldTokenTemplateFormat.cs" />
+    <Compile Include="ContentKeyAuthorization\Templates\PlayReadyContentKey.cs" />
+    <Compile Include="ContentKeyAuthorization\Templates\PlayReadyLicenseResponseTemplate.cs" />
+    <Compile Include="ContentKeyAuthorization\Templates\PlayReadyLicenseTemplate.cs" />
+    <Compile Include="ContentKeyAuthorization\Templates\PlayReadyLicenseType.cs" />
+    <Compile Include="ContentKeyAuthorization\Templates\PlayReadyPlayRight.cs" />
+    <Compile Include="ContentKeyAuthorization\Templates\ScmsRestriction.cs" />
+    <Compile Include="ContentKeyAuthorization\Templates\TokenClaim.cs" />
+    <Compile Include="ContentKeyAuthorization\Templates\TokenRestrictionTemplate.cs" />
+    <Compile Include="ContentKeyAuthorization\Templates\TokenRestrictionTemplateSerializer.cs" />
+    <Compile Include="ContentKeyAuthorization\Templates\TokenVerificationKey.cs" />
+    <Compile Include="ContentKeyAuthorization\Templates\UnknownOutputPassingOptions.cs" />
+    <Compile Include="DynamicEncryption\AssetData.cs" />
+    <Compile Include="DynamicEncryption\AssetDeliveryPolicyCollection.cs" />
+    <Compile Include="DynamicEncryption\AssetDeliveryPolicyConfigurationKeys.cs" />
+    <Compile Include="DynamicEncryption\AssetDeliveryPolicyData.cs" />
+    <Compile Include="DynamicEncryption\AssetDeliveryPolicyType.cs" />
+    <Compile Include="DynamicEncryption\AssetDeliveryProtocol.cs" />
+    <Compile Include="DynamicEncryption\CloudMediaContext.cs" />
+    <Compile Include="DynamicEncryption\AssetEncryptionState.cs" />
+    <Compile Include="DynamicEncryption\IAsset.cs" />
+    <Compile Include="DynamicEncryption\IAssetDeliveryPolicy.cs" />
+    <Compile Include="DynamicEncryption\MediaContextBase.cs" />
+    <Compile Include="DynamicEncryption\OutputAsset.cs" />
     <Compile Include="Entities\AccessPermissions.cs" />
     <Compile Include="Collections\AccessPolicyBaseCollection.cs">
       <SubType>Code</SubType>
@@ -138,8 +176,12 @@
     <Compile Include="AssetPlaceholderToInstanceResolver.cs" />
     <Compile Include="Entities\AssetState.cs" />
     <Compile Include="AzureMediaServicesClassFactory.cs" />
+    <Compile Include="Entities\AssetType.cs" />
     <Compile Include="Entities\BaseEntity.cs" />
-    <Compile Include="BlobTransfer\BlobTransferClient.cs" />
+    <Compile Include="BlobTransferCompleteEventArgs.cs" />
+    <Compile Include="BlobTransferProgressChangedEventArgs.cs" />
+    <Compile Include="BlobTransferSpeedCalculator.cs" />
+    <Compile Include="BlobTransferType.cs" />
     <Compile Include="BulkIngest\IIngestManifest.cs" />
     <Compile Include="BulkIngest\IIngestManifestAsset.cs" />
     <Compile Include="BulkIngest\IIngestManifestFile.cs" />
@@ -167,6 +209,51 @@
     <Compile Include="DataServiceAsyncExtensions.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Live\AkamaiAccessControlData.cs" />
+    <Compile Include="Live\AkamaiSignatureHeaderAuthenticationKey.cs" />
+    <Compile Include="Live\AsyncHelper.cs" />
+    <Compile Include="Live\ChannelAccessControl.cs" />
+    <Compile Include="Live\ChannelAccessControlData.cs" />
+    <Compile Include="Live\ChannelBaseCollection.cs" />
+    <Compile Include="Live\ChannelCreationOptions.cs" />
+    <Compile Include="Live\ChannelData.cs" />
+    <Compile Include="Live\ChannelEndpoint.cs" />
+    <Compile Include="Live\ChannelEndpointData.cs" />
+    <Compile Include="Live\ChannelInput.cs" />
+    <Compile Include="Live\ChannelInputData.cs" />
+    <Compile Include="Live\ChannelOutput.cs" />
+    <Compile Include="Live\ChannelOutputHls.cs" />
+    <Compile Include="Live\ChannelPreview.cs" />
+    <Compile Include="Live\ChannelPreviewData.cs" />
+    <Compile Include="Live\ChannelState.cs" />
+    <Compile Include="Live\CloudMediaContext.cs" />
+    <Compile Include="Live\CrossSiteAccessPolicies.cs" />
+    <Compile Include="Live\IChannel.cs" />
+    <Compile Include="Live\IOperation.cs" />
+    <Compile Include="Live\IPAccessControlData.cs" />
+    <Compile Include="Live\IPRange.cs" />
+    <Compile Include="Live\IPRangeData.cs" />
+    <Compile Include="Live\IProgram.cs" />
+    <Compile Include="Live\IStreamingEndpoint.cs" />
+    <Compile Include="Live\MediaContextBase.cs" />
+    <Compile Include="Live\OperationBaseCollection.cs" />
+    <Compile Include="Live\OperationData.cs" />
+    <Compile Include="Live\OperationState.cs" />
+    <Compile Include="Live\ProgramBaseCollection.cs" />
+    <Compile Include="Live\ProgramCreationOptions.cs" />
+    <Compile Include="Live\ProgramData.cs" />
+    <Compile Include="Live\ProgramState.cs" />
+    <Compile Include="Live\RestEntity.cs" />
+    <Compile Include="Live\StreamingConstants.cs" />
+    <Compile Include="Live\StreamingEndpointAccessControl.cs" />
+    <Compile Include="Live\StreamingEndpointAccessControlData.cs" />
+    <Compile Include="Live\StreamingEndpointBaseCollection.cs" />
+    <Compile Include="Live\StreamingEndpointCacheControl.cs" />
+    <Compile Include="Live\StreamingEndpointCacheControlData.cs" />
+    <Compile Include="Live\StreamingEndpointCreationOptions.cs" />
+    <Compile Include="Live\StreamingEndpointData.cs" />
+    <Compile Include="Live\StreamingEndpointState.cs" />
+    <Compile Include="Live\StreamingProtocol.cs" />
     <Compile Include="MediaQueryable.cs" />
     <Compile Include="MediaQueryProvider.cs" />
     <Compile Include="MediaServicesCredentials.cs" />
@@ -240,6 +327,7 @@
     <Compile Include="Entities\NotificationJobState.cs" />
     <Compile Include="Collections\OutputAssetCollection.cs" />
     <Compile Include="Entities\ITask.cs" />
+    <Compile Include="DownloadProgressEventArgs.cs" />
     <Compile Include="Entities\IAsset.cs" />
     <Compile Include="Entities\AssetData.cs" />
     <Compile Include="IMediaContextContainer.cs" />
@@ -284,6 +372,10 @@
     <Compile Include="Versioning\ServiceVersionAdapter.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="ContentKeyAuthorization\Templates\ErrorMessages.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ErrorMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources1.Designer.cs</LastGenOutput>
@@ -310,6 +402,7 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Properties\SlowCheetah\SlowCheetah.Transforms.targets" />
     <None Include="Settings.stylecop" />
   </ItemGroup>
   <ItemGroup />
@@ -318,10 +411,21 @@
     <TransformOnBuild>true</TransformOnBuild>
     <OverwriteReadOnlyOutputFiles>true</OverwriteReadOnlyOutputFiles>
   </PropertyGroup>
+  <PropertyGroup Label="SlowCheetah">
+    <SlowCheetahToolsPath>$([System.IO.Path]::GetFullPath( $(MSBuildProjectDirectory)\..\..\..\packages\SlowCheetah.2.5.10.3\tools\))</SlowCheetahToolsPath>
+    <SlowCheetah_EnableImportFromNuGet Condition=" '$(SC_EnableImportFromNuGet)'=='' ">true</SlowCheetah_EnableImportFromNuGet>
+    <SlowCheetah_NuGetImportPath Condition=" '$(SlowCheetah_NuGetImportPath)'=='' ">$([System.IO.Path]::GetFullPath( $(MSBuildProjectDirectory)\Properties\SlowCheetah\SlowCheetah.Transforms.targets ))</SlowCheetah_NuGetImportPath>
+    <SlowCheetahTargets Condition=" '$(SlowCheetah_EnableImportFromNuGet)'=='true' and Exists('$(SlowCheetah_NuGetImportPath)') ">$(SlowCheetah_NuGetImportPath)</SlowCheetahTargets>
+  </PropertyGroup>
+  <Import Project="$(NugetTargetPath)" Condition="Exists($(NugetTargetPath))" />
   <Target Name="BeforeBuild">
   </Target>
   <Target Name="AfterBuild">
   </Target>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Import Project="$(SlowCheetahTargets)" Condition="Exists('$(SlowCheetahTargets)')" Label="SlowCheetah" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
 </Project>

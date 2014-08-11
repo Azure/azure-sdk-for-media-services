@@ -42,6 +42,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
         public const string MultiConfig = @"Configuration\multi.xml";
         public const string DefaultMp4ToSmoothConfig = @"Configuration\MP4 to Smooth Streams.xml";
         public const string PlayReadyConfig = @"Configuration\PlayReady Protection.xml";
+        public const string PlayReadyConfigWithContentKey = @"Configuration\PlayReady Protection_ContentKey.xml";
         public const string SmoothToHlsConfig = @"Configuration\Smooth Streams to Apple HTTP Live Streams.xml";
         public const string SmoothToEncryptHlsConfig = @"Configuration\Smooth Streams to Encrypted Apple HTTP Live Streams.xml";
         

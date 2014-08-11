@@ -38,7 +38,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestMethod]
         public void ShouldBeAbleToGetManifests()
         {
-            _mediaContext.IngestManifests.ToList();
+            _mediaContext.IngestManifests.Take(5).ToList();
         }
 
         [DeploymentItem(TestFile1, DeploymentFolder1)]
@@ -314,35 +314,35 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         {
             List<IIngestManifestFile> files;
             IIngestManifest ingestManifestCreated;
-			string path = null;
+            string path = null;
 
-			try
-			{
-				path = CreateManifestEncryptFiles(out files, out ingestManifestCreated);
+            try
+            {
+                path = CreateManifestEncryptFiles(out files, out ingestManifestCreated);
 
-				foreach (var manifestAssetFile in files)
-				{
-					if (manifestAssetFile.EncryptionScheme == CommonEncryption.SchemeName)
-					{
-						Assert.IsFalse(File.Exists(Path.Combine(path, manifestAssetFile.Name)));
-					}
-					if (manifestAssetFile.EncryptionScheme == FileEncryption.SchemeName)
-					{
-						Assert.IsTrue(File.Exists(Path.Combine(path, manifestAssetFile.Name)));
-					}
-				}
-			}
-			finally
-			{
-				AssetFilesTests.CleanDirectory(path);
-			}
+                foreach (var manifestAssetFile in files)
+                {
+                    if (manifestAssetFile.EncryptionScheme == CommonEncryption.SchemeName)
+                    {
+                        Assert.IsFalse(File.Exists(Path.Combine(path, manifestAssetFile.Name)));
+                    }
+                    if (manifestAssetFile.EncryptionScheme == FileEncryption.SchemeName)
+                    {
+                        Assert.IsTrue(File.Exists(Path.Combine(path, manifestAssetFile.Name)));
+                    }
+                }
+            }
+            finally
+            {
+                AssetFilesTests.CleanDirectory(path);
+            }
         }
 
         [TestMethod]
         [ExpectedException(typeof(InvalidOperationException))]
         public void ShouldThrowKeyNotFoundExceptionDuringEncryptIfKeyIsMissing()
         {
-            var sourcePath =DeploymentFolder1;
+            var sourcePath = DeploymentFolder1;
             Assert.IsTrue(Directory.Exists(sourcePath));
             List<string> files = Directory.EnumerateFiles(sourcePath, "*.txt").ToList();
 
@@ -371,10 +371,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 Assert.AreEqual(1, ex.InnerExceptions.Count);
                 throw ex.InnerExceptions[0];
             }
-			finally
-			{
-				AssetFilesTests.CleanDirectory(path);
-			}
+            finally
+            {
+                AssetFilesTests.CleanDirectory(path);
+            }
         }
 
         [TestMethod]
@@ -405,7 +405,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             //also deleting a key on server side if no other links are found
             emptyAsset.ContentKeys.RemoveAt(0);
 
-            
+
             Directory.CreateDirectory(path);
             try
             {
@@ -417,13 +417,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 Assert.IsTrue(ex.InnerExceptions[0] is InvalidOperationException);
                 Assert.IsTrue(ex.InnerExceptions[1] is InvalidOperationException);
             }
-			finally
-			{
-				AssetFilesTests.CleanDirectory(path);
-			}
-		}
+            finally
+            {
+                AssetFilesTests.CleanDirectory(path);
+            }
+        }
 
-       
+
 
         [TestMethod]
         [DeploymentItem(TestFile1, DeploymentFolder1)]
@@ -451,31 +451,31 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             var path = @".\Resources\TestFiles\" + Guid.NewGuid();
             Directory.CreateDirectory(path);
 
-			try
-			{
-				ingestManifestCreated.EncryptFiles(path);
+            try
+            {
+                ingestManifestCreated.EncryptFiles(path);
 
-				Dictionary<string, string> filePaths = new Dictionary<string, string>();
-				foreach (var filePath in files)
-				{
-					FileInfo fileInfo = new FileInfo(filePath);
-					filePaths.Add(fileInfo.Name, filePath);
-				}
+                Dictionary<string, string> filePaths = new Dictionary<string, string>();
+                foreach (var filePath in files)
+                {
+                    FileInfo fileInfo = new FileInfo(filePath);
+                    filePaths.Add(fileInfo.Name, filePath);
+                }
 
 
-				foreach (var assetFile in ingestManifestAsset.IngestManifestFiles)
-				{
-					var encryptedPath = Path.Combine(path, assetFile.Name);
-					Assert.IsTrue(File.Exists(encryptedPath));
-					var decryptedPath = DecryptedFile(assetFile, encryptedPath, context);
-					Assert.IsTrue(AssetTests.CompareFiles(decryptedPath, filePaths[assetFile.Name]), "Original file and Decrypted are not same");
-				}
-			}
-			finally
-			{
-				AssetFilesTests.CleanDirectory(path);
-			}
-		}
+                foreach (var assetFile in ingestManifestAsset.IngestManifestFiles)
+                {
+                    var encryptedPath = Path.Combine(path, assetFile.Name);
+                    Assert.IsTrue(File.Exists(encryptedPath));
+                    var decryptedPath = DecryptedFile(assetFile, encryptedPath, context);
+                    Assert.IsTrue(AssetTests.CompareFiles(decryptedPath, filePaths[assetFile.Name]), "Original file and Decrypted are not same");
+                }
+            }
+            finally
+            {
+                AssetFilesTests.CleanDirectory(path);
+            }
+        }
 
         [TestMethod]
         [DeploymentItem(TestFile1, DeploymentFolder1)]
@@ -488,29 +488,29 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             IIngestManifest ingestManifestCreated;
             string path = null;
 
-			try
-			{
-				path = CreateManifestEncryptFiles(out files, out ingestManifestCreated);
-				IIngestManifestAsset ingestManifestAsset = ingestManifestCreated.IngestManifestAssets.ToList().Where(c => c.Asset.Options == AssetCreationOptions.StorageEncrypted).FirstOrDefault();
-				IIngestManifestFile mFile = ingestManifestAsset.IngestManifestFiles.Where(c => c.Name == "File0.txt").FirstOrDefault();
+            try
+            {
+                path = CreateManifestEncryptFiles(out files, out ingestManifestCreated);
+                IIngestManifestAsset ingestManifestAsset = ingestManifestCreated.IngestManifestAssets.ToList().Where(c => c.Asset.Options == AssetCreationOptions.StorageEncrypted).FirstOrDefault();
+                IIngestManifestFile mFile = ingestManifestAsset.IngestManifestFiles.Where(c => c.Name == "File0.txt").FirstOrDefault();
 
-				Dictionary<string, string> filePaths = new Dictionary<string, string>();
-				foreach (var filePath in new[] { TestFile1, TestFile2 })
-				{
-					FileInfo fileInfo = new FileInfo(filePath);
-					filePaths.Add(fileInfo.Name, filePath);
-				}
+                Dictionary<string, string> filePaths = new Dictionary<string, string>();
+                foreach (var filePath in new[] { TestFile1, TestFile2 })
+                {
+                    FileInfo fileInfo = new FileInfo(filePath);
+                    filePaths.Add(fileInfo.Name, filePath);
+                }
 
-				var encryptedPath = Path.Combine(path, mFile.Name);
-				Assert.IsTrue(File.Exists(encryptedPath));
-				var decryptedPath = DecryptedFile(mFile, encryptedPath, _mediaContext);
-				Assert.IsTrue(AssetTests.CompareFiles(decryptedPath, filePaths[mFile.Name]), "Original file and Decrypted are not same");
-			}
-			finally
-			{
-				AssetFilesTests.CleanDirectory(path);
-			}
-		}
+                var encryptedPath = Path.Combine(path, mFile.Name);
+                Assert.IsTrue(File.Exists(encryptedPath));
+                var decryptedPath = DecryptedFile(mFile, encryptedPath, _mediaContext);
+                Assert.IsTrue(AssetTests.CompareFiles(decryptedPath, filePaths[mFile.Name]), "Original file and Decrypted are not same");
+            }
+            finally
+            {
+                AssetFilesTests.CleanDirectory(path);
+            }
+        }
 
         private static string DecryptedFile(IIngestManifestFile ingestManifestFile, string encryptedPath, CloudMediaContext context)
         {
@@ -680,10 +680,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 var expectedExcpetion = ax.GetBaseException() as IOException;
                 throw expectedExcpetion;
             }
-			finally
-			{
-				AssetFilesTests.CleanDirectory(path);
-			}
+            finally
+            {
+                AssetFilesTests.CleanDirectory(path);
+            }
         }
 
 
@@ -701,7 +701,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
 
-            IIngestManifest actual = _mediaContext.IngestManifests.CreateAsync(expected.Name,"some storage").Result;
+            IIngestManifest actual = _mediaContext.IngestManifests.CreateAsync(expected.Name, "some storage").Result;
 
             Assert.AreEqual(expected.Name, actual.Name);
             dataContextMock.Verify((ctxt) => ctxt.SaveChangesAsync(It.IsAny<object>()), Times.Exactly(2));
@@ -722,7 +722,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             try
             {
-                _mediaContext.IngestManifests.CreateAsync(expected.Name,"some storage").Wait();
+                _mediaContext.IngestManifests.CreateAsync(expected.Name, "some storage").Wait();
             }
             catch (AggregateException ax)
             {
@@ -752,7 +752,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             try
             {
-                _mediaContext.IngestManifests.CreateAsync(expected.Name,"some storage").Wait();
+                _mediaContext.IngestManifests.CreateAsync(expected.Name, "some storage").Wait();
             }
             catch (AggregateException ax)
             {
@@ -823,8 +823,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             VerifyManifestAsset(ingestManifestAssetInfo2);
 
             Assert.AreEqual(2, ingestManifestAssetInfo2.IngestManifestFiles.Count(), "Files collection size is not matching expectations");
-          
-          
+
+
             return ingestManifest;
         }
 
