@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Services.Client;
+using System.Security.Cryptography;
 using Microsoft.Practices.TransientFaultHandling;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization;
@@ -240,6 +241,31 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             IContentKey contentKey = mediaContext.ContentKeys.Create(Guid.NewGuid(), key, name, contentKeyType);
 
             return contentKey;
+        }
+
+        public static IContentKey CreateTestKeyWithSpecified(string keyIdentifier, CloudMediaContext mediaContext, ContentKeyType contentKeyType, string name = "")
+        {
+            var keyId = EncryptionUtils.GetKeyIdAsGuid(keyIdentifier);
+            SymmetricAlgorithm symmetricAlgorithm = new AesCryptoServiceProvider();
+            if ((contentKeyType == ContentKeyType.CommonEncryption) ||
+                (contentKeyType == ContentKeyType.EnvelopeEncryption))
+            {
+                symmetricAlgorithm.KeySize = EncryptionUtils.KeySizeInBitsForAes128;
+            }
+            else
+            {
+                symmetricAlgorithm.KeySize = EncryptionUtils.KeySizeInBitsForAes256;
+            }
+            IContentKey contentKey = mediaContext.ContentKeys.Create(keyId, symmetricAlgorithm.Key, name, contentKeyType);
+
+            return contentKey;
+        }
+
+        public static Guid GetGuidFromBase64String(string base64keyId)
+        {
+            byte[] keyIdBytes = Convert.FromBase64String(base64keyId);
+            Guid keyId = new Guid(keyIdBytes);
+            return keyId;
         }
 
         public static IContentKeyAuthorizationPolicy CreateTestPolicy(CloudMediaContext mediaContext, string name, List<IContentKeyAuthorizationPolicyOption> policyOptions, ref IContentKey contentKey)
