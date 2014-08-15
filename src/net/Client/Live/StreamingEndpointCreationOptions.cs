@@ -68,13 +68,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <param name="name">Name of the streaming endpoint to be created</param>
         /// <param name="scaleUnits">The streaming endpoint scale units.</param>
-        internal StreamingEndpointCreationOptions(string name, int scaleUnits)
+        public StreamingEndpointCreationOptions(string name, int scaleUnits)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
                 throw new ArgumentNullException("name");
             }
-            if (scaleUnits <= 0)
+            if (scaleUnits < 0)
             {
                 throw new ArgumentOutOfRangeException("scaleUnits");
             }

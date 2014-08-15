@@ -65,7 +65,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="name">Name of the channel to be created</param>
         /// <param name="inputStreamingProtocol">the Streaming Protocol of the channel input</param>
         /// <param name="inputIPAllowList">the IP allow list for the channel input access control</param>
-        internal ChannelCreationOptions(
+        public ChannelCreationOptions(
             string name, 
             StreamingProtocol inputStreamingProtocol,
             IEnumerable<IPRange> inputIPAllowList)

@@ -25,9 +25,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     internal class ChannelInputData
     {
         /// <summary>
-        /// Gets or sets Key Frame Distance HNS. MinValue = 19000000, MaxValue = 61000000
+        /// Gets or sets Key Frame Distance HNS. MinValue = PT1.9S, MaxValue = PT6.1S
         /// </summary>
-        public long? KeyFrameDistanceHns { get; set; }
+        public TimeSpan? KeyFrameInterval { get; set; }
 
         /// <summary>
         /// Gets or sets the streaming protocol (for REST).
@@ -60,7 +60,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new ArgumentNullException("input");
             }
 
-            KeyFrameDistanceHns = input.KeyFrameDistanceHns;
+            KeyFrameInterval = input.KeyFrameInterval;
             StreamingProtocol = input.StreamingProtocol.ToString();
             AccessControl = input.AccessControl == null
                 ? null
@@ -88,7 +88,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             var result = new ChannelInput
             {
-                KeyFrameDistanceHns = input.KeyFrameDistanceHns,
+                KeyFrameInterval = input.KeyFrameInterval,
                 StreamingProtocol =
                     (StreamingProtocol)Enum.Parse(typeof(StreamingProtocol), input.StreamingProtocol, true),
                 AccessControl = (ChannelAccessControl)input.AccessControl
