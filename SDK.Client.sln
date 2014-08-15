@@ -1,9 +1,29 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30110.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDK.Client", "src\net\Client\SDK.Client.csproj", "{E194B46E-9063-4CFA-85FC-51E5AAD55586}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDK.Client.Tests", "test\net\client\SDK.Client.Tests.csproj", "{8713AE4E-44F6-41AA-B8DC-CD1236F484CD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDK.Client.Tests.Scenario", "test\net\scenario\SDK.Client.Tests.Scenario.csproj", "{8713AE4E-44F6-41AA-B8DC-CD1236F484CD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{ECC37AD8-3AA1-4070-B21A-464ADCF2AF62}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDK.Client.Tests.Unit", "test\net\unit\SDK.Client.Tests.Unit.csproj", "{19DA48B7-6C3C-4B2C-8789-1CC9CCBDA4C7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDK.Client.Tests.Common", "test\net\common\SDK.Client.Tests.Common.csproj", "{04DB0E20-008C-45EF-B427-B6F33B25CD67}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4FB5122C-B709-4507-8C7D-C1F73161A9DB}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\windowsazure.mediaservices.nuspec = .nuget\windowsazure.mediaservices.nuspec
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDK.Client.Tests.Stress", "test\net\stress\SDK.Client.Tests.Stress.csproj", "{0CD55683-0485-4630-89B5-54EA080E2FC1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,8 +89,59 @@ Global
 		{8713AE4E-44F6-41AA-B8DC-CD1236F484CD}.Release|x64.Build.0 = Release|x64
 		{8713AE4E-44F6-41AA-B8DC-CD1236F484CD}.Release|x86.ActiveCfg = Release|x86
 		{8713AE4E-44F6-41AA-B8DC-CD1236F484CD}.Release|x86.Build.0 = Release|x86
+		{19DA48B7-6C3C-4B2C-8789-1CC9CCBDA4C7}.Coverage|Any CPU.ActiveCfg = Release|Any CPU
+		{19DA48B7-6C3C-4B2C-8789-1CC9CCBDA4C7}.Coverage|Any CPU.Build.0 = Release|Any CPU
+		{19DA48B7-6C3C-4B2C-8789-1CC9CCBDA4C7}.Coverage|x64.ActiveCfg = Release|Any CPU
+		{19DA48B7-6C3C-4B2C-8789-1CC9CCBDA4C7}.Coverage|x86.ActiveCfg = Release|Any CPU
+		{19DA48B7-6C3C-4B2C-8789-1CC9CCBDA4C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19DA48B7-6C3C-4B2C-8789-1CC9CCBDA4C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19DA48B7-6C3C-4B2C-8789-1CC9CCBDA4C7}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{19DA48B7-6C3C-4B2C-8789-1CC9CCBDA4C7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{19DA48B7-6C3C-4B2C-8789-1CC9CCBDA4C7}.IncrementVersion|Any CPU.ActiveCfg = Release|Any CPU
+		{19DA48B7-6C3C-4B2C-8789-1CC9CCBDA4C7}.IncrementVersion|Any CPU.Build.0 = Release|Any CPU
+		{19DA48B7-6C3C-4B2C-8789-1CC9CCBDA4C7}.IncrementVersion|x64.ActiveCfg = Release|Any CPU
+		{19DA48B7-6C3C-4B2C-8789-1CC9CCBDA4C7}.IncrementVersion|x86.ActiveCfg = Release|Any CPU
+		{19DA48B7-6C3C-4B2C-8789-1CC9CCBDA4C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19DA48B7-6C3C-4B2C-8789-1CC9CCBDA4C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19DA48B7-6C3C-4B2C-8789-1CC9CCBDA4C7}.Release|x64.ActiveCfg = Release|Any CPU
+		{19DA48B7-6C3C-4B2C-8789-1CC9CCBDA4C7}.Release|x86.ActiveCfg = Release|Any CPU
+		{04DB0E20-008C-45EF-B427-B6F33B25CD67}.Coverage|Any CPU.ActiveCfg = Release|Any CPU
+		{04DB0E20-008C-45EF-B427-B6F33B25CD67}.Coverage|Any CPU.Build.0 = Release|Any CPU
+		{04DB0E20-008C-45EF-B427-B6F33B25CD67}.Coverage|x64.ActiveCfg = Release|Any CPU
+		{04DB0E20-008C-45EF-B427-B6F33B25CD67}.Coverage|x86.ActiveCfg = Release|Any CPU
+		{04DB0E20-008C-45EF-B427-B6F33B25CD67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04DB0E20-008C-45EF-B427-B6F33B25CD67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04DB0E20-008C-45EF-B427-B6F33B25CD67}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{04DB0E20-008C-45EF-B427-B6F33B25CD67}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{04DB0E20-008C-45EF-B427-B6F33B25CD67}.IncrementVersion|Any CPU.ActiveCfg = Release|Any CPU
+		{04DB0E20-008C-45EF-B427-B6F33B25CD67}.IncrementVersion|Any CPU.Build.0 = Release|Any CPU
+		{04DB0E20-008C-45EF-B427-B6F33B25CD67}.IncrementVersion|x64.ActiveCfg = Release|Any CPU
+		{04DB0E20-008C-45EF-B427-B6F33B25CD67}.IncrementVersion|x86.ActiveCfg = Release|Any CPU
+		{04DB0E20-008C-45EF-B427-B6F33B25CD67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04DB0E20-008C-45EF-B427-B6F33B25CD67}.Release|Any CPU.Build.0 = Release|Any CPU
+		{04DB0E20-008C-45EF-B427-B6F33B25CD67}.Release|x64.ActiveCfg = Release|Any CPU
+		{04DB0E20-008C-45EF-B427-B6F33B25CD67}.Release|x86.ActiveCfg = Release|Any CPU
+		{0CD55683-0485-4630-89B5-54EA080E2FC1}.Coverage|Any CPU.ActiveCfg = Release|Any CPU
+		{0CD55683-0485-4630-89B5-54EA080E2FC1}.Coverage|Any CPU.Build.0 = Release|Any CPU
+		{0CD55683-0485-4630-89B5-54EA080E2FC1}.Coverage|x64.ActiveCfg = Release|Any CPU
+		{0CD55683-0485-4630-89B5-54EA080E2FC1}.Coverage|x86.ActiveCfg = Release|Any CPU
+		{0CD55683-0485-4630-89B5-54EA080E2FC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CD55683-0485-4630-89B5-54EA080E2FC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CD55683-0485-4630-89B5-54EA080E2FC1}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{0CD55683-0485-4630-89B5-54EA080E2FC1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0CD55683-0485-4630-89B5-54EA080E2FC1}.IncrementVersion|Any CPU.ActiveCfg = Release|Any CPU
+		{0CD55683-0485-4630-89B5-54EA080E2FC1}.IncrementVersion|Any CPU.Build.0 = Release|Any CPU
+		{0CD55683-0485-4630-89B5-54EA080E2FC1}.IncrementVersion|x64.ActiveCfg = Release|Any CPU
+		{0CD55683-0485-4630-89B5-54EA080E2FC1}.IncrementVersion|x86.ActiveCfg = Release|Any CPU
+		{0CD55683-0485-4630-89B5-54EA080E2FC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CD55683-0485-4630-89B5-54EA080E2FC1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CD55683-0485-4630-89B5-54EA080E2FC1}.Release|x64.ActiveCfg = Release|Any CPU
+		{0CD55683-0485-4630-89B5-54EA080E2FC1}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		EnterpriseLibraryConfigurationToolBinariesPath = packages\TransientFaultHandling.Core.5.1.1209.1\lib\NET4
 	EndGlobalSection
 EndGlobal

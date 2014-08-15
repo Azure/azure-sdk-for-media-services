@@ -17,22 +17,21 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Data.Services.Client;
 using System.Data.Services.Common;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     [DataServiceKey("Id")]
-    internal partial class IngestManifestData : IIngestManifest, ICloudMediaContextInit
+    internal partial class IngestManifestData : BaseEntity<IIngestManifest>, IIngestManifest
     {
         //private const int AcquringLockMillisecondsTimeout = 100000;
         internal static int MaxNumberOfEncryptionThreadsForFilePerCore = 5;
-        private CloudMediaContext _cloudMediaContext;
         private IngestManifestAssetCollection _assetsCollection;
         internal readonly ConcurrentDictionary<string, string> TrackedFilesPaths;
 
@@ -56,7 +55,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             {
                 if ((_assetsCollection == null) && !string.IsNullOrWhiteSpace(Id))
                 {
-                    _assetsCollection = new IngestManifestAssetCollection(_cloudMediaContext, this);
+                    _assetsCollection = new IngestManifestAssetCollection(GetMediaContext(), this);
                 }
 
                 return _assetsCollection;
@@ -79,17 +78,20 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
         /// <summary>
-        /// Deletes manifest asyncroniously.
+        /// Deletes manifest asynchronously.
         /// </summary>
         /// <returns><see cref="Task"/></returns>
         public Task DeleteAsync()
         {
             IngestManifestCollection.VerifyManifest(this);
 
-            DataServiceContext dataContext = _cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(IngestManifestCollection.EntitySet, this);
             dataContext.DeleteObject(this);
-            return dataContext.SaveChangesAsync(this);
+
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(this));
         }
 
 
@@ -192,7 +194,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                         }
                         else
                         {
-                            throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, StringTable.BulkIngestFileExists, destinationPath));
+                            throw new IOException(string.Format(CultureInfo.InvariantCulture, StringTable.BulkIngestFileExists, destinationPath));
                         }
                     }
 
@@ -393,10 +395,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public Task UpdateAsync()
         {
             IngestManifestCollection.VerifyManifest(this);
-            DataServiceContext dataContext = _cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(IngestManifestCollection.EntitySet, this);
             dataContext.UpdateObject(this);
-            return dataContext.SaveChangesAsync(this);
+
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(this));
         }
 
         /// <summary>
@@ -412,12 +417,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             get
             {
-                if (_cloudMediaContext == null)
+                if (GetMediaContext() == null)
                 {
                     throw new NullReferenceException("Operation can't be performed. CloudMediaContext hasn't been initiliazed for IngestManifestData type");
                 }
 
-                return _cloudMediaContext.StorageAccounts.Where(c => c.Name == this.StorageAccountName).FirstOrDefault();
+                return GetMediaContext().StorageAccounts.Where(c => c.Name == this.StorageAccountName).FirstOrDefault();
             }
         }
 
@@ -426,14 +431,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         IIngestManifestStatistics IIngestManifest.Statistics { get { return Statistics; } }
 
-        /// <summary>
-        /// Inits the cloud media context.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        public void InitCloudMediaContext(CloudMediaContext context)
-        {
-            _cloudMediaContext = context;
-        }
+       
 
         private static IngestManifestState GetExposedState(int state)
         {

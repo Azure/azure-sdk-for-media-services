@@ -16,6 +16,7 @@
 
 using System;
 using System.Linq;
+using System.Threading;
 using Microsoft.WindowsAzure.MediaServices.Client.OAuth;
 using Microsoft.WindowsAzure.MediaServices.Client.Versioning;
 
@@ -24,7 +25,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// <summary>
     /// Describes the context from which all entities in the Microsoft WindowsAzure Media Services platform can be accessed.
     /// </summary>
-    public class CloudMediaContext : MediaContextBase
+    public partial class CloudMediaContext : MediaContextBase
     {
         /// <summary>
         /// The certificate thumbprint for Nimbus services.
@@ -36,30 +37,25 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         internal const string NimbusRestApiCertificateSubject = "CN=NimbusRestApi";
 
-        private const string MediaServicesAccessScope = "urn:WindowsAzureMediaServices";
         private static readonly Uri _mediaServicesUri = new Uri("https://media.windows.net/");
-        private static readonly Uri _mediaServicesAcsBaseAddress = new Uri("https://wamsprodglobal001acs.accesscontrol.windows.net");
 
-        private readonly AzureMediaServicesDataServiceContextFactory _dataContextFactory;
-        private readonly AssetCollection _assets;
-        private readonly AssetFileCollection _files;
-        private readonly AccessPolicyBaseCollection _accessPolicies;
-        private readonly ContentKeyCollection _contentKeys;
-        private readonly JobBaseCollection _jobs;
-        private readonly JobTemplateBaseCollection _jobTemplates;
-        private readonly NotificationEndPointCollection _notificationEndPoints;
-        private readonly MediaProcessorBaseCollection _mediaProcessors;
-        private readonly LocatorBaseCollection _locators;
-        private readonly IngestManifestCollection _ingestManifests;
-        private readonly IngestManifestAssetCollection _ingestManifestAssets;
-        private readonly IngestManifestFileCollection _ingestManifestFiles;
-        private readonly StorageAccountBaseCollection _storageAccounts;
-
-        // Live collections.
-        private ChannelBaseCollection _channels;
-        private ProgramBaseCollection _programs;
-        private OriginBaseCollection _origins;
-        private OperationBaseCollection _operations;
+        private AssetCollection _assets;
+        private AssetFileCollection _files;
+        private AccessPolicyBaseCollection _accessPolicies;
+        private ContentKeyCollection _contentKeys;
+        private JobBaseCollection _jobs;
+        private JobTemplateBaseCollection _jobTemplates;
+        private NotificationEndPointCollection _notificationEndPoints;
+        private MediaProcessorBaseCollection _mediaProcessors;
+        private LocatorBaseCollection _locators;
+        private IngestManifestCollection _ingestManifests;
+        private IngestManifestAssetCollection _ingestManifestAssets;
+        private IngestManifestFileCollection _ingestManifestFiles;
+        private StorageAccountBaseCollection _storageAccounts;
+        private MediaServicesClassFactory _classFactory;
+        private OAuthDataServiceAdapter dataServiceAdapter;
+        private ServiceVersionAdapter versionAdapter;
+        private Uri apiServer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CloudMediaContext"/> class.
@@ -67,7 +63,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="accountName">The Microsoft WindowsAzure Media Services account name to authenticate with.</param>
         /// <param name="accountKey">The Microsoft WindowsAzure Media Services account key to authenticate with.</param>
         public CloudMediaContext(string accountName, string accountKey)
-            : this(CloudMediaContext._mediaServicesUri, accountName, accountKey, CloudMediaContext.MediaServicesAccessScope, CloudMediaContext._mediaServicesAcsBaseAddress.AbsoluteUri)
+            : this(CloudMediaContext._mediaServicesUri, new MediaServicesCredentials(accountName, accountKey))
         {
         }
 
@@ -78,7 +74,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="accountName">The Microsoft WindowsAzure Media Services account name to authenticate with.</param>
         /// <param name="accountKey">The Microsoft WindowsAzure Media Services account key to authenticate with.</param>
         public CloudMediaContext(Uri apiServer, string accountName, string accountKey)
-            : this(apiServer, accountName, accountKey, scope: CloudMediaContext.MediaServicesAccessScope, acsBaseAddress: CloudMediaContext._mediaServicesAcsBaseAddress.AbsoluteUri)
+            : this(apiServer, new MediaServicesCredentials(accountName, accountKey))
         {
         }
 
@@ -91,54 +87,65 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="scope">The scope of authorization.</param>
         /// <param name="acsBaseAddress">The access control endpoint to authenticate against.</param>
         public CloudMediaContext(Uri apiServer, string accountName, string accountKey, string scope, string acsBaseAddress)
+            : this(apiServer, new MediaServicesCredentials(accountName, accountKey, scope, acsBaseAddress))
         {
-            this.ParallelTransferThreadCount = 10;
-            this.NumberOfConcurrentTransfers = 2;
-
-            OAuthDataServiceAdapter dataServiceAdapter =
-                new OAuthDataServiceAdapter(accountName, accountKey, scope, acsBaseAddress, NimbusRestApiCertificateThumbprint, NimbusRestApiCertificateSubject);
-            ServiceVersionAdapter versionAdapter = new ServiceVersionAdapter(KnownApiVersions.Current);
-
-            this._dataContextFactory = new AzureMediaServicesDataServiceContextFactory(apiServer, dataServiceAdapter, versionAdapter, this);
-
-            this._jobs = new JobBaseCollection(this);
-            this._jobTemplates = new JobTemplateBaseCollection(this);
-            this._assets = new AssetCollection(this);
-            this._files = new AssetFileCollection(this);
-            this._accessPolicies = new AccessPolicyBaseCollection(this);
-            this._contentKeys = new ContentKeyCollection(this);
-            this._notificationEndPoints = new NotificationEndPointCollection(this);
-            this._mediaProcessors = new MediaProcessorBaseCollection(this);
-            this._locators = new LocatorBaseCollection(this);
-            this._ingestManifests = new IngestManifestCollection(this);
-            this._ingestManifestAssets = new IngestManifestAssetCollection(this,null);
-            this._ingestManifestFiles = new IngestManifestFileCollection(this, null);
-            this._storageAccounts = new StorageAccountBaseCollection(this);
-
-            this._channels = new ChannelBaseCollection(this);
-            this._programs = new ProgramBaseCollection(this);
-            this._origins = new OriginBaseCollection(this);
-            this._operations = new OperationBaseCollection(this);
         }
 
         /// <summary>
-        /// Gets or sets the number of threads to use to for each blob transfer.
+        /// Initializes a new instance of the <see cref="CloudMediaContext"/> class.
         /// </summary>
-        /// <remarks>The default value is 10.</remarks>
-        public int ParallelTransferThreadCount { get; set; }
+        /// <param name="credentials">Microsoft WindowsAzure Media Services credentials.</param>
+        public CloudMediaContext(MediaServicesCredentials credentials)
+            : this(_mediaServicesUri, credentials)
+        {
+        }
 
         /// <summary>
-        /// Gets or sets the number of concurrent blob transfers allowed.
+        /// Initializes a new instance of the <see cref="CloudMediaContext"/> class.
         /// </summary>
-        /// <remarks>The default value is 2.</remarks>
-        public int NumberOfConcurrentTransfers { get; set; }
+        /// <param name="apiServer">A <see cref="Uri"/> representing the API endpoint.</param>
+        /// <param name="credentials">Microsoft WindowsAzure Media Services credentials.</param>
+        public CloudMediaContext(Uri apiServer, MediaServicesCredentials credentials)
+        {
+            this.apiServer = apiServer;
+            this.ParallelTransferThreadCount = 10;
+            this.NumberOfConcurrentTransfers = 2;
+            this.Credentials = credentials;
+            dataServiceAdapter = new OAuthDataServiceAdapter(credentials, NimbusRestApiCertificateThumbprint, NimbusRestApiCertificateSubject);
+            versionAdapter = new ServiceVersionAdapter(KnownApiVersions.Current);
+
+        }
+
+        public override MediaServicesClassFactory MediaServicesClassFactory
+        {
+            get
+            {
+                if (_classFactory == null)
+                {
+                    Interlocked.CompareExchange(ref _classFactory, new AzureMediaServicesClassFactory(apiServer, dataServiceAdapter, versionAdapter, this), null);
+                }
+                return _classFactory;
+            }
+            set
+            {
+                _classFactory = value;
+            }
+        }
 
         /// <summary>
         /// Gets the collection of assets in the system.
         /// </summary>
         public override AssetBaseCollection Assets
         {
-            get { return this._assets; }
+            get
+            {
+                if (_assets == null)
+                {
+                    Interlocked.CompareExchange(ref _assets, new AssetCollection(this), null);
+                }
+                return this._assets;
+
+            }
         }
 
         /// <summary>
@@ -146,7 +153,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         public override AssetFileBaseCollection Files
         {
-            get { return this._files; }
+            get
+            {
+                if (_files == null)
+                {
+                    Interlocked.CompareExchange(ref _files, new AssetFileCollection(this), null);
+                }
+                return this._files;
+
+            }
         }
 
         /// <summary>
@@ -154,7 +169,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         public override AccessPolicyBaseCollection AccessPolicies
         {
-            get { return this._accessPolicies; }
+            get
+            {
+                if (_accessPolicies == null)
+                {
+                    Interlocked.CompareExchange(ref _accessPolicies, new AccessPolicyBaseCollection(this), null);
+                }
+                return this._accessPolicies;
+
+            }
         }
 
         /// <summary>
@@ -162,7 +185,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         public override ContentKeyBaseCollection ContentKeys
         {
-            get { return this._contentKeys; }
+            get
+            {
+                if (_contentKeys == null)
+                {
+                    Interlocked.CompareExchange(ref _contentKeys, new ContentKeyCollection(this), null);
+                }
+                return this._contentKeys;
+
+            }
         }
 
         /// <summary>
@@ -170,7 +201,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         public override JobBaseCollection Jobs
         {
-            get { return this._jobs; }
+            get
+            {
+                if (_jobs == null)
+                {
+                    Interlocked.CompareExchange(ref _jobs, new JobBaseCollection(this), null);
+                }
+                return this._jobs;
+            }
         }
 
         /// <summary>
@@ -178,7 +216,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         public override JobTemplateBaseCollection JobTemplates
         {
-            get { return this._jobTemplates; }
+            get
+            {
+                if (_jobTemplates == null)
+                {
+                    Interlocked.CompareExchange(ref _jobTemplates, new JobTemplateBaseCollection(this), null);
+                }
+                return this._jobTemplates;
+            }
         }
 
         /// <summary>
@@ -186,7 +231,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         public override MediaProcessorBaseCollection MediaProcessors
         {
-            get { return this._mediaProcessors; }
+            get
+            {
+                if (_mediaProcessors == null)
+                {
+                    Interlocked.CompareExchange(ref _mediaProcessors, new MediaProcessorBaseCollection(this), null);
+                }
+                return this._mediaProcessors;
+
+            }
         }
 
         /// <summary>
@@ -196,7 +249,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         ///   <seealso cref="IStorageAccount" />
         public override StorageAccountBaseCollection StorageAccounts
         {
-            get { return this._storageAccounts; }
+            get
+            {
+                if (_storageAccounts == null)
+                {
+                    Interlocked.CompareExchange(ref _storageAccounts, new StorageAccountBaseCollection(this), null);
+                }
+                return this._storageAccounts;
+
+            }
         }
 
         /// <summary>
@@ -204,90 +265,89 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         public override IStorageAccount DefaultStorageAccount
         {
-            get 
-            { 
-                return this.StorageAccounts.Where(c=>c.IsDefault == true).FirstOrDefault(); 
+            get
+            {
+                return this.StorageAccounts.Where(c => c.IsDefault == true).FirstOrDefault();
             }
         }
 
         /// <summary>
-        /// Gets the collection of notification endpoints avaiable in the system.
+        /// Gets the collection of notification endpoints available in the system.
         /// </summary>
         public override NotificationEndPointCollection NotificationEndPoints
         {
-            get { return this._notificationEndPoints; }
+            get
+            {
+                if (_notificationEndPoints == null)
+                {
+                    Interlocked.CompareExchange(ref _notificationEndPoints, new NotificationEndPointCollection(this), null);
+                }
+                return this._notificationEndPoints;
+
+            }
         }
 
         /// <summary>
         /// Gets the collection of locators in the system.
         /// </summary>
-        public LocatorBaseCollection Locators
+        public override LocatorBaseCollection Locators
         {
-            get { return this._locators; }
-        }
+            get
+            {
+                if (_locators == null)
+                {
+                    Interlocked.CompareExchange(ref _locators, new LocatorBaseCollection(this), null);
+                }
+                return this._locators;
 
-        /// <summary>
-        /// Gets a factory for creating data service context instances prepared for Windows Azure Media Services.
-        /// </summary>
-        public AzureMediaServicesDataServiceContextFactory DataContextFactory
-        {
-            get { return this._dataContextFactory; }
+            }
         }
 
         /// <summary>
         /// Gets the collection of bulk ingest manifests in the system.
         /// </summary>
-        public IngestManifestCollection IngestManifests
+        public override IngestManifestCollection IngestManifests
         {
-            get { return this._ingestManifests; }
+            get
+            {
+                if (_ingestManifests == null)
+                {
+                    Interlocked.CompareExchange(ref _ingestManifests, new IngestManifestCollection(this), null);
+                }
+                return this._ingestManifests;
+
+            }
         }
 
         /// <summary>
         /// Gets the collection of manifest asset files in the system
         /// </summary>
-        public  IngestManifestFileCollection IngestManifestFiles
+        public override IngestManifestFileCollection IngestManifestFiles
         {
-            get { return this._ingestManifestFiles; }
+            get
+            {
+                if (_ingestManifestFiles == null)
+                {
+                    Interlocked.CompareExchange(ref _ingestManifestFiles, new IngestManifestFileCollection(this, null), null);
+                }
+                return this._ingestManifestFiles;
+
+            }
         }
 
         /// <summary>
         /// Gets the collection of manifest assets in the system
         /// </summary>
-        public IngestManifestAssetCollection IngestManifestAssets
+        public override IngestManifestAssetCollection IngestManifestAssets
         {
-            get { return this._ingestManifestAssets; }
-        }
-
-        /// <summary>
-        /// Gets the collection of channels in the system.
-        /// </summary>
-        public ChannelBaseCollection Channels
-        {
-            get { return this._channels; }
-        }
-
-        /// <summary>
-        /// Gets the collection of programs in the system.
-        /// </summary>
-        public ProgramBaseCollection Programs
-        {
-            get { return this._programs; }
-        }
-
-        /// <summary>
-        /// Gets the collection of origins in the system.
-        /// </summary>
-        public OriginBaseCollection Origins
-        {
-            get { return this._origins; }
-        }
-
-        /// <summary>
-        /// Gets the collection of operation in the system.
-        /// </summary>
-        public OperationBaseCollection Operations
-        {
-            get { return this._operations; }
+            get
+            {
+                if (_ingestManifestAssets == null)
+                {
+                    Interlocked.CompareExchange(ref _ingestManifestAssets, new IngestManifestAssetCollection(this, null), null);
+                }
+                return this._ingestManifestAssets;
+            }
         }
     }
 }

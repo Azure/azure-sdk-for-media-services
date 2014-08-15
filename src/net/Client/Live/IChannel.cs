@@ -36,7 +36,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Gets or sets the description of the channel.
         /// </summary>
         string Description { get; set; }
-        
+
         /// <summary>
         /// Gets channel creation date.
         /// </summary>
@@ -48,29 +48,34 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         DateTime LastModified { get; set; }
 
         /// <summary>
-        /// Gets Url of the preview.
-        /// </summary>
-        Uri PreviewUrl { get; }
-
-        /// <summary>
-        /// Gets ingest Url.
-        /// </summary>
-        Uri IngestUrl { get; }
-
-        /// <summary>
         /// Gets state of the channel.
         /// </summary>
         ChannelState State { get; }
 
         /// <summary>
-        /// Gets or sets size of the channel.
+        /// Gets or sets the cross site access policies for the channel.
         /// </summary>
-        ChannelSize Size { get; set; }
+        CrossSiteAccessPolicies CrossSiteAccessPolicies { get; set; }
 
         /// <summary>
-        /// Gets or sets channel settings.
+        /// Gets or sets the channel input properties.
         /// </summary>
-        ChannelSettings Settings { get; set; }
+        ChannelInput Input { get; set; }
+
+        /// <summary>
+        /// Gets or sets the channel preview properties.
+        /// </summary>
+        ChannelPreview Preview { get; set; }
+
+        /// <summary>
+        /// Gets or sets the channel output properties.
+        /// </summary>
+        ChannelOutput Output { get; set; }
+
+        /// <summary>
+        /// Collection of programs associated with the channel.
+        /// </summary>
+        ProgramBaseCollection Programs { get; }
 
         /// <summary>
         /// Deletes the channel.
@@ -95,11 +100,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         Task<IOperation> SendDeleteOperationAsync();
 
         /// <summary>
-        /// Collection of programs associated with the channel.
-        /// </summary>
-        ProgramBaseCollection Programs { get; }
-
-        /// <summary>
         /// Starts the channel.
         /// </summary>
         void Start();
@@ -121,6 +121,29 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <returns>Task to wait on for operation sending completion.</returns>
         Task<IOperation> SendStartOperationAsync();
+
+        /// <summary>
+        /// Resets the channel.
+        /// </summary>
+        void Reset();
+
+        /// <summary>
+        /// Resets the channel asynchronously.
+        /// </summary>
+        /// <returns>Task to wait on for operation completion.</returns>
+        Task ResetAsync();
+
+        /// <summary>
+        /// Sends reset operation to the service and returns. Use Operations collection to get operation's status.
+        /// </summary>
+        /// <returns>Operation info that can be used to track the operation.</returns>
+        IOperation SendResetOperation();
+
+        /// <summary>
+        /// Sends reset operation to the service asynchronously. Use Operations collection to get operation's status.
+        /// </summary>
+        /// <returns>Task to wait on for operation sending completion.</returns>
+        Task<IOperation> SendResetOperationAsync();
 
         /// <summary>
         /// Stops the channel.

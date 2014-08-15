@@ -16,9 +16,9 @@
 
 
 using System;
-using System.Data.Services.Client;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -32,22 +32,28 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// The name of the entity set.
         /// </summary>
         internal const string EntitySet = "IngestManifests";
-
-        private readonly CloudMediaContext _cloudMediaContext;
+        private readonly Lazy<IQueryable<IIngestManifest>> _query;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IngestManifestCollection"/> class.
         /// </summary>
         /// <param name="cloudMediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Justification = "By design")]
-        internal IngestManifestCollection(CloudMediaContext cloudMediaContext)
+        internal IngestManifestCollection(MediaContextBase cloudMediaContext)
+            : base(cloudMediaContext)
         {
-            this._cloudMediaContext = cloudMediaContext;
-
-            this.DataContextFactory = this._cloudMediaContext.DataContextFactory;
-            this.Queryable = this.DataContextFactory.CreateDataServiceContext().CreateQuery<IngestManifestData>(EntitySet);
+             this._query = new Lazy<IQueryable<IIngestManifest>>(() => this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<IIngestManifest, IngestManifestData>(EntitySet));
         }
 
+
+        /// <summary>
+        /// Gets the queryable collection of assets.
+        /// </summary>
+        protected override IQueryable<IIngestManifest> Queryable
+        {
+            get { return this._query.Value; }
+            set { throw new NotSupportedException(); }
+        }
 
         /// <summary>
         /// Creates the specified name.
@@ -56,7 +62,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns><see cref="IIngestManifest"/></returns>
         public IIngestManifest Create(string name)
         {
-            return Create(name, this._cloudMediaContext.DefaultStorageAccount.Name);
+            IStorageAccount defaultStorageAccount = this.MediaContext.DefaultStorageAccount;
+            if (defaultStorageAccount == null)
+            {
+                throw new InvalidOperationException(StringTable.DefaultStorageAccountIsNull);
+            }
+            return Create(name, defaultStorageAccount.Name);
         }
 
         /// <summary>
@@ -66,7 +77,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns><see cref="Task"/> of type <see cref="IIngestManifest"/></returns>
         public Task<IIngestManifest> CreateAsync(string name)
         {
-            return CreateAsync(name, this._cloudMediaContext.DefaultStorageAccount.Name);
+            IStorageAccount defaultStorageAccount = this.MediaContext.DefaultStorageAccount;
+            if (defaultStorageAccount == null)
+            {
+                throw new InvalidOperationException(StringTable.DefaultStorageAccountIsNull);
+            }
+            return CreateAsync(name, defaultStorageAccount.Name);
         }
 
         /// <summary>
@@ -87,17 +103,18 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                                     };
 
 
-            ingestManifestData.InitCloudMediaContext(this._cloudMediaContext);
-            DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            ingestManifestData.SetMediaContext(this.MediaContext);
+            IMediaDataServiceContext dataContext = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AddObject(EntitySet, ingestManifestData);
 
-            return dataContext
-                .SaveChangesAsync(ingestManifestData)
+            MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(ingestManifestData))
                 .ContinueWith<IIngestManifest>(
                     t =>
                     {
                         t.ThrowIfFaulted();
-                        IngestManifestData data = (IngestManifestData)t.AsyncState;
+                        IngestManifestData data = (IngestManifestData)t.Result.AsyncState;
                         return data;
 
                     });

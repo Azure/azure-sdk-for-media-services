@@ -21,6 +21,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -30,8 +31,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     public class IngestManifestAssetCollection : BaseCollection<IIngestManifestAsset>
     {
         internal const string EntitySet = "IngestManifestAssets";
-        private readonly CloudMediaContext _cloudMediaContext;
-        private readonly DataServiceContext _dataContext;
+        private readonly IMediaDataServiceContext _dataContext;
         private readonly IIngestManifest _parentIngestManifest;
         private readonly Lazy<IQueryable<IIngestManifestAsset>> _query;
 
@@ -40,12 +40,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <param name="cloudMediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
         /// <param name="parentIngestManifest">parent manifest if collection associated with manifest </param>
-        internal IngestManifestAssetCollection(CloudMediaContext cloudMediaContext, IIngestManifest parentIngestManifest)
+        internal IngestManifestAssetCollection(MediaContextBase cloudMediaContext, IIngestManifest parentIngestManifest):base(cloudMediaContext)
         {
-            _cloudMediaContext = cloudMediaContext;
-            _dataContext = _cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            _dataContext = MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             _parentIngestManifest = parentIngestManifest;
-            _query = new Lazy<IQueryable<IIngestManifestAsset>>(() => _dataContext.CreateQuery<IngestManifestAssetData>(EntitySet));
+            _query = new Lazy<IQueryable<IIngestManifestAsset>>(() => _dataContext.CreateQuery<IIngestManifestAsset, IngestManifestAssetData>(EntitySet));
         }
 
         /// <summary>
@@ -135,7 +134,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     (fileTasks) =>
                     {   
                         //Updating statistic
-                        var _this = _cloudMediaContext.IngestManifests.Where(c => c.Id == _parentIngestManifest.Id).FirstOrDefault();
+                        var _this = MediaContext.IngestManifests.Where(c => c.Id == _parentIngestManifest.Id).FirstOrDefault();
                         if (_this != null)
                         {
                             ((IngestManifestData)_parentIngestManifest).Statistics = _this.Statistics;
@@ -200,7 +199,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             IngestManifestCollection.VerifyManifest(ingestManifest);
 
-            DataServiceContext dataContext = _cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             var data = new IngestManifestAssetData
                            {
                                ParentIngestManifestId = ingestManifest.Id
@@ -212,14 +211,17 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             dataContext.AttachTo(AssetCollection.AssetSet, asset);
             dataContext.SetLink(data,"Asset",asset);
 
-            Task<IIngestManifestAsset> task = dataContext.SaveChangesAsync(data).ContinueWith<IIngestManifestAsset>(t =>
-                                                                                                            {
-                                                                                                                t.ThrowIfFaulted();
-                                                                                                                token.ThrowIfCancellationRequested();
-                                                                                                                IngestManifestAssetData ingestManifestAsset = (IngestManifestAssetData)t.AsyncState;
-                                                                                                                continueWith(ingestManifestAsset);
-                                                                                                                return ingestManifestAsset;
-                                                                                                            }, TaskContinuationOptions.ExecuteSynchronously);
+            MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            Task<IIngestManifestAsset> task = retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(data))
+                .ContinueWith<IIngestManifestAsset>(t =>
+                {
+                    t.ThrowIfFaulted();
+                    token.ThrowIfCancellationRequested();
+                    IngestManifestAssetData ingestManifestAsset = (IngestManifestAssetData)t.Result.AsyncState;
+                    continueWith(ingestManifestAsset);
+                    return ingestManifestAsset;
+                }, TaskContinuationOptions.ExecuteSynchronously);
 
             return task;
         }

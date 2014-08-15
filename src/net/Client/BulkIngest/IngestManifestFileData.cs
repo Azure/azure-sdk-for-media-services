@@ -15,32 +15,20 @@
 // </license>
 
 using System;
-using System.Data.Services.Client;
 using System.Data.Services.Common;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     [DataServiceKey("Id")]
-    internal partial class IngestManifestFileData : IIngestManifestFile, ICloudMediaContextInit
+    internal partial class IngestManifestFileData : BaseEntity<IIngestManifestFile>, IIngestManifestFile
     {
-        private CloudMediaContext _cloudMediaContext;
         internal string Path = String.Empty;
-
         public IngestManifestFileData()
         {
             Id = string.Empty;
         }
-
-        #region ICloudMediaContextInit Members
-
-        public void InitCloudMediaContext(CloudMediaContext context)
-        {
-            _cloudMediaContext = context;
-        }
-
-        #endregion
-
         #region IManifestAssetFile Members
 
         /// <summary>
@@ -49,10 +37,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns><see cref="Task"/></returns>
         public Task DeleteAsync()
         {
-            DataServiceContext dataContext = _cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            IMediaDataServiceContext dataContext = GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(IngestManifestFileCollection.EntitySet, this);
             dataContext.DeleteObject(this);
-            return dataContext.SaveChangesAsync(this);
+
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(this));
         }
 
         /// <summary>

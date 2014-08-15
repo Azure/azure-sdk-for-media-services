@@ -19,8 +19,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// <summary>
     /// Represents a base media context containing collections to operate on.
     /// </summary>
-    public abstract class MediaContextBase
+    public abstract partial class MediaContextBase
     {
+        /// <summary>
+        /// Gets Microsoft WindowsAzure Media Services credentials used for authenticating requests.
+        /// </summary>
+        public MediaServicesCredentials Credentials { get; protected set; }
+
         /// <summary>
         /// Gets a collection to operate on AccessPolicies.
         /// </summary>
@@ -83,8 +88,31 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public abstract IStorageAccount DefaultStorageAccount { get; }
 
         /// <summary>
-        /// Gets the collection of notification endpoints avaiable in the system.
+        /// Gets the collection of notification endpoints available in the system.
         /// </summary>
         public abstract NotificationEndPointCollection NotificationEndPoints { get; }
+
+
+        /// <summary>
+        /// Gets or sets a factory for creating data service context instances prepared for Windows Azure Media Services.
+        /// </summary>
+        public virtual MediaServicesClassFactory MediaServicesClassFactory { get; set; }
+
+        public abstract IngestManifestFileCollection IngestManifestFiles { get; }
+        public abstract IngestManifestCollection IngestManifests { get; }
+        public abstract IngestManifestAssetCollection IngestManifestAssets { get; }
+        public abstract LocatorBaseCollection Locators { get; }
+
+        /// <summary>
+        /// Gets or sets the number of threads to use to for each blob transfer.
+        /// </summary>
+        /// <remarks>The default value is 10.</remarks>
+        public int ParallelTransferThreadCount { get; set; }
+
+        /// <summary>
+        /// Gets or sets the number of concurrent blob transfers allowed.
+        /// </summary>
+        /// <remarks>The default value is 2.</remarks>
+        public int NumberOfConcurrentTransfers { get; set; }
     }
 }

@@ -21,8 +21,13 @@ using System.Threading.Tasks;
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     [DataServiceKey("Id")]
-    internal class ProgramData : RestEntity<ProgramData>, IProgram, ICloudMediaContextInit
+    internal class ProgramData : RestEntity<ProgramData>, IProgram
     {
+        private IChannel _channel;
+        private IAsset _asset;
+
+        protected override string EntitySetName { get { return ProgramBaseCollection.ProgramSet; } }
+
         /// <summary>
         /// Gets or sets name of the program.
         /// </summary>
@@ -54,37 +59,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public string AssetId { get; set; }
 
         /// <summary>
-        /// Gets or sets the length of the DVR window.
+        /// Gets or sets the streaming manifest file name. 
         /// </summary>
-        public int? DvrWindowLengthSeconds { get; set; }
-
-        /// <summary>
-        /// Gets or sets the estimated length of duration in seconds.
-        /// </summary>
-        public int EstimatedDurationSeconds { get; set; }
-
-        /// <summary>
-        /// Enables or disables archiving.
-        /// </summary>
-        public bool EnableArchive { get; set; }
+        public string ManifestName { get; set; }
 
         /// <summary>
         /// Gets or sets program state.
         /// </summary>
         public string State { get; set; }
-
-        #region ICloudMediaContextInit Members
-
-        /// <summary>
-        /// Initializes the cloud media context.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        public void InitCloudMediaContext(CloudMediaContext context)
-        {
-            this._cloudMediaContext = (CloudMediaContext)context;
-        }
-
-        #endregion
 
         /// <summary>
         /// Gets program state.
@@ -98,52 +80,39 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
         /// <summary>
+        /// Gets or sets the length of the DVR window.
+        /// </summary>
+        public TimeSpan ArchiveWindowLength { get; set; }
+
+        /// <summary>
         /// Gets the channel associated with the program.
         /// </summary>
         IChannel IProgram.Channel
         {
             get
             {
-                if ((this._channel == null) && !String.IsNullOrWhiteSpace(this.ChannelId))
+                if ((_channel == null) && !String.IsNullOrWhiteSpace(ChannelId))
                 {
-                    this._channel = this._cloudMediaContext.Channels.Where(c => c.Id == this.ChannelId).Single();
+                    _channel = GetMediaContext().Channels.Where(c => c.Id == ChannelId).Single();
                 }
 
-                return this._channel;
+                return _channel;
             }
         }
 
         /// <summary>
-        /// Gets the estimated duration of the program.
+        /// Gets the asset associated with the program.
         /// </summary>
-        TimeSpan IProgram.EstimatedDuration
+        IAsset IProgram.Asset
         {
             get
             {
-                return TimeSpan.FromSeconds(this.EstimatedDurationSeconds);
-            }
-            set
-            {
-                this.EstimatedDurationSeconds = (int)value.TotalSeconds;
-            }
-        }
+                if ((_asset == null) && !String.IsNullOrWhiteSpace(AssetId))
+                {
+                    _asset = GetMediaContext().Assets.Where(a => a.Id == AssetId).Single();
+                }
 
-        /// <summary>
-        /// Gets or sets the length of the DVR window.
-        /// </summary>
-        TimeSpan? IProgram.DvrWindowLength
-        {
-            get
-            {
-                return this.DvrWindowLengthSeconds.HasValue ?
-                    (TimeSpan?)TimeSpan.FromSeconds(this.DvrWindowLengthSeconds.Value) :
-                    null;
-            }
-            set
-            {
-                this.DvrWindowLengthSeconds = value.HasValue ?
-                    (int?)value.Value.TotalSeconds :
-                    null;
+                return _asset;
             }
         }
 
@@ -161,7 +130,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>Task to wait on for operation completion.</returns>
         public Task StartAsync()
         {
-            Uri uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Programs('{0}')/Start", this.Id), UriKind.Relative);
+            var uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Programs('{0}')/Start", Id), UriKind.Relative);
 
             return ExecuteActionAsync(uri, StreamingConstants.StartProgramPollInterval);
         }
@@ -172,7 +141,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>Operation info that can be used to track the operation.</returns>
         public IOperation SendStartOperation()
         {
-            Uri uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Programs('{0}')/Start", this.Id), UriKind.Relative);
+            var uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Programs('{0}')/Start", Id), UriKind.Relative);
 
             return SendOperation(uri);
         }
@@ -200,7 +169,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>Task to wait on for operation completion.</returns>
         public Task StopAsync()
         {
-            Uri uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Programs('{0}')/Stop", this.Id), UriKind.Relative);
+            var uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Programs('{0}')/Stop", Id), UriKind.Relative);
 
             return ExecuteActionAsync(uri, StreamingConstants.StopProgramPollInterval);
         }
@@ -211,7 +180,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>Operation info that can be used to track the operation.</returns>
         public IOperation SendStopOperation()
         {
-            Uri uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Programs('{0}')/Stop", this.Id), UriKind.Relative);
+            var uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Programs('{0}')/Stop", Id), UriKind.Relative);
 
             return SendOperation(uri);
         }
@@ -224,9 +193,5 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             return Task.Factory.StartNew(() => SendStopOperation());
         }
-
-        protected override string EntitySetName { get { return ProgramBaseCollection.ProgramSet; } }
-
-        private IChannel _channel;
     }
 }

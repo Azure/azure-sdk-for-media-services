@@ -25,6 +25,7 @@ using System.Net.Security;
 using System.Runtime.Serialization.Json;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.Practices.TransientFaultHandling;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.OAuth
 {
@@ -36,49 +37,31 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.OAuth
     {
         private const string AuthorizationHeader = "Authorization";
         private const string BearerTokenFormat = "Bearer {0}";
-        private const string GrantType = "client_credentials";
-        private const int ExpirationTimeBufferInSeconds = 120;  // The OAuth2 token expires in 10 hours, 
-                                                                // so setting the buffer as 2 minutes is safe for 
+        private const int ExpirationTimeBufferInSeconds = 600;  // The token has an expiration time in hours, 
+                                                                // so setting the buffer as 10 minutes is safe for 
                                                                 // the network latency and clock skew.
 
-        private readonly string _acsBaseAddress;
+        private readonly MediaServicesCredentials _credentials;
+        private readonly static object _acsRefreshLock = new object();
         private readonly string _trustedRestCertificateHash;
         private readonly string _trustedRestSubject;
-        private readonly string _clientSecret;
-        private readonly string _clientId;
-        private readonly string _scope;
-
-        private DateTime _tokenExpiration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OAuthDataServiceAdapter"/> class.
         /// </summary>
-        /// <param name="clientId">The client id.</param>
-        /// <param name="clientSecret">The client secret.</param>
-        /// <param name="scope">The scope.</param>
-        /// <param name="acsBaseAddress">The acs base address.</param>
+        /// <param name="credentials">Microsoft WindowsAzure Media Services credentials.</param>
         /// <param name="trustedRestCertificateHash">The trusted rest certificate hash.</param>
         /// <param name="trustedRestSubject">The trusted rest subject.</param>
-        public OAuthDataServiceAdapter(string clientId, string clientSecret, string scope, string acsBaseAddress, string trustedRestCertificateHash, string trustedRestSubject)
+        public OAuthDataServiceAdapter(MediaServicesCredentials credentials, string trustedRestCertificateHash, string trustedRestSubject)
         {
-            this._clientId = clientId;
-            this._clientSecret = clientSecret;
-            this._scope = scope;
-            this._acsBaseAddress = acsBaseAddress;
+            this._credentials = credentials;
             this._trustedRestCertificateHash = trustedRestCertificateHash;
             this._trustedRestSubject = trustedRestSubject;
 
             #if DEBUG
             ServicePointManager.ServerCertificateValidationCallback = this.ValidateCertificate;
             #endif
-
-            this.GetToken();
         }
-
-        /// <summary> 
-        /// Gets OAuth Access Token to be used for web requests.
-        /// </summary> 
-        public string AccessToken { get; private set; }
 
         /// <summary>
         /// Adapts the specified data service context.
@@ -102,12 +85,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.OAuth
 
             if (request.Headers[AuthorizationHeader] == null)
             {
-                if (DateTime.Now > this._tokenExpiration)
+                lock (_acsRefreshLock)
                 {
-                    this.GetToken();
+                    if (DateTime.UtcNow.AddSeconds(ExpirationTimeBufferInSeconds) > this._credentials.TokenExpiration)
+                    {
+                        this._credentials.RefreshToken();
+                    }
                 }
 
-                request.Headers.Add(AuthorizationHeader, string.Format(CultureInfo.InvariantCulture, BearerTokenFormat, this.AccessToken));
+                request.Headers.Add(AuthorizationHeader, string.Format(CultureInfo.InvariantCulture, BearerTokenFormat, this._credentials.AccessToken));
             }
         }
 
@@ -130,39 +116,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.OAuth
             }
 
             return error == SslPolicyErrors.None;
-        }
-
-        private void GetToken()
-        {
-            using (WebClient client = new WebClient())
-            {
-                client.BaseAddress = this._acsBaseAddress;
-
-                var oauthRequestValues = new NameValueCollection
-                {
-                    {"grant_type", GrantType},
-                    {"client_id", this._clientId},
-                    {"client_secret", this._clientSecret},
-                    {"scope", this._scope},
-                };
-
-                RetryPolicy retryPolicy = new RetryPolicy(
-                    new WebRequestTransientErrorDetectionStrategy(),
-                    RetryStrategyFactory.DefaultStrategy());
-
-                retryPolicy.ExecuteAction(
-                    () =>
-                        {
-                            byte[] responseBytes = client.UploadValues("/v2/OAuth2-13", "POST", oauthRequestValues);
-
-                            using (var responseStream = new MemoryStream(responseBytes))
-                            {
-                                OAuth2TokenResponse tokenResponse = (OAuth2TokenResponse)new DataContractJsonSerializer(typeof (OAuth2TokenResponse)).ReadObject(responseStream);
-                                this.AccessToken = tokenResponse.AccessToken;
-                                this._tokenExpiration = DateTime.Now.AddSeconds(tokenResponse.ExpirationInSeconds - ExpirationTimeBufferInSeconds);
-                            }
-                        });
-            }
         }
 
         /// <summary> 

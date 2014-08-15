@@ -13,130 +13,102 @@
 // limitations under the License.
 
 using System;
-using System.Data.Services.Client;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.MediaServices.Client.Properties;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
     /// Represents a collection of <see cref="IChannel"/>.
     /// </summary>
-    public class ChannelBaseCollection : CloudBaseCollection<IChannel>
+    public sealed class ChannelBaseCollection : CloudBaseCollection<IChannel>
     {
         internal const string ChannelSet = "Channels";
-        private readonly CloudMediaContext _cloudMediaContext;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ChannelBaseCollection"/> class.
         /// </summary>
-        /// <param name="cloudMediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Justification = "By design")]
-        internal ChannelBaseCollection(CloudMediaContext cloudMediaContext)
+        /// <param name="cloudMediaContext">The <seealso cref="MediaContextBase"/> instance.</param>
+        internal ChannelBaseCollection(MediaContextBase cloudMediaContext)
+            : base(cloudMediaContext)
         {
-            this._cloudMediaContext = cloudMediaContext;
-
-            this.DataContextFactory = this._cloudMediaContext.DataContextFactory;
-            this.Queryable = this.DataContextFactory.CreateDataServiceContext().CreateQuery<ChannelData>(ChannelSet);
+			Queryable = MediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<IChannel, ChannelData>(ChannelSet);
         }
 
         /// <summary>
-        /// Creates new channel.
+        /// Create a new channel.
         /// </summary>
         /// <param name="name">Unique name of the channel.</param>
-        /// <param name="description">Description of the channel.</param>
-        /// <param name="size">Size of the channel.</param>
-        /// <param name="settings">Channel settings.</param>
+        /// <param name="inputProtocol">Channel input streaming protocol</param>
+        /// <param name="inputIPAllowList">Channel input IP allow list</param>
         /// <returns>The created channel.</returns>
-        public IChannel Create(string name, string description, ChannelSize size, ChannelSettings settings)
+        public IChannel Create(string name, StreamingProtocol inputProtocol, IEnumerable<IPRange> inputIPAllowList)
         {
-            return AsyncHelper.Wait(CreateAsync(name, description, size, settings));
+            return Create(new ChannelCreationOptions(name, inputProtocol, inputIPAllowList));
         }
 
         /// <summary>
-        /// Creates new channel.
+        /// Asynchronously create a new channel.
         /// </summary>
         /// <param name="name">Unique name of the channel.</param>
-        /// <param name="size">Size of the channel.</param>
-        /// <param name="settings">Channel settings.</param>
-        /// <returns>The created channel.</returns>
-        public IChannel Create(string name, ChannelSize size, ChannelSettings settings)
+        /// <param name="inputProtocol">Channel input streaming protocol</param>
+        /// <param name="inputIPAllowList">Channel input IP allow list</param>
+        /// <returns>The channel creation task.</returns>
+        public Task<IChannel> CreateAsync(string name, StreamingProtocol inputProtocol, IEnumerable<IPRange> inputIPAllowList)
         {
-            return Create(name, null, size, settings);
+            return CreateAsync(new ChannelCreationOptions(name, inputProtocol, inputIPAllowList));
         }
 
         /// <summary>
-        /// Asynchronously creates new channel.
+        /// Create a new channel.
         /// </summary>
-        /// <param name="name">Unique name of the channel.</param>
-        /// <param name="description">Description of the channel.</param>
-        /// <param name="size">Size of the channel.</param>
-        /// <param name="settings">Channel settings.</param>
+        /// <param name="options"> Channel creation options </param>
         /// <returns>The created channel.</returns>
-        public Task<IChannel> CreateAsync(string name, string description, ChannelSize size, ChannelSettings settings)
+        public IChannel Create(ChannelCreationOptions options)
         {
-            if (string.IsNullOrEmpty(name))
+            return AsyncHelper.Wait(CreateAsync(options));
+        }
+
+        /// <summary>
+        /// Asynchronously create a new channel.
+        /// </summary>
+        /// <param name="options"> Channel creation options </param>
+        /// <returns>The channel creation task.</returns>
+        public Task<IChannel> CreateAsync(ChannelCreationOptions options)
+        {
+            var response = CreateChannelAsync(options);
+
+            return response.ContinueWith<IChannel>(t =>
             {
-                throw new ArgumentException(Resources.ErrorEmptyChannelName);
-            }
+                t.ThrowIfFaulted();
+                string operationId = t.Result.Single().Headers[StreamingConstants.OperationIdHeader];
 
-            var channel = new ChannelData
-            {
-                Description = description,
-                Name = name,
-                Size = size.ToString(),
-            };
+                IOperation operation = AsyncHelper.WaitOperationCompletion(
+                    MediaContext,
+                    operationId,
+                    StreamingConstants.CreateChannelPollInterval);
 
-            ((IChannel)channel).Settings = settings;
+                string messageFormat = Resources.ErrorCreateChannelFailedFormat;
+                string message;
 
-            channel.InitCloudMediaContext(this._cloudMediaContext);
-
-            DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
-            dataContext.AddObject(ChannelSet, channel);
-
-            return dataContext
-                .SaveChangesAsync(channel)
-                .ContinueWith<IChannel>(t =>
+                switch (operation.State)
                 {
-                    t.ThrowIfFaulted();
-                    string operationId = t.Result.Single().Headers[StreamingConstants.OperationIdHeader];
-
-                    IOperation operation = AsyncHelper.WaitOperationCompletion(
-                        this._cloudMediaContext,
-                        operationId,
-                        StreamingConstants.CreateChannelPollInterval);
-
-                    string messageFormat = Resources.ErrorCreateChannelFailedFormat;
-                    string message;
-
-                    switch (operation.State)
-                    {
-                        case OperationState.Succeeded:
-                            channel = (ChannelData)t.AsyncState;
-                            Uri uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Channels('{0}')", channel.Id), UriKind.Relative);
-                            return (ChannelData)dataContext.Execute<ChannelData>(uri).SingleOrDefault();;
-                        case OperationState.Failed:
-                            message = string.Format(CultureInfo.CurrentCulture, messageFormat, Resources.Failed, operationId, operation.ErrorMessage);
-                            throw new InvalidOperationException(message);
-                        default: // can never happen unless state enum is extended
-                            message = string.Format(CultureInfo.CurrentCulture, messageFormat, Resources.InInvalidState, operationId, operation.State);
-                            throw new InvalidOperationException(message);
-                    }
-                });
-        }
-
-        /// <summary>
-        /// Asynchronously creates new channel.
-        /// </summary>
-        /// <param name="name">Unique name of the channel.</param>
-        /// <param name="size">Size of the channel.</param>
-        /// <param name="settings">Channel settings.</param>
-        /// <returns>The created channel.</returns>
-        public Task<IChannel> CreateAsync(string name, ChannelSize size, ChannelSettings settings)
-        {
-            return CreateAsync(name, null, size, settings);
+                    case OperationState.Succeeded:
+                        var result = (ChannelData)t.Result.AsyncState;
+                        result.Refresh();
+                        return result;
+                    case OperationState.Failed:
+                        message = string.Format(CultureInfo.CurrentCulture, messageFormat, Resources.Failed, operationId, operation.ErrorMessage);
+                        throw new InvalidOperationException(message);
+                    default: // can never happen unless state enum is extended
+                        message = string.Format(CultureInfo.CurrentCulture, messageFormat, Resources.InInvalidState, operationId, operation.State);
+                        throw new InvalidOperationException(message);
+                }
+            });
         }
 
         #region Non-polling asyncs
@@ -145,96 +117,115 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Sends create channel operation to the service and returns. Use Operations collection to get operation's status.
         /// </summary>
         /// <param name="name">Unique name of the channel.</param>
-        /// <param name="size">Size of the channel.</param>
-        /// <param name="settings">Channel settings.</param>
+        /// <param name="inputProtocol">Channel input streaming protocol</param>
+        /// <param name="inputIPAllowList">Channel input IP allow list</param>
         /// <returns>Operation info that can be used to track the operation.</returns>
-        public IOperation SendCreateOperation(
-            string name,
-            ChannelSize size,
-            ChannelSettings settings)
+        public IOperation SendCreateOperation(string name, StreamingProtocol inputProtocol, IEnumerable<IPRange> inputIPAllowList)
         {
-            return SendCreateOperation(name, null, size, settings);
+            return SendCreateOperation(new ChannelCreationOptions(name, inputProtocol, inputIPAllowList));
+        }
+
+        /// <summary>
+        /// Sends create channel operation to the service asynchronously. Use Operations collection to get operation's status.
+        /// </summary>
+        /// <param name="name">Unique name of the channel.</param>
+        /// <param name="inputProtocol">Channel input streaming protocol</param>
+        /// <param name="inputIPAllowList">Channel input IP allow list</param>
+        /// <returns>Task to wait on for operation sending completion.</returns>
+        public Task<IOperation> SendCreateOperationAsync(string name, StreamingProtocol inputProtocol, IEnumerable<IPRange> inputIPAllowList)
+        {
+            return SendCreateOperationAsync(new ChannelCreationOptions(name, inputProtocol, inputIPAllowList));
         }
 
         /// <summary>
         /// Sends create channel operation to the service and returns. Use Operations collection to get operation's status.
         /// </summary>
-        /// <param name="name">Unique name of the channel.</param>
-        /// <param name="description">Description of the channel.</param>
-        /// <param name="size">Size of the channel.</param>
-        /// <param name="settings">Channel settings.</param>
+        /// <param name="options"> Channel creation options </param>
         /// <returns>Operation info that can be used to track the operation.</returns>
-        public IOperation SendCreateOperation(
-            string name,
-            string description,
-            ChannelSize size, 
-            ChannelSettings settings)
+        public IOperation SendCreateOperation(ChannelCreationOptions options)
         {
-            if (string.IsNullOrEmpty(name))
+            return AsyncHelper.Wait(SendCreateOperationAsync(options));
+        }
+
+        /// <summary>
+        /// Sends create channel operation to the service asynchronously. Use Operations collection to get operation's status.
+        /// </summary>
+        /// <param name="options"> Channel creation options </param>
+        /// <returns>Task to wait on for operation sending completion.</returns>
+        public Task<IOperation> SendCreateOperationAsync(ChannelCreationOptions options)
+        {
+            var response = CreateChannelAsync(options);
+
+            return response.ContinueWith(t =>
+            {
+                t.ThrowIfFaulted();
+
+                string operationId = t.Result.Single().Headers[StreamingConstants.OperationIdHeader];
+
+                IOperation result = new OperationData
+                {
+                    ErrorCode = null,
+                    ErrorMessage = null,
+                    Id = operationId,
+                    State = OperationState.InProgress.ToString(),
+                };
+
+                return result;
+            });
+        }
+
+        #endregion Non-polling asyncs
+
+        private Task<IMediaDataServiceResponse> CreateChannelAsync(ChannelCreationOptions options)
+        {
+            if (options == null)
+            {
+                throw new ArgumentNullException("options");
+            }
+
+            if (string.IsNullOrEmpty(options.Name))
             {
                 throw new ArgumentException(Resources.ErrorEmptyChannelName);
             }
 
-            var channel = new ChannelData
+            if (options.Input == null ||
+                options.Input.AccessControl == null ||
+                options.Input.AccessControl.IPAllowList == null)
             {
-                Description = description,
-                Name = name,
-                Size = size.ToString(),
+                throw new ArgumentException(Resources.ErrorEmptyChannelInputIPAllowList);
+            }
+
+            var channelData = new ChannelData
+            {
+                Name = options.Name,
+                Description = options.Description,
+                CrossSiteAccessPolicies = options.CrossSiteAccessPolicies
             };
 
-            ((IChannel)channel).Settings = settings;
+            IChannel channel = channelData;
 
-            channel.InitCloudMediaContext(this._cloudMediaContext);
+            channel.Input = options.Input;
+            channel.Preview = options.Preview;
+            channel.Output = options.Output;
+            
+            if (channel.Input.Endpoints == null)
+            {
+                channel.Input.Endpoints = new List<ChannelEndpoint>().AsReadOnly();
+            }
 
-            DataServiceContext dataContext = this._cloudMediaContext.DataContextFactory.CreateDataServiceContext();
+            if (channel.Preview != null && channel.Preview.Endpoints == null)
+            {
+                channel.Preview.Endpoints = new List<ChannelEndpoint>().AsReadOnly();
+            }
+
+            channelData.SetMediaContext(MediaContext);
+
+            IMediaDataServiceContext dataContext = MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AddObject(ChannelSet, channel);
-            var response = dataContext.SaveChanges();
 
-            string operationId = response.Single().Headers[StreamingConstants.OperationIdHeader];
+            MediaRetryPolicy retryPolicy = MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
 
-            IOperation result = new OperationData()
-            {
-                ErrorCode = null,
-                ErrorMessage = null,
-                Id = operationId,
-                State = OperationState.InProgress.ToString(),
-            };
-
-            return result;
+            return retryPolicy.ExecuteAsync(() => dataContext.SaveChangesAsync(channel));
         }
-
-        /// <summary>
-        /// Sends create channel operation to the service asynchronously. Use Operations collection to get operation's status.
-        /// </summary>
-        /// <param name="name">Unique name of the channel.</param>
-        /// <param name="size">Size of the channel.</param>
-        /// <param name="settings">Channel settings.</param>
-        /// <returns>Task to wait on for operation sending completion.</returns>
-        public Task<IOperation> SendCreateOperationAsync(
-            string name,
-            ChannelSize size,
-            ChannelSettings settings)
-        {
-            return SendCreateOperationAsync(name, null, size, settings);
-        }
-
-        /// <summary>
-        /// Sends create channel operation to the service asynchronously. Use Operations collection to get operation's status.
-        /// </summary>
-        /// <param name="name">Unique name of the channel.</param>
-        /// <param name="description">Description of the channel.</param>
-        /// <param name="size">Size of the channel.</param>
-        /// <param name="settings">Channel settings.</param>
-        /// <returns>Task to wait on for operation sending completion.</returns>
-        public Task<IOperation> SendCreateOperationAsync(
-            string name,
-            string description,
-            ChannelSize size,
-            ChannelSettings settings)
-        {
-            return Task.Factory.StartNew(() => SendCreateOperation(name, description, size, settings));
-        }
-
-        #endregion Non-polling asyncs
     }
 }
