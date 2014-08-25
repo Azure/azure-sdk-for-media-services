@@ -18,6 +18,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Net;
 using Microsoft.Practices.TransientFaultHandling;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization;
@@ -44,7 +45,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Stress
         [ClassInitialize()]
         public static void ClassInit(TestContext context)
         {
-         CreateCounters();
+         //CreateCounters();
             
             _mediaContext = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
             IContentKeyAuthorizationPolicyOption policyOption = null;
@@ -81,14 +82,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Stress
         [TestMethod]
         public void KeyDeliveryUrlStressSample()
         {
+            ServicePointManager.ServerCertificateValidationCallback = (sender, certificate, chain, errors) => true;
             for (int i = 0; i < 50; i++)
             {
                 var current = _testData[rnd.Next(_testData.Count)];
                 KeyDeliveryServiceClient keyClient = new KeyDeliveryServiceClient(RetryPolicy.DefaultFixed);
                 var key = GetKeyDeliveryUrlTests.GetString(keyClient.AcquireHlsKey(current.Item1, current.Item2));
                 Assert.AreEqual(current.Item3, key);
-                numberOfOperationsPerformanceCounter.Increment();
-                operationsPerSecondCounter.Increment();
+                //numberOfOperationsPerformanceCounter.Increment();
+                //operationsPerSecondCounter.Increment();
             }
         }
 

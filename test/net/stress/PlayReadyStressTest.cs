@@ -30,7 +30,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Stress
     public class PlayReadyStressTest
     {
         private static CloudMediaContext _mediaContext;
-        private static readonly List<Tuple<Uri, string, string>> _testData = new List<Tuple<Uri, string, string>>();
+        private static readonly List<Tuple<Uri, string>> _testData = new List<Tuple<Uri, string>>();
         private Random rnd = new Random();
         private static PerformanceCounter numberOfOperationsPerformanceCounter;
         private static PerformanceCounter operationsPerSecondCounter;
@@ -39,7 +39,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Stress
         //Initialization code which runs once per test run
 
         /// <summary>
-        /// Prepoluate content keys to be used in stress test
+        /// Prepopulate content keys to be used in stress test
         /// </summary>
         /// <param name="context">The context.</param>
         [ClassInitialize()]
@@ -55,7 +55,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Stress
             string licenseTemplate = MediaServicesLicenseTemplateSerializer.Serialize(responseTemplate);
 
 
-            IContentKeyAuthorizationPolicy contentKeyAuthorizationPolicy = _mediaContext.ContentKeyAuthorizationPolicies.CreateAsync("PerfTets"+Guid.NewGuid().ToString()).Result;
+            IContentKeyAuthorizationPolicy contentKeyAuthorizationPolicy = _mediaContext.ContentKeyAuthorizationPolicies.CreateAsync("PerfTest"+Guid.NewGuid().ToString()).Result;
 
             policyOption = ContentKeyAuthorizationPolicyOptionTests.CreateOption(_mediaContext, String.Empty,
                 ContentKeyDeliveryType.PlayReadyLicense, null, licenseTemplate, ContentKeyRestrictionType.Open);
@@ -81,7 +81,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Stress
                 contentKey = contentKey.UpdateAsync().Result;
                 Uri keyDeliveryServiceUri = contentKey.GetKeyDeliveryUrl(ContentKeyDeliveryType.PlayReadyLicense);
                 Assert.IsNotNull(keyDeliveryServiceUri);
-                _testData.Add(new Tuple<Uri, string, string>(keyDeliveryServiceUri, contentKey.Id, ""));
+                _testData.Add(new Tuple<Uri, string>(keyDeliveryServiceUri, contentKey.Id));
             }
 
         }
@@ -91,11 +91,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Stress
         {
 
         }
-
         [TestMethod]
         public void PlayReadySampleLoad()
         {
-            for (int i = 0; i < 50; i++)
+            ServicePointManager.ServerCertificateValidationCallback = (sender, certificate, chain, errors) => true;
+            for (int i = 0; i < 30; i++)
             {
                 var current = _testData[rnd.Next(_testData.Count)];
                 string challengeString = GetPlayReadyLicenseAcquistionChallenge(current.Item2);
