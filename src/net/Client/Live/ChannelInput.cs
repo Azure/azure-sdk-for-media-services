@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Collections.ObjectModel;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
@@ -23,9 +24,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     public class ChannelInput
     {
         /// <summary>
-        /// Gets or sets Key Frame Distance HNS. MinValue = 19000000, MaxValue = 61000000
+        /// Gets or sets Key Frame Distance HNS. MinValue = PT1.9S, MaxValue = PT6.1S
         /// </summary>
-        public long? KeyFrameDistanceHns { get; set; }
+        public TimeSpan? KeyFrameInterval { get; set; }
 
         /// <summary>
         /// Gets or sets the channel input streaming protocol.

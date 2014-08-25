@@ -188,7 +188,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             if (options.CustomHostNames == null)
             {
-                options.CustomHostNames = Enumerable.Empty<string>();
+                options.CustomHostNames = new List<string>();
             }
 
             var streamingEndpoint = new StreamingEndpointData
