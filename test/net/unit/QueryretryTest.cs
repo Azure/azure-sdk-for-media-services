@@ -113,7 +113,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.UnitTests
 		[TestMethod]
 		public void QueryRetrySimple()
 		{
-			MediaRetryPolicy queryRetryPolicy = new TestMediaServicesClassFactory(null).GetQueryRetryPolicy();
+			MediaRetryPolicy queryRetryPolicy = new TestMediaServicesClassFactory(null).GetQueryRetryPolicy(null);
 
 			var mock = new ThrowingQueryable();
 

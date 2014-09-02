@@ -64,3 +64,6 @@ test/net/Scenario/App.IncrementVersion.config
 test/net/Scenario/App.IncrementVersion.config
 test/net/Scenario/App.Coverage.config
 test/net/Scenario/App.Release.config
+/test/net/stress/App.Debug.config
+/test/net/stress/app.Release.config
+/SDK.Client.sln.GhostDoc.xml

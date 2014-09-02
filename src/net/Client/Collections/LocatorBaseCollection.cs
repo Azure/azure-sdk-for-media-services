@@ -173,7 +173,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             dataContext.SetLink(locator, AccessPolicyPropertyName, accessPolicy);
             dataContext.SetLink(locator, AssetPropertyName, asset);
 
-            MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+            MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy(dataContext as IRetryPolicyAdapter);
 
             return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(locator))
                 .ContinueWith<ILocator>(

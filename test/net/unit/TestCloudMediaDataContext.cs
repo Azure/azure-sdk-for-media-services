@@ -24,10 +24,11 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
 {
-    public class TestCloudMediaDataContext : IMediaDataServiceContext
+    public class TestCloudMediaDataContext : IMediaDataServiceContext,IRetryPolicyAdapter
     {
         private readonly MediaContextBase _mediaContextBase;
         private readonly Dictionary<Type, string> _entitySetMappings = new Dictionary<Type, string>();
@@ -505,6 +506,21 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
                 List<T> list = _pendingChanges[entitySetName] as List<T>;
                 list.Add(entity);
             }
+        }
+
+        public Func<Task<TResult>> AdaptExecuteAsync<TResult>(Func<Task<TResult>> taskFunc)
+        {
+            return taskFunc;
+        }
+
+        public Func<Task> AdaptExecuteAsync(Func<Task> taskFunc)
+        {
+            return taskFunc;
+        }
+
+        public Func<TResult> AdaptExecuteAction<TResult>(Func<TResult> func)
+        {
+            return func;
         }
     }
 }

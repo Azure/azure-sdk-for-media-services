@@ -35,7 +35,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             Uri uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/{0}('{1}')", OperationSet, id), UriKind.Relative);
             IMediaDataServiceContext dataContext = this._cloudMediaContext.MediaServicesClassFactory.CreateDataServiceContext();
 
-            MediaRetryPolicy retryPolicy = _cloudMediaContext.MediaServicesClassFactory.GetQueryRetryPolicy();
+            MediaRetryPolicy retryPolicy = _cloudMediaContext.MediaServicesClassFactory.GetQueryRetryPolicy(dataContext as IRetryPolicyAdapter);
 
             IOperation operation = retryPolicy.ExecuteAction<IEnumerable<OperationData>>(() => dataContext.Execute<OperationData>(uri)).SingleOrDefault();
             return operation;

@@ -87,11 +87,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             dataContext.ReadingEntity += this.OnReadingEntity;
 
-			MediaRetryPolicy queryRetryPolicy = GetQueryRetryPolicy();
+            var queryRetryPolicy = GetQueryRetryPolicy(null);
+            var context= new  MediaDataServiceContext(dataContext, queryRetryPolicy);
+            queryRetryPolicy.RetryPolicyAdapter = context;
+            return context;
 
-            return new MediaDataServiceContext(dataContext, queryRetryPolicy);
         }
 
+       
         /// <summary>
         /// Creates retry policy for working with Azure blob storage.
         /// </summary>
@@ -108,27 +111,44 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             return retryPolicy;
         }
 
-        /// <summary>
+       /// <summary>
         /// Creates retry policy for saving changes in Media Services REST layer.
         /// </summary>
         /// <returns>Retry policy.</returns>
-        public override MediaRetryPolicy GetSaveChangesRetryPolicy()
+        public override MediaRetryPolicy GetSaveChangesRetryPolicy(IRetryPolicyAdapter adapter)
         {
             var retryPolicy = new MediaRetryPolicy(
                 GetSaveChangesErrorDetectionStrategy(),
                 retryCount: ConnectionRetryMaxAttempts,
                 minBackoff: TimeSpan.FromMilliseconds(ConnectionRetrySleepQuantum),
                 maxBackoff: TimeSpan.FromMilliseconds(ConnectionRetrySleepQuantum * 16),
-                deltaBackoff: TimeSpan.FromMilliseconds(ConnectionRetrySleepQuantum));
-
+                deltaBackoff: TimeSpan.FromMilliseconds(ConnectionRetrySleepQuantum) 
+                );
+            retryPolicy.RetryPolicyAdapter = adapter;
             return retryPolicy;
         }
 
+        [Obsolete]
+        public override MediaRetryPolicy GetSaveChangesRetryPolicy()
+        {
+            return GetSaveChangesRetryPolicy(null);
+        }
+
+
+        [Obsolete]
         /// <summary>
         /// Creates retry policy for querying Media Services REST layer.
         /// </summary>
         /// <returns>Retry policy.</returns>
         public override MediaRetryPolicy GetQueryRetryPolicy()
+        {
+            return GetQueryRetryPolicy(null);
+        }
+        /// <summary>
+        /// Creates retry policy for querying Media Services REST layer.
+        /// </summary>
+        /// <returns>Retry policy.</returns>
+        public override MediaRetryPolicy GetQueryRetryPolicy(IRetryPolicyAdapter adapter)
         {
             var retryPolicy = new MediaRetryPolicy(
                 GetQueryErrorDetectionStrategy(),
@@ -136,7 +156,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 minBackoff: TimeSpan.FromMilliseconds(ConnectionRetrySleepQuantum),
                 maxBackoff: TimeSpan.FromMilliseconds(ConnectionRetrySleepQuantum * 16),
                 deltaBackoff: TimeSpan.FromMilliseconds(ConnectionRetrySleepQuantum));
-
+            retryPolicy.RetryPolicyAdapter = adapter;
             return retryPolicy;
         }
 

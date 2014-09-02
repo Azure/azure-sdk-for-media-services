@@ -254,10 +254,12 @@
     <Compile Include="Live\StreamingEndpointData.cs" />
     <Compile Include="Live\StreamingEndpointState.cs" />
     <Compile Include="Live\StreamingProtocol.cs" />
+    <Compile Include="MediaOperationContext.cs" />
     <Compile Include="MediaQueryable.cs" />
     <Compile Include="MediaQueryProvider.cs" />
     <Compile Include="MediaServicesCredentials.cs" />
     <Compile Include="Cache.cs" />
+    <Compile Include="TransientFaultHandling\IRetryPolicyAdapter.cs" />
     <Compile Include="TransientFaultHandling\RetryPolicyExtensions.cs" />
     <Compile Include="TransientFaultHandling\StorageTransientErrorDetectionStrategy.cs" />
     <Compile Include="TransientFaultHandling\ExceptionExtensions.cs" />

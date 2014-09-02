@@ -269,7 +269,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             dataContext.AttachTo(EntitySetName, this);
             dataContext.DeleteObject(this);
 
-            MediaRetryPolicy retryPolicy = GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+            MediaRetryPolicy retryPolicy = GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy(dataContext as IRetryPolicyAdapter);
 
             return retryPolicy.ExecuteAsync(() => dataContext.SaveChangesAsync(this))
                 .ContinueWith(t =>
@@ -316,7 +316,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             dataContext.AttachTo(EntitySetName, this);
             dataContext.DeleteObject(this);
 
-            MediaRetryPolicy retryPolicy = GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+            MediaRetryPolicy retryPolicy = GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy(dataContext as IRetryPolicyAdapter);
 
             var response = retryPolicy.ExecuteAction(() => dataContext.SaveChanges());
 

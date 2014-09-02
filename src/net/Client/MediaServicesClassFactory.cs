@@ -14,6 +14,7 @@
 // limitations under the License.
 // </license>
 
+using System;
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
@@ -32,12 +33,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>Retry policy.</returns>
         public abstract MediaRetryPolicy GetBlobStorageClientRetryPolicy();
 
+        [Obsolete]
         /// <summary>
         /// Creates retry policy for saving changes in Media Services REST layer.
         /// </summary>
         /// <returns>Retry policy.</returns>
         public abstract MediaRetryPolicy GetSaveChangesRetryPolicy();
 
+        [Obsolete]
         /// <summary>
         /// Creates retry policy for querying Media Services REST layer.
         /// </summary>
@@ -85,5 +88,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             return new BlobTransferClient();
         }
+
+        public abstract MediaRetryPolicy GetSaveChangesRetryPolicy(IRetryPolicyAdapter adapter);
+        public abstract MediaRetryPolicy GetQueryRetryPolicy(IRetryPolicyAdapter adapter);
     }
 }

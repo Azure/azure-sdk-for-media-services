@@ -27,6 +27,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Versioning
     /// </summary>
     public class ServiceVersionAdapter
     {
+        private const string _xMsVersion = "x-ms-version";
         private readonly Version _serviceVersion;
 
         /// <summary>
@@ -44,7 +45,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Versioning
         /// <param name="context">The context.</param>
         public void Adapt(DataServiceContext context)
         {
-            context.SendingRequest += this.AddRequestVersion;
+            context.SendingRequest2 += this.AddRequestVersion;
         }
 
         /// <summary>
@@ -58,7 +59,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Versioning
                 throw new ArgumentNullException("request");
             }
 
-            request.Headers.Add("x-ms-version", this._serviceVersion.ToString());
+            request.Headers.Add(_xMsVersion, this._serviceVersion.ToString());
         }
 
         /// <summary>
@@ -66,7 +67,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Versioning
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The <see cref="System.Data.Services.Client.SendingRequestEventArgs"/> instance containing the event data.</param>
-        private void AddRequestVersion(object sender, SendingRequestEventArgs e)
+        private void AddRequestVersion(object sender, SendingRequest2EventArgs e)
         {
             this.AddToRequestHeaders(e);
         }
@@ -75,9 +76,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Versioning
         /// Adds to request headers.
         /// </summary>
         /// <param name="sendingRequestEventArgs">The <see cref="System.Data.Services.Client.SendingRequestEventArgs"/> instance containing the event data.</param>
-        private void AddToRequestHeaders(SendingRequestEventArgs sendingRequestEventArgs)
+        private void AddToRequestHeaders(SendingRequest2EventArgs sendingRequestEventArgs)
         {
-            this.AddVersionToRequest(sendingRequestEventArgs.Request);
+            sendingRequestEventArgs.RequestMessage.SetHeader(_xMsVersion, this._serviceVersion.ToString());
         }
     }
 }

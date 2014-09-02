@@ -49,7 +49,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             dataContext.AttachTo(EntitySetName, this);
             dataContext.DeleteObject(this);
 
-            MediaRetryPolicy retryPolicy = GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+            MediaRetryPolicy retryPolicy = GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy(dataContext as IRetryPolicyAdapter);
 
             return retryPolicy.ExecuteAsync(() => dataContext.SaveChangesAsync(this));
         }
@@ -63,8 +63,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             IMediaDataServiceContext dataContext = GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(EntitySetName, this);
             dataContext.UpdateObject(this);
-            
-            MediaRetryPolicy retryPolicy = GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+
+            MediaRetryPolicy retryPolicy = GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy(dataContext as IRetryPolicyAdapter);
 
             var response = retryPolicy.ExecuteAction(() => dataContext.SaveChanges()).Single();
 
@@ -166,7 +166,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 {
                     IMediaDataServiceContext dataContext = GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
 
-                    MediaRetryPolicy retryPolicy = GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+                    MediaRetryPolicy retryPolicy = GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy(dataContext as IRetryPolicyAdapter);
 
                     var response = retryPolicy.ExecuteAction(() => dataContext.Execute(uri, "POST", operationParameters));
 
@@ -217,7 +217,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             IMediaDataServiceContext dataContext = GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
 
-            MediaRetryPolicy retryPolicy = GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+            MediaRetryPolicy retryPolicy = GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy(dataContext as IRetryPolicyAdapter);
 
             var response = retryPolicy.ExecuteAction(() => dataContext.Execute(uri, "POST", operationParameters));
 
@@ -261,7 +261,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             IMediaDataServiceContext dataContext = GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(EntitySetName, this, Guid.NewGuid().ToString());
 
-            MediaRetryPolicy retryPolicy = GetMediaContext().MediaServicesClassFactory.GetQueryRetryPolicy();
+            MediaRetryPolicy retryPolicy = GetMediaContext().MediaServicesClassFactory.GetQueryRetryPolicy(dataContext as IRetryPolicyAdapter);
 
             // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
             retryPolicy.ExecuteAction(() => dataContext.Execute<T>(uri)).Single();

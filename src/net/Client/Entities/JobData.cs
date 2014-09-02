@@ -241,7 +241,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             dataContext.AttachTo(JobBaseCollection.JobSet, this);
             dataContext.DeleteObject(this);
 
-            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy(dataContext as IRetryPolicyAdapter);
 
             return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(this));
         }
@@ -278,7 +278,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             dataContext.AttachTo(JobBaseCollection.JobSet, this);
             dataContext.UpdateObject(this);
 
-            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy(dataContext as IRetryPolicyAdapter);
 
             return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(this))
                 .ContinueWith<IJob>(
@@ -322,7 +322,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
            
             this.InnerSubmit(dataContext);
 
-            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy(dataContext as IRetryPolicyAdapter);
 
             return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(SaveChangesOptions.Batch, this))
                 .ContinueWith(
@@ -816,7 +816,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 ? assetIdMap.Inputs.Count
                 : ((IJob)this).InputMediaAssets.Count;
 
-            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy(dataContext as IRetryPolicyAdapter);
 
             return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(SaveChangesOptions.Batch, jobTemplateData))
                 .ContinueWith<IJobTemplate>(

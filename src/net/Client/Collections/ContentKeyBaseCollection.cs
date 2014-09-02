@@ -249,7 +249,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             IMediaDataServiceContext dataContext = mediaContext.MediaServicesClassFactory.CreateDataServiceContext();
 
-            MediaRetryPolicy retryPolicy = mediaContext.MediaServicesClassFactory.GetQueryRetryPolicy();
+            MediaRetryPolicy retryPolicy = mediaContext.MediaServicesClassFactory.GetQueryRetryPolicy(dataContext as IRetryPolicyAdapter);
 
             IEnumerable<string> results = retryPolicy.ExecuteAction<IEnumerable<string>>(() => dataContext.Execute<string>(uriGetProtectionKeyId));
 
@@ -274,7 +274,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 // If not, download it from Nimbus to use.
                 Uri uriGetProtectionKey = new Uri(String.Format(CultureInfo.InvariantCulture, "/GetProtectionKey?protectionKeyId='{0}'", protectionKeyId), UriKind.Relative);
 
-                MediaRetryPolicy retryPolicy = mediaContext.MediaServicesClassFactory.GetQueryRetryPolicy();
+                MediaRetryPolicy retryPolicy = mediaContext.MediaServicesClassFactory.GetQueryRetryPolicy(dataContext as IRetryPolicyAdapter);
 
                 IEnumerable<string> results2 = retryPolicy.ExecuteAction<IEnumerable<string>>(() => dataContext.Execute<string>(uriGetProtectionKey));
 

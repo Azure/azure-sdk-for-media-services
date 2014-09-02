@@ -73,7 +73,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption
             policy.SetMediaContext(this.MediaContext);
             dataContext.AddObject(DeliveryPolicySet, policy);
 
-            MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+            MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy(dataContext as IRetryPolicyAdapter);
 
             return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(policy))
                 .ContinueWith<IAssetDeliveryPolicy>(

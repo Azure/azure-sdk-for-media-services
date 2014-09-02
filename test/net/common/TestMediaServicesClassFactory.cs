@@ -49,7 +49,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
                 retryCount: 5,
                 minBackoff: TimeSpan.FromMilliseconds(10),
                 maxBackoff: TimeSpan.FromMilliseconds(10000),
-                deltaBackoff: TimeSpan.FromMilliseconds(50));
+                deltaBackoff: TimeSpan.FromMilliseconds(50),
+                adapter:null);
 
             return retryPolicy;
         }

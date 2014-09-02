@@ -16,15 +16,19 @@
 
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Practices.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling
 {
     public class MediaRetryPolicy : RetryPolicy
     {
+        public IRetryPolicyAdapter RetryPolicyAdapter { get; set; } 
+
         public MediaRetryPolicy(ITransientErrorDetectionStrategy errorDetectionStrategy, RetryStrategy retryStrategy)
             : base(errorDetectionStrategy, retryStrategy)
         {
+           
         }
 
         public MediaRetryPolicy(ITransientErrorDetectionStrategy errorDetectionStrategy, int retryCount)
@@ -37,7 +41,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling
         {
         }
 
-        public MediaRetryPolicy(ITransientErrorDetectionStrategy errorDetectionStrategy, int retryCount, TimeSpan minBackoff, TimeSpan maxBackoff, TimeSpan deltaBackoff)
+        public MediaRetryPolicy(ITransientErrorDetectionStrategy errorDetectionStrategy, int retryCount, TimeSpan minBackoff, TimeSpan maxBackoff, TimeSpan deltaBackoff, IRetryPolicyAdapter adapter = null)
             : this(
                 errorDetectionStrategy, (RetryStrategy)new ExponentialBackoff(retryCount, minBackoff, maxBackoff, deltaBackoff))
         {
@@ -48,8 +52,19 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling
         {
         }
 
+        /// <summary>
+        /// Executes the action.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the t result.</typeparam>
+        /// <param name="func">The function.</param>
+        /// <returns>TResult.</returns>
+        /// <exception cref="System.ArgumentNullException">func</exception>
         public override TResult ExecuteAction<TResult>(Func<TResult> func)
         {
+
+            //Converting func,if  RetryPolicyAdapter defined 
+            var adaptedFunction = RetryPolicyAdapter != null ? RetryPolicyAdapter.AdaptExecuteAction(func) : func;
+
             if (func == null)
             {
                 throw new ArgumentNullException("func");
@@ -65,7 +80,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling
                 {
                     try
                     {
-                        return func();
+                        return adaptedFunction();
                     }
                     catch (Exception ex)
                     {
@@ -79,7 +94,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling
                             if (delay.TotalMilliseconds < 0.0)
                             {
                                 delay = TimeSpan.Zero;
-                            }   
+                            }
                             OnRetrying(retryCount, ex, delay);
                         }
                         else
@@ -94,6 +109,63 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling
 
                 Thread.Sleep(delay);
             }
+        }
+
+        /// <summary>
+        /// Repeatedly executes the specified asynchronous task while it satisfies the
+        //     current retry policy.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the t result.</typeparam>
+        /// <param name="taskFunc">A function that returns a started task (also refered as "hot" task).</param>
+        /// <returns>Task&lt;TResult&gt;.Returns a task that will run to completion if the original task completes
+        ///     successfully (either the first time or after retrying transient failures).
+       ///      If the task fails with a non-transient error or the retry limit is reached,
+       ///     the returned task will become faulted and the exception must be observed.</returns>
+        public new Task<TResult> ExecuteAsync<TResult>(Func<Task<TResult>> taskFunc)
+        {
+            //If adapter defined, we are converting taskFunc before executing it 
+            return base.ExecuteAsync(RetryPolicyAdapter != null ? RetryPolicyAdapter.AdaptExecuteAsync(taskFunc) : taskFunc);
+        }
+
+        /// <summary>
+        /// Repetitively executes the specified asynchronous task while it satisfies the current retry policy.
+        /// </summary>
+        /// <param name="taskAction">A function that returns a started task (also refered as "hot" task).</param>
+        /// <returns>Returns a task that will run to completion if the original task completes successfully (either the
+        /// first time or after retrying transient failures). If the task fails with a non-transient error or
+        /// the retry limit is reached, the returned task will become faulted and the exception must be observed.</returns>
+        public new Task ExecuteAsync(Func<Task> taskAction)
+        {
+            //If adapter defined, we are converting taskAction before executing it 
+            return base.ExecuteAsync(RetryPolicyAdapter != null ? RetryPolicyAdapter.AdaptExecuteAsync(taskAction) : taskAction);
+        }
+
+        /// <summary>
+        ///  Repeatedly executes the specified asynchronous task while it satisfies the current retry policy.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the t result.</typeparam>
+        /// <param name="taskFunc">A function that returns a started task (also refered as "hot" task).</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Returns a task that will run to completion if the original task completes
+        ///     successfully (either the first time or after retrying transient failures).
+        ///     If the task fails with a non-transient error or the retry limit is reached,
+        ///     the returned task will become faulted and the exception must be observed.</returns>
+        public new Task<TResult> ExecuteAsync<TResult>(Func<Task<TResult>> taskFunc, CancellationToken cancellationToken)
+        {
+            return base.ExecuteAsync<TResult>(RetryPolicyAdapter != null ? RetryPolicyAdapter.AdaptExecuteAsync(taskFunc) : taskFunc, cancellationToken);
+        }
+
+        /// <summary>
+        /// Repetitively executes the specified asynchronous task while it satisfies the current retry policy.
+        /// </summary>
+        /// <param name="taskAction">A function that returns a started task (also refered as "hot" task).</param>
+        /// <param name="cancellationToken">To cancel the retry operation, but not operations that are already in flight or that already completed successfully.</param>
+        /// <returns>Returns a task that will run to completion if the original task completes successfully (either the
+        /// first time or after retrying transient failures). If the task fails with a non-transient error or
+        /// the retry limit is reached, the returned task will become faulted and the exception must be observed.</returns>
+        public new Task ExecuteAsync(Func<Task> taskAction, CancellationToken cancellationToken)
+        {
+            return base.ExecuteAsync(RetryPolicyAdapter != null ? RetryPolicyAdapter.AdaptExecuteAsync(taskAction) : taskAction, cancellationToken);
         }
     }
 
