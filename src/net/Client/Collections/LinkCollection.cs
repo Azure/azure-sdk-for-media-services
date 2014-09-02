@@ -18,6 +18,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization;
+using Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption;
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
@@ -135,6 +137,18 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             if (type == typeof(IContentKey))
             {
                 return ContentKeyBaseCollection.ContentKeySet;
+            }
+            if (type == typeof(IContentKeyAuthorizationPolicy))
+            {
+                return ContentKeyAuthorizationPolicyCollection.ContentKeyAuthorizationPolicySet;
+            }
+            if (type == typeof(IContentKeyAuthorizationPolicyOption))
+            {
+                return ContentKeyAuthorizationPolicyOptionCollection.ContentKeyAuthorizationPolicyOptionSet;
+            }
+            if (type == typeof(IAssetDeliveryPolicy))
+            {
+                return AssetDeliveryPolicyCollection.DeliveryPolicySet;
             }
 
             throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, "Not supported type: {0}.", type), "type");

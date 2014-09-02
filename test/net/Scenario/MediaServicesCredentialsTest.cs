@@ -111,11 +111,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             Assert.AreEqual(expectedTicks, target.TokenExpiration.Ticks);
         }
 
-        //Should be enabled once REST will fix a bug 671271
         [TestMethod()]
         [ExpectedException(typeof(DataServiceQueryException))]
         [TestCategory("DailyBvtRun")]
-        [Ignore()]
         public void MediaServicesCredentialsTestReuseInvalidToken()
         {
             var context1 = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
@@ -136,12 +134,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 throw;
             }
         }
-
-        //Should be enabled once REST will fix a bug 671271
+        
         [TestMethod()]
         [ExpectedException(typeof(DataServiceQueryException))]
         [TestCategory("DailyBvtRun")]
-        [Ignore()]
         public void MediaServicesCredentialsTestReuseInvalidTokenBytes()
         {
             // Get the current time plus two hours and then remove the milliseconds component

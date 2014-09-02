@@ -259,7 +259,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetBlobStorageClientRetryPolicy();
 
-			return blobTransferClient.UploadBlob(
+            return blobTransferClient.UploadBlob(
 					new Uri(locator.BaseUri), 
 					path, 
 					null, 
@@ -562,13 +562,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                             t.ThrowIfFaulted(() => this.Cleanup(null, null, locator, accessPolicy));
                             cancellationToken.ThrowIfCancellationRequested(() => this.Cleanup(null, null, locator, accessPolicy));
 
+							var blobTransfer = GetMediaContext().MediaServicesClassFactory.GetBlobTransferClient();
 
-                            var blobTransfer = GetMediaContext().MediaServicesClassFactory.GetBlobTransferClient();
+							blobTransfer.NumberOfConcurrentTransfers = this.GetMediaContext().NumberOfConcurrentTransfers;
+							blobTransfer.ParallelTransferThreadCount = this.GetMediaContext().ParallelTransferThreadCount;
 
-                            blobTransfer.NumberOfConcurrentTransfers = this.GetMediaContext().NumberOfConcurrentTransfers;
-                            blobTransfer.ParallelTransferThreadCount = this.GetMediaContext().ParallelTransferThreadCount;
-                                               
-                            UploadAsync(path, blobTransfer, locator, cancellationToken).Wait();
+							UploadAsync(path, blobTransfer, locator, cancellationToken).Wait();
                             locator.Delete(); 
                             cancellationToken.ThrowIfCancellationRequested(() => this.Cleanup(null, null, null, accessPolicy));
                             accessPolicy.Delete();

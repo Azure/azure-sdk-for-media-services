@@ -20,6 +20,7 @@ using System.Collections.ObjectModel;
 using System.Data.Services.Common;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption;
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
@@ -31,6 +32,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     internal partial class AssetData : BaseEntity<IAsset>,IAsset
     {
         private const string ContentKeysPropertyName = "ContentKeys";
+        private const string DeliveryPoliciesPropertyName = "DeliveryPolicies";
         private const string LocatorsPropertyName = "Locators";
         private const string ParentAssetsPropertyName = "ParentAssets";
 
@@ -41,6 +43,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private MediaContextBase _mediaContextBase;
 
         private readonly object _contentKeyLocker = new object();
+        private readonly object _deliveryPolicyLocker = new object();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AssetData"/> class.
@@ -49,6 +52,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             this.Locators = new List<LocatorData>();
             this.ContentKeys = new List<ContentKeyData>();
+            this.DeliveryPolicies = new List<AssetDeliveryPolicyData>();
             this.Files = new List<AssetFileData>();
             
         }
@@ -190,6 +194,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             this._mediaContextBase = context;
             InvalidateLocatorsCollection();
             InvalidateContentKeysCollection();
+            InvalidateDeliveryPoliciesCollection();
             InvalidateFilesCollection();
             if (context != null)
             {
@@ -282,6 +287,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             IMediaDataServiceContext dataContext = this._mediaContextBase.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(AssetCollection.AssetSet, this);
             this.InvalidateContentKeysCollection();
+            this.InvalidateDeliveryPoliciesCollection();
             dataContext.DeleteObject(this);
 
             MediaRetryPolicy retryPolicy = this._mediaContextBase.MediaServicesClassFactory.GetSaveChangesRetryPolicy();

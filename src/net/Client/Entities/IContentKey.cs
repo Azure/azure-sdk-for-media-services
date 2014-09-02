@@ -14,8 +14,10 @@
 // limitations under the License.
 // </license>
 
+using System;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -72,6 +74,18 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         void Update();
 
+        /// <summary>
+        /// Asynchronously gets the Key Delivery Uri to give to clients to request the content key for content playback.
+        /// </summary>
+        /// <param name="contentKeyDeliveryType">The type of key delivery to get a Uri for</param>
+        /// <returns>Uri for clients to request the key from</returns>
+        Task<Uri> GetKeyDeliveryUrlAsync(ContentKeyDeliveryType contentKeyDeliveryType);
 
+        /// <summary>
+        /// Gets the Key Delivery Uri to give to clients to request the content key for content playback.
+        /// </summary>
+        /// <param name="contentKeyDeliveryType">The type of key delivery to get a Uri for</param>
+        /// <returns>Uri for clients to request the key from</returns>
+        Uri GetKeyDeliveryUrl(ContentKeyDeliveryType contentKeyDeliveryType);
     }
 }

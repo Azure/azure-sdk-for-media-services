@@ -72,6 +72,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     RetryPolicy = retryPolicy,
                     ServerTimeout = TimeSpan.FromSeconds(90)
                 };
+
             CloudBlockBlob blob = GetCloudBlockBlob(uri, client, subDirectory, localFile, contentType, getSharedAccessSignature);
             BlobPolicyActivationWait(() => blob.DeleteIfExists(options: blobRequestOptions));
 
