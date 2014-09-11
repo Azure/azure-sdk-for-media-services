@@ -18,7 +18,7 @@ using System;
 using System.Data.Services.Client;
 using System.Net;
 
-namespace Microsoft.WindowsAzure.MediaServices.Client.Versioning
+namespace Microsoft.WindowsAzure.MediaServices.Client.RequestAdapters
 {
     
 
@@ -59,7 +59,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Versioning
                 throw new ArgumentNullException("request");
             }
 
-            request.Headers.Add(_xMsVersion, this._serviceVersion.ToString());
+            request.Headers.Set(_xMsVersion, this._serviceVersion.ToString());
         }
 
         /// <summary>
@@ -69,16 +69,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Versioning
         /// <param name="e">The <see cref="System.Data.Services.Client.SendingRequestEventArgs"/> instance containing the event data.</param>
         private void AddRequestVersion(object sender, SendingRequest2EventArgs e)
         {
-            this.AddToRequestHeaders(e);
+            e.RequestMessage.SetHeader(_xMsVersion, this._serviceVersion.ToString());
         }
-
-        /// <summary>
-        /// Adds to request headers.
-        /// </summary>
-        /// <param name="sendingRequestEventArgs">The <see cref="System.Data.Services.Client.SendingRequestEventArgs"/> instance containing the event data.</param>
-        private void AddToRequestHeaders(SendingRequest2EventArgs sendingRequestEventArgs)
-        {
-            sendingRequestEventArgs.RequestMessage.SetHeader(_xMsVersion, this._serviceVersion.ToString());
-        }
+        
     }
 }

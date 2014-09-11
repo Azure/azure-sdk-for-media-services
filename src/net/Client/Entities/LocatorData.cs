@@ -16,6 +16,7 @@
 
 using System;
 using System.Data.Services.Common;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
@@ -31,6 +32,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     {
         private AccessPolicyData _accessPolicy;
         private AssetData _asset;
+
+        /// <summary>
+        /// The prefix for the locator Id.
+        /// </summary>
+        internal const string LocatorIdentifierPrefix = "nb:lid:UUID:";
 
         /// <summary>
         /// Gets or sets the <see cref="IAccessPolicy"/> that defines this locator.
@@ -57,7 +63,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             get
             {
-                if ((this._accessPolicy == null) && !string.IsNullOrWhiteSpace(this.Id))
+                if ((this._accessPolicy == null) && !String.IsNullOrWhiteSpace(this.Id))
                 {
                     IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
                     dataContext.AttachTo(LocatorBaseCollection.LocatorSet, this);
@@ -75,7 +81,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             get
             {
-                if ((this._asset == null) && !string.IsNullOrWhiteSpace(this.Id))
+                if ((this._asset == null) && !String.IsNullOrWhiteSpace(this.Id))
                 {
                     IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
                     dataContext.AttachTo(LocatorBaseCollection.LocatorSet, this);
@@ -208,6 +214,28 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
         }
 
+        internal static string NormalizeLocatorId(string locatorId)
+        {
+            if (String.IsNullOrWhiteSpace(locatorId))
+            {
+                return null;
+            }
+
+            if (locatorId.StartsWith(LocatorIdentifierPrefix, StringComparison.OrdinalIgnoreCase))
+            {
+                locatorId = locatorId.Remove(0, LocatorIdentifierPrefix.Length);
+            }
+
+            Guid locatorIdGuid;
+            if (!Guid.TryParse(locatorId, out locatorIdGuid))
+            {
+                throw new ArgumentException(
+                    String.Format(CultureInfo.InvariantCulture, "Invalid locator Id. Make sure to use the following format: '{0}<GUID>'", LocatorIdentifierPrefix),
+                    "locatorId");
+            }
+
+            return String.Concat((string) LocatorData.LocatorIdentifierPrefix, locatorId);
+        }
         private static LocatorType GetExposedType(int type)
         {
             return (LocatorType)type;

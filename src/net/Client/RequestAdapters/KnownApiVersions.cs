@@ -16,7 +16,7 @@
 
 using System;
 
-namespace Microsoft.WindowsAzure.MediaServices.Client.Versioning
+namespace Microsoft.WindowsAzure.MediaServices.Client.RequestAdapters
 {
 
 

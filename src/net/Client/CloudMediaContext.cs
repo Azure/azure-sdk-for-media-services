@@ -18,7 +18,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using Microsoft.WindowsAzure.MediaServices.Client.OAuth;
-using Microsoft.WindowsAzure.MediaServices.Client.Versioning;
+using Microsoft.WindowsAzure.MediaServices.Client.RequestAdapters;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -56,6 +56,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private OAuthDataServiceAdapter dataServiceAdapter;
         private ServiceVersionAdapter versionAdapter;
         private Uri apiServer;
+        private UserAgentAdapter userAgentAdapter;
+       
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CloudMediaContext"/> class.
@@ -113,6 +115,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             this.Credentials = credentials;
             dataServiceAdapter = new OAuthDataServiceAdapter(credentials, NimbusRestApiCertificateThumbprint, NimbusRestApiCertificateSubject);
             versionAdapter = new ServiceVersionAdapter(KnownApiVersions.Current);
+            userAgentAdapter = new UserAgentAdapter(KnownClientVersions.Current);
+           
 
         }
 
@@ -122,7 +126,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             {
                 if (_classFactory == null)
                 {
-                    Interlocked.CompareExchange(ref _classFactory, new AzureMediaServicesClassFactory(apiServer, dataServiceAdapter, versionAdapter, this), null);
+                    Interlocked.CompareExchange(ref _classFactory, new AzureMediaServicesClassFactory(apiServer, dataServiceAdapter, versionAdapter, this, userAgentAdapter), null);
                 }
                 return _classFactory;
             }

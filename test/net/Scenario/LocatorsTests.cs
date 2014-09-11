@@ -31,7 +31,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-       
+
         public void ShouldReturnSameLocatorCollectionAfterAssetRequery()
         {
             var asset = _mediaContext.Assets.Create("SmallWmv.wmv", AssetCreationOptions.StorageEncrypted);
@@ -47,7 +47,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-       public void ShouldReturnSameLocatorCollectionAfterAssetRequery2()
+        public void ShouldReturnSameLocatorCollectionAfterAssetRequery2()
         {
             var asset = _mediaContext.Assets.Create(Guid.NewGuid().ToString(), AssetCreationOptions.StorageEncrypted);
             FileInfo info = new FileInfo(_smallWmv);
@@ -68,8 +68,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [ExpectedException(typeof (InvalidOperationException))]
-        
+        [ExpectedException(typeof(InvalidOperationException))]
+
         public void ShouldThrowUpdatingLocatorIfItsTypeIsNotOrigin()
         {
             // Arrange
@@ -92,7 +92,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             // Arrange            
 
 
-            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10),  AccessPermissions.Read);
+            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.Read);
             var asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
 
             // Act
@@ -112,11 +112,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestCategory("DailyBvtRun")]
         public void ShouldCreateLocatorWithNameSync()
         {
-            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10),AccessPermissions.Read);
-            var asset = _mediaContext.Assets.Create("ShouldCreateLocatorAndQueryItByName",AssetCreationOptions.None);
-            var locator = _mediaContext.Locators.CreateLocator(LocatorType.OnDemandOrigin, asset, accessPolicy,DateTime.Now.AddDays(2),"ShouldCreateLocatorWithoutNameAndUpdateName_" + Guid.NewGuid().ToString());
-            
-            FindLocatorByNameAndVerifyIt(locator.Name,locator.Id);
+            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.Read);
+            var asset = _mediaContext.Assets.Create("ShouldCreateLocatorAndQueryItByName", AssetCreationOptions.None);
+            var locator = _mediaContext.Locators.CreateLocator(LocatorType.OnDemandOrigin, asset, accessPolicy, DateTime.Now.AddDays(2), "ShouldCreateLocatorWithoutNameAndUpdateName_" + Guid.NewGuid().ToString());
+
+            FindLocatorByNameAndVerifyIt(locator.Name, locator.Id);
         }
 
         private static void FindLocatorByNameAndVerifyIt(string locatorNameToSearch, string expectedLocatorId)
@@ -132,20 +132,20 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         {
             var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.List | AccessPermissions.Read);
             var asset = _mediaContext.Assets.Create("ShouldCreateSASLocatorWithName", AssetCreationOptions.None);
-            var locator = _mediaContext.Locators.CreateSasLocator( asset, accessPolicy, DateTime.Now.AddDays(2), "ShouldCreateLocatorWithoutNameAndUpdateName_" + Guid.NewGuid().ToString());
+            var locator = _mediaContext.Locators.CreateSasLocator(asset, accessPolicy, DateTime.Now.AddDays(2), "ShouldCreateLocatorWithoutNameAndUpdateName_" + Guid.NewGuid().ToString());
 
-            FindLocatorByNameAndVerifyIt(locator.Name,locator.Id);
+            FindLocatorByNameAndVerifyIt(locator.Name, locator.Id);
         }
 
         [TestMethod]
         [TestCategory("DailyBvtRun")]
         public void ShouldCreateLocatorWithNameASync()
         {
-            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10),AccessPermissions.Read);
+            var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.Read);
             var asset = _mediaContext.Assets.Create("ShouldCreateLocatorAndQueryItByName", AssetCreationOptions.None);
             var locator = _mediaContext.Locators.CreateLocatorAsync(LocatorType.OnDemandOrigin, asset, accessPolicy, DateTime.Now.AddDays(2), "ShouldCreateLocatorWithoutNameAndUpdateName_" + Guid.NewGuid().ToString()).Result;
 
-            FindLocatorByNameAndVerifyIt(locator.Name,locator.Id);
+            FindLocatorByNameAndVerifyIt(locator.Name, locator.Id);
         }
 
         [TestMethod]
@@ -336,7 +336,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             DateTime locatorStartTime = DateTime.Now.AddHours(1);
 
             // Act
-            var locatorTask = _mediaContext.Locators.CreateLocatorAsync(LocatorType.Sas, asset, accessPolicy, locatorStartTime.ToUniversalTime());
+            var locatorTask = _mediaContext.Locators.CreateLocatorAsync(LocatorType.Sas, asset, accessPolicy, locatorStartTime.ToUniversalTime(), null);
             locatorTask.Wait();
             var locator = locatorTask.Result;
 
@@ -457,7 +457,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         public void ShouldUpdateExpiryTimeWhenUpdateLocatorAsyncCalledWithExpiryTime()
         {
             // Arrange            
-            
+
             var accessPolicyDuration = TimeSpan.FromHours(2);
             var expectedExpiryTime = DateTime.UtcNow.Date.AddDays(1);
 
@@ -480,7 +480,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        
+
         public void ShouldUpdateExpiryTimeWhenUpdateLocatorCalledWithStartAndExpiryTime()
         {
             // Arrange            
@@ -510,11 +510,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        
+
         public void ShouldUpdateExpiryTimeWhenUpdateLocatorAsyncCalledWithStartAndExpiryTime()
         {
             // Arrange          
-           
+
             var accessPolicyDuration = TimeSpan.FromHours(2);
             var expectedExpiryTime = DateTime.UtcNow.Date.AddDays(2);
             var expectedStartTime = DateTime.UtcNow.Date.AddDays(1);
@@ -659,7 +659,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             try
             {
-            locator.Delete();
+                locator.Delete();
             }
             catch (Exception x)
             {
@@ -667,6 +667,96 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             }
 
             Assert.AreEqual(0, exceptionCount);
+        }
+
+        [TestMethod]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [ExpectedException(typeof(ArgumentException))]
+        public void ShouldThrowIfLocatorIdIsInvalidWithoutPrefixWhenCreateOriginLocator()
+        {
+            IAsset asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
+            IAccessPolicy accessPolicy = _mediaContext.AccessPolicies.Create("Read", TimeSpan.FromMinutes(5), AccessPermissions.Read);
+            string locatorId = "invalid-locator-id";
+
+            _mediaContext.Locators.CreateLocator(locatorId, LocatorType.OnDemandOrigin, asset, accessPolicy, null);
+        }
+
+        [TestMethod]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [ExpectedException(typeof(ArgumentException))]
+        public void ShouldThrowIfLocatorIdIsInvalidWithPrefixWhenCreateOriginLocator()
+        {
+            IAsset asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
+            IAccessPolicy accessPolicy = _mediaContext.AccessPolicies.Create("Read", TimeSpan.FromMinutes(5), AccessPermissions.Read);
+            string locatorId = string.Concat(LocatorData.LocatorIdentifierPrefix, "invalid-locator-id");
+
+            _mediaContext.Locators.CreateLocator(locatorId, LocatorType.OnDemandOrigin, asset, accessPolicy, null);
+            _mediaContext.Locators.CreateLocator(locatorId, LocatorType.OnDemandOrigin, asset, accessPolicy, null);
+        }
+
+        [TestMethod]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        public void ShouldCreateOriginLocator()
+        {
+            IAsset asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
+            IAccessPolicy accessPolicy = _mediaContext.AccessPolicies.Create("Read", TimeSpan.FromMinutes(5), AccessPermissions.Read);
+
+            ILocator locator = _mediaContext.Locators.CreateLocator(LocatorType.OnDemandOrigin, asset, accessPolicy);
+
+            Assert.IsNotNull(locator);
+
+            string locatorIdWithoutPrefix = locator.Id.Remove(0, LocatorData.LocatorIdentifierPrefix.Length);
+            Assert.AreEqual(locator.ContentAccessComponent, locatorIdWithoutPrefix, true);
+            Assert.IsTrue(locator.Path.TrimEnd('/').EndsWith(locatorIdWithoutPrefix, StringComparison.OrdinalIgnoreCase));
+        }
+
+        [TestMethod]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        public void ShouldSetLocatorIdWithoutPrefixWhenCreateOriginLocator()
+        {
+            IAsset asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
+            IAccessPolicy accessPolicy = _mediaContext.AccessPolicies.Create("Read", TimeSpan.FromMinutes(5), AccessPermissions.Read);
+            string locatorIdWithoutPrefix = Guid.NewGuid().ToString();
+
+            ILocator locator = _mediaContext.Locators.CreateLocator(locatorIdWithoutPrefix, LocatorType.OnDemandOrigin, asset, accessPolicy,null);
+
+            Assert.IsNotNull(locator);
+            Assert.AreEqual(locator.ContentAccessComponent, locatorIdWithoutPrefix, true);
+            Assert.IsTrue(locator.Path.TrimEnd('/').EndsWith(locatorIdWithoutPrefix, StringComparison.OrdinalIgnoreCase));
+        }
+
+        [TestMethod]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        public void ShouldRecreateLocatorWithSameLocatorId()
+        {
+            IAsset asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
+            IAccessPolicy accessPolicy = _mediaContext.AccessPolicies.Create("Read", TimeSpan.FromMinutes(5), AccessPermissions.Read);
+
+
+            ILocator locator = _mediaContext.Locators.CreateLocator(LocatorType.OnDemandOrigin, asset, accessPolicy);
+            Assert.IsNotNull(locator);
+            string id = locator.Id;
+            locator.Delete();
+            Assert.IsNull(_mediaContext.Locators.Where(c => c.Id == id).FirstOrDefault());
+
+            locator = _mediaContext.Locators.CreateLocator(id, LocatorType.OnDemandOrigin, asset, accessPolicy, null);
+            Assert.IsNotNull(locator);
+        }
+
+        [TestMethod]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        public void ShouldSetLocatorIdWithPrefixWhenCreateOriginLocator()
+        {
+            IAsset asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
+            IAccessPolicy accessPolicy = _mediaContext.AccessPolicies.Create("Read", TimeSpan.FromMinutes(5), AccessPermissions.Read);
+            string locatorIdWithoutPrefix = Guid.NewGuid().ToString();
+            string locatorIdWithPrefix = string.Concat(LocatorData.LocatorIdentifierPrefix, locatorIdWithoutPrefix);
+
+            ILocator locator = _mediaContext.Locators.CreateLocator(locatorIdWithPrefix,LocatorType.OnDemandOrigin, asset, accessPolicy, startTime: null);
+
+            Assert.IsNotNull(locator);
+            Assert.AreEqual(locator.ContentAccessComponent, locatorIdWithoutPrefix, true);
+            Assert.IsTrue(locator.Path.TrimEnd('/').EndsWith(locatorIdWithoutPrefix, StringComparison.OrdinalIgnoreCase));
         }
     }
 }
