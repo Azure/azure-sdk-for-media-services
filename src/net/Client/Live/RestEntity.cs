@@ -60,6 +60,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>Operation info that can be used to track the operation.</returns>
         public IOperation SendUpdateOperation()
         {
+            ValidateSettings();
+
             IMediaDataServiceContext dataContext = GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(EntitySetName, this);
             dataContext.UpdateObject(this);
@@ -254,6 +256,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 Id = operationId
             };
         }
+
+        internal  virtual void ValidateSettings() { }
 
         internal virtual void Refresh()
         {
