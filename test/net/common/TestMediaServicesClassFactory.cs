@@ -41,16 +41,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
         public override MediaRetryPolicy GetQueryRetryPolicy(IRetryPolicyAdapter adapter)
         {
             return base.GetQueryRetryPolicy(adapter);
-        
-            var retryPolicy = new MediaRetryPolicy(
-                GetSaveChangesErrorDetectionStrategy(),
-                retryCount: 5,
-                minBackoff: TimeSpan.FromMilliseconds(10),
-                maxBackoff: TimeSpan.FromMilliseconds(10000),
-                deltaBackoff: TimeSpan.FromMilliseconds(50),
-                adapter:adapter);
-
-            return retryPolicy;
         }
 
         public override MediaErrorDetectionStrategy GetSaveChangesErrorDetectionStrategy()

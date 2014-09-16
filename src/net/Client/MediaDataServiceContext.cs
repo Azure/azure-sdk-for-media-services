@@ -21,7 +21,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.MediaServices.Client.RequestAdapters;
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
-using Microsoft.WindowsAzure.MediaServices.Client.RequestAdapters;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {

@@ -69,68 +69,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
             return _cacheSchemaSet;
         }
 
-        private static void ValidateAgainstOldTokenFormatSchema(string template)
-        {
-            XmlSchemaSet schemaSets = GetOldTokenFormatSchemaSet();
-
-            XDocument templateDocument = XDocument.Parse(template);
-
-            templateDocument.Validate(schemaSets, null);
-        }
-
-        private static bool IsOldTokenFormat(string template)
-        {
-            bool returnValue = false;
-            XDocument parsedTemplate = XDocument.Parse(template);
-
-            if (0 == String.Compare(parsedTemplate.Root.Name.LocalName, "TokenRestriction", StringComparison.Ordinal))
-            {
-                returnValue = true;
-            }
-
-            return returnValue;
-        }
-
-        private static TokenRestrictionTemplate ConvertFromOldTokenFormat(XmlReader reader)
-        {            
-            XmlSerializer serializer = new XmlSerializer(typeof(TokenRestriction));
-
-            TokenRestriction tokenRestrictionInOldFormat = (TokenRestriction)serializer.Deserialize(reader);
-
-            TokenRestrictionTemplate templateToReturn = new TokenRestrictionTemplate();
-            templateToReturn.Issuer = new Uri(tokenRestrictionInOldFormat.issuer);
-            templateToReturn.Audience = new Uri(tokenRestrictionInOldFormat.audience);
-
-            if (tokenRestrictionInOldFormat.RequiredClaims != null)
-            {
-                foreach (TokenRestrictionClaim currentClaim in tokenRestrictionInOldFormat.RequiredClaims)
-                {
-                    TokenClaim claim = new TokenClaim(currentClaim.type, currentClaim.value);
-                    templateToReturn.RequiredClaims.Add(claim);
-                }
-            }
-
-            if (tokenRestrictionInOldFormat.VerificationKeys != null)
-            {
-                foreach (TokenRestrictionVerificationKey verificationKey in tokenRestrictionInOldFormat.VerificationKeys)
-                {
-                    if (verificationKey.type == VerificationKeyType.Symmetric)
-                    {
-                        if (verificationKey.IsPrimary && (templateToReturn.PrimaryVerificationKey == null))
-                        {
-                            templateToReturn.PrimaryVerificationKey = new SymmetricVerificationKey(verificationKey.value);
-                        }
-                        else
-                        {
-                            templateToReturn.AlternateVerificationKeys.Add(new SymmetricVerificationKey(verificationKey.value));
-                        }
-                    }
-                }
-            }
-
-            return templateToReturn;
-        }
-
         /// <summary>
         /// Deserializes a string containing an Xml representation of a TokenRestrictionTemplate
         /// back into a TokenRestrictionTemplate class instance.
@@ -150,14 +88,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
 
                 reader = XmlReader.Create(stringReader);
 
-                if (IsOldTokenFormat(templateXml))
-                {
-                    templateToReturn = ConvertFromOldTokenFormat(reader);
-                }
-                else
-                {
-                    templateToReturn = (TokenRestrictionTemplate)serializer.ReadObject(reader);
-                }
+                templateToReturn = (TokenRestrictionTemplate)serializer.ReadObject(reader);
             }
             finally
             {

@@ -158,7 +158,6 @@
     </Compile>
     <Compile Include="ContentKeyAuthorization\Templates\ExplicitAnalogTelevisionRestriction.cs" />
     <Compile Include="ContentKeyAuthorization\Templates\MediaServicesLicenseTemplateSerializer.cs" />
-    <Compile Include="ContentKeyAuthorization\Templates\OldTokenTemplateFormat.cs" />
     <Compile Include="ContentKeyAuthorization\Templates\PlayReadyContentKey.cs" />
     <Compile Include="ContentKeyAuthorization\Templates\PlayReadyLicenseResponseTemplate.cs" />
     <Compile Include="ContentKeyAuthorization\Templates\PlayReadyLicenseTemplate.cs" />
