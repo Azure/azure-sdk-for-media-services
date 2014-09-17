@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
 using System.Data.Services.Common;
 using System.Globalization;
 using System.Linq;
@@ -353,6 +354,23 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             _input = null;
             _preview = null;
             base.Refresh();
+        }
+
+        /// <summary>
+        /// Set array property empty array if it is null because OData does not support 
+        /// empty collection 
+        /// </summary>
+        internal override void ValidateSettings()
+        {
+            if (_input != null && _input.Endpoints == null)
+            {
+                _input.Endpoints = new List<ChannelEndpoint>().AsReadOnly();
+            }
+
+            if (_preview != null && _preview.Endpoints == null)
+            {
+                _preview.Endpoints = new List<ChannelEndpoint>().AsReadOnly();
+            }
         }
 
         /// <summary>
