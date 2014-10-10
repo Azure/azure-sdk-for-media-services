@@ -211,7 +211,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             dataContext.AttachTo(AssetCollection.AssetSet, asset);
             dataContext.SetLink(data,"Asset",asset);
 
-            MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+            MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy(dataContext as IRetryPolicyAdapter);
 
             Task<IIngestManifestAsset> task = retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(data))
                 .ContinueWith<IIngestManifestAsset>(t =>

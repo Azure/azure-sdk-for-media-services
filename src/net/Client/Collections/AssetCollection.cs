@@ -119,8 +119,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             IMediaDataServiceContext dataContext = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AddObject(AssetSet, (IAsset)emptyAsset);
 
-            MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
-
+            MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy(dataContext as IRetryPolicyAdapter);
+            
             return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(emptyAsset))
                 .ContinueWith<IAsset>(
                     t =>
@@ -175,7 +175,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             dataContext.AddObject(ContentKeyBaseCollection.ContentKeySet, contentKeyData);
 
-            MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+            MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy(dataContext as IRetryPolicyAdapter);
 
             retryPolicy.ExecuteAction<IMediaDataServiceResponse>(() => dataContext.SaveChanges());
 

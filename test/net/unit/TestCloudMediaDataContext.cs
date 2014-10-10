@@ -22,12 +22,14 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
 {
-    public class TestCloudMediaDataContext : IMediaDataServiceContext
+    public class TestCloudMediaDataContext : IMediaDataServiceContext,IRetryPolicyAdapter
     {
         private readonly MediaContextBase _mediaContextBase;
         private readonly Dictionary<Type, string> _entitySetMappings = new Dictionary<Type, string>();
@@ -213,7 +215,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
                     };
                 }
             }
-            string response = "7D9BB04D9D0A4A24800CADBFEF232689E048F69C";
+            var cert = new X509Certificate2("UnitTest.pfx");
+            string response = Convert.ToBase64String(cert.RawData);
             return new List<TElement>
             {
                 (TElement) ((object) response)
@@ -333,7 +336,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<string>> ExecuteAsync(Uri requestUri, string httpMethod, bool singleResult, params OperationParameter[] parameter)
+        public Task<IEnumerable<string>> ExecuteAsync(Uri requestUri, string httpMethod, bool singleResult, params OperationParameter[] parameters)
         {
             throw new NotImplementedException();
         }
@@ -505,6 +508,21 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
                 List<T> list = _pendingChanges[entitySetName] as List<T>;
                 list.Add(entity);
             }
+        }
+
+        public Func<Task<TResult>> AdaptExecuteAsync<TResult>(Func<Task<TResult>> taskFunc)
+        {
+            return taskFunc;
+        }
+
+        public Func<Task> AdaptExecuteAsync(Func<Task> taskFunc)
+        {
+            return taskFunc;
+        }
+
+        public Func<TResult> AdaptExecuteAction<TResult>(Func<TResult> func)
+        {
+            return func;
         }
     }
 }

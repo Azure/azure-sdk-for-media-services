@@ -210,8 +210,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
             catch (SerializationException e)
             {
                 e.Message.Contains("ContentKey");
-                // REVIEW: Should we test for the error here ourselves?  If so we can control the error message and return a better error.
-                // Assert.IsTrue(e.Message.Contains(ErrorMessages.PlayReadyContentKeyRequired));
             }
         }
 

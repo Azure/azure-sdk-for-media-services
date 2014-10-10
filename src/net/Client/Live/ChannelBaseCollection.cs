@@ -208,22 +208,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             channel.Preview = options.Preview;
             channel.Output = options.Output;
             
-            if (channel.Input.Endpoints == null)
-            {
-                channel.Input.Endpoints = new List<ChannelEndpoint>().AsReadOnly();
-            }
-
-            if (channel.Preview != null && channel.Preview.Endpoints == null)
-            {
-                channel.Preview.Endpoints = new List<ChannelEndpoint>().AsReadOnly();
-            }
+            channelData.ValidateSettings();
 
             channelData.SetMediaContext(MediaContext);
 
             IMediaDataServiceContext dataContext = MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AddObject(ChannelSet, channel);
 
-            MediaRetryPolicy retryPolicy = MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+            MediaRetryPolicy retryPolicy = MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy(dataContext as IRetryPolicyAdapter);
 
             return retryPolicy.ExecuteAsync(() => dataContext.SaveChangesAsync(channel));
         }

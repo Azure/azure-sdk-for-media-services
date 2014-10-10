@@ -38,7 +38,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
         protected void LoadProperty(IMediaDataServiceContext dataContext, BaseEntity entity, string propertyName)
         {
-            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy(dataContext as IRetryPolicyAdapter);
             retryPolicy.ExecuteAction(() => dataContext.LoadProperty(entity, propertyName));
         }
     }

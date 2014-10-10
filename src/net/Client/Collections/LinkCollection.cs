@@ -62,8 +62,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             this._dataContext.AttachTo(GetEntitySetName(typeof(TInterface)), item);
             this._dataContext.AddLink(this._parent, this._propertyName, item);
 
-            MediaRetryPolicy retryPolicy = this._parent.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
-
+            MediaRetryPolicy retryPolicy = this._parent.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy(_dataContext as IRetryPolicyAdapter);
+            
             retryPolicy.ExecuteAction<IMediaDataServiceResponse>(() => _dataContext.SaveChanges());
 
             base.InsertItem(index, item);
@@ -77,7 +77,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             this._dataContext.DeleteLink(this._parent, this._propertyName, this[index]);
 
-            MediaRetryPolicy retryPolicy = this._parent.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+            MediaRetryPolicy retryPolicy = this._parent.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy(_dataContext as IRetryPolicyAdapter);
 
             retryPolicy.ExecuteAction<IMediaDataServiceResponse>(() => _dataContext.SaveChanges());
 

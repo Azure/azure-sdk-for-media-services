@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30110.0
+VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDK.Client", "src\net\Client\SDK.Client.csproj", "{E194B46E-9063-4CFA-85FC-51E5AAD55586}"
 EndProject
@@ -39,6 +39,9 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
+		Stage|Any CPU = Stage|Any CPU
+		Stage|x64 = Stage|x64
+		Stage|x86 = Stage|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{E194B46E-9063-4CFA-85FC-51E5AAD55586}.Coverage|Any CPU.ActiveCfg = Coverage|Any CPU
@@ -65,6 +68,12 @@ Global
 		{E194B46E-9063-4CFA-85FC-51E5AAD55586}.Release|x64.Build.0 = Release|x64
 		{E194B46E-9063-4CFA-85FC-51E5AAD55586}.Release|x86.ActiveCfg = Release|x86
 		{E194B46E-9063-4CFA-85FC-51E5AAD55586}.Release|x86.Build.0 = Release|x86
+		{E194B46E-9063-4CFA-85FC-51E5AAD55586}.Stage|Any CPU.ActiveCfg = Stage|Any CPU
+		{E194B46E-9063-4CFA-85FC-51E5AAD55586}.Stage|Any CPU.Build.0 = Stage|Any CPU
+		{E194B46E-9063-4CFA-85FC-51E5AAD55586}.Stage|x64.ActiveCfg = Stage|x64
+		{E194B46E-9063-4CFA-85FC-51E5AAD55586}.Stage|x64.Build.0 = Stage|x64
+		{E194B46E-9063-4CFA-85FC-51E5AAD55586}.Stage|x86.ActiveCfg = Stage|x86
+		{E194B46E-9063-4CFA-85FC-51E5AAD55586}.Stage|x86.Build.0 = Stage|x86
 		{8713AE4E-44F6-41AA-B8DC-CD1236F484CD}.Coverage|Any CPU.ActiveCfg = Coverage|Any CPU
 		{8713AE4E-44F6-41AA-B8DC-CD1236F484CD}.Coverage|Any CPU.Build.0 = Coverage|Any CPU
 		{8713AE4E-44F6-41AA-B8DC-CD1236F484CD}.Coverage|x64.ActiveCfg = Coverage|x64
@@ -89,6 +98,12 @@ Global
 		{8713AE4E-44F6-41AA-B8DC-CD1236F484CD}.Release|x64.Build.0 = Release|x64
 		{8713AE4E-44F6-41AA-B8DC-CD1236F484CD}.Release|x86.ActiveCfg = Release|x86
 		{8713AE4E-44F6-41AA-B8DC-CD1236F484CD}.Release|x86.Build.0 = Release|x86
+		{8713AE4E-44F6-41AA-B8DC-CD1236F484CD}.Stage|Any CPU.ActiveCfg = Stage|Any CPU
+		{8713AE4E-44F6-41AA-B8DC-CD1236F484CD}.Stage|Any CPU.Build.0 = Stage|Any CPU
+		{8713AE4E-44F6-41AA-B8DC-CD1236F484CD}.Stage|x64.ActiveCfg = Stage|x64
+		{8713AE4E-44F6-41AA-B8DC-CD1236F484CD}.Stage|x64.Build.0 = Stage|x64
+		{8713AE4E-44F6-41AA-B8DC-CD1236F484CD}.Stage|x86.ActiveCfg = Stage|x86
+		{8713AE4E-44F6-41AA-B8DC-CD1236F484CD}.Stage|x86.Build.0 = Stage|x86
 		{19DA48B7-6C3C-4B2C-8789-1CC9CCBDA4C7}.Coverage|Any CPU.ActiveCfg = Release|Any CPU
 		{19DA48B7-6C3C-4B2C-8789-1CC9CCBDA4C7}.Coverage|Any CPU.Build.0 = Release|Any CPU
 		{19DA48B7-6C3C-4B2C-8789-1CC9CCBDA4C7}.Coverage|x64.ActiveCfg = Release|Any CPU
@@ -105,6 +120,10 @@ Global
 		{19DA48B7-6C3C-4B2C-8789-1CC9CCBDA4C7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{19DA48B7-6C3C-4B2C-8789-1CC9CCBDA4C7}.Release|x64.ActiveCfg = Release|Any CPU
 		{19DA48B7-6C3C-4B2C-8789-1CC9CCBDA4C7}.Release|x86.ActiveCfg = Release|Any CPU
+		{19DA48B7-6C3C-4B2C-8789-1CC9CCBDA4C7}.Stage|Any CPU.ActiveCfg = Stage|Any CPU
+		{19DA48B7-6C3C-4B2C-8789-1CC9CCBDA4C7}.Stage|Any CPU.Build.0 = Stage|Any CPU
+		{19DA48B7-6C3C-4B2C-8789-1CC9CCBDA4C7}.Stage|x64.ActiveCfg = Stage|Any CPU
+		{19DA48B7-6C3C-4B2C-8789-1CC9CCBDA4C7}.Stage|x86.ActiveCfg = Stage|Any CPU
 		{04DB0E20-008C-45EF-B427-B6F33B25CD67}.Coverage|Any CPU.ActiveCfg = Release|Any CPU
 		{04DB0E20-008C-45EF-B427-B6F33B25CD67}.Coverage|Any CPU.Build.0 = Release|Any CPU
 		{04DB0E20-008C-45EF-B427-B6F33B25CD67}.Coverage|x64.ActiveCfg = Release|Any CPU
@@ -121,6 +140,10 @@ Global
 		{04DB0E20-008C-45EF-B427-B6F33B25CD67}.Release|Any CPU.Build.0 = Release|Any CPU
 		{04DB0E20-008C-45EF-B427-B6F33B25CD67}.Release|x64.ActiveCfg = Release|Any CPU
 		{04DB0E20-008C-45EF-B427-B6F33B25CD67}.Release|x86.ActiveCfg = Release|Any CPU
+		{04DB0E20-008C-45EF-B427-B6F33B25CD67}.Stage|Any CPU.ActiveCfg = Stage|Any CPU
+		{04DB0E20-008C-45EF-B427-B6F33B25CD67}.Stage|Any CPU.Build.0 = Stage|Any CPU
+		{04DB0E20-008C-45EF-B427-B6F33B25CD67}.Stage|x64.ActiveCfg = Stage|Any CPU
+		{04DB0E20-008C-45EF-B427-B6F33B25CD67}.Stage|x86.ActiveCfg = Stage|Any CPU
 		{0CD55683-0485-4630-89B5-54EA080E2FC1}.Coverage|Any CPU.ActiveCfg = Release|Any CPU
 		{0CD55683-0485-4630-89B5-54EA080E2FC1}.Coverage|Any CPU.Build.0 = Release|Any CPU
 		{0CD55683-0485-4630-89B5-54EA080E2FC1}.Coverage|x64.ActiveCfg = Release|Any CPU
@@ -137,6 +160,10 @@ Global
 		{0CD55683-0485-4630-89B5-54EA080E2FC1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0CD55683-0485-4630-89B5-54EA080E2FC1}.Release|x64.ActiveCfg = Release|Any CPU
 		{0CD55683-0485-4630-89B5-54EA080E2FC1}.Release|x86.ActiveCfg = Release|Any CPU
+		{0CD55683-0485-4630-89B5-54EA080E2FC1}.Stage|Any CPU.ActiveCfg = Stage|Any CPU
+		{0CD55683-0485-4630-89B5-54EA080E2FC1}.Stage|Any CPU.Build.0 = Stage|Any CPU
+		{0CD55683-0485-4630-89B5-54EA080E2FC1}.Stage|x64.ActiveCfg = Stage|Any CPU
+		{0CD55683-0485-4630-89B5-54EA080E2FC1}.Stage|x86.ActiveCfg = Stage|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

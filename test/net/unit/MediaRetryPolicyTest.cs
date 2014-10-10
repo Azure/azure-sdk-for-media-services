@@ -36,7 +36,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
         [TestMethod()]
         public void MediaRetryPolicyTestExecuteActionTrivial()
         {
-            MediaRetryPolicy target = new TestMediaServicesClassFactory(null).GetSaveChangesRetryPolicy();
+            MediaRetryPolicy target = new TestMediaServicesClassFactory(null).GetSaveChangesRetryPolicy(null);
             int expected = 10;
             Func<int> func = () => expected;
             int actual = target.ExecuteAction(func);
@@ -49,7 +49,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
         [TestMethod()]
         public void MediaRetryPolicyTestExecuteActionRetry()
         {
-            MediaRetryPolicy target = new TestMediaServicesClassFactory(null).GetSaveChangesRetryPolicy();
+            MediaRetryPolicy target = new TestMediaServicesClassFactory(null).GetSaveChangesRetryPolicy(null);
 
             int exceptionCount = 2;
             int expected = 10;
@@ -72,7 +72,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
         [ExpectedException(typeof(WebException))]
         public void MediaRetryPolicyTestExecuteActionNonTransient()
         {
-            MediaRetryPolicy target = new TestMediaServicesClassFactory(null).GetSaveChangesRetryPolicy();
+            MediaRetryPolicy target = new TestMediaServicesClassFactory(null).GetSaveChangesRetryPolicy(null);
 
             int exceptionCount = 2;
             int expected = 10;
@@ -104,7 +104,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
         [TestMethod()]
         public void MediaRetryPolicyTestExecuteActionBackoff()
         {
-            MediaRetryPolicy target = new TestMediaServicesClassFactory(null).GetSaveChangesRetryPolicy();
+            MediaRetryPolicy target = new TestMediaServicesClassFactory(null).GetSaveChangesRetryPolicy(null);
 
             int exceptionCount = 5;
             int expected = 10;
@@ -135,7 +135,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
         [TestMethod()]
         public void MediaRetryPolicyTestExecuteAsyncTrivial()
         {
-            MediaRetryPolicy target = new TestMediaServicesClassFactory(null).GetSaveChangesRetryPolicy();
+            MediaRetryPolicy target = new TestMediaServicesClassFactory(null).GetSaveChangesRetryPolicy(null);
             int expected = 10;
             var task = target.ExecuteAsync(() => Task.Factory.StartNew<int>(() => expected));
             Assert.AreEqual(expected, task.Result);
@@ -147,7 +147,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
         [TestMethod()]
         public void MediaRetryPolicyTestExecuteAsyncRetry()
         {
-            MediaRetryPolicy target = new TestMediaServicesClassFactory(null).GetSaveChangesRetryPolicy();
+            MediaRetryPolicy target = new TestMediaServicesClassFactory(null).GetSaveChangesRetryPolicy(null);
 
             int exceptionCount = 2;
             int expected = 10;
@@ -171,7 +171,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
         [ExpectedException(typeof(WebException))]
         public void MediaRetryPolicyTestExecuteAsyncNonTransient()
         {
-            MediaRetryPolicy target = new TestMediaServicesClassFactory(null).GetSaveChangesRetryPolicy();
+            MediaRetryPolicy target = new TestMediaServicesClassFactory(null).GetSaveChangesRetryPolicy(null);
 
             int exceptionCount = 2;
             int expected = 10;
@@ -206,7 +206,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
         [TestMethod()]
         public void MediaRetryPolicyTestExecuteAsyncBackoff()
         {
-            MediaRetryPolicy target = new TestMediaServicesClassFactory(null).GetSaveChangesRetryPolicy();
+            MediaRetryPolicy target = new TestMediaServicesClassFactory(null).GetSaveChangesRetryPolicy(null);
 
             int exceptionCount = 5;
             int expected = 10;
@@ -230,5 +230,58 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
             Assert.AreEqual(expected, task.Result);
             Assert.AreEqual(0, exceptionCount);
         }
+
+        /// <summary>
+        ///A test for ExecuteAction
+        ///</summary>
+        [TestMethod()]
+        public void MediaRetryPolicyTestExecuteActionAdapter()
+        {
+           
+            var adapter = new TestRetryAdapter();
+            MediaRetryPolicy target = new TestMediaServicesClassFactory(null).GetSaveChangesRetryPolicy(adapter);
+
+            int exceptionCount = 2;
+            int expected = 10;
+            var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
+
+            Func<int> func = () =>
+            {
+                if (--exceptionCount > 0) throw fakeException;
+                return expected;
+            };
+
+            
+            Assert.AreEqual(expected, target.ExecuteAction(func));
+            Assert.AreEqual(2, adapter.FuncExecutedCountByExecuteAction);
+            Assert.AreEqual(1, adapter.NumberOfAdaptCalled);
+        }
+
+        /// <summary>
+        ///A test for ExecuteAction
+        ///</summary>
+        [TestMethod()]
+        public void MediaRetryPolicyTestExecuteAsyncRetryHasBeenAdaptedOnce()
+        {
+            var adapter = new TestRetryAdapter();
+            MediaRetryPolicy target = new TestMediaServicesClassFactory(null).GetSaveChangesRetryPolicy(adapter);
+
+            int exceptionCount = 2;
+            int expected = 10;
+            var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
+
+            Func<int> func = () =>
+            {
+                if (--exceptionCount > 0) throw fakeException;
+                return expected;
+            };
+
+            var task = target.ExecuteAsync(() => Task.Factory.StartNew<int>(() => func()));
+            Assert.AreEqual(expected, task.Result);
+            Assert.AreEqual(0, exceptionCount);
+            Assert.AreEqual(1, adapter.NumberOfAdaptCalled);
+            Assert.AreEqual(2, adapter.FuncExecutedCountByExecuteAsync1);
+        }
     }
+
 }
