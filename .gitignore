@@ -67,3 +67,5 @@ test/net/Scenario/App.Release.config
 /test/net/stress/App.Debug.config
 /test/net/stress/app.Release.config
 /SDK.Client.sln.GhostDoc.xml
+/test/net/Scenario/App.Stage.config
+/test/net/Scenario/App.LKG.config

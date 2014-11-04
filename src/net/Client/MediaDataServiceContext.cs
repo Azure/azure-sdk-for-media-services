@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Data.Services.Client;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.MediaServices.Client.RequestAdapters;
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
@@ -30,21 +31,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     {
         private readonly DataServiceContext _dataContext;
         private readonly MediaRetryPolicy _queryRetryPolicy;
-        private Guid _requestGuid;
 
-		public MediaDataServiceContext(DataServiceContext dataContext, MediaRetryPolicy queryRetryPolicy)
+       
+        private readonly ClientRequestIdAdapter _clientRequestIdAdapter;
+
+        public MediaDataServiceContext(DataServiceContext dataContext, MediaRetryPolicy queryRetryPolicy, ClientRequestIdAdapter clientRequestAdapter)
         {
             _dataContext = dataContext;
             _queryRetryPolicy = queryRetryPolicy;
-            _dataContext.SendingRequest2 +=
-                delegate(object o, SendingRequest2EventArgs args)
-                {
-                    const string xMsClientRequestId = "x-ms-client-request-id";
-                    if (args.RequestMessage.GetHeader(xMsClientRequestId) == null)
-                    {
-                        args.RequestMessage.SetHeader(xMsClientRequestId, _requestGuid.ToString());
-                    }
-                };
+            _clientRequestIdAdapter = clientRequestAdapter;
+
         }
 
         /// <summary>
@@ -72,7 +68,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>A new System.Data.Services.Client.DataServiceQuery<TElement> instance that represents a data service query.</returns>
         public IQueryable<TIinterface> CreateQuery<TIinterface, TData>(string entitySetName)
         {
-            _requestGuid = Guid.NewGuid();
+            _clientRequestIdAdapter.ChangeCurrentRequestId();
             IQueryable<TIinterface> inner = (IQueryable<TIinterface>)_dataContext.CreateQuery<TData>(entitySetName);
             var result = new MediaQueryable<TIinterface, TData>(inner, _queryRetryPolicy);
             return result;
@@ -434,20 +430,19 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
         public Func<Task> AdaptExecuteAsync(Func<Task> taskFunc)
         {
-            _requestGuid = Guid.NewGuid();
+            _clientRequestIdAdapter.ChangeCurrentRequestId();
             return taskFunc;
         }
 
         Func<TResult> IRetryPolicyAdapter.AdaptExecuteAction<TResult>(Func<TResult> func)
         {
-            _requestGuid = Guid.NewGuid();
+            _clientRequestIdAdapter.ChangeCurrentRequestId();
             return func;
         }
 
         Func<Task<TResult>> IRetryPolicyAdapter.AdaptExecuteAsync<TResult>(Func<Task<TResult>> taskFunc)
         {
-            _requestGuid = Guid.NewGuid();
-           
+            _clientRequestIdAdapter.ChangeCurrentRequestId();
             return taskFunc;
         }
 

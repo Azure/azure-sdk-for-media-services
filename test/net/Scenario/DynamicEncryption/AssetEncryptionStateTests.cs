@@ -300,7 +300,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             Assert.AreEqual(ContentKeyType.CommonEncryption, playReadyProtectedSmoothAsset.ContentKeys[0].ContentKeyType);
 
-            ValidateAssetEncryptionState(asset, protocolsToTest, AssetEncryptionState.StaticCommonEncryption);
+            ValidateAssetEncryptionState(playReadyProtectedSmoothAsset, protocolsToTest, AssetEncryptionState.StaticCommonEncryption);
 
             CleanupAsset(playReadyProtectedSmoothAsset);
             CleanupAsset(asset);

@@ -155,7 +155,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [Ignore] // Not enabled in REST yet
         public void PlayReadyAssetDeliveryPolicyTestAttach()
         {
             var asset = _mediaContext.Assets.Create("Asset for PlayReadyAssetDeliveryPolicyTestAttach", AssetCreationOptions.None);
@@ -183,7 +182,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [Ignore]
+        [ExpectedException(typeof(DataServiceRequestException))]
         public void FailToAttachPolicyIfCommonContentKeyNotPresent()
         {
             var asset = _mediaContext.Assets.Create("Asset for FailToAttachPolicyIfCommonContentKeyNotPresent", AssetCreationOptions.None);
@@ -211,7 +210,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [Ignore]
+        [ExpectedException(typeof(DataServiceRequestException))]
         public void FailToAttachPolicyIfRequiredEnvelopeKeyNotPresent()
         {
             var asset = _mediaContext.Assets.Create("Asset for FailToAttachPolicyIfRequiredEnvelopeKeyNotPresent", AssetCreationOptions.None);

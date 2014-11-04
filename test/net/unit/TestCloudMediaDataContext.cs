@@ -22,6 +22,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
@@ -214,7 +215,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
                     };
                 }
             }
-            string response = "7D9BB04D9D0A4A24800CADBFEF232689E048F69C";
+            var cert = new X509Certificate2("UnitTest.pfx");
+            string response = Convert.ToBase64String(cert.RawData);
             return new List<TElement>
             {
                 (TElement) ((object) response)
@@ -334,7 +336,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<string>> ExecuteAsync(Uri requestUri, string httpMethod, bool singleResult, params OperationParameter[] parameter)
+        public Task<IEnumerable<string>> ExecuteAsync(Uri requestUri, string httpMethod, bool singleResult, params OperationParameter[] parameters)
         {
             throw new NotImplementedException();
         }

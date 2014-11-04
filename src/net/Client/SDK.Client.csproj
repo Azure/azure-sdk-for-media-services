@@ -9,6 +9,35 @@
     <RestorePackages>true</RestorePackages>
     <SigningFlag Condition="$(SigningFlag) == '' Or $(SigningFlag) == '*Undefined*'">NOTSIGNED</SigningFlag>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Stage|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Stage\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;X64</DefineConstants>
+    <DocumentationFile>bin\Debug\Microsoft.WindowsAzure.MediaServices.Client.xml</DocumentationFile>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>\Build\NimbusFXCopRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Stage|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Stage\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>..\..\..\build\NimbusFXCopRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Stage|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Stage\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>\Build\NimbusFXCopRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <Import Project="..\..\..\Build\Common.Build.settings" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -129,7 +158,6 @@
     </Compile>
     <Compile Include="ContentKeyAuthorization\Templates\ExplicitAnalogTelevisionRestriction.cs" />
     <Compile Include="ContentKeyAuthorization\Templates\MediaServicesLicenseTemplateSerializer.cs" />
-    <Compile Include="ContentKeyAuthorization\Templates\OldTokenTemplateFormat.cs" />
     <Compile Include="ContentKeyAuthorization\Templates\PlayReadyContentKey.cs" />
     <Compile Include="ContentKeyAuthorization\Templates\PlayReadyLicenseResponseTemplate.cs" />
     <Compile Include="ContentKeyAuthorization\Templates\PlayReadyLicenseTemplate.cs" />
@@ -254,7 +282,6 @@
     <Compile Include="Live\StreamingEndpointData.cs" />
     <Compile Include="Live\StreamingEndpointState.cs" />
     <Compile Include="Live\StreamingProtocol.cs" />
-    <Compile Include="MediaOperationContext.cs" />
     <Compile Include="MediaQueryable.cs" />
     <Compile Include="MediaQueryProvider.cs" />
     <Compile Include="MediaServicesCredentials.cs" />
@@ -370,8 +397,11 @@
     </Compile>
     <Compile Include="Entities\TaskTemplateData.cs" />
     <Compile Include="UploadProgressChangedEventArgs.cs" />
-    <Compile Include="Versioning\KnownApiVersions.cs" />
-    <Compile Include="Versioning\ServiceVersionAdapter.cs" />
+    <Compile Include="RequestAdapters\KnownApiVersions.cs" />
+    <Compile Include="RequestAdapters\ClientRequestIdAdapter.cs" />
+    <Compile Include="RequestAdapters\KnownClientVersions.cs" />
+    <Compile Include="RequestAdapters\ServiceVersionAdapter.cs" />
+    <Compile Include="RequestAdapters\UserAgentAdapter.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ContentKeyAuthorization\Templates\ErrorMessages.resx">
@@ -400,7 +430,29 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <TransformOnBuild>true</TransformOnBuild>
+    </None>
+    <None Include="App.Coverage.config">
+      <DependentUpon>App.config</DependentUpon>
+      <IsTransformFile>True</IsTransformFile>
+    </None>
+    <None Include="App.Debug.config">
+      <DependentUpon>App.config</DependentUpon>
+      <IsTransformFile>True</IsTransformFile>
+    </None>
+    <None Include="App.IncrementVersion.config">
+      <DependentUpon>App.config</DependentUpon>
+      <IsTransformFile>True</IsTransformFile>
+    </None>
+    <None Include="App.Release.config">
+      <DependentUpon>App.config</DependentUpon>
+      <IsTransformFile>True</IsTransformFile>
+    </None>
+    <None Include="App.Stage.config">
+      <DependentUpon>App.config</DependentUpon>
+      <IsTransformFile>True</IsTransformFile>
+    </None>
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

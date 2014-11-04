@@ -122,6 +122,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
 
         [TestMethod]
         [DeploymentItem(@"TestData\AssetEncryptionStateTestCases.csv", "TestData")]
+        [DeploymentItem(@"UnitTest.pfx")]
         public void RunAllGetEffectiveDeliveryPolicyTestCases()
         {
             string testCaseDataFilePath = WindowsAzureMediaServicesTestConfiguration.GetVideoSampleFilePath(TestContext, c_TestCaseDataFile);
