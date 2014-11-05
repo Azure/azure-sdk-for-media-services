@@ -38,6 +38,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void GetPlayReadyLicenseDeliveryUrl()
         {
             IContentKey contentKey = null;
@@ -73,6 +76,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void GetHlsKeyDeliveryUrlAndFetchKey()
         {
             IContentKey contentKey = null;
@@ -99,7 +105,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
                 // Enable once all accounts are enabled for per customer Key Delivery Urls
                 //Assert.IsTrue(keyDeliveryServiceUri.Host.StartsWith(_mediaContext.Credentials.ClientId));
-                
+
                 KeyDeliveryServiceClient keyClient = new KeyDeliveryServiceClient(RetryPolicy.DefaultFixed);
                 string rawkey = EncryptionUtils.GetKeyIdAsGuid(contentKey.Id).ToString();
                 byte[] key = keyClient.AcquireHlsKey(keyDeliveryServiceUri, TokenServiceClient.GetAuthTokenForKey(rawkey));
@@ -114,10 +120,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             }
         }
 
-       
+
 
         [TestMethod]
-        [ExpectedException(typeof (DataServiceQueryException))]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [ExpectedException(typeof(DataServiceQueryException))]
         public void EnsurePlayReadyLicenseDeliveryUrlForEnvelopeKeyFails()
         {
             IContentKey contentKey = null;
@@ -146,7 +154,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof (DataServiceQueryException))]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [ExpectedException(typeof(DataServiceQueryException))]
         public void EnsureEnvelopeKeyDeliveryUrlForCommonKeyFails()
         {
             IContentKey contentKey = null;
@@ -179,7 +189,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof (DataServiceQueryException))]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [ExpectedException(typeof(DataServiceQueryException))]
         public void EnsureNoneKeyDeliveryUrlFails()
         {
             IContentKey contentKey = null;
@@ -229,10 +241,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             */
         }
 
-        public static IContentKey CreateTestKey(CloudMediaContext mediaContext,ContentKeyType contentKeyType, string name = "")
+        public static IContentKey CreateTestKey(CloudMediaContext mediaContext, ContentKeyType contentKeyType, string name = "")
         {
             byte[] key;
-            return CreateTestKey(mediaContext,contentKeyType, out key);
+            return CreateTestKey(mediaContext, contentKeyType, out key);
         }
 
         public static IContentKey CreateTestKey(CloudMediaContext mediaContext, ContentKeyType contentKeyType, out byte[] key, string name = "")
@@ -291,7 +303,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             {
                 throw new ArgumentNullException("bytes");
             }
-            char[] chars = new char[bytes.Length/sizeof (char)];
+            char[] chars = new char[bytes.Length / sizeof(char)];
             Buffer.BlockCopy(bytes, 0, chars, 0, bytes.Length);
             return new string(chars);
         }
