@@ -148,6 +148,7 @@
     <Compile Include="DynamicEncryption\GetKeyDeliveryUrlTests.cs" />
     <Compile Include="DynamicEncryption\KeyDeliveryClient.cs" />
     <Compile Include="DynamicEncryption\TokenClient.cs" />
+    <Compile Include="EncodingReservedUnitDataTests.cs" />
     <Compile Include="IngestManifestAssetTests.cs" />
     <Compile Include="LinkCollectionTest.cs" />
     <Compile Include="ContentKeyTests.cs" />

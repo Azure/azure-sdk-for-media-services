@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization {
+namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization.Templates {
     using System;
     
     
@@ -78,7 +78,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization {
                 return ResourceManager.GetString("AtLeastOneLicenseTemplateRequired", resourceCulture);
             }
         }
-
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Set BeginDate or RelativeBeginDate but not both.
+        /// </summary>
+        public static string BeginDateAndRelativeBeginDateCannotbeSetSimultaneouslyError {
+            get {
+                return ResourceManager.GetString("BeginDateAndRelativeBeginDateCannotbeSetSimultaneouslyError", resourceCulture);
+            }
+        }
+        
         /// <summary>
         ///   Looks up a localized string similar to BeginDate cannot be set on Non Persistent licenses..
         /// </summary>
@@ -86,8 +95,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization {
             get {
                 return ResourceManager.GetString("BeginDateCannotBeSetOnNonPersistentLicense", resourceCulture);
             }
-        }        
-
+        }
+        
         /// <summary>
         ///   Looks up a localized string similar to The value can only be set to null, 100, 150, 200, 250, or 300..
         /// </summary>
@@ -114,13 +123,22 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization {
                 return ResourceManager.GetString("DigitalVideoOnlyMutuallyExclusiveWithPassingToUnknownOutputError", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to ExpirationDate cannot be set on Non Persistent licenses..
         /// </summary>
         public static string ExpirationCannotBeSetOnNonPersistentLicense {
             get {
                 return ResourceManager.GetString("ExpirationCannotBeSetOnNonPersistentLicense", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Set ExpirationDate or RelativeExpirationDate but not both.
+        /// </summary>
+        public static string ExpirationDateAndRelativeExpirationDateCannotbeSetSimultaneouslyError {
+            get {
+                return ResourceManager.GetString("ExpirationDateAndRelativeExpirationDateCannotbeSetSimultaneouslyError", resourceCulture);
             }
         }
         
