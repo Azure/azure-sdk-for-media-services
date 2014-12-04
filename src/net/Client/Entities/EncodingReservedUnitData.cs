@@ -28,9 +28,23 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     {
         public Guid AccountId { get; set; }
         /// <summary>
-        ///     Name of encoding reserved unit
+        /// Gets or sets the ReservedUnitType.
         /// </summary>
         public int ReservedUnitType { get; set; }
+        /// <summary>
+        ///  Gets or sets the ReservedUnitType.
+        /// </summary>
+        ReservedUnitType IEncodingReservedUnit.ReservedUnitType
+        {
+            get
+            {
+                return (ReservedUnitType)this.ReservedUnitType;
+            }
+            set
+            {
+                this.ReservedUnitType = (int)value;
+            }
+        }
 
         /// <summary>
         ///     Maximum Number of Reservable units of this encoding type

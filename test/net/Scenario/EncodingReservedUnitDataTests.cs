@@ -38,9 +38,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             var encodingBasicReservedUnit = _dataContext.EncodingReservedUnits.FirstOrDefault();
             var initialReserveUnitType = encodingBasicReservedUnit.ReservedUnitType;
             var initialEncodingRUcount = encodingBasicReservedUnit.CurrentReservedUnits;
-            encodingBasicReservedUnit.ReservedUnitType = (int)ReservedUnitType.Basic;
+            encodingBasicReservedUnit.ReservedUnitType = ReservedUnitType.Basic;
             encodingBasicReservedUnit.Update();
-            Assert.AreEqual(encodingBasicReservedUnit.ReservedUnitType, (int)ReservedUnitType.Basic,
+            Assert.AreEqual(encodingBasicReservedUnit.ReservedUnitType, ReservedUnitType.Basic,
             "Expecting Encoding ReservedUnit to be of Basic Type");
             encodingBasicReservedUnit.CurrentReservedUnits = 1;
             encodingBasicReservedUnit.Update();
@@ -114,16 +114,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 var encodingBasicReservedUnit = _dataContext.EncodingReservedUnits.FirstOrDefault();
                 var initialReserveUnitType = encodingBasicReservedUnit.ReservedUnitType;
                 var initialRUcount = encodingBasicReservedUnit.CurrentReservedUnits;
-                encodingBasicReservedUnit.ReservedUnitType = (int)ReservedUnitType.Basic;
+                encodingBasicReservedUnit.ReservedUnitType = ReservedUnitType.Basic;
                 encodingBasicReservedUnit.Update();
-                Assert.AreEqual(encodingBasicReservedUnit.ReservedUnitType, (int)ReservedUnitType.Basic,
+                Assert.AreEqual(encodingBasicReservedUnit.ReservedUnitType, ReservedUnitType.Basic,
                 "Expecting Encoding ReservedUnit to be of Basic Type");
-                encodingBasicReservedUnit = _dataContext.EncodingReservedUnits.Where(c => c.ReservedUnitType == (int)ReservedUnitType.Basic).FirstOrDefault();
-                encodingBasicReservedUnit.ReservedUnitType = (int)ReservedUnitType.Standard;
+                encodingBasicReservedUnit = _dataContext.EncodingReservedUnits.Where(c => c.ReservedUnitType == ReservedUnitType.Basic).FirstOrDefault();
+                encodingBasicReservedUnit.ReservedUnitType = ReservedUnitType.Standard;
                 encodingBasicReservedUnit.CurrentReservedUnits = 1;
                 encodingBasicReservedUnit.Update();
-                encodingBasicReservedUnit = _dataContext.EncodingReservedUnits.Where(c => c.ReservedUnitType == (int)ReservedUnitType.Standard).FirstOrDefault();
-                Assert.AreEqual(encodingBasicReservedUnit.ReservedUnitType, (int)ReservedUnitType.Standard,
+                encodingBasicReservedUnit = _dataContext.EncodingReservedUnits.Where(c => c.ReservedUnitType == ReservedUnitType.Standard).FirstOrDefault();
+                Assert.AreEqual(encodingBasicReservedUnit.ReservedUnitType, ReservedUnitType.Standard,
                     "Expecting Encoding ReservedUnit to be of Standard Type");
                 encodingBasicReservedUnit.ReservedUnitType = initialReserveUnitType;
                 encodingBasicReservedUnit.CurrentReservedUnits = initialRUcount;
@@ -147,20 +147,20 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 var encodingBasicReservedUnit = _dataContext.EncodingReservedUnits.FirstOrDefault();
                 var initialReserveUnitType = encodingBasicReservedUnit.ReservedUnitType;
                 var initialRUcount = encodingBasicReservedUnit.CurrentReservedUnits;
-                encodingBasicReservedUnit.ReservedUnitType = (int)ReservedUnitType.Basic;
+                encodingBasicReservedUnit.ReservedUnitType = ReservedUnitType.Basic;
                 encodingBasicReservedUnit.Update();
-                Assert.AreEqual(encodingBasicReservedUnit.ReservedUnitType, (int)ReservedUnitType.Basic,
+                Assert.AreEqual(encodingBasicReservedUnit.ReservedUnitType, ReservedUnitType.Basic,
                     "Expecting Encoding ReservedUnit to be of Basic Type");
                 encodingBasicReservedUnit =
-                    _dataContext.EncodingReservedUnits.Where(c => c.ReservedUnitType == (int)ReservedUnitType.Basic)
+                    _dataContext.EncodingReservedUnits.Where(c => c.ReservedUnitType == ReservedUnitType.Basic)
                         .FirstOrDefault();
-                encodingBasicReservedUnit.ReservedUnitType = (int)ReservedUnitType.Premium;
+                encodingBasicReservedUnit.ReservedUnitType = ReservedUnitType.Premium;
                 encodingBasicReservedUnit.CurrentReservedUnits = 1;
                 encodingBasicReservedUnit.Update();
                 encodingBasicReservedUnit =
-                    _dataContext.EncodingReservedUnits.Where(c => c.ReservedUnitType == (int)ReservedUnitType.Premium)
+                    _dataContext.EncodingReservedUnits.Where(c => c.ReservedUnitType == ReservedUnitType.Premium)
                         .FirstOrDefault();
-                Assert.AreEqual(encodingBasicReservedUnit.ReservedUnitType, (int)ReservedUnitType.Premium,
+                Assert.AreEqual(encodingBasicReservedUnit.ReservedUnitType, ReservedUnitType.Premium,
                     "Expecting Encoding ReservedUnit to be of premium type");
                 encodingBasicReservedUnit.ReservedUnitType = initialReserveUnitType;
                 encodingBasicReservedUnit.CurrentReservedUnits = initialRUcount;
@@ -185,11 +185,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             var encodingBasicReservedUnit = _dataContext.EncodingReservedUnits.FirstOrDefault();
             var initialEncodingReservedUnitType = encodingBasicReservedUnit.ReservedUnitType;
             var initialReservedUnitCount = encodingBasicReservedUnit.CurrentReservedUnits;
-            encodingBasicReservedUnit.ReservedUnitType = (int)ReservedUnitType.Basic;
+            encodingBasicReservedUnit.ReservedUnitType = ReservedUnitType.Basic;
             encodingBasicReservedUnit.Update();
-            Assert.AreEqual(encodingBasicReservedUnit.ReservedUnitType, (int)ReservedUnitType.Basic,
+            Assert.AreEqual(encodingBasicReservedUnit.ReservedUnitType,ReservedUnitType.Basic,
             "Expecting Encoding ReservedUnit to be of Basic Type");
-            encodingBasicReservedUnit = _dataContext.EncodingReservedUnits.Where(c => c.ReservedUnitType == (int)ReservedUnitType.Basic).FirstOrDefault();
+            encodingBasicReservedUnit = _dataContext.EncodingReservedUnits.Where(c => c.ReservedUnitType == ReservedUnitType.Basic).FirstOrDefault();
             encodingBasicReservedUnit.CurrentReservedUnits = 1;
             encodingBasicReservedUnit = encodingBasicReservedUnit.UpdateAsync().Result;
             Assert.AreEqual(encodingBasicReservedUnit.CurrentReservedUnits, 1,
