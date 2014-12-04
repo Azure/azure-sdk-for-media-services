@@ -67,6 +67,88 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
         }
 
         [TestMethod]
+        public void RoundTripTestWithRelativeBeginDateRelativeEndDate()
+        {
+            PlayReadyLicenseResponseTemplate responseTemplate = new PlayReadyLicenseResponseTemplate();
+            responseTemplate.ResponseCustomData = "This is my response custom data";
+            PlayReadyLicenseTemplate licenseTemplate = new PlayReadyLicenseTemplate();
+            responseTemplate.LicenseTemplates.Add(licenseTemplate);
+
+            licenseTemplate.LicenseType = PlayReadyLicenseType.Persistent;
+            licenseTemplate.RelativeBeginDate = TimeSpan.FromHours(1);
+            licenseTemplate.RelativeExpirationDate = TimeSpan.FromHours(2);
+
+            licenseTemplate.PlayRight.CompressedDigitalAudioOpl = 300;
+            licenseTemplate.PlayRight.CompressedDigitalVideoOpl = 400;
+            licenseTemplate.PlayRight.UncompressedDigitalAudioOpl = 250;
+            licenseTemplate.PlayRight.UncompressedDigitalVideoOpl = 270;
+            licenseTemplate.PlayRight.AnalogVideoOpl = 100;
+            licenseTemplate.PlayRight.AgcAndColorStripeRestriction = new AgcAndColorStripeRestriction(1);
+            licenseTemplate.PlayRight.AllowPassingVideoContentToUnknownOutput = UnknownOutputPassingOption.Allowed;
+            licenseTemplate.PlayRight.ExplicitAnalogTelevisionOutputRestriction = new ExplicitAnalogTelevisionRestriction(0, true);
+            licenseTemplate.PlayRight.ImageConstraintForAnalogComponentVideoRestriction = true;
+            licenseTemplate.PlayRight.ImageConstraintForAnalogComputerMonitorRestriction = true;
+            licenseTemplate.PlayRight.ScmsRestriction = new ScmsRestriction(2);
+
+            string serializedTemplate = MediaServicesLicenseTemplateSerializer.Serialize(responseTemplate);
+            Assert.IsFalse(String.IsNullOrWhiteSpace(serializedTemplate));
+
+            PlayReadyLicenseResponseTemplate responseTemplate2 = MediaServicesLicenseTemplateSerializer.Deserialize(serializedTemplate);
+            Assert.IsNotNull(responseTemplate2);
+
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void RoundTripTestErrorWithRelativeBeginDateBeginDate()
+        {
+            try
+            {
+                PlayReadyLicenseResponseTemplate responseTemplate = new PlayReadyLicenseResponseTemplate();
+                responseTemplate.ResponseCustomData = "This is my response custom data";
+                PlayReadyLicenseTemplate licenseTemplate = new PlayReadyLicenseTemplate();
+                responseTemplate.LicenseTemplates.Add(licenseTemplate);
+
+                licenseTemplate.LicenseType = PlayReadyLicenseType.Persistent;
+                licenseTemplate.RelativeBeginDate = TimeSpan.FromHours(1);
+                licenseTemplate.BeginDate = DateTime.Now.AddHours(-1);
+
+                string serializedTemplate = MediaServicesLicenseTemplateSerializer.Serialize(responseTemplate);
+
+            }
+            catch (ArgumentException ae)
+            {
+                Assert.IsTrue(ae.Message.Contains(ErrorMessages.BeginDateAndRelativeBeginDateCannotbeSetSimultaneouslyError));
+                throw;
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void RoundTripTestErrorWithRelativeExpirationDateExpirationDate()
+        {
+            try
+            {
+                PlayReadyLicenseResponseTemplate responseTemplate = new PlayReadyLicenseResponseTemplate();
+                responseTemplate.ResponseCustomData = "This is my response custom data";
+                PlayReadyLicenseTemplate licenseTemplate = new PlayReadyLicenseTemplate();
+                responseTemplate.LicenseTemplates.Add(licenseTemplate);
+
+                licenseTemplate.LicenseType = PlayReadyLicenseType.Persistent;
+                licenseTemplate.RelativeExpirationDate = TimeSpan.FromHours(1);
+                licenseTemplate.ExpirationDate = DateTime.Now.AddHours(1);
+
+                string serializedTemplate = MediaServicesLicenseTemplateSerializer.Serialize(responseTemplate);
+                Assert.Fail();
+            }
+            catch (ArgumentException ae)
+            {
+                Assert.IsTrue(ae.Message.Contains(ErrorMessages.ExpirationDateAndRelativeExpirationDateCannotbeSetSimultaneouslyError));
+                throw;
+            }
+        }
+
+        [TestMethod]
         public void ValidateNonPersistentLicenseConstraints()
         {
             string serializedTemplate = null;

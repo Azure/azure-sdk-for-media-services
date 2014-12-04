@@ -11,8 +11,19 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
     /// Configures the PlayReady License Response Template.  
     /// </summary>
     [DataContract(Namespace = "http://schemas.microsoft.com/Azure/MediaServices/KeyDelivery/PlayReadyTemplate/v1")]
-    public class PlayReadyLicenseResponseTemplate
+    public class PlayReadyLicenseResponseTemplate : IExtensibleDataObject
     {
+        //Implementing IExtensibleDataObject member ExtensionData
+
+        #region IExtensibleDataObject Members
+        private ExtensionDataObject _extensionData;
+        public virtual ExtensionDataObject ExtensionData
+        {
+            get { return _extensionData; }
+            set { _extensionData = value; }
+        }
+        #endregion
+
         public PlayReadyLicenseResponseTemplate()
         {
             InternalConstruct();

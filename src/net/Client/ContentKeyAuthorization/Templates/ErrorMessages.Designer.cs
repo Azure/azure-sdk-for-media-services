@@ -93,6 +93,17 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Set BeginDate or RelativeBeginDate but not both.
+        /// </summary>
+        public static string BeginDateAndRelativeBeginDateCannotbeSetSimultaneouslyError
+        {
+            get
+            {
+                return ResourceManager.GetString("BeginDateAndRelativeBeginDateCannotbeSetSimultaneouslyError", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to BeginDate cannot be set on Non Persistent licenses..
         /// </summary>
         public static string BeginDateCannotBeSetOnNonPersistentLicense
@@ -144,6 +155,17 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
             get
             {
                 return ResourceManager.GetString("ExpirationCannotBeSetOnNonPersistentLicense", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Set ExpirationDate or RelativeExpirationDate but not both.
+        /// </summary>
+        public static string ExpirationDateAndRelativeExpirationDateCannotbeSetSimultaneouslyError
+        {
+            get
+            {
+                return ResourceManager.GetString("ExpirationDateAndRelativeExpirationDateCannotbeSetSimultaneouslyError", resourceCulture);
             }
         }
 

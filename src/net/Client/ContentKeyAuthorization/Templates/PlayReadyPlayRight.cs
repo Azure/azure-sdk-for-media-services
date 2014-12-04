@@ -12,7 +12,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
     /// and is required in license templates.
     /// </summary>
     [DataContract(Namespace = "http://schemas.microsoft.com/Azure/MediaServices/KeyDelivery/PlayReadyTemplate/v1")]
-    public class PlayReadyPlayRight
+    public class PlayReadyPlayRight : IExtensibleDataObject
     {
         /// <summary>
         /// Specifies the amount of time that the license is valid after the license is first used to play content.
@@ -176,6 +176,17 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
             }
         }
         private int? _uncompressedDigitalAudioOpl;
+
+        //Implementing IExtensibleDataObject member ExtensionData
+
+        #region IExtensibleDataObject Members
+        private ExtensionDataObject _extensionData;
+        public virtual ExtensionDataObject ExtensionData
+        {
+            get { return _extensionData; }
+            set { _extensionData = value; }
+        }
+        #endregion
 
     }
 }
