@@ -69,6 +69,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         StreamingEndpointState State { get; }
 
         /// <summary>
+        /// Gets or sets if CDN to be enabled on this Streaming Endpoint.
+        /// </summary>
+        bool CdnEnabled { get; set; }
+
+        /// <summary>
         /// Gets or sets cross site access policies.
         /// </summary>
         CrossSiteAccessPolicies CrossSiteAccessPolicies { get; set; }
