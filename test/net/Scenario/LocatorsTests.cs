@@ -31,6 +31,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
 
         public void ShouldReturnSameLocatorCollectionAfterAssetRequery()
         {
@@ -47,6 +49,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void ShouldReturnSameLocatorCollectionAfterAssetRequery2()
         {
             var asset = _mediaContext.Assets.Create(Guid.NewGuid().ToString(), AssetCreationOptions.StorageEncrypted);
@@ -69,7 +73,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         [ExpectedException(typeof(InvalidOperationException))]
-
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void ShouldThrowUpdatingLocatorIfItsTypeIsNotOrigin()
         {
             // Arrange
@@ -86,7 +91,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void ShouldReturnLocatorWhenCreateOriginLocatorCalled()
         {
             // Arrange            
@@ -109,7 +116,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void ShouldCreateLocatorWithNameSync()
         {
             var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.Read);
@@ -127,7 +136,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void ShouldCreateSASLocatorWithNameSync()
         {
             var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.List | AccessPermissions.Read);
@@ -138,7 +149,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void ShouldCreateLocatorWithNameASync()
         {
             var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.Read);
@@ -149,7 +162,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void ShouldCreateSASLocatorWithNameASync()
         {
             var accessPolicy = _mediaContext.AccessPolicies.Create("TestPolicy", TimeSpan.FromMinutes(10), AccessPermissions.List | AccessPermissions.Read);
@@ -161,6 +176,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void ShouldCreateLocatorWhenCreateOriginLocatorCalled()
         {
             // Arrange            
@@ -187,7 +204,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void ShouldCreateLocatorWhenCreateOriginLocatorAsyncCalled()
         {
             // Arrange         
@@ -217,7 +236,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         [ExpectedException(typeof(DataServiceRequestException))]
         public void ShouldThrowTryingToCreateOriginLocatorWithWritePermissions()
         {
@@ -228,7 +249,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         [ExpectedException(typeof(DataServiceRequestException))]
         public void ShouldThrowTryingToCreateOriginLocatorWithDeletePermissions()
         {
@@ -246,7 +269,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void ShouldReturnLocatorWhenCreateOriginLocatorWithStartDateCalled()
         {
             // Arrange            
@@ -275,7 +300,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void ShouldReturnLocatorWhenCreateSasLocatorCalled()
         {
             // Arrange            
@@ -298,6 +325,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void ShouldCreateLocatorWhenCreateSasLocatorCalled()
         {
             // Arrange            
@@ -323,8 +352,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
 
         [TestMethod]
-        [TestCategory("DailyBvtRun")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void ExpirationTimeOfCreatedLocatorShouldMatchLocatorStartTimePlusPolicyDuration()
         {
             // Arrange            
@@ -356,6 +387,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void ShouldCreateLocatorWhenCreateSasLocatorAsyncCalled()
         {
             // Arrange            
@@ -386,7 +419,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void ShouldDeleteLocatorWhenDeleteLocatorCalled()
         {
             // Arrange            
@@ -407,7 +442,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void ShouldDeleteLocatorWhenDeleteLocatorAsyncCalled()
         {
             // Arrange            
@@ -430,6 +467,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void ShouldUpdateExpiryTimeWhenUpdateLocatorCalledWithExpiryTime()
         {
             // Arrange            
@@ -453,7 +492,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void ShouldUpdateExpiryTimeWhenUpdateLocatorAsyncCalledWithExpiryTime()
         {
             // Arrange            
@@ -480,7 +521,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void ShouldUpdateExpiryTimeWhenUpdateLocatorCalledWithStartAndExpiryTime()
         {
             // Arrange            
@@ -510,7 +552,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void ShouldUpdateExpiryTimeWhenUpdateLocatorAsyncCalledWithStartAndExpiryTime()
         {
             // Arrange          
@@ -538,7 +581,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void ShouldDeleteLocatorAfterSyncUpload()
         {
             var asset = _mediaContext.Assets.Create("SmallWmv", AssetCreationOptions.None);
@@ -550,7 +595,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void ShouldNotDeleteLocatorAfterASyncUpload()
         {
             var asset = _mediaContext.Assets.Create("SmallWmv.wmv", AssetCreationOptions.None);
@@ -565,6 +612,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(0)]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void TestLocatorCreateRetry()
         {
             var dataContextMock = new Mock<IMediaDataServiceContext>();
@@ -596,6 +645,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(0)]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void TestLocatorUpdateRetry()
         {
             var dataContextMock = new Mock<IMediaDataServiceContext>();
@@ -628,6 +679,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(0)]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void TestLocatorDeleteRetry()
         {
             var dataContextMock = new Mock<IMediaDataServiceContext>();
@@ -672,6 +725,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         [ExpectedException(typeof(ArgumentException))]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void ShouldThrowIfLocatorIdIsInvalidWithoutPrefixWhenCreateOriginLocator()
         {
             IAsset asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
@@ -684,6 +739,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         [ExpectedException(typeof(ArgumentException))]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void ShouldThrowIfLocatorIdIsInvalidWithPrefixWhenCreateOriginLocator()
         {
             IAsset asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
@@ -696,6 +753,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void ShouldCreateOriginLocator()
         {
             IAsset asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
@@ -712,13 +771,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void ShouldSetLocatorIdWithoutPrefixWhenCreateOriginLocator()
         {
             IAsset asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
             IAccessPolicy accessPolicy = _mediaContext.AccessPolicies.Create("Read", TimeSpan.FromMinutes(5), AccessPermissions.Read);
             string locatorIdWithoutPrefix = Guid.NewGuid().ToString();
 
-            ILocator locator = _mediaContext.Locators.CreateLocator(locatorIdWithoutPrefix, LocatorType.OnDemandOrigin, asset, accessPolicy,null);
+            ILocator locator = _mediaContext.Locators.CreateLocator(locatorIdWithoutPrefix, LocatorType.OnDemandOrigin, asset, accessPolicy, null);
 
             Assert.IsNotNull(locator);
             Assert.AreEqual(locator.ContentAccessComponent, locatorIdWithoutPrefix, true);
@@ -727,6 +788,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void ShouldRecreateLocatorWithSameLocatorId()
         {
             IAsset asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
@@ -745,6 +808,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void ShouldSetLocatorIdWithPrefixWhenCreateOriginLocator()
         {
             IAsset asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
@@ -752,7 +817,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             string locatorIdWithoutPrefix = Guid.NewGuid().ToString();
             string locatorIdWithPrefix = string.Concat(LocatorData.LocatorIdentifierPrefix, locatorIdWithoutPrefix);
 
-            ILocator locator = _mediaContext.Locators.CreateLocator(locatorIdWithPrefix,LocatorType.OnDemandOrigin, asset, accessPolicy, startTime: null);
+            ILocator locator = _mediaContext.Locators.CreateLocator(locatorIdWithPrefix, LocatorType.OnDemandOrigin, asset, accessPolicy, startTime: null);
 
             Assert.IsNotNull(locator);
             Assert.AreEqual(locator.ContentAccessComponent, locatorIdWithoutPrefix, true);

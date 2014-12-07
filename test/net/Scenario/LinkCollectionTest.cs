@@ -22,7 +22,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod()]
         [Priority(0)]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void LinkCollectionTestInsertRetry()
         {
             var data = new AssetData { };
@@ -43,7 +45,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod()]
         [Priority(0)]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void LinkCollectionTestRemoveRetry()
         {
             var data = new AssetData { };

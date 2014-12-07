@@ -35,6 +35,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(0)]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void TestStreamingEndpointCreate()
         {
             string testStreamingEndpointName = Guid.NewGuid().ToString().Substring(0, 30);
@@ -46,6 +48,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(0)]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void TestStreamingEndpointCreateRetry()
         {
             var expected = new ChannelData { Name = "testData" };
@@ -70,6 +74,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestMethod]
         [Priority(0)]
         [ExpectedException(typeof(WebException))]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void TestStreamingEndpointCreateFailedRetry()
         {
             var expected = new ChannelData { Name = "testData" };
@@ -96,6 +102,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(0)]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void TestDeleteRetry()
         {
             var data = new StreamingEndpointData { Name = "testData", Id = "1" };
@@ -125,6 +133,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(0)]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void TestSendDeleteOperationRetry()
         {
             var data = new StreamingEndpointData { Name = "testData", Id = "1" };
