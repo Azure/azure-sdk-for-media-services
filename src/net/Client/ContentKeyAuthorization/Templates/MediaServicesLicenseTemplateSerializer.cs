@@ -140,6 +140,22 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
                     }
                 }
 
+                //
+                //  License template should not have both BeginDate and RelativeBeginDate set.
+                //  Only one of these two values should be set.
+                if ((template.BeginDate.HasValue) && (template.RelativeBeginDate.HasValue))
+                {
+                    throw new ArgumentException(ErrorMessages.BeginDateAndRelativeBeginDateCannotbeSetSimultaneouslyError);
+                }
+
+                //
+                //  License template should not have both ExpirationDate and RelativeExpirationDate set.
+                //  Only one of these two values should be set.
+                if ((template.ExpirationDate.HasValue) && (template.RelativeExpirationDate.HasValue))
+                {
+                    throw new ArgumentException(ErrorMessages.ExpirationDateAndRelativeExpirationDateCannotbeSetSimultaneouslyError);
+                }
+
                 if (template.LicenseType == PlayReadyLicenseType.Nonpersistent)
                 {
                     //

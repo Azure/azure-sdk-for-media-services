@@ -8,10 +8,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization {
+namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
+{
     using System;
-    
-    
+
+
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -22,23 +23,28 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class ErrorMessages {
-        
+    public class ErrorMessages
+    {
+
         private static global::System.Resources.ResourceManager resourceMan;
-        
+
         private static global::System.Globalization.CultureInfo resourceCulture;
-        
+
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal ErrorMessages() {
+        internal ErrorMessages()
+        {
         }
-        
+
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Resources.ResourceManager ResourceManager {
-            get {
-                if (object.ReferenceEquals(resourceMan, null)) {
+        public static global::System.Resources.ResourceManager ResourceManager
+        {
+            get
+            {
+                if (object.ReferenceEquals(resourceMan, null))
+                {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization.Templates.Err" +
                             "orMessages", typeof(ErrorMessages).Assembly);
                     resourceMan = temp;
@@ -46,71 +52,97 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization {
                 return resourceMan;
             }
         }
-        
+
         /// <summary>
         ///   Overrides the current thread's CurrentUICulture property for all
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Globalization.CultureInfo Culture {
-            get {
+        public static global::System.Globalization.CultureInfo Culture
+        {
+            get
+            {
                 return resourceCulture;
             }
-            set {
+            set
+            {
                 resourceCulture = value;
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The value can only be set to null, 100, 150, or 200..
         /// </summary>
-        public static string AnalogVideoOplValueError {
-            get {
+        public static string AnalogVideoOplValueError
+        {
+            get
+            {
                 return ResourceManager.GetString("AnalogVideoOplValueError", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to A PlayReadyLicenseResponseTemplate must have at least one PlayReadyLicenseTemplate.
         /// </summary>
-        public static string AtLeastOneLicenseTemplateRequired {
-            get {
+        public static string AtLeastOneLicenseTemplateRequired
+        {
+            get
+            {
                 return ResourceManager.GetString("AtLeastOneLicenseTemplateRequired", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Set BeginDate or RelativeBeginDate but not both.
+        /// </summary>
+        public static string BeginDateAndRelativeBeginDateCannotbeSetSimultaneouslyError
+        {
+            get
+            {
+                return ResourceManager.GetString("BeginDateAndRelativeBeginDateCannotbeSetSimultaneouslyError", resourceCulture);
             }
         }
 
         /// <summary>
         ///   Looks up a localized string similar to BeginDate cannot be set on Non Persistent licenses..
         /// </summary>
-        public static string BeginDateCannotBeSetOnNonPersistentLicense {
-            get {
+        public static string BeginDateCannotBeSetOnNonPersistentLicense
+        {
+            get
+            {
                 return ResourceManager.GetString("BeginDateCannotBeSetOnNonPersistentLicense", resourceCulture);
             }
-        }        
+        }
 
         /// <summary>
         ///   Looks up a localized string similar to The value can only be set to null, 100, 150, 200, 250, or 300..
         /// </summary>
-        public static string CompressedDigitalAudioOplValueError {
-            get {
+        public static string CompressedDigitalAudioOplValueError
+        {
+            get
+            {
                 return ResourceManager.GetString("CompressedDigitalAudioOplValueError", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The value can only be set to null, 400, or 500..
         /// </summary>
-        public static string CompressedDigitalVideoOplValueError {
-            get {
+        public static string CompressedDigitalVideoOplValueError
+        {
+            get
+            {
                 return ResourceManager.GetString("CompressedDigitalVideoOplValueError", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to PlayReady does not allow passing to unknown outputs if the DigitalVideoOnlyContentRestriction is enabled..
         /// </summary>
-        public static string DigitalVideoOnlyMutuallyExclusiveWithPassingToUnknownOutputError {
-            get {
+        public static string DigitalVideoOnlyMutuallyExclusiveWithPassingToUnknownOutputError
+        {
+            get
+            {
                 return ResourceManager.GetString("DigitalVideoOnlyMutuallyExclusiveWithPassingToUnknownOutputError", resourceCulture);
             }
         }
@@ -118,71 +150,98 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization {
         /// <summary>
         ///   Looks up a localized string similar to ExpirationDate cannot be set on Non Persistent licenses..
         /// </summary>
-        public static string ExpirationCannotBeSetOnNonPersistentLicense {
-            get {
+        public static string ExpirationCannotBeSetOnNonPersistentLicense
+        {
+            get
+            {
                 return ResourceManager.GetString("ExpirationCannotBeSetOnNonPersistentLicense", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Set ExpirationDate or RelativeExpirationDate but not both.
+        /// </summary>
+        public static string ExpirationDateAndRelativeExpirationDateCannotbeSetSimultaneouslyError
+        {
+            get
+            {
+                return ResourceManager.GetString("ExpirationDateAndRelativeExpirationDateCannotbeSetSimultaneouslyError", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to FirstPlayExpiration cannot be set on the PlayRight of a Non Persistent license..
         /// </summary>
-        public static string FirstPlayExpirationCannotBeSetOnNonPersistentLicense {
-            get {
+        public static string FirstPlayExpirationCannotBeSetOnNonPersistentLicense
+        {
+            get
+            {
                 return ResourceManager.GetString("FirstPlayExpirationCannotBeSetOnNonPersistentLicense", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to GracePeriod cannot be set on Non Persistent licenses..
         /// </summary>
-        public static string GracePeriodCannotBeSetOnNonPersistentLicense {
-            get {
+        public static string GracePeriodCannotBeSetOnNonPersistentLicense
+        {
+            get
+            {
                 return ResourceManager.GetString("GracePeriodCannotBeSetOnNonPersistentLicense", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to ConfigurationData must be 0, 1, 2, or 3.
         /// </summary>
-        public static string InvalidTwoBitConfigurationData {
-            get {
+        public static string InvalidTwoBitConfigurationData
+        {
+            get
+            {
                 return ResourceManager.GetString("InvalidTwoBitConfigurationData", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Each PlayReadyLicenseTemplate in the PlayReadyLicenseResponseTemplate must have either a ContentEncryptionKeyFromHeader or a ContentEncryptionKeyFromKeyIdentifier.
         /// </summary>
-        public static string PlayReadyContentKeyRequired {
-            get {
+        public static string PlayReadyContentKeyRequired
+        {
+            get
+            {
                 return ResourceManager.GetString("PlayReadyContentKeyRequired", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Each PlayReadyLicenseTemplate in the PlayReadyLicenseResponseTemplate must have a PlayReadyPlayRight.
         /// </summary>
-        public static string PlayReadyPlayRightRequired {
-            get {
+        public static string PlayReadyPlayRightRequired
+        {
+            get
+            {
                 return ResourceManager.GetString("PlayReadyPlayRightRequired", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The value can only be set to null, 100, 150, 200, 250, or 300..
         /// </summary>
-        public static string UncompressedDigitalAudioOplValueError {
-            get {
+        public static string UncompressedDigitalAudioOplValueError
+        {
+            get
+            {
                 return ResourceManager.GetString("UncompressedDigitalAudioOplValueError", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The value can only be set to null, 100, 250, 270, or 300..
         /// </summary>
-        public static string UncompressedDigitalVideoOplValueError {
-            get {
+        public static string UncompressedDigitalVideoOplValueError
+        {
+            get
+            {
                 return ResourceManager.GetString("UncompressedDigitalVideoOplValueError", resourceCulture);
             }
         }

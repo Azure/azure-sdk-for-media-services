@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="StorageAccountBaseCollection.cs" company="Microsoft">Copyright 2012 Microsoft Corporation</copyright>
+// <copyright file="EncodingReservedUnitCollection.cs" company="Microsoft">Copyright 2014 Microsoft Corporation</copyright>
 // <license>
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,33 +17,31 @@
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
-    public class StorageAccountBaseCollection:CloudBaseCollection<IStorageAccount>
+    public class EncodingReservedUnitCollection : CloudBaseCollection<IEncodingReservedUnit>
     {
         /// <summary>
         /// The name of the storage account processor set.
         /// </summary>
-        internal const string EntitySet = "StorageAccounts";
-
-
+        public const string EncodingReservedUnitSet = "EncodingReservedUnitTypes";
         /// <summary>
-        /// Initializes a new instance of the <see cref="StorageAccountBaseCollection"/> class to be used for Mocking purposes.Introduced in version 3.0
+        /// Initializes a new instance of the <see cref="EncodingReservedUnitCollection"/> class
         /// </summary>
-        public StorageAccountBaseCollection()
+        public EncodingReservedUnitCollection()
             : base(null)
         {
 
         }
         /// <summary>
-        /// Initializes a new instance of the <see cref="StorageAccountBaseCollection"/> class.
+        /// Initializes a new instance of the <see cref="EncodingReservedUnitCollection"/> class.
         /// </summary>
         /// <param name="mediaContext">The media context.</param>
-        internal StorageAccountBaseCollection(MediaContextBase mediaContext)
+        internal EncodingReservedUnitCollection(MediaContextBase mediaContext)
             : base(mediaContext)
         {
             MediaContext = mediaContext;
             MediaServicesClassFactory factory = MediaContext.MediaServicesClassFactory;
-            Queryable = factory.CreateDataServiceContext().CreateQuery<IStorageAccount, StorageAccountData>(EntitySet);
+            this.Queryable = factory.CreateDataServiceContext().CreateQuery<IEncodingReservedUnit, EncodingReservedUnitData>(EncodingReservedUnitSet);
         }
-         
+
     }
 }

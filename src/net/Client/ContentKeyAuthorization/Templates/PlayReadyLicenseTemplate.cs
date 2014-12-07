@@ -13,7 +13,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
     /// Represents a license template for creating PlayReady licenses to return to clients.
     /// </summary>
     [DataContract(Namespace = "http://schemas.microsoft.com/Azure/MediaServices/KeyDelivery/PlayReadyTemplate/v1")]
-    public class PlayReadyLicenseTemplate
+    public class PlayReadyLicenseTemplate : IExtensibleDataObject
     {
         public PlayReadyLicenseTemplate()
         {
@@ -43,6 +43,21 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
         public DateTime? ExpirationDate { get; set; }
 
         /// <summary>
+        /// Configures starting DateTime value when the license is valid.  Attempts to use the license before this date and time 
+        /// will result in an error on the client.  The DateTime value is calculated as DateTime.UtcNow + RelativeBeginDate when 
+        /// the license is issued
+        /// </summary>
+        [DataMember(EmitDefaultValue = false)]
+        public TimeSpan? RelativeBeginDate { get; set; }
+
+        /// <summary>
+        /// Configures the DateTime value when the license expires.  Attempts to use the license after this date and time will result 
+        /// in an error on the client.  The DateTime value is calculated as DateTime.UtcNow + RelativeExpirationDate when the license 
+        /// is issued
+        /// </summary>
+        [DataMember(EmitDefaultValue = false)]
+        public TimeSpan? RelativeExpirationDate { get; set; }
+        /// <summary>
         /// Configures the Grace Period setting of the PlayReady license.  This setting affects how DateTime based restrictions are
         /// evaluated on certain devices in the situation that the devices secure clock becomes unset.
         /// </summary>
@@ -71,5 +86,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
         /// </summary>
         [DataMember(IsRequired=true)]
         public PlayReadyContentKey ContentKey { get; set; }
+
+        //Implementing IExtensibleDataObject member ExtensionData
+        
+        #region IExtensibleDataObject Members
+        private ExtensionDataObject _extensionData;
+        public virtual ExtensionDataObject ExtensionData
+        {
+            get { return _extensionData; }
+            set { _extensionData = value; }
+        }
+        #endregion
     }
 }
