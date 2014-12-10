@@ -87,7 +87,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Stress
             {
                 var current = _testData[rnd.Next(_testData.Count)];
                 KeyDeliveryServiceClient keyClient = new KeyDeliveryServiceClient(RetryPolicy.DefaultFixed);
-                var key = GetKeyDeliveryUrlTests.GetString(keyClient.AcquireHlsKey(current.Item1, current.Item2));
+                var key = GetKeyDeliveryUrlTests.GetString(keyClient.AcquireHlsKeyWithBearerHeader(current.Item1, current.Item2));
                 Assert.AreEqual(current.Item3, key);
                 //numberOfOperationsPerformanceCounter.Increment();
                 //operationsPerSecondCounter.Increment();
