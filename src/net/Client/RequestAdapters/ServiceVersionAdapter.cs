@@ -20,12 +20,10 @@ using System.Net;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.RequestAdapters
 {
-    
-
     /// <summary>
     /// An adapter to add the service version to the request.
     /// </summary>
-    public class ServiceVersionAdapter
+    public class ServiceVersionAdapter : IDataServiceContextAdapter
     {
         private const string _xMsVersion = "x-ms-version";
         private readonly Version _serviceVersion;

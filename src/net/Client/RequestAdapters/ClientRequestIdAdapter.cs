@@ -23,7 +23,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.RequestAdapters
     /// <summary>
     /// ClientRequestIdAdapter is used to add user agent specific information to http request. 
     /// </summary>
-    public class ClientRequestIdAdapter
+    public class ClientRequestIdAdapter : IWebRequestAdapter, IDataServiceContextAdapter
     {
 
         private const string XMsClientRequestId = "x-ms-client-request-id";
