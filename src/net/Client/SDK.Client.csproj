@@ -179,6 +179,7 @@
     <Compile Include="BlobTransfer\MemoryManager.cs" />
     <Compile Include="BlobTransfer\MemoryManagerFactory.cs" />
     <Compile Include="BlobTransfer\ServicePointModifier.cs" />
+    <Compile Include="Collections\EncodingReservedUnitCollection.cs" />
     <Compile Include="ContentKeyAuthorization\ContentKeyAuthorizationPolicyCollection.cs" />
     <Compile Include="ContentKeyAuthorization\ContentKeyAuthorizationPolicyData.cs" />
     <Compile Include="ContentKeyAuthorization\ContentKeyAuthorizationPolicyOptionCollection.cs" />
@@ -223,6 +224,7 @@
     <Compile Include="DynamicEncryption\IAssetDeliveryPolicy.cs" />
     <Compile Include="DynamicEncryption\MediaContextBase.cs" />
     <Compile Include="DynamicEncryption\OutputAsset.cs" />
+    <Compile Include="Entities\EncodingReservedUnitData.cs" />
     <Compile Include="Entities\AccessPermissions.cs" />
     <Compile Include="Collections\AccessPolicyBaseCollection.cs">
       <SubType>Code</SubType>
@@ -279,6 +281,7 @@
     <Compile Include="DataServiceAsyncExtensions.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Entities\IEncodingReservedUnit.cs" />
     <Compile Include="Live\AkamaiAccessControlData.cs" />
     <Compile Include="Live\AkamaiSignatureHeaderAuthenticationKey.cs" />
     <Compile Include="Live\AsyncHelper.cs" />
@@ -328,6 +331,7 @@
     <Compile Include="MediaQueryProvider.cs" />
     <Compile Include="MediaServicesCredentials.cs" />
     <Compile Include="Cache.cs" />
+    <Compile Include="ReservedUnitType.cs" />
     <Compile Include="TransientFaultHandling\IRetryPolicyAdapter.cs" />
     <Compile Include="TransientFaultHandling\RetryPolicyExtensions.cs" />
     <Compile Include="TransientFaultHandling\StorageTransientErrorDetectionStrategy.cs" />
@@ -451,7 +455,7 @@
       <LastGenOutput>ErrorMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources1.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="StringTable.Stage.resx">
