@@ -69,6 +69,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.OAuth
         /// <param name="dataServiceContext">The data service context.</param>
         public void Adapt(DataServiceContext dataServiceContext)
         {
+            if (dataServiceContext == null) { throw new ArgumentNullException("dataServiceContext"); }
             dataServiceContext.SendingRequest2 += this.OnSendingRequest;
         }
 

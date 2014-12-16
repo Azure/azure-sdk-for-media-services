@@ -20,14 +20,13 @@ Source in GitHub at https://github.com/WindowsAzure/azure-sdk-for-media-services
     <language>en-US</language>
     <tags>windowsazureofficial, WindowsAzure, MediaServices, Microsoft,</tags>
     <dependencies>
-      <dependency id="Microsoft.Data.OData" version="5.6.0" />
-      <dependency id="Microsoft.Data.Edm" version="5.6.0" />
-      <dependency id="Microsoft.Data.Services.Client" version="5.6.0" />
-      <dependency id="System.Spatial" version="5.6.0" />
+      <dependency id="Microsoft.Data.OData" version="5.6.3" />
+      <dependency id="Microsoft.Data.Edm" version="5.6.3" />
+      <dependency id="Microsoft.Data.Services.Client" version="5.6.3" />
+      <dependency id="System.Spatial" version="5.6.3" />
       <dependency id="TransientFaultHandling.Core" version="5.1.1209.1" />
-      <dependency id="WindowsAzure.Storage" version="3.1.0.0" />
-	  <dependency  id="Microsoft.WindowsAzure.ConfigurationManager" version="2.0.3.0" />
-      <dependency id="Newtonsoft.Json" version="6.0.3.0" />
+      <dependency id="WindowsAzure.Storage" version="4.3.0.0" />
+      <dependency id="Newtonsoft.Json" version="6.0.6.0" />
     </dependencies>
     <references>
       <reference file="Microsoft.WindowsAzure.MediaServices.Client.dll" />

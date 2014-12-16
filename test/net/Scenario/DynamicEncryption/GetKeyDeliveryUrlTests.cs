@@ -126,6 +126,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [TestCategory("Bvt")]
+        [DeploymentItem("amscer.pfx") ]
         public void GetHlsKeyDeliveryUrlAndFetchKeyWithJWTAuthentication()
         {
             IContentKey contentKey = null;
@@ -233,10 +234,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 string expectedString = GetString(expectedKey);
                 string fetchedString = GetString(key);
                 Assert.AreEqual(expectedString, fetchedString);
-            }
-            catch(Exception ex)
-            {
-
             }
             finally
             {
