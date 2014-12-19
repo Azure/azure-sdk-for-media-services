@@ -205,7 +205,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 tokenRestrictionTemplate.Audience = new Uri("http://sampleissuerurl");
                 tokenRestrictionTemplate.Issuer = new Uri("http://sampleaudience");
                 tokenRestrictionTemplate.TokenType = TokenType.SWT;
-                //tokenRestrictionTemplate.RequiredClaims.Add(new TokenClaim(TokenClaim.ContentKeyIdentifierClaimType,contentKeyId.ToString()) );
+                tokenRestrictionTemplate.RequiredClaims.Add(new TokenClaim(TokenClaim.ContentKeyIdentifierClaimType,contentKeyId.ToString()) );
 
                 string optionName = "GetHlsKeyDeliveryUrlAndFetchKeyWithSWTAuthentication";
                 string requirements = TokenRestrictionTemplateSerializer.Serialize(tokenRestrictionTemplate);                
@@ -224,11 +224,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
                 Assert.IsNotNull(keyDeliveryServiceUri);
 
-                // Enable once all accounts are enabled for per customer Key Delivery Urls
-                //Assert.IsTrue(keyDeliveryServiceUri.Host.StartsWith(_mediaContext.Credentials.ClientId));
+                Assert.IsTrue(keyDeliveryServiceUri.Host.StartsWith(_mediaContext.Credentials.ClientId));
 
                 KeyDeliveryServiceClient keyClient = new KeyDeliveryServiceClient(RetryPolicy.DefaultFixed);
-                string swtTokenString = TokenRestrictionTemplateSerializer.GenerateTestToken(tokenRestrictionTemplate, tokenRestrictionTemplate.PrimaryVerificationKey, null, DateTime.Now.AddDays(2));
+                string swtTokenString = TokenRestrictionTemplateSerializer.GenerateTestToken(tokenRestrictionTemplate, tokenRestrictionTemplate.PrimaryVerificationKey, contentKeyId, DateTime.Now.AddDays(2));
                 byte[] key = keyClient.AcquireHlsKeyWithBearerHeader(keyDeliveryServiceUri, swtTokenString);
 
                 string expectedString = GetString(expectedKey);
