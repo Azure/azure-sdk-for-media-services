@@ -46,6 +46,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.RequestAdapters
         /// <param name="context">The context.</param>
         public void Adapt(DataServiceContext context)
         {
+            if (context == null) { throw new ArgumentNullException("context"); }
             context.SendingRequest2 += this.AddRequestUserAgent;
         }
 
@@ -61,9 +62,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.RequestAdapters
             }
 
             //User agent can't be set through header collection in HttpWebRequest
-            if (request is HttpWebRequest)
+            HttpWebRequest httpWebRequest = request as HttpWebRequest;
+            if (httpWebRequest != null)
             {
-                ((HttpWebRequest)request).UserAgent = _userAgentHeaderValue;
+                httpWebRequest.UserAgent = _userAgentHeaderValue;
             }
             else
             {

@@ -24,13 +24,10 @@ using System.Text;
 using System.Threading;
 using System.Xml;
 using System.Xml.Linq;
-using System.Xml.XPath;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Queue;
-using Moq;
-using System.Net;
 using System.Threading.Tasks;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
