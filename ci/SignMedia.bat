@@ -42,11 +42,6 @@ nuget.exe pack .\drop\WAMSSDK\windowsazure.mediaservices.nuspec -o .\drop -Symbo
 if %ERRORLEVEL% neq 0 goto packagingfailed
 echo OK
 
-echo Publishing Media SDK NuGet Package to Myget server
-nuget push .\drop\windowsazure.mediaservices.%1.nupkg %2 -Source %3
-if %ERRORLEVEL% neq 0 goto publishfailed
-echo OK
-
 echo Copying files to the packages share...
 copy .\drop\*.* c:\packages
 if %ERRORLEVEL% neq 0 goto copyfailed
