@@ -26,12 +26,12 @@ del /q c:\signing\tosign\*.*
 echo OK
 
 echo Copying Media SDK signed managed DLLs and the pdbs to the final drop location...
-echo Creating \drop\WAMSSDK\lib\net40
-md .\drop\WAMSSDK\lib\net40
+echo Creating \drop\WAMSSDK\lib\net45
+md .\drop\WAMSSDK\lib\net45
 echo Copy MediaServices.Client.dll
-copy /y c:\signing\signed\Microsoft.WindowsAzure.MediaServices.Client.dll .\drop\WAMSSDK\lib\net40\
+copy /y c:\signing\signed\Microsoft.WindowsAzure.MediaServices.Client.dll .\drop\WAMSSDK\lib\net45\
 echo Copy MediaServices.Client.pdb
-copy /y .\Publish\Build\Release\Microsoft.WindowsAzure.MediaServices.Client.pdb .\drop\WAMSSDK\lib\net40\
+copy /y .\Publish\Build\Release\Microsoft.WindowsAzure.MediaServices.Client.pdb .\drop\WAMSSDK\lib\net45\
 echo Copy Nuget spec
 copy /y .\.nuget\windowsazure.mediaservices.nuspec .\drop\WAMSSDK\
 if %ERRORLEVEL% neq 0 goto copyfailed
