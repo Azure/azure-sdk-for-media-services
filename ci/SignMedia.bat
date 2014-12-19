@@ -1,12 +1,5 @@
 @echo off
 
-echo Validating the \\adxsdksign\signed share is empty...
-for /F %%I in ('dir /s /b c:\signing\signed\*.*') do (
-    echo FAILED. The \\adxsdksign\signed share is not empty. Please empty the share before starting a new signing job.
-    exit /b -1
-)
-echo OK
-
 echo Cleaning signed and packages directories
 del /q c:\signing\signed\*.*
 del /q c:\packages\*.*
@@ -17,7 +10,7 @@ if %ERRORLEVEL% neq 0 goto copyfailed
 echo OK
 
 echo Signing managed desktop library DLLs...
-C:\tools\ci-signing\CodeSignUtility\csu.exe /c1=72 /c2=10006 "/d=.NET SDK" "/kw=MediaServices"
+%CI_SIGNING%\CodeSignUtility\csu.exe /c1=72 /c2=10006 "/d=.NET SDK" "/kw=MediaServices"
 if %ERRORLEVEL% neq 0 goto signfailed
 echo OK
 
