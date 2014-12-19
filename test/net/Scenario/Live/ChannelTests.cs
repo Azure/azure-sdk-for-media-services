@@ -235,6 +235,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [Priority(0)]
+        [Ignore]
         public void TestChannelSendCreateOperation()
         {
             var expected = new ChannelData { Name = "testData" };
