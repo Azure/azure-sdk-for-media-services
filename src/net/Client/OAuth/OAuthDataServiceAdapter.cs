@@ -16,16 +16,11 @@
 
 
 using System;
-using System.Collections.Specialized;
 using System.Data.Services.Client;
 using System.Globalization;
-using System.IO;
 using System.Net;
 using System.Net.Security;
-using System.Runtime.Serialization.Json;
 using System.Security.Cryptography.X509Certificates;
-using Microsoft.Practices.TransientFaultHandling;
-using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.OAuth
 {
@@ -69,6 +64,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.OAuth
         /// <param name="dataServiceContext">The data service context.</param>
         public void Adapt(DataServiceContext dataServiceContext)
         {
+            if (dataServiceContext == null) { throw new ArgumentNullException("dataServiceContext"); }
             dataServiceContext.SendingRequest2 += this.OnSendingRequest;
         }
 

@@ -46,11 +46,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("Bvt")]
         public void ShouldCreateAssetFileWithEncryption()
         {
-            var filePaths = new[] {WindowsAzureMediaServicesTestConfiguration.SmallWmv};
+            var filePaths = new[] { WindowsAzureMediaServicesTestConfiguration.SmallWmv };
             IAsset asset = AssetTests.CreateAsset(_mediaContext, Path.GetFullPath(WindowsAzureMediaServicesTestConfiguration.SmallWmv), AssetCreationOptions.StorageEncrypted);
 
             // Associate an access policy with the asset so we can download the files associated with it
@@ -67,12 +69,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Media\SmallWMV2.wmv", "Media")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("Bvt")]
         public void ShouldCreateAssetFileArrayWithEncryption()
         {
-            var filePaths = new[] {WindowsAzureMediaServicesTestConfiguration.SmallWmv, WindowsAzureMediaServicesTestConfiguration.SmallWmv2};
+            var filePaths = new[] { WindowsAzureMediaServicesTestConfiguration.SmallWmv, WindowsAzureMediaServicesTestConfiguration.SmallWmv2 };
             IAsset asset = _mediaContext.Assets.Create(Guid.NewGuid().ToString(), AssetCreationOptions.StorageEncrypted);
             IAccessPolicy policy = _mediaContext.AccessPolicies.Create("Write", TimeSpan.FromMinutes(5), AccessPermissions.Write);
             ILocator locator = _mediaContext.Locators.CreateSasLocator(asset, policy);
@@ -103,8 +107,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("Bvt")]
         public void ShouldCreateAssetFileWithPlayReadyEncryption()
         {
             // Note that this file is not really PlayReady encrypted.  For the purposes of this test that is okay.
@@ -126,7 +132,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         [Priority(0)]
         public void TestQueries()
         {
@@ -148,7 +156,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         [DeploymentItem(@"Media\SmallWMV2.wmv", "Media")]
         [Priority(0)]
         public void ShouldCreateAssetFileArrayWithPlayReadyEncryption()
@@ -164,7 +174,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 };
 
 
-            foreach (string filePath in new[] {WindowsAzureMediaServicesTestConfiguration.SmallWmv, WindowsAzureMediaServicesTestConfiguration.SmallWmv2})
+            foreach (string filePath in new[] { WindowsAzureMediaServicesTestConfiguration.SmallWmv, WindowsAzureMediaServicesTestConfiguration.SmallWmv2 })
             {
                 var info = new FileInfo(filePath);
                 IAssetFile file = asset.AssetFiles.Create(info.Name);
@@ -186,7 +196,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void ShouldDeleteContentKey()
         {
             Guid keyId = Guid.NewGuid();
@@ -204,7 +216,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void ShouldDeleteContentKeyWithDifferentContexts()
         {
             Guid keyId = Guid.NewGuid();
@@ -221,10 +235,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void ShouldCreateTaskUsingStorageEncryptedAsset()
         {
-            var filePaths = new[] {WindowsAzureMediaServicesTestConfiguration.SmallWmv};
+            var filePaths = new[] { WindowsAzureMediaServicesTestConfiguration.SmallWmv };
             IAsset asset = AssetTests.CreateAsset(_mediaContext, Path.GetFullPath(WindowsAzureMediaServicesTestConfiguration.SmallWmv), AssetCreationOptions.StorageEncrypted);
             IMediaProcessor processor = JobTests.GetEncoderMediaProcessor(_mediaContext);
             IJob job = _mediaContext.Jobs.Create("Encode Job with encrypted asset");
@@ -244,6 +260,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Configuration\PlayReady Protection.xml", "Configuration")]
         [DeploymentItem(@"Media\Small.ism", "Media")]
         [DeploymentItem(@"Media\Small.ismc", "Media")]
@@ -251,7 +269,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [Priority(0)]
         public void ShouldGetClearConfigurationFromTask()
         {
-            var filePaths = new[] {WindowsAzureMediaServicesTestConfiguration.SmallIsm, WindowsAzureMediaServicesTestConfiguration.SmallIsmc, WindowsAzureMediaServicesTestConfiguration.SmallIsmv};
+            var filePaths = new[] { WindowsAzureMediaServicesTestConfiguration.SmallIsm, WindowsAzureMediaServicesTestConfiguration.SmallIsmc, WindowsAzureMediaServicesTestConfiguration.SmallIsmv };
             IAsset asset = _mediaContext.Assets.Create(Guid.NewGuid().ToString(), AssetCreationOptions.StorageEncrypted);
 
             foreach (string filePath in filePaths)
@@ -296,8 +314,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(1)]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("Bvt")]
         public void ShouldDeleteAssetWithCommonEncryptionContentKey()
         {
             var dataContext2 = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
@@ -327,8 +347,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(1)]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("Bvt")]
         public void ShouldDeleteAssetWithStorageEncryptionContentKey()
         {
             // Use two contexts to cover the case where the content key needs to be internally attached to
@@ -369,8 +391,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(0)]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("Bvt")]
         public void TestAssetFileDeleteRetry()
         {
             var dataContextMock = new Mock<IMediaDataServiceContext>();
@@ -528,7 +552,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 }
             }
 
-            if (bytesThatMatch > (bytesToCompare/100))
+            if (bytesThatMatch > (bytesToCompare / 100))
             {
                 throw new ArgumentException("It is acceptable for some bytes to match in an encrypted data buffer but the percentage should be very small.  Further investigation needed.");
             }
@@ -608,44 +632,44 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 string tempFile = Guid.NewGuid().ToString();
                 try
                 {
-                file.Download(tempFile);
+                    file.Download(tempFile);
 
-                using (var originalFile = new FileStream(originalFilePath, FileMode.Open, FileAccess.Read))
-                using (Stream fileFromServer = File.Open(tempFile, FileMode.Open))
-                {
-                    long fileOffset = 0;
-                    var dataFromOriginalFile = new byte[1024];
-                    var dataFromServerFile = new byte[dataFromOriginalFile.Length];
-                    bool fExit = false;
-                    while (!fExit)
+                    using (var originalFile = new FileStream(originalFilePath, FileMode.Open, FileAccess.Read))
+                    using (Stream fileFromServer = File.Open(tempFile, FileMode.Open))
                     {
-                        int bytesRead = fileFromServer.Read(dataFromServerFile, 0, dataFromServerFile.Length);
-
-                        if (0 == bytesRead)
+                        long fileOffset = 0;
+                        var dataFromOriginalFile = new byte[1024];
+                        var dataFromServerFile = new byte[dataFromOriginalFile.Length];
+                        bool fExit = false;
+                        while (!fExit)
                         {
-                            fExit = true;
-                        }
-                        else
-                        {
-                            fileOffset += bytesRead;
+                            int bytesRead = fileFromServer.Read(dataFromServerFile, 0, dataFromServerFile.Length);
 
-                            int bytesRead2 = originalFile.Read(dataFromOriginalFile, 0, bytesRead);
-                            Assert.IsTrue(bytesRead == bytesRead2);
+                            if (0 == bytesRead)
+                            {
+                                fExit = true;
+                            }
+                            else
+                            {
+                                fileOffset += bytesRead;
 
-                            EnsureBuffersMatch(dataFromOriginalFile, dataFromServerFile, bytesRead);
+                                int bytesRead2 = originalFile.Read(dataFromOriginalFile, 0, bytesRead);
+                                Assert.IsTrue(bytesRead == bytesRead2);
+
+                                EnsureBuffersMatch(dataFromOriginalFile, dataFromServerFile, bytesRead);
+                            }
                         }
+
+                        Assert.IsTrue(originalFile.Length == fileOffset, "Did not process the expected file length");
                     }
-
-                    Assert.IsTrue(originalFile.Length == fileOffset, "Did not process the expected file length");
-                }
                 }
                 finally
                 {
                     if (File.Exists(tempFile))
                     {
-                File.Delete(tempFile);
-            }
-        }
+                        File.Delete(tempFile);
+                    }
+                }
             }
         }
 

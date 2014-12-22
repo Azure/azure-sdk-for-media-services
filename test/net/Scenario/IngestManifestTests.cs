@@ -36,6 +36,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void ShouldBeAbleToGetManifests()
         {
             _mediaContext.IngestManifests.Take(5).ToList();
@@ -43,6 +45,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [DeploymentItem(TestFile1, DeploymentFolder1)]
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(1)]
         public void ListAssetsAndFilesForNewlyCreatedManifests()
         {
@@ -84,6 +88,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [ExpectedException(typeof(InvalidOperationException))]
         public void ShouldThrowExceptionWhenAttemptingToCreateManifestAssetFromContextCollection()
         {
@@ -93,6 +99,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(TestFile1, DeploymentFolder1)]
         [DeploymentItem(TestFile2, DeploymentFolder1)]
         [Priority(1)]
@@ -120,6 +128,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void DeleteAssetShouldDeleteAllManifestAssetsFiles()
         {
             CloudMediaContext context = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
@@ -148,12 +158,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         /// Creating empty manifest
         /// </summary>
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void CreateEmptyManifest()
         {
             CreateEmptyManifestAndVerifyIt();
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void ShouldCreateEmptymanifestWithDefaultStorageAccountName()
         {
             const string manifestName = "TestManifest";
@@ -161,6 +175,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [ExpectedException(typeof(DataServiceRequestException))]
         public void ShouldThrowTryingToCreateEmptyManifestWithNonExistentAccountName()
         {
@@ -183,6 +199,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         /// </summary>
         [Ignore]
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [ExpectedException(typeof(DataServiceRequestException))]
         public void ShouldThrowTryingToCreateEmptyManifestWithEmptyAccountName()
         {
@@ -202,7 +220,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         /// Deleting empty manifest
         /// </summary>
         [TestMethod]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void CreateEmptyManifestAndDeleteIt()
         {
             IIngestManifest ingestManifest = CreateEmptyManifestAndVerifyIt();
@@ -228,7 +248,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         /// Creating empty manifest and updating it
         /// </summary>
         [TestMethod]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void CreateEmptyManifestAndUpdateIt()
         {
             IIngestManifest ingestManifest = CreateEmptyManifestAndVerifyIt();
@@ -248,6 +270,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void CreateEmptyBulkIngestManifestAsync()
         {
             CloudMediaContext context = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
@@ -262,6 +286,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         /// We should be able to add additional asset infoes into active manifest.
         /// </summary>
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(TestFile1, DeploymentFolder1)]
         [DeploymentItem(TestFile2, DeploymentFolder1)]
         [DeploymentItem(InterviewWmv, DeploymentFolder2)]
@@ -284,6 +310,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         /// We should be able to add additional files to existing asset infoes of active manifest.
         /// </summary>
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(TestFile1, DeploymentFolder1)]
         [DeploymentItem(TestFile2, DeploymentFolder1)]
         [DeploymentItem(InterviewWmv, DeploymentFolder2)]
@@ -308,6 +336,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         /// Encrypting manifest files
         /// </summary>
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(TestFile1, DeploymentFolder1)]
         [DeploymentItem(TestFile2, DeploymentFolder1)]
         public void CheckIfOnlyStorageEncryptedFilesExistsInEncryptionFolderAnfterEncrypt()
@@ -339,6 +369,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [ExpectedException(typeof(InvalidOperationException))]
         public void ShouldThrowKeyNotFoundExceptionDuringEncryptIfKeyIsMissing()
         {
@@ -378,6 +410,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void ShouldThrowAggregateExceptionWithMultipleKetNotFoundExceptionDuringEncryptIfKeyIsMissing()
         {
             var sourcePath = @".\Resources\TestFiles\";
@@ -426,6 +460,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(TestFile1, DeploymentFolder1)]
         [DeploymentItem(TestFile2, DeploymentFolder1)]
         public void EncryptManifestWithFewSmalFiles()
@@ -478,10 +514,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(TestFile1, DeploymentFolder1)]
         [DeploymentItem(TestFile2, DeploymentFolder1)]
         [Priority(0)]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("Bvt")]
         public void EncryptManifestFilesAndVerifyThemAfterDecryption()
         {
             List<IIngestManifestFile> files;
@@ -617,6 +655,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void DeleteActiveExistingManifest()
         {
             IIngestManifest ingestManifest = CreateManifestWithAssetsAndVerifyIt(_mediaContext);
@@ -624,6 +664,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void DeleteInactiveExistingManifest()
         {
             IIngestManifest ingestManifest = CreateEmptyManifestAndVerifyIt();
@@ -639,6 +681,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(InterviewWmv, DeploymentFolder2)]
         [DeploymentItem(TestFile1, DeploymentFolder1)]
         [DeploymentItem(TestFile2, DeploymentFolder1)]
@@ -648,6 +692,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(TestFile1, DeploymentFolder1)]
         [DeploymentItem(TestFile2, DeploymentFolder1)]
         [ExpectedException(typeof(IOException))]
@@ -690,6 +736,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         #region Retry Logic tests
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(0)]
         public void TestIngestManifestCreateRetry()
         {
@@ -708,6 +756,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(0)]
         [ExpectedException(typeof(WebException))]
         public void TestIngestManifestCreateFailedRetry()
@@ -736,6 +786,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(0)]
         [ExpectedException(typeof(WebException))]
         public void TestIngestManifestCreateFailedRetryMessageLengthLimitExceeded()
@@ -766,6 +818,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(0)]
         public void TestIngestManifestUpdateRetry()
         {
@@ -786,6 +840,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(0)]
         public void TestIngestManifestDeleteRetry()
         {

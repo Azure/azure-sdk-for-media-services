@@ -37,6 +37,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(0)]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void TestNotificationEndPointCreateRetry()
         {
             var expected = new NotificationEndPoint { Name = "testData" };
@@ -55,6 +57,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestMethod]
         [Priority(0)]
         [ExpectedException(typeof(WebException))]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void TestNotificationEndPointCreateFailedRetry()
         {
             var expected = new NotificationEndPoint { Name = "testData" };
@@ -82,6 +86,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestMethod]
         [Priority(0)]
         [ExpectedException(typeof(WebException))]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void TestNotificationEndPointCreateFailedRetryMessageLengthLimitExceeded()
         {
             var expected = new NotificationEndPoint { Name = "testData" };
@@ -110,6 +116,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(0)]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void TestNotificationEndPointUpdateRetry()
         {
             var data = new NotificationEndPoint { Name = "testData" };
@@ -130,6 +138,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(0)]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void TestNotificationEndPointDeleteRetry()
         {
             var data = new NotificationEndPoint { Name = "testData" };

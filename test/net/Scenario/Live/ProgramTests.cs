@@ -34,7 +34,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         #region Retry Logic tests
 
-        [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(0)]
         public void TestProgramCreateRetryAsyn()
         {
