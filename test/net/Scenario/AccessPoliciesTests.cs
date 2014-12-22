@@ -37,6 +37,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void ShouldReturnAccessPolicyWhenCreateCalled()
         {
             // Arrange
@@ -54,6 +56,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void ShouldCreateAccessPolicyWhenCreateCalled()
         {
             // Arrange
@@ -76,7 +80,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("Bvt")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void ShouldCreateAccessPolicyAsyncWhenCreateAsyncCalled()
         {
             // Arrange         
@@ -98,7 +104,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void ShouldRemoveAccessPolicyFromCollectionWhenDeleteCalled()
         {
             // Arrange
@@ -119,6 +127,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void ShouldDeleteAccessPolicyWhenDeleteCalled()
         {
             // Arrange
@@ -143,7 +153,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void ShouldDeleteAccessPolicyAsyncWhenDeleteAsyncCalled()
         {
             // Arrange
@@ -169,8 +181,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(0)]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("Bvt")]
         public void TestAccessPolicyCreateRetry()
         {
             var dataContextMock = new Mock<IMediaDataServiceContext>();
@@ -198,8 +212,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(0)]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("Bvt")]
         public void TestAccessPolicyDeleteRetry()
         {
             var dataContextMock = new Mock<IMediaDataServiceContext>();

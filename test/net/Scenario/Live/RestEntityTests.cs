@@ -65,6 +65,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(0)]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void TestRestEntityUpdateRetry()
         {
             RestEntity<StreamingEndpointData> data = new StreamingEndpointData { Name = "testData" };
@@ -94,6 +96,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(0)]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void TestRestEntityDeleteRetry()
         {
             RestEntity<ProgramData> data = new ProgramData { Name = "testData", Id = "1" };
@@ -116,6 +120,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(0)]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void TestRestEntityExecuteActionAsync()
         {
             var dataContextMock = new Mock<IMediaDataServiceContext>();
@@ -151,6 +157,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(0)]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void TestRestEntityRefresh()
         {
             var dataContextMock = new Mock<IMediaDataServiceContext>();
@@ -178,6 +186,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod]
         [Priority(0)]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void TestRestEntitySendOperation()
         {
             var dataContextMock = new Mock<IMediaDataServiceContext>();

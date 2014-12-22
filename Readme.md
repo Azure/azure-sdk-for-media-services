@@ -1,4 +1,4 @@
-# Windows Azure Media Services SDK .NET 4 
+# Windows Azure Media Services SDK .NET 4.5
 
 Windows Azure Media Services allows you to build a media distribution solution that can stream audio and video to Windows, iOS, Android, and other devices and platforms.To learn more, visit our [Developer Center](http://www.windowsazure.com/en-us/develop/media-services/).
 
@@ -23,7 +23,7 @@ To get the source code of our SDKs and samples via **git** just type:
 
 1. A Media Services account in a new or existing Windows Azure subscription. See the topic [How to Create a Media Services Account](http://www.windowsazure.com/en-us/manage/services/media-services/how-to-create-a-media-services-account/).
 2. Operating Systems: Windows 7, Windows 2008 R2, or Windows 8.
-3. .NET Framework 4.5 or .NET Framework 4.
+3. .NET Framework 4.5.
 4. Visual Studio 2012 or Visual Studio 2010 SP1 (Professional, Premium, Ultimate, or Express).
 
 ### Building and Referencing the SDK

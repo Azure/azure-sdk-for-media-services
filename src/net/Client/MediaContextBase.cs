@@ -83,6 +83,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public abstract StorageAccountBaseCollection StorageAccounts { get; }
 
         /// <summary>
+        ///   Gets a collection to operate on EncodingReservedUnits.
+        /// </summary>
+        /// <seealso cref="EncodingReservedUnitCollection" />
+        /// <seealso cref="IEncodingReservedUnit" />
+        public abstract EncodingReservedUnitCollection EncodingReservedUnits { get; }
+
+        /// <summary>
         /// Returns default storage account
         /// </summary>
         public abstract IStorageAccount DefaultStorageAccount { get; }

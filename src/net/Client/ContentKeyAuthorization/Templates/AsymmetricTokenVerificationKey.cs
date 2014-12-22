@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="TokenVerificationKey.cs" company="Microsoft">Copyright 2014 Microsoft Corporation</copyright>
+// <copyright file="AsymmetricTokenVerificationKey.cs" company="Microsoft">Copyright 2014 Microsoft Corporation</copyright>
 // <license>
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,12 +19,18 @@ using System.Runtime.Serialization;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
 {
+    /// <summary>
+    /// Class AsymmetricTokenVerificationKey represents asymmetric keys which are used in token verification scenarios
+    /// </summary>
     [DataContract(Namespace = "http://schemas.microsoft.com/Azure/MediaServices/KeyDelivery/TokenRestrictionTemplate/v1")]
-    [KnownType(typeof(SymmetricVerificationKey))]
-    [KnownType(typeof(AsymmetricTokenVerificationKey))]
-    [KnownType(typeof(X509CertTokenVerificationKey))]
-    public abstract class TokenVerificationKey
+    public abstract class AsymmetricTokenVerificationKey : TokenVerificationKey
     {
+        /// <summary>
+        /// Gets or sets the raw body of a key.
+        /// </summary>
+        /// <value>The raw body.</value>
+        [DataMember(IsRequired = true)]
+        public virtual byte[] RawBody { get; set; }
 
     }
 }

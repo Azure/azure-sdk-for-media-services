@@ -52,6 +52,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private IngestManifestAssetCollection _ingestManifestAssets;
         private IngestManifestFileCollection _ingestManifestFiles;
         private StorageAccountBaseCollection _storageAccounts;
+        private EncodingReservedUnitCollection _encodingReservedUnits;
         private MediaServicesClassFactory _classFactory;
         private OAuthDataServiceAdapter dataServiceAdapter;
         private ServiceVersionAdapter versionAdapter;
@@ -351,6 +352,21 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     Interlocked.CompareExchange(ref _ingestManifestAssets, new IngestManifestAssetCollection(this, null), null);
                 }
                 return this._ingestManifestAssets;
+            }
+        }
+
+        /// <summary>
+        /// Gets the collection of EncodingReservedUnits
+        /// </summary>
+        public override EncodingReservedUnitCollection EncodingReservedUnits
+        {
+            get
+            {
+                if (_encodingReservedUnits == null)
+                {
+                    Interlocked.CompareExchange(ref _encodingReservedUnits, new EncodingReservedUnitCollection(this), null);
+                }
+                return this._encodingReservedUnits;
             }
         }
     }

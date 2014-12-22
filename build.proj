@@ -145,7 +145,7 @@
     
     <Message Importance="high" Text="DailyBvtRun tests:" />
     <Exec
-      Command="MSTest.exe /testcontainer:$(ScenarioTestAssemblyName) /resultsfile:$(TestOutputDirectory)\DailyBvtRun.trx /category:DailyBvtRun"
+      Command="MSTest.exe /testcontainer:$(ScenarioTestAssemblyName) /resultsfile:$(TestOutputDirectory)\DailyBvtRun.trx /category:Bvt"
       ContinueOnError="false" />   
   </Target>
   

@@ -102,6 +102,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>The task to create the program.</returns>
         public Task<IProgram> CreateAsync(ProgramCreationOptions options)
         {
+            if (options == null) { throw new ArgumentNullException("options"); }
+
             if (string.IsNullOrEmpty(options.Name))
             {
                 throw new ArgumentException(Resources.ErrorEmptyProgramName);

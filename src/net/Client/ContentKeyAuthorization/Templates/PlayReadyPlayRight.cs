@@ -1,9 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿//-----------------------------------------------------------------------
+// <copyright file="PlayReadyPlayRight.cs" company="Microsoft">Copyright 2014 Microsoft Corporation</copyright>
+// <license>
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// </license>
+
+
+using System;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
 {
@@ -12,7 +25,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
     /// and is required in license templates.
     /// </summary>
     [DataContract(Namespace = "http://schemas.microsoft.com/Azure/MediaServices/KeyDelivery/PlayReadyTemplate/v1")]
-    public class PlayReadyPlayRight
+    public class PlayReadyPlayRight : IExtensibleDataObject
     {
         /// <summary>
         /// Specifies the amount of time that the license is valid after the license is first used to play content.
@@ -176,6 +189,17 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
             }
         }
         private int? _uncompressedDigitalAudioOpl;
+
+        //Implementing IExtensibleDataObject member ExtensionData
+
+        #region IExtensibleDataObject Members
+        private ExtensionDataObject _extensionData;
+        public virtual ExtensionDataObject ExtensionData
+        {
+            get { return _extensionData; }
+            set { _extensionData = value; }
+        }
+        #endregion
 
     }
 }

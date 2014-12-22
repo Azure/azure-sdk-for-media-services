@@ -23,8 +23,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         #region Retry Logic tests
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(0)]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("Bvt")]
         public void TestIngestManifestAssetCreateRetry()
         {
             var asset = new AssetData { Name = "testData", Id = "testId" };
@@ -46,11 +48,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(0)]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("Bvt")]
         public void TestIngestManifestFileDeleteRetry()
         {
-            var data = new IngestManifestAssetData {  };
+            var data = new IngestManifestAssetData { };
 
             var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
 

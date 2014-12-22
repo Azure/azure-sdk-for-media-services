@@ -20,6 +20,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         #region Retry Logic tests
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(0)]
         public void TestIngestManifestFileCreateRetry()
         {
@@ -31,7 +33,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
 
-            var parent = new IngestManifestAssetData { Asset = new AssetData {} };
+            var parent = new IngestManifestAssetData { Asset = new AssetData { } };
             var ingestManifestFiles = new IngestManifestFileCollection(_mediaContext, parent);
 
             var tempFile = "a:\\wherever\\whatever.mp3";
@@ -42,6 +44,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(0)]
         [ExpectedException(typeof(WebException))]
         public void TestIngestManifestFileCreateFailedRetry()
@@ -74,6 +78,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(0)]
         [ExpectedException(typeof(WebException))]
         public void TestIngestManifestFileCreateFailedRetryMessageLengthLimitExceeded()
@@ -91,7 +97,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             var parent = new IngestManifestAssetData { Asset = new AssetData { } };
             var ingestManifestFiles = new IngestManifestFileCollection(_mediaContext, parent);
 
-            var tempFile = "a:\\wherever\\whatever.mp3"; 
+            var tempFile = "a:\\wherever\\whatever.mp3";
             try
             {
                 IIngestManifestFile actual = ingestManifestFiles.Create(tempFile);
@@ -111,6 +117,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(0)]
         public void TestIngestManifestFileDeleteRetry()
         {

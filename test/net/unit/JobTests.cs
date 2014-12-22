@@ -241,7 +241,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
 		 }
 
 		 [TestMethod]
-		 [TestCategory("DailyBvtRun")]
+		 [TestCategory("Bvt")]
 		 public void TestJobGetContentKeysRetry()
 		 {
 			 var data = new JobData { Name = "testData", Id = "testId" };
