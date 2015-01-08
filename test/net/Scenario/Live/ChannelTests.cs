@@ -34,6 +34,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(1)]
         [Ignore] // enable when environment is ready
         public void ChannelTestReset()
@@ -50,6 +52,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(1)]
         [Ignore] // enable when environment is ready
         public void ChannelTestCreateTrivial()
@@ -68,6 +72,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         #region Retry Logic tests
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(0)]
         public void TestChannelCreateRetry()
         {
@@ -99,6 +105,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(0)]
         [ExpectedException(typeof(WebException))]
         public void TestChannelCreateFailedRetry()
@@ -133,6 +141,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(0)]
         public void TestChannelUpdateRetry()
         {
@@ -160,6 +170,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(0)]
         public void TestChannelDeleteRetry()
         {
@@ -189,6 +201,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(0)]
         public void TestChannelSendDeleteOperationRetry()
         {
@@ -218,7 +232,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(0)]
+        [Ignore]
         public void TestChannelSendCreateOperation()
         {
             var expected = new ChannelData { Name = "testData" };
@@ -296,7 +313,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         {
             return new ChannelOutput
             {
-                Hls = new ChannelOutputHls {FragmentsPerSegment = 1}
+                Hls = new ChannelOutputHls { FragmentsPerSegment = 1 }
             };
         }
 

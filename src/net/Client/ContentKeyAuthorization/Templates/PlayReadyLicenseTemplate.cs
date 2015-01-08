@@ -1,11 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿//-----------------------------------------------------------------------
+// <copyright file="PlayReadyLicenseTemplate.cs" company="Microsoft">Copyright 2014 Microsoft Corporation</copyright>
+// <license>
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// </license>
+
+
+using System;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
-using Microsoft.WindowsAzure.MediaServices.Client;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
 {
@@ -13,7 +24,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
     /// Represents a license template for creating PlayReady licenses to return to clients.
     /// </summary>
     [DataContract(Namespace = "http://schemas.microsoft.com/Azure/MediaServices/KeyDelivery/PlayReadyTemplate/v1")]
-    public class PlayReadyLicenseTemplate
+    public class PlayReadyLicenseTemplate : IExtensibleDataObject
     {
         public PlayReadyLicenseTemplate()
         {
@@ -43,6 +54,21 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
         public DateTime? ExpirationDate { get; set; }
 
         /// <summary>
+        /// Configures starting DateTime value when the license is valid.  Attempts to use the license before this date and time 
+        /// will result in an error on the client.  The DateTime value is calculated as DateTime.UtcNow + RelativeBeginDate when 
+        /// the license is issued
+        /// </summary>
+        [DataMember(EmitDefaultValue = false)]
+        public TimeSpan? RelativeBeginDate { get; set; }
+
+        /// <summary>
+        /// Configures the DateTime value when the license expires.  Attempts to use the license after this date and time will result 
+        /// in an error on the client.  The DateTime value is calculated as DateTime.UtcNow + RelativeExpirationDate when the license 
+        /// is issued
+        /// </summary>
+        [DataMember(EmitDefaultValue = false)]
+        public TimeSpan? RelativeExpirationDate { get; set; }
+        /// <summary>
         /// Configures the Grace Period setting of the PlayReady license.  This setting affects how DateTime based restrictions are
         /// evaluated on certain devices in the situation that the devices secure clock becomes unset.
         /// </summary>
@@ -71,5 +97,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
         /// </summary>
         [DataMember(IsRequired=true)]
         public PlayReadyContentKey ContentKey { get; set; }
+
+        //Implementing IExtensibleDataObject member ExtensionData
+        
+        #region IExtensibleDataObject Members
+        private ExtensionDataObject _extensionData;
+        public virtual ExtensionDataObject ExtensionData
+        {
+            get { return _extensionData; }
+            set { _extensionData = value; }
+        }
+        #endregion
     }
 }

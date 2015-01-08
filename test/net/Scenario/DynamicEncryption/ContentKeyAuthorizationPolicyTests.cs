@@ -39,6 +39,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void CreateContentKeyAuthorizationPolicy()
         {
             ContentKeyAuthorizationPolicyCollection collection = _mediaContext.ContentKeyAuthorizationPolicies;
@@ -49,6 +51,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void CreateAndDeleteContentKeyAuthorizationPolicy()
         {
             ContentKeyAuthorizationPolicyCollection collection = _mediaContext.ContentKeyAuthorizationPolicies;
@@ -61,6 +66,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void ExecuteFirstOrDefaultAuthorizationPolicy()
         {
             IContentKeyAuthorizationPolicy policy = _mediaContext.ContentKeyAuthorizationPolicies.CreateAsync(testRun).Result;
@@ -68,30 +76,42 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void ExecuteCountForAuthorizationPolicy()
         {
             int count = _mediaContext.ContentKeyAuthorizationPolicies.Count();
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void ExecuteTopForAuthorizationPolicy()
         {
             List<IContentKeyAuthorizationPolicy> policies = _mediaContext.ContentKeyAuthorizationPolicies.Take(5).ToList();
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void FilterPolicyById()
         {
             IContentKeyAuthorizationPolicy policy = _mediaContext.ContentKeyAuthorizationPolicies.Where(p => p.Id == "nb:ckpid:UUID:" + Guid.NewGuid().ToString()).FirstOrDefault();
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void FilterPolicyByName()
         {
             IContentKeyAuthorizationPolicy policy = _mediaContext.ContentKeyAuthorizationPolicies.Where(p => p.Name == testRun).FirstOrDefault();
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void CreateAndUpdateContentKeyAuthorizationPolicy()
         {
             ContentKeyAuthorizationPolicyCollection collection = _mediaContext.ContentKeyAuthorizationPolicies;
@@ -109,6 +129,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void UpdateContentKeyAuthorizationPolicyId()
         {
             IContentKeyAuthorizationPolicy policy = _mediaContext.ContentKeyAuthorizationPolicies.CreateAsync(testRun).Result;
@@ -131,6 +153,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void QueryContentKeyBYAuthorizationPolicyId()
         {
             IContentKeyAuthorizationPolicy policy = _mediaContext.ContentKeyAuthorizationPolicies.CreateAsync(testRun).Result;
@@ -144,6 +169,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void AddingOptionsToCreatedPolicy()
         {
             string optionName = "AddingOptionsToCreatedPolicy Test Option";
@@ -170,6 +197,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         #region Retry Logic tests
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(0)]
         public void TestContentKeyAuthorizationPolicyCreateRetry()
         {
@@ -190,6 +219,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(0)]
         [ExpectedException(typeof(WebException))]
         public void TestContentKeyAuthorizationPolicyCreateFailedRetry()
@@ -218,6 +249,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(0)]
         [ExpectedException(typeof(WebException))]
         public void TestContentKeyAuthorizationPolicyCreateFailedRetryMessageLengthLimitExceeded()
@@ -248,6 +281,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(0)]
         public void TestContentKeyAuthorizationPolicyUpdateRetry()
         {
@@ -268,6 +303,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(0)]
         public void TestContentKeyAuthorizationPolicyDeleteRetry()
         {

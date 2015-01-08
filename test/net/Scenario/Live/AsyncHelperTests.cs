@@ -42,6 +42,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         ///A test for WaitOperationCompletion
         ///</summary>
         [TestMethod()]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void WaitOperationCompletionTest()
         {
             var data = new OperationData {Id = "1", State = OperationState.Succeeded.ToString()};

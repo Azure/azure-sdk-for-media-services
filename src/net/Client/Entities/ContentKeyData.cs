@@ -186,6 +186,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     .ContinueWith<IContentKey>(
                     t =>
                     {
+                        t.ThrowIfFaulted();
                         var data = (ContentKeyData)t.Result.AsyncState;
                         return data;
                     });

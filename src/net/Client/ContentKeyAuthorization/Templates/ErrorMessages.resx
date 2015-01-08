@@ -159,4 +159,10 @@
   <data name="UncompressedDigitalVideoOplValueError" xml:space="preserve">
     <value>The value can only be set to null, 100, 250, 270, or 300.</value>
   </data>
+  <data name="BeginDateAndRelativeBeginDateCannotbeSetSimultaneouslyError" xml:space="preserve">
+    <value>Set BeginDate or RelativeBeginDate but not both</value>
+  </data>
+  <data name="ExpirationDateAndRelativeExpirationDateCannotbeSetSimultaneouslyError" xml:space="preserve">
+    <value>Set ExpirationDate or RelativeExpirationDate but not both</value>
+  </data>
 </root>

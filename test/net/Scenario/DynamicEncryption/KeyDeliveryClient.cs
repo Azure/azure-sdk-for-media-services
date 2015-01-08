@@ -31,7 +31,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.DynamicEncryption
             _retryPolicy = retryPolicy;
         }
 
-        public byte[] AcquireHlsKey(Uri keydeliveryUri, string authToken)
+        public byte[] AcquireHlsKeyWithBearerHeader(Uri keydeliveryUri, string authToken)
         {
             var kdClient = new HttpClient();
             kdClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authToken);

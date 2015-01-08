@@ -1,4 +1,4 @@
-ï»¿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="AssemblyInfo.cs" company="Microsoft">Copyright 2012 Microsoft Corporation</copyright>
 // <license>
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,8 +26,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Microsoft")]
 [assembly: AssemblyProduct("Windows Azure Media Services")]
-[assembly: AssemblyCopyright("Copyright Â© 2012 Microsoft Corp.")]
-[assembly: AssemblyTrademark("Microsoft Â® is a registered trademark of Microsoft Corporation.")]
+[assembly: AssemblyCopyright("Copyright © 2012 Microsoft Corp.")]
+[assembly: AssemblyTrademark("Microsoft ® is a registered trademark of Microsoft Corporation.")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
@@ -52,9 +52,6 @@ using System.Runtime.InteropServices;
 [assembly: NeutralResourcesLanguage("en-US")]
 
 //For delay signing specify PublicKey for each friendly assembly
-//[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Microsoft.WindowsAzure.MediaServices.Client.Tests.Scenario, PublicKey=0024000004800000940000000602000000240000525341310004000001000100b5fc90e7027f67871e773a8fde8938c81dd402ba65b9201d60593e96c492651e889cc13f1415ebb53fac1131ae0bd333c5ee6021672d9718ea31a8aebd0da0072f25d87dba6fc90ffd598ed4da35e44c398c454307e8e33b8426143daec9f596836f97c8f74750e5975c64e2189f45def46b2a2b1247adc3652bf5c308055da9")]
-//[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit, PublicKey=0024000004800000940000000602000000240000525341310004000001000100b5fc90e7027f67871e773a8fde8938c81dd402ba65b9201d60593e96c492651e889cc13f1415ebb53fac1131ae0bd333c5ee6021672d9718ea31a8aebd0da0072f25d87dba6fc90ffd598ed4da35e44c398c454307e8e33b8426143daec9f596836f97c8f74750e5975c64e2189f45def46b2a2b1247adc3652bf5c308055da9")]
-//[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Microsoft.WindowsAzure.MediaServices.Client.Tests.Common, PublicKey=0024000004800000940000000602000000240000525341310004000001000100b5fc90e7027f67871e773a8fde8938c81dd402ba65b9201d60593e96c492651e889cc13f1415ebb53fac1131ae0bd333c5ee6021672d9718ea31a8aebd0da0072f25d87dba6fc90ffd598ed4da35e44c398c454307e8e33b8426143daec9f596836f97c8f74750e5975c64e2189f45def46b2a2b1247adc3652bf5c308055da9")]
-[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Microsoft.WindowsAzure.MediaServices.Client.Tests.Scenario")]
-[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit")]
-[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Microsoft.WindowsAzure.MediaServices.Client.Tests.Common")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Microsoft.WindowsAzure.MediaServices.Client.Tests.Scenario, PublicKey=0024000004800000940000000602000000240000525341310004000001000100b5fc90e7027f67871e773a8fde8938c81dd402ba65b9201d60593e96c492651e889cc13f1415ebb53fac1131ae0bd333c5ee6021672d9718ea31a8aebd0da0072f25d87dba6fc90ffd598ed4da35e44c398c454307e8e33b8426143daec9f596836f97c8f74750e5975c64e2189f45def46b2a2b1247adc3652bf5c308055da9")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit, PublicKey=0024000004800000940000000602000000240000525341310004000001000100b5fc90e7027f67871e773a8fde8938c81dd402ba65b9201d60593e96c492651e889cc13f1415ebb53fac1131ae0bd333c5ee6021672d9718ea31a8aebd0da0072f25d87dba6fc90ffd598ed4da35e44c398c454307e8e33b8426143daec9f596836f97c8f74750e5975c64e2189f45def46b2a2b1247adc3652bf5c308055da9")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Microsoft.WindowsAzure.MediaServices.Client.Tests.Common, PublicKey=0024000004800000940000000602000000240000525341310004000001000100b5fc90e7027f67871e773a8fde8938c81dd402ba65b9201d60593e96c492651e889cc13f1415ebb53fac1131ae0bd333c5ee6021672d9718ea31a8aebd0da0072f25d87dba6fc90ffd598ed4da35e44c398c454307e8e33b8426143daec9f596836f97c8f74750e5975c64e2189f45def46b2a2b1247adc3652bf5c308055da9")]

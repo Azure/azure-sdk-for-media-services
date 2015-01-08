@@ -49,6 +49,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void TestQueries()
         {
             _mediaContext.Assets.FirstOrDefault();
@@ -81,6 +83,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         /// Known issue with mime-type detection
         /// </summary>
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(1)]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldCreateAssetFile()
@@ -113,9 +117,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(0)]
-        [TestCategory("DailyBvtRun")]
-        [ExpectedException(typeof (ArgumentException))]
+        [TestCategory("Bvt")]
+        [ExpectedException(typeof(ArgumentException))]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldThrowArgumentExceptionOnAssetUploadWhenLocalFileNameNotMatchingAssetFileName()
         {
@@ -138,6 +144,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(1)]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldCreateSingleFileAssetWithNoLocatorUsingOveloadSync()
@@ -153,8 +161,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(1)]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("Bvt")]
         public void ShouldCreateAssetFileInfoWithoutUploadingFile()
         {
             IAsset asset = _mediaContext.Assets.Create("Empty", AssetCreationOptions.StorageEncrypted);
@@ -170,8 +180,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(1)]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("Bvt")]
         public void ShouldNotHaveLocatorsAfterAssetCreation()
         {
             IAsset asset = _mediaContext.Assets.Create("Test", AssetCreationOptions.StorageEncrypted);
@@ -179,9 +191,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(1)]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("Bvt")]
         public void ShouldCreateEncryptedInitilizedAsset()
         {
             IAsset asset = _mediaContext.Assets.Create("Test", AssetCreationOptions.StorageEncrypted);
@@ -209,14 +223,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             Assert.AreEqual(asset.Name, refreshedAsset.Name);
             Assert.AreEqual(AssetState.Initialized, refreshedAsset.State);
             Assert.AreEqual(1, refreshedAsset.AssetFiles.Count(), "file count wrong");
-            VerifyAndDownloadAsset(refreshedAsset,1,false);
+            VerifyAndDownloadAsset(refreshedAsset, 1, false);
             ContentKeyTests.VerifyFileAndContentKeyMetadataForStorageEncryption(refreshedAsset, _mediaContext);
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(1)]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("Bvt")]
         public void ShouldCreateEmptyNoneEncryptedAssetUploadFileAndDownloadIt()
         {
             IAsset asset = _mediaContext.Assets.Create("Test", AssetCreationOptions.None);
@@ -234,6 +250,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Media\SmallWmv2.wmv", "Media")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         [Priority(1)]
@@ -264,7 +282,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
 
         [TestMethod]
-        [ExpectedException(typeof (FileNotFoundException))]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [ExpectedException(typeof(FileNotFoundException))]
         public void ShouldThrowCreatingAssetFileWithMissingFile()
         {
             try
@@ -278,6 +298,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(1)]
         [Ignore]
         public void CreateAssetAndUpload4FilesUsingSyncCall()
@@ -287,6 +309,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(0)]
         [Ignore]
         public void ShouldCreateAssetAndUpload10FilesUsingSyncCall()
@@ -296,6 +320,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(1)]
         [Ignore]
         public void ShouldCreateAssetAndUpload4FilesUsingAsyncCall()
@@ -306,6 +332,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(0)]
         [Ignore]
         public void ShouldCreateAssetAndUpload10FilesUsingAsyncCall()
@@ -316,6 +344,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(1)]
         [Ignore]
         public void ShouldCreateAssetAndUploadAndDownload10FilesUsingAsyncCall()
@@ -357,6 +387,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [Ignore]
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(1)]
         public void ShouldCreateAssetAndCreate100FilesUsingAsyncCall()
         {
@@ -375,8 +407,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Media\SmallWmv2.wmv", "Media")]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("Bvt")]
         public void CreateAssetWithUniqueAlternateIdAndFilterByIt()
         {
             CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.StorageEncrypted);
@@ -390,9 +424,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof (DataServiceQueryException))]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [ExpectedException(typeof(DataServiceQueryException))]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("Bvt")]
         public void ShouldNotReturnAssetsForEmptyId()
         {
             IAsset createdAsset = CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.StorageEncrypted);
@@ -401,7 +437,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void ShouldQueryAssetsByNameWithContains()
         {
             IAsset createdAsset = CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.StorageEncrypted);
@@ -411,8 +449,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("Bvt")]
         public void ShouldModifyAssetFile()
         {
             string assetId;
@@ -434,21 +474,25 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(1)]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldDownloadAssetFile()
         {
             IAsset asset = CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
 
-            
+
             VerifyAndDownloadAsset(asset, 1);
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(1)]
         public void ShouldDownloadSameAssetFile2TimesIdenticallyAsStorageSDK()
         {
-            
+
             IAsset asset = _mediaContext.Assets.Create("Test", AssetCreationOptions.None);
             VerifyAsset(asset);
             IAccessPolicy policy = _mediaContext.AccessPolicies.Create("temp", TimeSpan.FromMinutes(10), AccessPermissions.Write);
@@ -466,19 +510,21 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             policy.Delete();
             IAsset refreshedAsset = RefreshedAsset(asset);
             Assert.AreEqual(2, refreshedAsset.AssetFiles.Count(), "file count wrong");
-           
+
 
             for (int i = 0; i < 2; i++)
             {
                 VerifyAndDownloadAsset(refreshedAsset, 2);
             }
-           
+
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(0)]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("Bvt")]
         public void ShouldDownloadCommonEncryptionProtectedAssetFile()
         {
             IAsset asset = CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.CommonEncryptionProtected);
@@ -486,9 +532,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(1)]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("Bvt")]
         public void ShouldDownloadEnvelopeEncryptionProtectedAssetFile()
         {
             IAsset asset = _mediaContext.Assets.Create(_smallWmv, AssetCreationOptions.EnvelopeEncryptionProtected);
@@ -499,15 +547,19 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(0)]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldDownloadIngestEncryptedAssetFile()
         {
             IAsset asset = CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.StorageEncrypted);
-            VerifyAndDownloadAsset(asset, 1,false);
+            VerifyAndDownloadAsset(asset, 1, false);
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldDeleteAssetsForFinishedJob()
         {
@@ -523,6 +575,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldDeleteParentAssetAndGetParentCount()
         {
@@ -541,6 +595,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@".\Resources\interview.wmv", "Content")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldNotThrowTryingToDeleteAssetWithActiveLocators()
@@ -564,8 +620,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@".\Resources\interview.wmv", "Content")]
-       public void ShouldCreateAssetWithSingleFile()
+        public void ShouldCreateAssetWithSingleFile()
         {
             string assetFilePath = @"Content\interview.wmv";
 
@@ -581,8 +639,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@".\Resources\TestFiles", "TestFiles")]
-       public void ShouldCreateAssetAsyncWithMultipleFiles()
+        public void ShouldCreateAssetAsyncWithMultipleFiles()
         {
             string[] files = Directory.GetFiles("TestFiles");
 
@@ -612,6 +672,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@".\Resources\interview.wmv", "Content")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldReportProgressForFile()
@@ -636,8 +698,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@".\Resources\interview.wmv", "Content")]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("Bvt")]
         public void ShouldUpdateAssetNameAndAlternateId()
         {
             string fileName = @"Content\interview.wmv";
@@ -662,8 +726,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-       public void ShouldDeleteAsset()
+        public void ShouldDeleteAsset()
         {
             IAsset asset = CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
 
@@ -684,8 +750,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("Bvt")]
         public void ShouldDeleteEmptyAsset()
         {
             IAsset asset = _mediaContext.Assets.Create("ShouldDeleteEmptyAsset", AssetCreationOptions.None);
@@ -707,8 +775,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(0)]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("Bvt")]
         public void ShouldSetContentFileSizeOnAssetFileWithoutUpload()
         {
             IAsset asset = _mediaContext.Assets.Create("test", AssetCreationOptions.None);
@@ -729,7 +799,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             Assert.AreEqual(expected, refreshedFile.ContentFileSize, "ContentFileSize Mismatch after Update");
         }
 
-        
+
         #region Helper/utility methods
 
         public static IAsset CreateAsset(CloudMediaContext datacontext, string filePath, AssetCreationOptions options)
@@ -752,14 +822,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             return asset;
         }
 
-       
+
         /// <summary>
         /// Verifies the and download asset.
         /// </summary>
         /// <param name="asset">The asset.</param>
         /// <param name="expectedFileCount">The expected file count.</param>
         /// <param name="performStorageSdkDownloadVerification">if set to <c>true</c> also perform storage SDK download verification.</param>
-        private void VerifyAndDownloadAsset(IAsset asset, int expectedFileCount,bool performStorageSdkDownloadVerification = true)
+        private void VerifyAndDownloadAsset(IAsset asset, int expectedFileCount, bool performStorageSdkDownloadVerification = true)
         {
             Assert.AreEqual(expectedFileCount, asset.AssetFiles.Count(), "file count wrong");
 
@@ -768,7 +838,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             var client = storageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containername);
             Assert.IsTrue(container.Exists(), "Asset container {0} can't be found", container);
-          
+
             foreach (var assetFile in asset.AssetFiles)
             {
                 string downloadPathForWamsSdk = Guid.NewGuid().ToString();
@@ -829,8 +899,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                     {
                         File.Delete(downloadPathForWamsSdk);
                     }
-                }                
-            }         
+                }
+            }
         }
 
         private static string GetHashValueForFileMd5CheckSum(string filepath)
@@ -908,7 +978,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             }
         }
 
-        private  string CreateNewFileFromOriginal(DirectoryInfo info, out string fileName)
+        private string CreateNewFileFromOriginal(DirectoryInfo info, out string fileName)
         {
             string fullFilePath = Path.Combine(info.FullName, Guid.NewGuid().ToString() + ".wmv");
             File.Copy(_smallWmv, fullFilePath);
@@ -990,7 +1060,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
                 var files = new List<Task>();
                 BlobTransferClient blobTransferClient = _mediaContext.MediaServicesClassFactory.GetBlobTransferClient();
-               IAccessPolicy policy = _mediaContext.AccessPolicies.Create("Write", TimeSpan.FromMinutes(20), AccessPermissions.Write);
+                IAccessPolicy policy = _mediaContext.AccessPolicies.Create("Write", TimeSpan.FromMinutes(20), AccessPermissions.Write);
                 ILocator locator = _mediaContext.Locators.CreateSasLocator(asset, policy);
 
                 for (int i = 0; i < expected; i++)
