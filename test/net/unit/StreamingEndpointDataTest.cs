@@ -27,13 +27,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
     ///to contain all StreamingEndpointDataTest Unit Tests
     ///</summary>
     [TestClass]
-    [Ignore] //TODO: enable when the streaming endpoint is deployed in the test environment
     public class StreamingEndpointDataTest
     {
         /// <summary>
         ///A test for Settings
         ///</summary>
-        [TestMethod()]
+        [TestMethod]
         public void SettingsTestSubProperties()
         {
             IStreamingEndpoint target = new StreamingEndpointData();
@@ -60,7 +59,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
             {
                  AccessControl = new ChannelAccessControl
                  {
-                     IPAllowList = new List<IPRange> {new IPRange {Address = IPAddress.Parse("192.168.0.1/24"), SubnetPrefixLength = 24} }
+                     IPAllowList = new List<IPRange> {new IPRange {Address = IPAddress.Parse("192.168.0.0"), SubnetPrefixLength = 24} }
                  }
             };
 
