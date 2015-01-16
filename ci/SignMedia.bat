@@ -1,12 +1,5 @@
 @echo off
 
-echo Validating the \\adxsdksign\signed share is empty...
-for /F %%I in ('dir /s /b c:\signing\signed\*.*') do (
-    echo FAILED. The \\adxsdksign\signed share is not empty. Please empty the share before starting a new signing job.
-    exit /b -1
-)
-echo OK
-
 echo Cleaning signed and packages directories
 del /q c:\signing\signed\*.*
 del /q c:\packages\*.*
@@ -17,7 +10,7 @@ if %ERRORLEVEL% neq 0 goto copyfailed
 echo OK
 
 echo Signing managed desktop library DLLs...
-C:\tools\ci-signing\CodeSignUtility\csu.exe /c1=72 /c2=10006 "/d=.NET SDK" "/kw=MediaServices"
+%CI_SIGNING%\CodeSignUtility\csu.exe /c1=72 /c2=10006 "/d=.NET SDK" "/kw=MediaServices"
 if %ERRORLEVEL% neq 0 goto signfailed
 echo OK
 
@@ -26,12 +19,12 @@ del /q c:\signing\tosign\*.*
 echo OK
 
 echo Copying Media SDK signed managed DLLs and the pdbs to the final drop location...
-echo Creating \drop\WAMSSDK\lib\net40
-md .\drop\WAMSSDK\lib\net40
+echo Creating \drop\WAMSSDK\lib\net45
+md .\drop\WAMSSDK\lib\net45
 echo Copy MediaServices.Client.dll
-copy /y c:\signing\signed\Microsoft.WindowsAzure.MediaServices.Client.dll .\drop\WAMSSDK\lib\net40\
+copy /y c:\signing\signed\Microsoft.WindowsAzure.MediaServices.Client.dll .\drop\WAMSSDK\lib\net45\
 echo Copy MediaServices.Client.pdb
-copy /y .\Publish\Build\Release\Microsoft.WindowsAzure.MediaServices.Client.pdb .\drop\WAMSSDK\lib\net40\
+copy /y .\Publish\Build\Release\Microsoft.WindowsAzure.MediaServices.Client.pdb .\drop\WAMSSDK\lib\net45\
 echo Copy Nuget spec
 copy /y .\.nuget\windowsazure.mediaservices.nuspec .\drop\WAMSSDK\
 if %ERRORLEVEL% neq 0 goto copyfailed
@@ -40,11 +33,6 @@ echo OK
 echo Creating Media SDK NuGet Packages....
 nuget.exe pack .\drop\WAMSSDK\windowsazure.mediaservices.nuspec -o .\drop -Symbols
 if %ERRORLEVEL% neq 0 goto packagingfailed
-echo OK
-
-echo Publishing Media SDK NuGet Package to Myget server
-nuget push .\drop\windowsazure.mediaservices.%1.nupkg %2 -Source %3
-if %ERRORLEVEL% neq 0 goto publishfailed
 echo OK
 
 echo Copying files to the packages share...

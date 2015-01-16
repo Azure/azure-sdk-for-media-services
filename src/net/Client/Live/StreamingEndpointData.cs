@@ -70,6 +70,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Gets or sets streaming endpoint state.
         /// </summary>
         public string State { get; set; }
+        
+        /// <summary>
+        /// Gets or sets if CDN to be enabled on this Streaming Endpoint.
+        /// </summary>
+        public bool CdnEnabled { get; set; }
 
         /// <summary>
         /// Gets streaming endpoint state.

@@ -191,6 +191,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 Name = options.Name,
                 Description = options.Description,
                 ScaleUnits = options.ScaleUnits,
+                CdnEnabled = options.CdnEnabled,
                 CrossSiteAccessPolicies = options.CrossSiteAccessPolicies
             };
 
