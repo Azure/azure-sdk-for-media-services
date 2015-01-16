@@ -17,7 +17,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private const int MaxSasSignatureRetry = 30;
 		private readonly TimeSpan SasSignatureRetryTime = TimeSpan.FromSeconds(1);
 		private readonly TimeSpan SasPolicyActivationMaxTime = TimeSpan.FromSeconds(30);
-
+        private readonly TimeSpan SasPolicyActivationMaxTimeThreshold = TimeSpan.FromSeconds(5);
         private readonly BlobTransferSpeedCalculator _uploadDownloadSpeedCalculator = 
             new BlobTransferSpeedCalculator(SpeedCalculatorCapacity);
 
@@ -97,8 +97,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             {
                 throw new ArgumentNullException("action");
             }
-
-
             SuccessfulOrRetryableResult result = 
                 new SuccessfulOrRetryableResult
                 {
@@ -280,8 +278,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 		{
 			var stopwatch = new System.Diagnostics.Stopwatch();
 			stopwatch.Start();
-
-			while (stopwatch.Elapsed < SasPolicyActivationMaxTime)
+            while (stopwatch.Elapsed < SasPolicyActivationMaxTime + SasPolicyActivationMaxTimeThreshold)
 			{
 				try
 				{
@@ -297,11 +294,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 						throw;
 					}
 					var status = ((HttpWebResponse)webException.Response).StatusCode;
-					if (status != HttpStatusCode.Forbidden)
-					{
-						throw;
-					}
-					Thread.Sleep(SasSignatureRetryTime);
+                    //Retrying only for forbidden exceptions due to a locator issue.
+                    //After SasPolicyActivationTime, we need to rethrow the forbidden exception so that 
+                    //necessary cleanup is done and goes to the exception callback.
+                    if ((status != HttpStatusCode.Forbidden) || (stopwatch.Elapsed > SasPolicyActivationMaxTime))
+                    {
+                        throw;
+                    }
+                    Thread.Sleep(SasSignatureRetryTime);
 				}
 			}
 		}
