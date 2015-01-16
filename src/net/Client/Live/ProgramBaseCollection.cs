@@ -102,6 +102,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>The task to create the program.</returns>
         public Task<IProgram> CreateAsync(ProgramCreationOptions options)
         {
+            if (options == null) { throw new ArgumentNullException("options"); }
+
             if (string.IsNullOrEmpty(options.Name))
             {
                 throw new ArgumentException(Resources.ErrorEmptyProgramName);
@@ -127,7 +129,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             IMediaDataServiceContext dataContext = MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AddObject(ProgramSet, program);
 
-            MediaRetryPolicy retryPolicy = MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+            MediaRetryPolicy retryPolicy = MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy(dataContext as IRetryPolicyAdapter);
 
             return retryPolicy.ExecuteAsync(() => dataContext.SaveChangesAsync(program))
                 .ContinueWith<IProgram>(t =>

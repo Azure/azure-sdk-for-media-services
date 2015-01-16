@@ -1,18 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
+﻿//-----------------------------------------------------------------------
+// <copyright file="TokenRestrictionTemplateSerializer.cs" company="Microsoft">Copyright 2012 Microsoft Corporation</copyright>
+// <license>
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// </license>
+
+using System;
 using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Reflection;
 using System.Runtime.Serialization;
 using System.Security.Cryptography;
-using System.Threading.Tasks;
 using System.Text;
 using System.Web;
 using System.Xml;
-using System.Xml.Linq;
-using System.Xml.Schema;
-using System.Xml.Serialization;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
 {
@@ -26,6 +35,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
             Type[] knownTypeList = 
             {
             typeof(SymmetricVerificationKey),
+            typeof(AsymmetricTokenVerificationKey),
+            typeof(X509CertTokenVerificationKey),
             };
 
             return new DataContractSerializer(typeof(TokenRestrictionTemplate), knownTypeList);
@@ -42,93 +53,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
             DataContractSerializer serializer = GetSerializer();
 
             return MediaServicesLicenseTemplateSerializer.SerializeToXml(template, serializer);
-        }
-
-        private static XmlSchemaSet _cacheSchemaSet;
-        private static XmlSchemaSet GetOldTokenFormatSchemaSet()
-        {
-            if (_cacheSchemaSet == null)
-            {
-                Assembly assembly = Assembly.GetExecutingAssembly();
-
-                XmlSchemaSet schemaSets = new XmlSchemaSet();
-                using (Stream oldTokenTemplateFormatSchemaStream = assembly.GetManifestResourceStream("Microsoft.Cloud.Media.KeyDelivery.Templates.OldTokenTemplateFormat.xsd"))
-                {
-                    XmlReaderSettings xmlReaderSettings = new XmlReaderSettings { DtdProcessing = DtdProcessing.Ignore };
-
-                    XmlReader oldTokenTemplateFormatSchemaReader = XmlReader.Create(oldTokenTemplateFormatSchemaStream, xmlReaderSettings);
-
-                    XmlSchema oldTokenTemplateFormatSchema = XmlSchema.Read(oldTokenTemplateFormatSchemaReader, null);
-
-                    schemaSets.Add(oldTokenTemplateFormatSchema);
-                }
-
-                _cacheSchemaSet = schemaSets;
-            }
-
-            return _cacheSchemaSet;
-        }
-
-        private static void ValidateAgainstOldTokenFormatSchema(string template)
-        {
-            XmlSchemaSet schemaSets = GetOldTokenFormatSchemaSet();
-
-            XDocument templateDocument = XDocument.Parse(template);
-
-            templateDocument.Validate(schemaSets, null);
-        }
-
-        private static bool IsOldTokenFormat(string template)
-        {
-            bool returnValue = false;
-            XDocument parsedTemplate = XDocument.Parse(template);
-
-            if (0 == String.Compare(parsedTemplate.Root.Name.LocalName, "TokenRestriction", StringComparison.Ordinal))
-            {
-                returnValue = true;
-            }
-
-            return returnValue;
-        }
-
-        private static TokenRestrictionTemplate ConvertFromOldTokenFormat(XmlReader reader)
-        {            
-            XmlSerializer serializer = new XmlSerializer(typeof(TokenRestriction));
-
-            TokenRestriction tokenRestrictionInOldFormat = (TokenRestriction)serializer.Deserialize(reader);
-
-            TokenRestrictionTemplate templateToReturn = new TokenRestrictionTemplate();
-            templateToReturn.Issuer = new Uri(tokenRestrictionInOldFormat.issuer);
-            templateToReturn.Audience = new Uri(tokenRestrictionInOldFormat.audience);
-
-            if (tokenRestrictionInOldFormat.RequiredClaims != null)
-            {
-                foreach (TokenRestrictionClaim currentClaim in tokenRestrictionInOldFormat.RequiredClaims)
-                {
-                    TokenClaim claim = new TokenClaim(currentClaim.type, currentClaim.value);
-                    templateToReturn.RequiredClaims.Add(claim);
-                }
-            }
-
-            if (tokenRestrictionInOldFormat.VerificationKeys != null)
-            {
-                foreach (TokenRestrictionVerificationKey verificationKey in tokenRestrictionInOldFormat.VerificationKeys)
-                {
-                    if (verificationKey.type == VerificationKeyType.Symmetric)
-                    {
-                        if (verificationKey.IsPrimary && (templateToReturn.PrimaryVerificationKey == null))
-                        {
-                            templateToReturn.PrimaryVerificationKey = new SymmetricVerificationKey(verificationKey.value);
-                        }
-                        else
-                        {
-                            templateToReturn.AlternateVerificationKeys.Add(new SymmetricVerificationKey(verificationKey.value));
-                        }
-                    }
-                }
-            }
-
-            return templateToReturn;
         }
 
         /// <summary>
@@ -150,14 +74,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
 
                 reader = XmlReader.Create(stringReader);
 
-                if (IsOldTokenFormat(templateXml))
-                {
-                    templateToReturn = ConvertFromOldTokenFormat(reader);
-                }
-                else
-                {
-                    templateToReturn = (TokenRestrictionTemplate)serializer.ReadObject(reader);
-                }
+                templateToReturn = (TokenRestrictionTemplate)serializer.ReadObject(reader);
             }
             finally
             {
@@ -233,8 +150,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
 
                 string signatureString = Convert.ToBase64String(signatureBytes);
 
-                builder.Insert(0, "Bearer=");
-                builder.AppendFormat("&HMACSHA256={0}", HttpUtility.UrlEncode(signatureString));
+               builder.AppendFormat("&HMACSHA256={0}", HttpUtility.UrlEncode(signatureString));
             }
 
             return builder.ToString();

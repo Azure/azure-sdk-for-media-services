@@ -16,16 +16,11 @@
 
 
 using System;
-using System.Collections.Specialized;
 using System.Data.Services.Client;
 using System.Globalization;
-using System.IO;
 using System.Net;
 using System.Net.Security;
-using System.Runtime.Serialization.Json;
 using System.Security.Cryptography.X509Certificates;
-using Microsoft.Practices.TransientFaultHandling;
-using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.OAuth
 {
@@ -69,7 +64,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.OAuth
         /// <param name="dataServiceContext">The data service context.</param>
         public void Adapt(DataServiceContext dataServiceContext)
         {
-            dataServiceContext.SendingRequest += this.OnSendingRequest;
+            if (dataServiceContext == null) { throw new ArgumentNullException("dataServiceContext"); }
+            dataServiceContext.SendingRequest2 += this.OnSendingRequest;
         }
 
         /// <summary>
@@ -85,15 +81,19 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.OAuth
 
             if (request.Headers[AuthorizationHeader] == null)
             {
-                lock (_acsRefreshLock)
-                {
-                    if (DateTime.UtcNow.AddSeconds(ExpirationTimeBufferInSeconds) > this._credentials.TokenExpiration)
-                    {
-                        this._credentials.RefreshToken();
-                    }
-                }
-
+                RefreshToken();
                 request.Headers.Add(AuthorizationHeader, string.Format(CultureInfo.InvariantCulture, BearerTokenFormat, this._credentials.AccessToken));
+            }
+        }
+
+        private void RefreshToken()
+        {
+            lock (_acsRefreshLock)
+            {
+                if (DateTime.UtcNow.AddSeconds(ExpirationTimeBufferInSeconds) > this._credentials.TokenExpiration)
+                {
+                    this._credentials.RefreshToken();
+                }
             }
         }
 
@@ -123,9 +123,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.OAuth
         /// </summary> 
         /// <param name="sender">Event sender.</param> 
         /// <param name="e">Event arguments.</param> 
-        private void OnSendingRequest(object sender, SendingRequestEventArgs e)
+        private void OnSendingRequest(object sender, SendingRequest2EventArgs e)
         {
-            this.AddAccessTokenToRequest(e.Request);
+            if (e.RequestMessage.GetHeader(AuthorizationHeader) == null)
+            {
+                RefreshToken();
+                e.RequestMessage.SetHeader(AuthorizationHeader, string.Format(CultureInfo.InvariantCulture, BearerTokenFormat, this._credentials.AccessToken));
+            }
         }
     }
 }

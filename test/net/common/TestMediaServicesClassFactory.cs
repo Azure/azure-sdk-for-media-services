@@ -28,7 +28,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
 {
     public class TestMediaServicesClassFactory : AzureMediaServicesClassFactory
     {
-        public TestMediaServicesClassFactory(IMediaDataServiceContext dataContext)
+        public TestMediaServicesClassFactory(IMediaDataServiceContext dataContext):base()
         {
             _dataContext = dataContext;
         }
@@ -38,20 +38,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
             return _dataContext;
         }
 
-        /// <summary>
-        /// Creates retry policy for saving changes in Media Services REST layer.
-        /// </summary>
-        /// <returns>Retry policy.</returns>
-        public override MediaRetryPolicy GetSaveChangesRetryPolicy()
+        public override MediaRetryPolicy GetQueryRetryPolicy(IRetryPolicyAdapter adapter)
         {
-            var retryPolicy = new MediaRetryPolicy(
-                GetSaveChangesErrorDetectionStrategy(),
-                retryCount: 5,
-                minBackoff: TimeSpan.FromMilliseconds(10),
-                maxBackoff: TimeSpan.FromMilliseconds(10000),
-                deltaBackoff: TimeSpan.FromMilliseconds(50));
-
-            return retryPolicy;
+            return base.GetQueryRetryPolicy(adapter);
         }
 
         public override MediaErrorDetectionStrategy GetSaveChangesErrorDetectionStrategy()

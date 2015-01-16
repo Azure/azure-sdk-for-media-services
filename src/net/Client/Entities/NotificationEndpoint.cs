@@ -162,7 +162,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             dataContext.AttachTo(NotificationEndPointCollection.NotificationEndPoints, this);
             dataContext.UpdateObject(this);
 
-            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy(dataContext as IRetryPolicyAdapter);
 
             return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(this));
         }
@@ -192,7 +192,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             dataContext.AttachTo(NotificationEndPointCollection.NotificationEndPoints, this);
             dataContext.DeleteObject(this);
 
-            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy(dataContext as IRetryPolicyAdapter);
 
             return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(this));
         }

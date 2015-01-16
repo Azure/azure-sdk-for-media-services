@@ -101,7 +101,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             dataContext.AddObject(ContentKeySet, contentKeyData);
 
-            MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+            MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy(dataContext as IRetryPolicyAdapter);
 
             return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(contentKeyData))
                 .ContinueWith<IContentKey>(

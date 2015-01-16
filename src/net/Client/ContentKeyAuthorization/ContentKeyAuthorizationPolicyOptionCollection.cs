@@ -74,7 +74,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
             policyOption.SetMediaContext(this.MediaContext);
             dataContext.AddObject(ContentKeyAuthorizationPolicyOptionSet, policyOption);
 
-            MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+            MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy(dataContext as IRetryPolicyAdapter);
 
             return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(policyOption))
                 .ContinueWith<IContentKeyAuthorizationPolicyOption>(

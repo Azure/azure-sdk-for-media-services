@@ -24,13 +24,10 @@ using System.Text;
 using System.Threading;
 using System.Xml;
 using System.Xml.Linq;
-using System.Xml.XPath;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Queue;
-using Moq;
-using System.Net;
 using System.Threading.Tasks;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
@@ -96,8 +93,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("Bvt")]
         public void ShouldCreateJobPreset()
         {
             IAsset asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.StorageEncrypted);
@@ -110,8 +109,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("Bvt")]
         public void ShouldReportJobProgress()
         {
             IAsset asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.StorageEncrypted);
@@ -135,13 +136,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             task.Wait();
             task.ThrowIfFaulted();
             Assert.AreEqual(JobState.Finished, job.State);
-            Assert.IsTrue(progressChanged,"Task progress has not been changed while job is expected to be finished");
+            Assert.IsTrue(progressChanged, "Task progress has not been changed while job is expected to be finished");
 
         }
 
-        
+
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldQueryJobByStartTime()
         {
@@ -153,8 +156,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             Task task = job.GetExecutionProgressTask(CancellationToken.None);
             task.Wait();
             List<IJob> jobs = _mediaContext.Jobs.Where(j => j.StartTime > startDateTime && j.StartTime < DateTime.UtcNow).ToList();
-           
-           Assert.IsTrue(jobs.Count > 0);
+
+            Assert.IsTrue(jobs.Count > 0);
         }
 
         private static bool IsFinalJobState(JobState jobState)
@@ -163,6 +166,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldGenerateMetadataFile()
         {
@@ -179,6 +184,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldFinishJobWithSuccessWhenPresetISUTF8()
         {
@@ -195,6 +202,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldContainTaskHistoryEventsOnceJobFinished()
         {
@@ -211,6 +220,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [ExpectedException(typeof(ArgumentException))]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldThrowTryingToCreateJobWithOneTaskAndNoOutput()
@@ -224,6 +235,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [ExpectedException(typeof(ArgumentException))]
         public void ShouldThrowTryingTocreateCreateJobWithNoTasks()
         {
@@ -240,6 +253,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldSubmitAndFinishJobWithOneTaskEmptyConfiguration()
         {
@@ -255,6 +270,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldFinishJobWithErrorWithInvalidPreset()
         {
@@ -276,6 +293,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(0)]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldCancelJobAfterSubmission()
@@ -289,6 +308,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Media\Thumbnail.xml", "Media")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldFinishJobCreatedFromThumbnailXml()
@@ -301,6 +322,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Media\ThumbnailWithZeroStep.xml", "Media")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldFinishJobWithZeroStepThumbnail()
@@ -313,6 +336,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Media\SmallWmv2.wmv", "Media")]
         [DeploymentItem(@"Media\SmallMp41.mp4", "Media")]
         [DeploymentItem(@"Configuration\multi.xml", "Configuration")]
@@ -346,6 +371,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Media\SmallWmv2.wmv", "Media")]
         [DeploymentItem(@"Media\SmallMp41.mp4", "Media")]
         [DeploymentItem(@"Configuration\multi.xml", "Configuration")]
@@ -384,10 +411,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Media\Thumbnail.xml", "Media")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         [Priority(0)]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("Bvt")]
         public void ShouldSubmitAndFinishChainedTasks()
         {
             IAsset asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.StorageEncrypted);
@@ -409,6 +438,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Media\Thumbnail.xml", "Media")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         [Priority(1)]
@@ -432,6 +463,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Configuration\MP4 to Smooth Streams.xml", "Configuration")]
         [DeploymentItem(@"Media\SmallMP41.mp4", "Media")]
         public void ShouldSubmitAndFihishMp4ToSmoothJob()
@@ -444,6 +477,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Configuration\AudioEncodingPreset.xml", "Configuration")]
         [DeploymentItem(@"Media\SmallMP41.mp4", "Media")]
         public void ShouldSubmitAndFihishMp4ToAudioJob()
@@ -456,6 +491,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Configuration\PlayReady Protection.xml", "Configuration")]
         [DeploymentItem(@"Media\Small.ism", "Media")]
         [DeploymentItem(@"Media\Small.ismc", "Media")]
@@ -512,6 +549,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Configuration\PlayReady Protection_ContentKey.xml", "Configuration")]
         [DeploymentItem(@"Media\Small.ism", "Media")]
         [DeploymentItem(@"Media\Small.ismc", "Media")]
@@ -535,6 +574,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [Priority(0)]
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Configuration\Smooth Streams to Apple HTTP Live Streams.xml", "Configuration")]
         [DeploymentItem(@"Media\Small.ism", "Media")]
         [DeploymentItem(@"Media\Small.ismc", "Media")]
@@ -551,6 +592,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [Priority(1)]
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Configuration\Smooth Streams to Encrypted Apple HTTP Live Streams.xml", "Configuration")]
         [DeploymentItem(@"Media\Small.ism", "Media")]
         [DeploymentItem(@"Media\Small.ismc", "Media")]
@@ -567,6 +610,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Configuration\Smooth Streams to Apple HTTP Live Streams.xml", "Configuration")]
         [DeploymentItem(@"Configuration\PlayReady Protection_ContentKey.xml", "Configuration")]
         [DeploymentItem(@"Media\Small.ism", "Media")]
@@ -601,9 +646,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Configuration\MP4 to Smooth Streams.xml", "Configuration")]
         [DeploymentItem(@"Media\SmallMP41.mp4", "Media")]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("Bvt")]
         public void ShouldSubmitAndFinishMp4ToSmoothJobWithStorageProtectedInputsAndOutputs()
         {
             string configuration = File.ReadAllText(WindowsAzureMediaServicesTestConfiguration.DefaultMp4ToSmoothConfig);
@@ -619,6 +666,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Configuration\PlayReady Protection.xml", "Configuration")]
         [DeploymentItem(@"Media\Small.ism", "Media")]
         [DeploymentItem(@"Media\Small.ismc", "Media")]
@@ -634,6 +683,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Media\EncodePlusEncryptWithEE.xml", "Media")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldSubmitAndFinishEETaskWithStorageProtectedInputAndClearOutput()
@@ -679,6 +730,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(1)]
         [ExpectedException(typeof(DataServiceRequestException))]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
@@ -693,6 +746,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(0)]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldDeleteJobInFinishedState()
@@ -705,6 +760,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(1)]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldDeleteJobInCancelledState()
@@ -719,6 +776,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Configuration\MP4 to Smooth Streams.xml", "Configuration")]
         [DeploymentItem(@"Media\SmallMP41.mp4", "Media")]
         [Priority(0)]
@@ -768,6 +827,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldUpdateJobPriorityWhenJobIsQueued()
         {
@@ -781,13 +842,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             WaitForJobStateAndUpdatePriority(job, JobState.Queued, newPriority);
             WaitForJob(job.Id, JobState.Finished, (string id) =>
-                { 
+                {
                     var finished = _mediaContext.Jobs.Where(c => c.Id == job.Id && c.Priority == newPriority).FirstOrDefault();
                     Assert.IsNotNull(finished);
                 });
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         [ExpectedException(typeof(DataServiceRequestException))]
         public void ShouldThrowTryingUpdateJobPriorityWhenJobIsProcessing()
@@ -809,12 +872,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         [ExpectedException(typeof(DataServiceRequestException))]
         public void ShouldThrowTryingUpdateJobPriorityWhenJobIsFinished()
         {
             const int newPriority = 3;
-            
+
             IMediaProcessor processor = GetMediaProcessor(_mediaContext, WindowsAzureMediaServicesTestConfiguration.MpEncoderName);
             IAsset asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.StorageEncrypted);
             IJob job = CreateAndSubmitOneTaskJob(_mediaContext, GenerateName("ShouldSubmitJobAndUpdatePriorityWhenJobIsQueued"), processor, GetWamePreset(processor), asset, TaskOptions.None);
@@ -887,18 +952,18 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             return job;
         }
 
-        public static void WaitForJob(string jobId, JobState jobState, Action<string> verifyAction, Action<double> progressChangedAction  = null)
+        public static void WaitForJob(string jobId, JobState jobState, Action<string> verifyAction, Action<double> progressChangedAction = null)
         {
             DateTime start = DateTime.Now;
             while (true)
             {
                 CloudMediaContext context2 = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
                 IJob job2 = context2.Jobs.Where(c => c.Id == jobId).Single();
-                ITask jobtask = job2.Tasks.Where(t=> t.State == JobState.Processing).FirstOrDefault();
+                ITask jobtask = job2.Tasks.Where(t => t.State == JobState.Processing).FirstOrDefault();
 
                 if (jobtask != null && jobtask.Progress > 0 && jobtask.Progress <= 100)
                 {
-                  if (progressChangedAction != null)
+                    if (progressChangedAction != null)
                     {
                         progressChangedAction(jobtask.Progress);
                     }
@@ -924,7 +989,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
                     throw new Exception(str.ToString());
                 }
-                
+
                 if (DateTime.Now - start > TimeSpan.FromMinutes(JobTimeOutInMinutes))
                 {
                     throw new Exception("Job Timed out - Current State " + job2.State.ToString() + " Expected State " + jobState + " jobId = " + jobId);
@@ -951,7 +1016,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             return mp;
         }
 
-       
+
 
         private string GenerateName(string name)
         {

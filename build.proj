@@ -23,9 +23,12 @@
     <PackageDirectory>.\Package</PackageDirectory>
     <BuildOutputDirectory>$(PublishDirectory)\Build</BuildOutputDirectory>     
     <TestOutputDirectory>$(PublishDirectory)\TestResults</TestOutputDirectory>
+	<NugetDirectory>.\.nuget</NugetDirectory>
 	
   </PropertyGroup>
-  
+  <Target Name="RestorePackages">  
+    <Exec Command="&quot;$(NugetDirectory)\NuGet.exe&quot; restore &quot;.\SDK.Client.sln&quot;" />	
+  </Target>
   <!-- Clean the build in all configurations -->
   <Target Name="Clean">
     <!-- Clean the solutions -->
@@ -93,7 +96,7 @@
 	
   </Target>
   
-   <Target Name="Build" DependsOnTargets="Clean;BuildDebug;BuildRelease" />
+   <Target Name="Build" DependsOnTargets="RestorePackages;Clean;BuildDebug;BuildRelease" />
   
    <!-- Publish any build artificates to the Publish directory -->
   <Target Name="Publish" DependsOnTargets="Build">
@@ -142,7 +145,7 @@
     
     <Message Importance="high" Text="DailyBvtRun tests:" />
     <Exec
-      Command="MSTest.exe /testcontainer:$(ScenarioTestAssemblyName) /resultsfile:$(TestOutputDirectory)\DailyBvtRun.trx /category:DailyBvtRun"
+      Command="MSTest.exe /testcontainer:$(ScenarioTestAssemblyName) /resultsfile:$(TestOutputDirectory)\DailyBvtRun.trx /category:Bvt"
       ContinueOnError="false" />   
   </Target>
   

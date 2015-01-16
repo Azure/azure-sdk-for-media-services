@@ -61,7 +61,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             dataContext.AddObject(AccessPolicySet, accessPolicy);
 
-            MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+            MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy(dataContext as IRetryPolicyAdapter);
 
             return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(accessPolicy))
                 .ContinueWith<IAccessPolicy>(

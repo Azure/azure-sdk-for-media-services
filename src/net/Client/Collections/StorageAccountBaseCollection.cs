@@ -26,7 +26,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MediaProcessorBaseCollection"/> class to be used for Mocking purposes.Introduced in version 3.0
+        /// Initializes a new instance of the <see cref="StorageAccountBaseCollection"/> class to be used for Mocking purposes.Introduced in version 3.0
         /// </summary>
         public StorageAccountBaseCollection()
             : base(null)
@@ -34,7 +34,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
         }
         /// <summary>
-        /// Initializes a new instance of the <see cref="MediaProcessorBaseCollection"/> class.
+        /// Initializes a new instance of the <see cref="StorageAccountBaseCollection"/> class.
         /// </summary>
         /// <param name="mediaContext">The media context.</param>
         internal StorageAccountBaseCollection(MediaContextBase mediaContext)

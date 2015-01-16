@@ -54,6 +54,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Media\Small.ism", "Media")]
         [DeploymentItem(@"Media\Small.ismc", "Media")]
         [DeploymentItem(@"Media\Small.ismv", "Media")]
@@ -85,6 +87,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void ValidateEncryptionStatusOfEmptyAsset()
         {
             IAsset asset = _mediaContext.Assets.Create("Empty Asset", AssetCreationOptions.None);
@@ -97,6 +101,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Media\SmallMp41.mp4", "Media")]
         public void ValidateEffectiveEncryptionStatusOfMP4()
         {
@@ -105,9 +111,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             Assert.AreEqual(AssetType.MP4, asset.AssetType);
             Assert.AreEqual(AssetCreationOptions.None, asset.Options);
 
-            AssetDeliveryProtocol protocolsToTest = AssetDeliveryProtocol.SmoothStreaming | 
-                                                    AssetDeliveryProtocol.Dash | 
-                                                    AssetDeliveryProtocol.HLS | 
+            AssetDeliveryProtocol protocolsToTest = AssetDeliveryProtocol.SmoothStreaming |
+                                                    AssetDeliveryProtocol.Dash |
+                                                    AssetDeliveryProtocol.HLS |
                                                     AssetDeliveryProtocol.Hds;
 
             List<TestCase> testCases = GetTestsCasesForProtocolCombination(protocolsToTest, AssetEncryptionState.Unsupported);
@@ -118,6 +124,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Media\SmallMp41.mp4", "Media")]
         public void ValidateEffectiveEncryptionStatusOfStorageEncryptedMP4()
         {
@@ -139,6 +147,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ValidateEffectiveEncryptionStatusOfWmv()
         {
@@ -147,9 +157,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             Assert.AreEqual(AssetType.Unknown, asset.AssetType);
             Assert.AreEqual(AssetCreationOptions.None, asset.Options);
 
-            AssetDeliveryProtocol protocolsToTest = AssetDeliveryProtocol.SmoothStreaming | 
-                                                    AssetDeliveryProtocol.Dash | 
-                                                    AssetDeliveryProtocol.HLS | 
+            AssetDeliveryProtocol protocolsToTest = AssetDeliveryProtocol.SmoothStreaming |
+                                                    AssetDeliveryProtocol.Dash |
+                                                    AssetDeliveryProtocol.HLS |
                                                     AssetDeliveryProtocol.Hds;
 
             List<TestCase> testCases = GetTestsCasesForProtocolCombination(protocolsToTest, AssetEncryptionState.Unsupported);
@@ -160,6 +170,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ValidateEffectiveEncryptionStatusOfStorageEncryptedWmv()
         {
@@ -168,9 +180,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             Assert.AreEqual(AssetType.Unknown, asset.AssetType);
             Assert.AreEqual(AssetCreationOptions.StorageEncrypted, asset.Options);
 
-            AssetDeliveryProtocol protocolsToTest = AssetDeliveryProtocol.SmoothStreaming | 
-                                                    AssetDeliveryProtocol.Dash | 
-                                                    AssetDeliveryProtocol.HLS | 
+            AssetDeliveryProtocol protocolsToTest = AssetDeliveryProtocol.SmoothStreaming |
+                                                    AssetDeliveryProtocol.Dash |
+                                                    AssetDeliveryProtocol.HLS |
                                                     AssetDeliveryProtocol.Hds;
 
             List<TestCase> testCases = GetTestsCasesForProtocolCombination(protocolsToTest, AssetEncryptionState.Unsupported);
@@ -181,6 +193,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Media\SmallMp41.mp4", "Media")]
         public void ValidateEffectiveEncryptionStatusOfMultiBitRateMP4()
         {
@@ -189,9 +203,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             Assert.AreEqual(AssetType.MultiBitrateMP4, asset.AssetType);
             Assert.AreEqual(AssetCreationOptions.None, asset.Options);
 
-            AssetDeliveryProtocol protocolsToTest = AssetDeliveryProtocol.SmoothStreaming | 
-                                                    AssetDeliveryProtocol.Dash | 
-                                                    AssetDeliveryProtocol.HLS | 
+            AssetDeliveryProtocol protocolsToTest = AssetDeliveryProtocol.SmoothStreaming |
+                                                    AssetDeliveryProtocol.Dash |
+                                                    AssetDeliveryProtocol.HLS |
                                                     AssetDeliveryProtocol.Hds;
 
             List<TestCase> testCases = GetTestsCasesForProtocolCombination(protocolsToTest, AssetEncryptionState.ClearOutput);
@@ -208,9 +222,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Media\SmallMp41.mp4", "Media")]
         public void ValidateEffectiveEncryptionStatusOfStorageEncryptedMultiBitRateMP4()
-        {        
+        {
             IAsset asset = CreateMbrMp4Asset(AssetCreationOptions.StorageEncrypted);
             Assert.AreEqual(true, asset.IsStreamable);
             Assert.AreEqual(AssetType.MultiBitrateMP4, asset.AssetType);
@@ -251,6 +267,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Media\Small.ism", "Media")]
         [DeploymentItem(@"Media\Small.ismc", "Media")]
         [DeploymentItem(@"Media\Small.ismv", "Media")]
@@ -280,6 +298,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Media\Small.ism", "Media")]
         [DeploymentItem(@"Media\Small.ismc", "Media")]
         [DeploymentItem(@"Media\Small.ismv", "Media")]
@@ -300,13 +320,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             Assert.AreEqual(ContentKeyType.CommonEncryption, playReadyProtectedSmoothAsset.ContentKeys[0].ContentKeyType);
 
-            ValidateAssetEncryptionState(asset, protocolsToTest, AssetEncryptionState.StaticCommonEncryption);
+            ValidateAssetEncryptionState(playReadyProtectedSmoothAsset, protocolsToTest, AssetEncryptionState.StaticCommonEncryption);
 
             CleanupAsset(playReadyProtectedSmoothAsset);
             CleanupAsset(asset);
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Media\Small.ism", "Media")]
         [DeploymentItem(@"Media\Small.ismc", "Media")]
         [DeploymentItem(@"Media\Small.ismv", "Media")]
@@ -334,6 +356,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Configuration\Smooth Streams to Apple HTTP Live Streams.xml", "Configuration")]
         [DeploymentItem(@"Configuration\PlayReady Protection_ContentKey.xml", "Configuration")]
         [DeploymentItem(@"Configuration\Smooth Streams to Encrypted Apple HTTP Live Streams.xml", "Configuration")]
@@ -357,6 +381,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Configuration\Smooth Streams to Apple HTTP Live Streams.xml", "Configuration")]
         [DeploymentItem(@"Configuration\PlayReady Protection_ContentKey.xml", "Configuration")]
         [DeploymentItem(@"Media\Small.ism", "Media")]
@@ -385,6 +411,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Configuration\Smooth Streams to Apple HTTP Live Streams.xml", "Configuration")]
         [DeploymentItem(@"Media\Small.ism", "Media")]
         [DeploymentItem(@"Media\Small.ismc", "Media")]
@@ -417,6 +445,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Configuration\Smooth Streams to Encrypted Apple HTTP Live Streams.xml", "Configuration")]
         [DeploymentItem(@"Media\Small.ism", "Media")]
         [DeploymentItem(@"Media\Small.ismc", "Media")]
@@ -561,14 +591,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             job.Refresh();
 
-            return job.OutputMediaAssets[0];       
+            return job.OutputMediaAssets[0];
         }
 
         private void ValidateAssetEncryptionState(IAsset asset, AssetDeliveryProtocol protocolsToTest, AssetEncryptionState expectedState)
         {
             AssetEncryptionState actualState = asset.GetEncryptionState(protocolsToTest);
 
-            Assert.AreEqual(expectedState, actualState);        
+            Assert.AreEqual(expectedState, actualState);
         }
 
         private void ValidateAssetEncryptionState(IAsset asset, List<TestCase> testCases)
@@ -641,7 +671,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             List<AssetDeliveryProtocol> combinationList = GetAllCombinationsOfDeliveryProtocol(protocols);
 
-            foreach(AssetDeliveryProtocol combination in combinationList)
+            foreach (AssetDeliveryProtocol combination in combinationList)
             {
                 testCases.Add(new TestCase(combination, expectedState));
             }
@@ -692,7 +722,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             else
             {
                 return AssetEncryptionState.BlockedByPolicy;
-            }        
+            }
         }
 
         private void UpdateTestCasesForAddedPolicy(List<TestCase> testCases, IList<IAssetDeliveryPolicy> policies)
@@ -725,7 +755,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                             throw new Exception("Unexpected policy type");
                     }
                 }
-            }        
+            }
         }
     }
 }

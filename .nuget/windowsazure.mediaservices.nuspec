@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>windowsazure.mediaservices</id>
-    <version>3.0.0.7</version>
+    <version>3.1.0.0</version>
     <title>Windows Azure Media Services .NET SDK</title>
     <authors>Microsoft Corporation</authors>
     <owners>Microsoft Corporation</owners>
@@ -10,7 +10,7 @@
     <projectUrl>http://aka.ms/wamsmsdn</projectUrl>
     <iconUrl>http://nimbuspmteam.blob.core.windows.net/nuget/Media Services 150.png</iconUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
-    <description>This package contains Windows Azure Media Service library 3.0.0.7 for .NET.</description>
+    <description>This package contains Windows Azure Media Service library 3.1.0.0 for .NET.</description>
     <releaseNotes>For more information, please check our forum: http://social.msdn.microsoft.com/Forums/en-US/MediaServices/threads
 
 For MSDN documentation please visit http://aka.ms/wamsmsdn
@@ -20,14 +20,13 @@ Source in GitHub at https://github.com/WindowsAzure/azure-sdk-for-media-services
     <language>en-US</language>
     <tags>windowsazureofficial, WindowsAzure, MediaServices, Microsoft,</tags>
     <dependencies>
-      <dependency id="Microsoft.Data.OData" version="5.6.0" />
-      <dependency id="Microsoft.Data.Edm" version="5.6.0" />
-      <dependency id="Microsoft.Data.Services.Client" version="5.6.0" />
-      <dependency id="System.Spatial" version="5.6.0" />
+      <dependency id="Microsoft.Data.OData" version="5.6.3" />
+      <dependency id="Microsoft.Data.Edm" version="5.6.3" />
+      <dependency id="Microsoft.Data.Services.Client" version="5.6.3" />
+      <dependency id="System.Spatial" version="5.6.3" />
       <dependency id="TransientFaultHandling.Core" version="5.1.1209.1" />
-      <dependency id="WindowsAzure.Storage" version="3.1.0.0" />
-	  <dependency  id="Microsoft.WindowsAzure.ConfigurationManager" version="2.0.3.0" />
-      <dependency id="Newtonsoft.Json" version="6.0.3.0" />
+      <dependency id="WindowsAzure.Storage" version="4.3.0.0" />
+      <dependency id="Newtonsoft.Json" version="6.0.6.0" />
     </dependencies>
     <references>
       <reference file="Microsoft.WindowsAzure.MediaServices.Client.dll" />

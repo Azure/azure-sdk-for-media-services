@@ -16,7 +16,7 @@
 
 using System;
 
-namespace Microsoft.WindowsAzure.MediaServices.Client.Versioning
+namespace Microsoft.WindowsAzure.MediaServices.Client.RequestAdapters
 {
 
 
@@ -36,13 +36,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Versioning
         public static readonly Version Version2_5 = new Version(major: 2, minor: 5);
         public static readonly Version Version2_6 = new Version(major: 2, minor: 6);
         public static readonly Version Version2_7 = new Version(major: 2, minor: 7);
+        public static readonly Version Version2_8 = new Version(major: 2, minor: 8);
 
         /// <summary>
         /// Gets the Media Service API version.
         /// </summary>
         public static Version Current
         {
-            get { return Version2_7; }
+            get { return Version2_8; }
         }
     }
 }

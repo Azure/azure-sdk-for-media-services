@@ -18,7 +18,7 @@ using System;
 using System.Data.Services.Client;
 using System.Net;
 
-namespace Microsoft.WindowsAzure.MediaServices.Client.Versioning
+namespace Microsoft.WindowsAzure.MediaServices.Client.RequestAdapters
 {
     
 
@@ -27,6 +27,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Versioning
     /// </summary>
     public class ServiceVersionAdapter
     {
+        private const string _xMsVersion = "x-ms-version";
         private readonly Version _serviceVersion;
 
         /// <summary>
@@ -44,7 +45,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Versioning
         /// <param name="context">The context.</param>
         public void Adapt(DataServiceContext context)
         {
-            context.SendingRequest += this.AddRequestVersion;
+            if (context == null) { throw new ArgumentNullException("context"); }
+            context.SendingRequest2 += this.AddRequestVersion;
         }
 
         /// <summary>
@@ -58,7 +60,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Versioning
                 throw new ArgumentNullException("request");
             }
 
-            request.Headers.Add("x-ms-version", this._serviceVersion.ToString());
+            request.Headers.Set(_xMsVersion, this._serviceVersion.ToString());
         }
 
         /// <summary>
@@ -66,18 +68,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Versioning
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The <see cref="System.Data.Services.Client.SendingRequestEventArgs"/> instance containing the event data.</param>
-        private void AddRequestVersion(object sender, SendingRequestEventArgs e)
+        private void AddRequestVersion(object sender, SendingRequest2EventArgs e)
         {
-            this.AddToRequestHeaders(e);
+            e.RequestMessage.SetHeader(_xMsVersion, this._serviceVersion.ToString());
         }
-
-        /// <summary>
-        /// Adds to request headers.
-        /// </summary>
-        /// <param name="sendingRequestEventArgs">The <see cref="System.Data.Services.Client.SendingRequestEventArgs"/> instance containing the event data.</param>
-        private void AddToRequestHeaders(SendingRequestEventArgs sendingRequestEventArgs)
-        {
-            this.AddVersionToRequest(sendingRequestEventArgs.Request);
-        }
+        
     }
 }

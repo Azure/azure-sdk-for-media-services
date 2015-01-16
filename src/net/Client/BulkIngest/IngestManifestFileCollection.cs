@@ -127,7 +127,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
                 dataContext.AddObject(EntitySet, data);
 
-                MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+                MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy(dataContext as IRetryPolicyAdapter);
 
                 Task<IIngestManifestFile> task = retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(data))
                     .ContinueWith<IIngestManifestFile>(t =>

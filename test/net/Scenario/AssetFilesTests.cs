@@ -31,7 +31,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
     [TestClass]
     public class AssetFilesTests
     {
-        
+
         private CloudMediaContext _mediaContext;
         private string _smallWmv;
         public TestContext TestContext { get; set; }
@@ -44,6 +44,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldNotThrowWhenSavingFileInfoIfTheAssetIsInPublishedState()
         {
@@ -59,9 +61,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof (ArgumentException))]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [ExpectedException(typeof(ArgumentException))]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("Bvt")]
         public void ShouldThrowArgumentExceptionWhenUploadSyncFileNameNotEqualToAssetFileName()
         {
             IAsset asset = _mediaContext.Assets.Create("test", AssetCreationOptions.None);
@@ -78,10 +82,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             }
         }
 
-       
+
 
         [TestMethod]
-        [ExpectedException(typeof (ArgumentException))]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [ExpectedException(typeof(ArgumentException))]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldThrowArgumentExceptionWhenUploadAsyncFileNameNotEqualToAssetFileName()
         {
@@ -109,9 +115,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(0)]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-		[DeploymentItem(@"Media\SmallMP41.mp4", "Media")]
+        [DeploymentItem(@"Media\SmallMP41.mp4", "Media")]
         public void When_Uploading_Multiple_Files_The_Progress_Event_Should_Only_Be_For_The_Bound_AssetFile()
         {
             IAsset asset = _mediaContext.Assets.Create("test", AssetCreationOptions.None);
@@ -157,11 +165,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldDownloadToFileFromAsset()
         {
             string fileUploaded = _smallWmv;
-            string outputDirectory = "Download"+Guid.NewGuid();
+            string outputDirectory = "Download" + Guid.NewGuid();
             string fileDownloaded = Path.Combine(outputDirectory, Path.GetFileName(fileUploaded));
             var fileUploadedInfo = new FileInfo(fileUploaded);
 
@@ -215,8 +225,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("Bvt")]
         public void ShouldDownloadToFileFromCommonEncryptionProtectedAsset()
         {
             string fileUploaded = _smallWmv;
@@ -274,8 +286,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("Bvt")]
         public void ShouldDownloadToFileFromStorageEncryptedAsset()
         {
             string fileUploaded = _smallWmv;
@@ -333,6 +347,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Timeout(60000)]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldCancelDownloadToFileAsyncTaskAfter50Milliseconds()
@@ -385,7 +401,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             }
 
             Assert.IsNotNull(canceledException);
-            Assert.IsInstanceOfType(canceledException, typeof (OperationCanceledException));
+            Assert.IsInstanceOfType(canceledException, typeof(OperationCanceledException));
 
             // The async task ends in a Canceled state.
             Assert.AreEqual(TaskStatus.Canceled, downloadToFileTask.Status);
@@ -398,6 +414,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(0)]
         public void TestAssetFileCreateRetry()
         {
@@ -429,6 +447,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(0)]
         public void TestAssetFileUpdateRetry()
         {
@@ -436,8 +456,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             int exceptionCount = 2;
 
-            var asset = new AssetData { Name = "testData"};
-            var file = new AssetFileData { Name = "testData"};
+            var asset = new AssetData { Name = "testData" };
+            var file = new AssetFileData { Name = "testData" };
             var fakeResponse = new TestMediaDataServiceResponse { AsyncState = file };
             var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
 
@@ -463,6 +483,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(0)]
         public void TestAssetFileDeleteRetry()
         {
@@ -471,7 +493,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             int exceptionCount = 2;
 
             var asset = new AssetData { Name = "testData" };
-            var file = new AssetFileData { Name = "testData"};
+            var file = new AssetFileData { Name = "testData" };
             var fakeResponse = new TestMediaDataServiceResponse { AsyncState = asset };
             var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
 

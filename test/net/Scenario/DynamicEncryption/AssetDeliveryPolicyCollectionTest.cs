@@ -11,8 +11,8 @@ using System.Data.Services.Client;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 {
-    
-    
+
+
     /// <summary>
     ///This is a test class for AssetDeliveryPolicyCollectionTest and is intended
     ///to contain all AssetDeliveryPolicyCollectionTest Unit Tests
@@ -113,6 +113,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void AssetDeliveryPolicyTestUpdate()
         {
             IAssetDeliveryPolicy policy = CreateEnvelopePolicy("AssetDeliveryPolicyTestUpdate");
@@ -128,6 +131,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void EnvelopeAssetDeliveryPolicyTestAttach()
         {
             var asset = _mediaContext.Assets.Create("Asset for EnvelopeAssetDeliveryPolicyTestAttach", AssetCreationOptions.None);
@@ -145,7 +151,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             Assert.AreEqual(1, asset.DeliveryPolicies.Count);
 
             List<IAssetDeliveryPolicy> policies = asset.DeliveryPolicies.ToList();
-            foreach(IAssetDeliveryPolicy current in policies)
+            foreach (IAssetDeliveryPolicy current in policies)
             {
                 asset.DeliveryPolicies.Remove(current);
                 current.Delete();
@@ -155,7 +161,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [Ignore] // Not enabled in REST yet
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void PlayReadyAssetDeliveryPolicyTestAttach()
         {
             var asset = _mediaContext.Assets.Create("Asset for PlayReadyAssetDeliveryPolicyTestAttach", AssetCreationOptions.None);
@@ -183,7 +191,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [Ignore]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [ExpectedException(typeof(DataServiceRequestException))]
         public void FailToAttachPolicyIfCommonContentKeyNotPresent()
         {
             var asset = _mediaContext.Assets.Create("Asset for FailToAttachPolicyIfCommonContentKeyNotPresent", AssetCreationOptions.None);
@@ -211,7 +221,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [Ignore]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [ExpectedException(typeof(DataServiceRequestException))]
         public void FailToAttachPolicyIfRequiredEnvelopeKeyNotPresent()
         {
             var asset = _mediaContext.Assets.Create("Asset for FailToAttachPolicyIfRequiredEnvelopeKeyNotPresent", AssetCreationOptions.None);
@@ -241,6 +253,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         #region Retry Logic tests
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         [Priority(0)]
         public void TestAssetDeliveryPolicyCreateRetry()
         {
@@ -261,6 +276,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(0)]
         [ExpectedException(typeof(WebException))]
         public void TestAssetDeliveryPolicyCreateFailedRetry()
@@ -289,6 +306,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(0)]
         [ExpectedException(typeof(WebException))]
         public void TestAssetDeliveryPolicyCreateFailedRetryMessageLengthLimitExceeded()
@@ -319,6 +338,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(0)]
         public void TestAssetDeliveryPolicyUpdateRetry()
         {
@@ -339,6 +360,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         [Priority(0)]
         public void TestAssetDeliveryPolicyDeleteRetry()
         {

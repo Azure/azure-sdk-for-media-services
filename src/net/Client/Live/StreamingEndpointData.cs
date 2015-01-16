@@ -316,5 +316,17 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             _cacheControl = null;
             base.Refresh();
         }
+
+        /// <summary>
+        /// Set array property empty array if it is null because OData does not support 
+        /// empty collection 
+        /// </summary>
+        internal override void ValidateSettings()
+        {
+            if (CustomHostNames == null)
+            {
+                CustomHostNames = new List<string>();
+            }
+        }
     }
 }

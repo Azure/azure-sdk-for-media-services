@@ -151,7 +151,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption
             dataContext.AttachTo(AssetDeliveryPolicyCollection.DeliveryPolicySet, this);
             dataContext.UpdateObject(this);
 
-            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy(dataContext as IRetryPolicyAdapter);
 
             return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(this))
                 .ContinueWith<IAssetDeliveryPolicy>(
@@ -188,7 +188,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption
             dataContext.AttachTo(AssetDeliveryPolicyCollection.DeliveryPolicySet, this);
             dataContext.DeleteObject(this);
 
-            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy(dataContext as IRetryPolicyAdapter);
 
             return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(this));
         }

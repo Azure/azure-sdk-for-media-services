@@ -248,7 +248,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             dataContext.AttachTo(AssetCollection.AssetSet, this);
             dataContext.UpdateObject(this);
 
-            MediaRetryPolicy retryPolicy = this._mediaContextBase.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+            MediaRetryPolicy retryPolicy = this._mediaContextBase.MediaServicesClassFactory.GetSaveChangesRetryPolicy(dataContext as IRetryPolicyAdapter);
 
             return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(this))
                    .ContinueWith<IAsset>(
@@ -290,7 +290,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             this.InvalidateDeliveryPoliciesCollection();
             dataContext.DeleteObject(this);
 
-            MediaRetryPolicy retryPolicy = this._mediaContextBase.MediaServicesClassFactory.GetSaveChangesRetryPolicy();
+            MediaRetryPolicy retryPolicy = this._mediaContextBase.MediaServicesClassFactory.GetSaveChangesRetryPolicy(dataContext as IRetryPolicyAdapter);
 
             return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(this));
         }
