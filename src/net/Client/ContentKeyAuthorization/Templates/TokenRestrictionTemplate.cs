@@ -27,9 +27,18 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
     [DataContract(Namespace = "http://schemas.microsoft.com/Azure/MediaServices/KeyDelivery/TokenRestrictionTemplate/v1")]
     public class TokenRestrictionTemplate
     {
+        [Obsolete]
         public TokenRestrictionTemplate()
         {
-            InternalConstruct();
+            TokenType = TokenType.SWT;
+            InitCollections();
+        }
+
+        public TokenRestrictionTemplate(TokenType tokenType)
+        {
+            TokenType = tokenType;
+            RequiredClaims = new List<TokenClaim>();
+            AlternateVerificationKeys = new List<TokenVerificationKey>();
         }
 
         [OnDeserializing]
@@ -39,12 +48,25 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
             // normal fashion but instead calls FormatterServices.GetUninitializedObject.
             // This means that the constructor isn't called.  Thus use this function
             // to make sure our List instances are not null.
-            InternalConstruct();
+            InitCollections();
         }
 
-        private void InternalConstruct()
+        
+        /// <summary>
+        /// Setting TokenType = TokenType.SWT If old xml scheme has been used and token type is not explicitly defined
+        /// </summary>
+        /// <param name="context"></param>
+        [OnDeserialized]
+        void OnDeserialized(StreamingContext context)
         {
-            TokenType = TokenType.JWT;
+            if (TokenType == TokenType.Undefined)
+            {
+                TokenType = TokenType.SWT;
+            }
+        }
+
+        private void InitCollections()
+        {
             RequiredClaims = new List<TokenClaim>();
             AlternateVerificationKeys = new List<TokenVerificationKey>();
         }
