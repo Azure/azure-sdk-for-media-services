@@ -26,8 +26,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Microsoft")]
 [assembly: AssemblyProduct("Windows Azure Media Services")]
-[assembly: AssemblyCopyright("Copyright © 2012 Microsoft Corp.")]
-[assembly: AssemblyTrademark("Microsoft ® is a registered trademark of Microsoft Corporation.")]
+[assembly: AssemblyCopyright("Copyright Â© 2012 Microsoft Corp.")]
+[assembly: AssemblyTrademark("Microsoft Â® is a registered trademark of Microsoft Corporation.")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
@@ -47,8 +47,8 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("3.1.0.0")]
-[assembly: AssemblyFileVersion("3.1.0.0")]
+[assembly: AssemblyVersion("3.1.0.1")]
+[assembly: AssemblyFileVersion("3.1.0.1")]
 [assembly: NeutralResourcesLanguage("en-US")]
 
 //For delay signing specify PublicKey for each friendly assembly
