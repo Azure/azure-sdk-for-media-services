@@ -141,7 +141,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 var templatex509Certificate2 = new X509Certificate2("amscer.pfx", "AMSGIT");
                 SigningCredentials cred = new X509SigningCredentials(templatex509Certificate2);
 
-                TokenRestrictionTemplate tokenRestrictionTemplate = new TokenRestrictionTemplate();
+                TokenRestrictionTemplate tokenRestrictionTemplate = new TokenRestrictionTemplate(TokenType.JWT);
                 tokenRestrictionTemplate.PrimaryVerificationKey = new X509CertTokenVerificationKey(templatex509Certificate2);
                 
                 tokenRestrictionTemplate.Audience = new Uri("http://sampleIssuerUrl");
@@ -200,7 +200,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
                 var contentKeyId = Guid.Parse(contentKey.Id.Replace("nb:kid:UUID:",String.Empty));
 
-                TokenRestrictionTemplate tokenRestrictionTemplate = new TokenRestrictionTemplate();
+                TokenRestrictionTemplate tokenRestrictionTemplate = new TokenRestrictionTemplate(TokenType.SWT);
                 tokenRestrictionTemplate.PrimaryVerificationKey = new SymmetricVerificationKey(); // the default constructor automatically generates a random key
                 tokenRestrictionTemplate.Audience = new Uri("http://sampleissuerurl");
                 tokenRestrictionTemplate.Issuer = new Uri("http://sampleaudience");
