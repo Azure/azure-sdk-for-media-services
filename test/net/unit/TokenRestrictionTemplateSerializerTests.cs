@@ -48,6 +48,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
             Assert.IsNotNull(template2);
             Assert.AreEqual(template.Issuer, template2.Issuer);
             Assert.AreEqual(template.Audience, template2.Audience);
+            Assert.AreEqual(template.TokenType, TokenType.SWT);
 
             SymmetricVerificationKey fromTemplate = (SymmetricVerificationKey) template.PrimaryVerificationKey;
             SymmetricVerificationKey fromTemplate2 = (SymmetricVerificationKey) template2.PrimaryVerificationKey;
@@ -56,7 +57,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
         }
 
         [TestMethod]
-        public void KnownGoodInputForObsoleteScheme()
+        public void KnownGoodInputForSwtOnlyScheme()
         {
             string tokenTemplate = "<TokenRestrictionTemplate xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://schemas.microsoft.com/Azure/MediaServices/KeyDelivery/TokenRestrictionTemplate/v1\"><AlternateVerificationKeys><TokenVerificationKey i:type=\"SymmetricVerificationKey\"><KeyValue>GG07fDPZ+HMD2vcoknMqYjEJMb7LSq8zUmdCYMvRCevnQK//ilbhODO/FydMrHiwZGmI6XywvOOU7SSzRPlI3Q==</KeyValue></TokenVerificationKey></AlternateVerificationKeys><Audience>http://sampleaudience/</Audience><Issuer>http://sampleissuerurl/</Issuer><PrimaryVerificationKey i:type=\"SymmetricVerificationKey\"><KeyValue>2OvxltHKwILn5PCRD8H+63sK98LBs1yF+ZdZbwzmToWYm29pLyqIMuCvMRGpLOv5DYh3NmpzWMAciu4ncW8VTg==</KeyValue></PrimaryVerificationKey><RequiredClaims><TokenClaim><ClaimType>urn:microsoft:azure:mediaservices:contentkeyidentifier</ClaimType><ClaimValue i:nil=\"true\" /></TokenClaim><TokenClaim><ClaimType>urn:myservice:claims:rental</ClaimType><ClaimValue>true</ClaimValue></TokenClaim></RequiredClaims></TokenRestrictionTemplate>";
 
@@ -77,7 +78,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
         [TestMethod]
          public void KnownGoodInputForSWT()
          {
-             string tokenTemplate = "<TokenRestrictionTemplate xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://schemas.microsoft.com/Azure/MediaServices/KeyDelivery/TokenRestrictionTemplate/v1\"><AlternateVerificationKeys /><Audience>http://sampleissuerurl/</Audience><Issuer>http://sampleaudience/</Issuer><PrimaryVerificationKey i:type=\"X509CertTokenVerificationKey\"><RawBody>MIIDAzCCAeugAwIBAgIQ2cl0q8oGkaFG+ZTZYsilhDANBgkqhkiG9w0BAQ0FADARMQ8wDQYDVQQDEwZDQVJvb3QwHhcNMTQxMjAxMTg0NzI5WhcNMzkxMjMxMjM1OTU5WjARMQ8wDQYDVQQDEwZDQVJvb3QwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDjgMbtZcLtKNdJXHSGQ7l6xJBtNCVhjF4+BLZq+D2RmubKTAnGXhNGY4FO2LrPjfkWumdnv5DOlFuwHy2qrsZu1TFZxxQzU9/Yp3VAD1Afk7ShUOxniPpIO9vfkUH+FEX1Taq4ncR/TkiwnIZLy+bBa0DlF2MsPGC62KbiN4xJqvSIuecxQvcN8MZ78NDejtj1/XHF7VBmVjWi5B79GpTvY9ap39BU8nM0Q8vWb9DwmpWLz8j7hm25f+8laHIE6U8CpeeD/OrZT8ncCD0hbhR3ZGGoFqJbyv2CLPVGeaIhIxBH41zgrBYR53NjkRLTB4IEUCgeTGvSzweqlb+4totdAgMBAAGjVzBVMA8GA1UdEwEB/wQFMAMBAf8wQgYDVR0BBDswOYAQSHiCUWtQlUe79thqsTDbbqETMBExDzANBgNVBAMTBkNBUm9vdIIQ2cl0q8oGkaFG+ZTZYsilhDANBgkqhkiG9w0BAQ0FAAOCAQEABa/2D+Rxo6tp63sDFRViikNkDa5GFZscQLn4Rm35NmUt35Wc/AugLaTJ7iP5zJTYIBUI9DDhHbgFqmYpW0p14NebJlBzrRFIaoHBOsHhy4VYrxIB8Q/OvSGPgbI2c39ni/odyTYKVtJacxPrIt+MqeiFMjJ19cJSOkKT2AFoPMa/L0++znMcEObSAHYMy1U51J1njpQvNJ+MQiR8y2gvmMbGEcMgicIJxbLB2imqJWCQkFUlsrxwuuzSvNaLkdd/HyhsR1JXc+kOREO8gWjhT6MAdgGKC9+neamR7sqwJHPNfcLYTDFOhi6cJH10z74mU1Xa5uLsX+aZp2YYHUFw4Q==</RawBody></PrimaryVerificationKey><RequiredClaims /><TokenType>SWT</TokenType></TokenRestrictionTemplate>";
+             string tokenTemplate = "<TokenRestrictionTemplate xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://schemas.microsoft.com/Azure/MediaServices/KeyDelivery/TokenRestrictionTemplate/v1\"><AlternateVerificationKeys /><Audience>http://sampleissuerurl/</Audience><Issuer>http://sampleaudience/</Issuer><PrimaryVerificationKey i:type=\"SymmetricVerificationKey\"><KeyValue>2OvxltHKwILn5PCRD8H+63sK98LBs1yF+ZdZbwzmToWYm29pLyqIMuCvMRGpLOv5DYh3NmpzWMAciu4ncW8VTg==</KeyValue></PrimaryVerificationKey><RequiredClaims><TokenClaim><ClaimType>urn:microsoft:azure:mediaservices:contentkeyidentifier</ClaimType><ClaimValue i:nil=\"true\" /></TokenClaim><TokenClaim><ClaimType>urn:myservice:claims:rental</ClaimType><ClaimValue>true</ClaimValue></TokenClaim></RequiredClaims><TokenType>SWT</TokenType></TokenRestrictionTemplate>";
              TokenRestrictionTemplate template = TokenRestrictionTemplateSerializer.Deserialize(tokenTemplate);
              Assert.IsNotNull(template);
              Assert.AreEqual(TokenType.SWT, template.TokenType);
