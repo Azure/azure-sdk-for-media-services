@@ -37,8 +37,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
         public TokenRestrictionTemplate(TokenType tokenType)
         {
             TokenType = tokenType;
-            RequiredClaims = new List<TokenClaim>();
-            AlternateVerificationKeys = new List<TokenVerificationKey>();
+            InitCollections();
         }
 
         [OnDeserializing]
