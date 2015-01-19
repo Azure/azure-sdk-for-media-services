@@ -178,7 +178,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             PlayReadyLicenseResponseTemplate responseTemplate = new PlayReadyLicenseResponseTemplate();
             responseTemplate.LicenseTemplates.Add(new PlayReadyLicenseTemplate());
 
-            TokenRestrictionTemplate tokenRestrictionTemplate = new TokenRestrictionTemplate();
+            TokenRestrictionTemplate tokenRestrictionTemplate = new TokenRestrictionTemplate(TokenType.JWT);
             tokenRestrictionTemplate.PrimaryVerificationKey = new SymmetricVerificationKey(); // the default constructor automatically generates a random key
             tokenRestrictionTemplate.Audience = new Uri("urn:someaudience");
             tokenRestrictionTemplate.Issuer = new Uri("http://someissuerurl");
