@@ -15,6 +15,7 @@
 // </license>
 
 using System;
+using System.Linq;
 using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
@@ -36,7 +37,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [Priority(0)]
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
-        public void TestStreamingEndpointCreate()
+        public void StreamingEndpointCreate()
         {
             string testStreamingEndpointName = Guid.NewGuid().ToString().Substring(0, 30);
             var actual = _mediaContext.StreamingEndpoints.Create(testStreamingEndpointName, 0);
@@ -48,7 +49,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [Priority(0)]
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
-        public void TestCdnCreate()
+        public void StreamingEndpointVerifyCDNEnabledFlag()
         {
             var name = "StreamingEndpoint" + DateTime.UtcNow.ToString("hhmmss");
             var option = new StreamingEndpointCreationOptions(name, 1)
@@ -56,10 +57,39 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 CdnEnabled = true
             };
             var streamingEndpoint = _mediaContext.StreamingEndpoints.Create(option);
-            streamingEndpoint.Start();
-            Assert.AreEqual(streamingEndpoint.State, StreamingEndpointState.Running);
-            streamingEndpoint.Stop();
+            var createdToValidate = _mediaContext.StreamingEndpoints.Where(c => c.Id == streamingEndpoint.Id).FirstOrDefault();
+            Assert.IsNotNull(createdToValidate);
+            Assert.AreEqual(true, createdToValidate.CdnEnabled);
             streamingEndpoint.Delete();
+            name = "CDNDisabled" + DateTime.UtcNow.ToString("hhmmss");
+            var disabledOption = new StreamingEndpointCreationOptions(name, 1)
+            {
+                CdnEnabled = false
+            };
+            streamingEndpoint = _mediaContext.StreamingEndpoints.Create(disabledOption);
+            createdToValidate = _mediaContext.StreamingEndpoints.Where(c => c.Id == streamingEndpoint.Id).FirstOrDefault();
+            Assert.IsNotNull(createdToValidate);
+            Assert.AreEqual(false, createdToValidate.CdnEnabled);
+            streamingEndpoint.Delete();
+        }
+
+        [TestMethod]
+        [Priority(0)]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        public void StreamingEndpointCreateStartStopDelete()
+        {
+            var name = "StreamingEndpoint" + DateTime.UtcNow.ToString("hhmmss");
+            var option = new StreamingEndpointCreationOptions(name, 1);
+            var streamingEndpoint = _mediaContext.StreamingEndpoints.Create(option);
+            Assert.IsNotNull(streamingEndpoint);
+            streamingEndpoint.Start();
+            Assert.AreEqual(StreamingEndpointState.Running,streamingEndpoint.State);
+            streamingEndpoint.Stop();
+            Assert.AreEqual(StreamingEndpointState.Stopped, streamingEndpoint.State);
+            streamingEndpoint.Delete();
+            var deleted = _mediaContext.StreamingEndpoints.Where(c => c.Id == streamingEndpoint.Id).FirstOrDefault();
+            Assert.IsNull(deleted);
         }
 
         #region Retry Logic tests
