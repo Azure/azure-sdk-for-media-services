@@ -278,11 +278,15 @@
     <Compile Include="Live\AkamaiAccessControlData.cs" />
     <Compile Include="Live\AkamaiSignatureHeaderAuthenticationKey.cs" />
     <Compile Include="Live\AsyncHelper.cs" />
+    <Compile Include="Live\AudioStream.cs" />
     <Compile Include="Live\ChannelAccessControl.cs" />
     <Compile Include="Live\ChannelAccessControlData.cs" />
     <Compile Include="Live\ChannelBaseCollection.cs" />
     <Compile Include="Live\ChannelCreationOptions.cs" />
     <Compile Include="Live\ChannelData.cs" />
+    <Compile Include="Live\ChannelEncoding.cs" />
+    <Compile Include="Live\ChannelEncodingData.cs" />
+    <Compile Include="Live\ChannelEncodingType.cs" />
     <Compile Include="Live\ChannelEndpoint.cs" />
     <Compile Include="Live\ChannelEndpointData.cs" />
     <Compile Include="Live\ChannelInput.cs" />
@@ -291,6 +295,7 @@
     <Compile Include="Live\ChannelOutputHls.cs" />
     <Compile Include="Live\ChannelPreview.cs" />
     <Compile Include="Live\ChannelPreviewData.cs" />
+    <Compile Include="Live\ChannelSlate.cs" />
     <Compile Include="Live\ChannelState.cs" />
     <Compile Include="Live\CloudMediaContext.cs" />
     <Compile Include="Live\CrossSiteAccessPolicies.cs" />
@@ -320,6 +325,7 @@
     <Compile Include="Live\StreamingEndpointData.cs" />
     <Compile Include="Live\StreamingEndpointState.cs" />
     <Compile Include="Live\StreamingProtocol.cs" />
+    <Compile Include="Live\VideoStream.cs" />
     <Compile Include="MediaQueryable.cs" />
     <Compile Include="MediaQueryProvider.cs" />
     <Compile Include="MediaServicesCredentials.cs" />

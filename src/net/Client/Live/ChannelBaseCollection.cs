@@ -199,7 +199,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             {
                 Name = options.Name,
                 Description = options.Description,
-                CrossSiteAccessPolicies = options.CrossSiteAccessPolicies
+                CrossSiteAccessPolicies = options.CrossSiteAccessPolicies,
+                Slate = options.Slate,
             };
 
             IChannel channel = channelData;
@@ -207,6 +208,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             channel.Input = options.Input;
             channel.Preview = options.Preview;
             channel.Output = options.Output;
+            channel.EncodingType = options.EncodingType;
+            channel.Encoding = options.Encoding;
             
             channelData.ValidateSettings();
 

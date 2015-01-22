@@ -35,6 +35,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
         internal static readonly TimeSpan StopProgramPollInterval = TimeSpan.FromSeconds(15);
 
+        internal static readonly TimeSpan ShowSlatePollInterval = TimeSpan.FromSeconds(15);
+
+        internal static readonly TimeSpan HideSlatePollInterval = TimeSpan.FromSeconds(5);
+
+        internal static readonly TimeSpan StartAdvertisementPollInterval = TimeSpan.FromSeconds(15);
+
+        internal static readonly TimeSpan EndAdvertisementPollInterval = TimeSpan.FromSeconds(5);
+
         /// <summary>
         /// Specifies infinite DVR window for a program.
         /// </summary>
@@ -51,5 +59,23 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
         internal static readonly TimeSpan ScaleStreamingEndpointPollInterval = TimeSpan.FromSeconds(15);
         #endregion Streaming Endpoint constants
+
+        #region Channel function parameter names
+
+        internal const string ChannelStartUriFormat = "/Channels('{0}')/Start";
+        internal const string ChannelStopUriFormat = "/Channels('{0}')/Stop";
+        internal const string ChannelResetUriFormat = "/Channels('{0}')/Reset";
+
+        internal const string ChannelShowSlateUriFormat = "/Channels('{0}')/ShowSlate";
+        internal const string ChannelHideSlateUriFormat = "/Channels('{0}')/HideSlate";
+        internal const string ChannelStartAdUriFormat = "/Channels('{0}')/StartAdvertisement";
+        internal const string ChannelEndAdUriFormat = "/Channels('{0}')/EndAdvertisement";
+
+        internal const string ShowSlateDurationParameter = "duration";
+        internal const string ShowSlateAssetIdParameter = "assetId";
+        internal const string StartAdDurationParameter = "duration";
+        internal const string StartAdCueIdParameter = "cueId";
+
+        #endregion Channel function parameter names
     }
 }
