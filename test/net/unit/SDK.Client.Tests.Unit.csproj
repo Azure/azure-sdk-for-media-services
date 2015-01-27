@@ -119,6 +119,7 @@
     <Compile Include="CacheTest.cs" />
     <Compile Include="CommonEncryptionTest.cs" />
     <Compile Include="ContentKeyTest.cs" />
+    <Compile Include="CustomMediaRetryPolicyTests.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="IngestManifestTest.cs" />
     <Compile Include="JobTemplateTests.cs" />
@@ -135,8 +136,10 @@
     <Compile Include="CollectionQueryTest.cs" />
     <Compile Include="SaveChangesErrorDetectionStrategyTest.cs" />
     <Compile Include="StorageTransientErrorDetectionStrategyTests.cs" />
+    <Compile Include="TestAzureMediaServicesClassFactoryForCustomRetryPolicy.cs" />
     <Compile Include="TestCloudMediaDataContext.cs" />
     <Compile Include="TestRetryAdapter.cs" />
+    <Compile Include="TestSaveChangesErrorDetectionStrategy.cs" />
     <Compile Include="TokenRestrictionTemplateSerializerTests.cs" />
     <Compile Include="WebRequestTransientErrorDetectionStrategyTests.cs" />
   </ItemGroup>
