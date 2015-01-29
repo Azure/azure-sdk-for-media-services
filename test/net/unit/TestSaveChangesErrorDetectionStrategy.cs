@@ -11,7 +11,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
 {
     public class TestSaveChangesErrorDetectionStrategy : SaveChangesErrorDetectionStrategy
     {
-        //created a new detectionstrategy for savecanges to add timeoutexception in the transient exception list.
+        //created a new detectionstrategy for savechanges to add timeoutexception in the transient exception list.
         protected override bool CheckIsTransient(Exception ex)
         {
             if (IsIOException(ex))

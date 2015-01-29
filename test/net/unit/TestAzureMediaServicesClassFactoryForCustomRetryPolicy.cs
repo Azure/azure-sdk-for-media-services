@@ -14,15 +14,8 @@
 // limitations under the License.
 // </license>
 
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 using System;
-using Microsoft.WindowsAzure.Storage.Blob;
-using Moq;
-using System.Net;
-using Microsoft.WindowsAzure.Storage.RetryPolicies;
 using Microsoft.Practices.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
@@ -81,21 +74,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
                 initialInterval: TimeSpan.FromMilliseconds(ConnectionRetryInitialInterval),
                 increment: TimeSpan.FromMilliseconds(ConnectionRetrySleepQuantum * 16)
                 );
-            retryPolicy.RetryPolicyAdapter = adapter;
-            return retryPolicy;
-        }
-
-        /// <summary>
-        /// Creates retry policy for querying Media Services REST layer.
-        /// This overrides the GetQueryRetryPolicy defined in AzureMediaServicesClassFactory
-        /// </summary>
-        /// <returns>Retry policy.</returns>
-        public override MediaRetryPolicy GetQueryRetryPolicy(IRetryPolicyAdapter adapter)
-        {
-            //Overriding to create a retrypolicy that has different retryattempts and retrysleepquantum than the default one.
-            var retryPolicy = new MediaRetryPolicy(
-                GetQueryErrorDetectionStrategy(),
-                (RetryStrategy)new FixedInterval(ConnectionQueryRetryMaxAttempts, TimeSpan.FromMilliseconds((ConnectionRetrySleepQuantum))));
             retryPolicy.RetryPolicyAdapter = adapter;
             return retryPolicy;
         }

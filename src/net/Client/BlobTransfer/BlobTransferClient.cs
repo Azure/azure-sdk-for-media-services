@@ -1,22 +1,9 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Net;
-using System.Net.Sockets;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Practices.TransientFaultHandling;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Auth;
-using Microsoft.WindowsAzure.Storage.Auth.Protocol;
 using Microsoft.WindowsAzure.Storage.Blob;
-using Microsoft.WindowsAzure.Storage.Blob.Protocol;
-using Microsoft.WindowsAzure.Storage.Core.Auth;
 using Microsoft.WindowsAzure.Storage.RetryPolicies;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
@@ -96,7 +83,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 				null, 
 				retryPolicy, 
 				contentType, 
-				getSharedAccessSignature: getSharedAccessSignature);
+				getSharedAccessSignature: getSharedAccessSignature)
+		    ;
 		}
 
 		/// <summary>
@@ -122,9 +110,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 			IRetryPolicy retryPolicy,
 			string contentType = null,
 			string subDirectory = "",
-			Func<string> getSharedAccessSignature = null)
+			Func<string> getSharedAccessSignature = null
+            )
 		{
-			SetConnectionLimits(url);
 
 			if (_forceSharedAccessSignatureRetry != TimeSpan.Zero)
 			{
@@ -154,27 +142,18 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 				}
 			};
 
-			return blobuploader.UploadBlob(
-				url,
-				localFile,
-				fileEncryption,
-				cancellationToken,
-				client,
-				retryPolicy,
-				contentType,
-				subDirectory,
-				getSharedAccessSignature: getSharedAccessSignature);
-		}
-
-		private void SetConnectionLimits(Uri url)
-		{
-			var servicePoint = ServicePointManager.FindServicePoint(url);
-			if (servicePoint != null)
-			{
-				servicePoint.ConnectionLimit = NumberOfConcurrentTransfers * ParallelTransferThreadCount;
-				servicePoint.ConnectionLeaseTimeout = (int)_connectionTimeout.TotalMilliseconds;
-				servicePoint.MaxIdleTime = (int)_connectionTimeout.TotalMilliseconds;
-			}
+		    return blobuploader.UploadBlob(
+		        url,
+		        localFile,
+		        fileEncryption,
+		        cancellationToken,
+		        client,
+		        retryPolicy,
+		        contentType,
+		        subDirectory,
+		        getSharedAccessSignature: getSharedAccessSignature,
+		        parallelTransferThreadCount: ParallelTransferThreadCount,
+		        numberOfConcurrentTransfers: NumberOfConcurrentTransfers);
 		}
 
 		/// <summary>
@@ -186,7 +165,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 		/// <param name="initializationVector">The initialization vector if encryption has been used.</param>
 		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <param name="retryPolicy">The RetryPolicy delegate returns a ShouldRetry delegate, which can be used to implement a custom retry policy.RetryPolicies class can bee used to get default policies</param>
-		/// <returns></returns>
+        /// <param name="getSharedAccessSignature">A callback function which returns Sas signature for the file to be downloaded</param>
+        /// <returns></returns>
 		public virtual Task DownloadBlob(
 			Uri uri, 
 			string localFile, 
@@ -194,7 +174,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 			ulong initializationVector, 
 			CancellationToken cancellationToken,
 			IRetryPolicy retryPolicy,
-			Func<string> getSharedAccessSignature = null)
+			Func<string> getSharedAccessSignature = null
+            )
 		{
 			return DownloadBlob(uri, localFile, fileEncryption, initializationVector, null, cancellationToken, retryPolicy, getSharedAccessSignature);
 		}
@@ -223,7 +204,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 			IRetryPolicy retryPolicy,
 			Func<string> getSharedAccessSignature = null, 
 			long start = 0, 
-			long length = -1)
+			long length = -1
+            )
 		{
 			if (client != null && getSharedAccessSignature != null)
 			{
@@ -245,8 +227,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 			{
 				throw new ArgumentException("Parameter length must be equals or greater than -1");
 			}
-
-			SetConnectionLimits(uri);
 
 			if (_forceSharedAccessSignatureRetry != TimeSpan.Zero)
 			{
@@ -286,7 +266,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 				retryPolicy,
 				getSharedAccessSignature,
 				start,
-				length);
+                length,
+                parallelTransferThreadCount: ParallelTransferThreadCount,
+                numberOfConcurrentTransfers: NumberOfConcurrentTransfers);
 		}
 	}
 }

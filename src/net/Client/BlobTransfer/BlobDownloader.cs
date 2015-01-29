@@ -32,16 +32,23 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             IRetryPolicy retryPolicy,
             Func<string> getSharedAccessSignature = null,
             long start = 0,
-            long length = -1)
+            long length = -1,
+            int parallelTransferThreadCount = 10,
+            int numberOfConcurrentTransfers = 2)
         {
             if (client != null && getSharedAccessSignature != null)
             {
                 throw new InvalidOperationException("The arguments client and getSharedAccessSignature cannot both be non-null");
             }
 
-            SetConnectionLimits(uri);
+            SetConnectionLimits(uri, Environment.ProcessorCount * numberOfConcurrentTransfers * parallelTransferThreadCount);
 
-            Task task = Task.Factory.StartNew(() => DownloadFileFromBlob(uri, localFile, fileEncryption, initializationVector, client, cancellationToken, retryPolicy, getSharedAccessSignature, start: start, length: length));
+            Task task =
+                Task.Factory.StartNew(
+                    () =>
+                        DownloadFileFromBlob(uri, localFile, fileEncryption, initializationVector, client,
+                            cancellationToken, retryPolicy, getSharedAccessSignature, start: start, length: length,
+                            parallelTransferThreadCount: parallelTransferThreadCount));
             return task;
         }
 
@@ -56,9 +63,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             Func<string> getSharedAccessSignature,
             bool shouldDoFileIO = true,
             long start = 0,
-            long length = -1)
+            long length = -1,
+            int parallelTransferThreadCount = 10)
         {
-            int numThreads = Environment.ProcessorCount * ParallelUploadDownloadThreadCountMultiplier;
+            int numThreads = Environment.ProcessorCount * parallelTransferThreadCount;
             ManualResetEvent downloadCompletedSignal = new ManualResetEvent(false);
             BlobRequestOptions blobRequestOptions = new BlobRequestOptions { RetryPolicy = retryPolicy };
             CloudBlockBlob blob = null;

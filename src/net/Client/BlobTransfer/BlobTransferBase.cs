@@ -36,13 +36,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             MemoryManagerFactory = memoryManagerFactory;
         }
 
-        protected void SetConnectionLimits(Uri url)
+        protected void SetConnectionLimits(Uri url, int connectionLimit)
         {
-            ServicePointModifier.SetConnectionPropertiesForSmallPayloads(url);
+            ServicePointModifier.SetConnectionPropertiesForSmallPayloads(url,connectionLimit);
         }
-
-        private const int ConnectionLimitMultiplier = 8;
-        protected const int ParallelUploadDownloadThreadCountMultiplier = 3;
 
         protected struct SuccessfulOrRetryableResult
         {

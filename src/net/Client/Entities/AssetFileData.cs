@@ -122,14 +122,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
             finally
             {
-                if (locator != null)
-                {
-                    locator.Delete();
-                }
-                if (accessPolicy != null)
-                {
-                    accessPolicy.Delete();
-                }               
+                Cleanup(null,null,locator,accessPolicy);             
             }
         }
 

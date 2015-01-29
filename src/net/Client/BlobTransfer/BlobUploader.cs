@@ -5,8 +5,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -33,9 +31,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             IRetryPolicy retryPolicy,
             string contentType = null,
             string subDirectory = "",
-            Func<string> getSharedAccessSignature = null)
+            Func<string> getSharedAccessSignature = null,
+            int parallelTransferThreadCount = 10,
+            int numberOfConcurrentTransfers = 2)
         {
-            SetConnectionLimits(url);
+            SetConnectionLimits(url, Environment.ProcessorCount * parallelTransferThreadCount * numberOfConcurrentTransfers);
             return Task.Factory.StartNew(
                 () => UploadFileToBlob(
                     cancellationToken,
@@ -46,8 +46,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     fileEncryption,
                     client,
                     retryPolicy,
-                    getSharedAccessSignature),
-                cancellationToken);
+                    getSharedAccessSignature,
+                    parallelTransferThreadCount),
+                    cancellationToken);
         }
 
         private void UploadFileToBlob(
@@ -60,6 +61,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             CloudBlobClient client,
             IRetryPolicy retryPolicy,
             Func<string> getSharedAccessSignature,
+            int parallelTransferThreadCount,
             bool shouldDoFileIO = true)
         {
             BlobTransferContext transferContext = new BlobTransferContext();
@@ -70,8 +72,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 using (new FileStream(localFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
                 }
-
-                SetConnectionLimits(uri);
 
                 ManualResetEvent uploadCompletedSignal = new ManualResetEvent(false);
                 BlobRequestOptions blobRequestOptions = new BlobRequestOptions
@@ -93,7 +93,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 }
                 else
                 {
-                    int numThreads = Environment.ProcessorCount * ParallelUploadDownloadThreadCountMultiplier;
+                    int numThreads = Environment.ProcessorCount * parallelTransferThreadCount;
                     int blockSize = GetBlockSize(fileSize);
 
                     transferContext.BlocksToTransfer = PrepareUploadDownloadQueue(fileSize, blockSize, ref numThreads);
