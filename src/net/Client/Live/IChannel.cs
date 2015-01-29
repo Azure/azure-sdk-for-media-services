@@ -265,31 +265,35 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <param name="duration">The duration of the ad marker.</param>
         /// <param name="cueId">optional cue id to use for the ad marker.</param>
-        void StartAdvertisement(TimeSpan duration, int cueId);
+        /// <param name="showSlate">Indicates whether to show slate for the duration of the ad.</param>
+        void StartAdvertisement(TimeSpan duration, int cueId, bool showSlate = true);
 
         /// <summary>
         /// Start an Ad marker on the channel asynchronously.
         /// </summary>
         /// <param name="duration">The duration of the ad marker.</param>
         /// <param name="cueId">optional cue id to use for the ad marker.</param>
+        /// <param name="showSlate">Indicates whether to show the slate for the duration of the ad.</param>
         /// <returns>Task to wait on for operation completion.</returns>
-        Task StartAdvertisementAsync(TimeSpan duration, int cueId);
+        Task StartAdvertisementAsync(TimeSpan duration, int cueId, bool showSlate = true);
 
         /// <summary>
         /// Sends start advertisement operation to the service and returns. Use Operations collection to get operation's status.
         /// </summary>
         /// <param name="duration">The duration of the ad marker.</param>
         /// <param name="cueId">optional cue id to use for the ad marker.</param>
+        /// <param name="showSlate">Indicates whether to show slate for the duration of ad.</param>
         /// <returns>Operation info that can be used to track the operation.</returns>
-        IOperation SendStartAdvertisementOperation(TimeSpan duration, int cueId);
+        IOperation SendStartAdvertisementOperation(TimeSpan duration, int cueId, bool showSlate = true);
 
         /// <summary>
         /// Sends start advertisement operation to the service asynchronously. Use Operations collection to get operation's status.
         /// </summary>
         /// <param name="duration">The duration of the ad marker.</param>
         /// <param name="cueId">optional cue id to use for the ad marker.</param>
+        /// <param name="showSlate">Indicates whether to show slate for the duration of the ad.</param>
         /// <returns>Task to wait on for operation sending completion.</returns>
-        Task<IOperation> SendStartAdvertisementOperationAsync(TimeSpan duration, int cueId);
+        Task<IOperation> SendStartAdvertisementOperationAsync(TimeSpan duration, int cueId, bool showSlate = true);
 
         /// <summary>
         /// Ends the ad marker on the channel.

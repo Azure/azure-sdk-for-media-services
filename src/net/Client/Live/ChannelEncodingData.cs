@@ -40,6 +40,24 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public List<AudioStream> AudioStreams { get; set; }
 
         /// <summary>
+        /// Gets or set whether CEA 708 closed captions are ingored by the chanenl.
+        /// </summary>
+        public bool IgnoreCea708ClosedCaptions { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string AdMarkerSource { get; set; }
+
+        /// <summary>
+        /// Default constructor. Need it since we have a non default constructor.
+        /// </summary>
+        public ChannelEncodingData()
+        {
+            //default constructor.
+        }
+
+        /// <summary>
         /// Creates an instance of ChannelEncodingData class from an instance of ChannelEncoding.
         /// </summary>
         /// <param name="encoding">Channel Encoding to copy into newly created instance.</param>
@@ -51,6 +69,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
 
             SystemPreset = encoding.SystemPreset;
+            IgnoreCea708ClosedCaptions = encoding.IgnoreCea708ClosedCaptions;
+            AdMarkerSource = encoding.AdMarkerSource.ToString();
 
             if (encoding.AudioStreams != null)
             {
@@ -77,7 +97,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             var result = new ChannelEncoding
             {
-                SystemPreset = encoding.SystemPreset
+                SystemPreset = encoding.SystemPreset,
+                IgnoreCea708ClosedCaptions = encoding.IgnoreCea708ClosedCaptions,
+                AdMarkerSource = encoding.AdMarkerSource == null ?
+                    Client.AdMarkerSource.Api :
+                    (AdMarkerSource)Enum.Parse(typeof(AdMarkerSource), encoding.AdMarkerSource, true),
             };
 
             if (encoding.AudioStreams != null)

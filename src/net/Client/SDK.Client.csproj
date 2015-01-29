@@ -275,6 +275,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Entities\IEncodingReservedUnit.cs" />
+    <Compile Include="Live\AdMarkerSource.cs" />
     <Compile Include="Live\AkamaiAccessControlData.cs" />
     <Compile Include="Live\AkamaiSignatureHeaderAuthenticationKey.cs" />
     <Compile Include="Live\AsyncHelper.cs" />
