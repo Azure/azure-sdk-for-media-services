@@ -26,8 +26,6 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
 using Microsoft.WindowsAzure.Storage;
-using Moq;
-using System.Net;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 {
@@ -209,7 +207,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             Assert.AreEqual(asset.Name, refreshedAsset.Name);
             Assert.AreEqual(AssetState.Initialized, refreshedAsset.State);
             Assert.AreEqual(1, refreshedAsset.AssetFiles.Count(), "file count wrong");
-            VerifyAndDownloadAsset(refreshedAsset,1,false);
+            VerifyAndDownloadAsset(refreshedAsset,1,_smallWmv,true,false);
             ContentKeyTests.VerifyFileAndContentKeyMetadataForStorageEncryption(refreshedAsset, _mediaContext);
         }
 
@@ -230,7 +228,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             IAsset refreshedAsset = RefreshedAsset(asset);
             Assert.AreEqual(1, refreshedAsset.AssetFiles.Count(), "file count wrong");
-            VerifyAndDownloadAsset(refreshedAsset, 1);
+            VerifyAndDownloadAsset(refreshedAsset, 1,_smallWmv,true);
         }
 
         [TestMethod]
@@ -258,7 +256,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             policy.Delete();
             IAsset refreshedAsset = RefreshedAsset(asset);
             Assert.AreEqual(2, refreshedAsset.AssetFiles.Count(), "file count wrong");
-            VerifyAndDownloadAsset(refreshedAsset, 2);
+            VerifyAndDownloadAsset(refreshedAsset, 2,_smallWmv,false);
         }
 
 
@@ -441,11 +439,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             IAsset asset = CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
 
             
-            VerifyAndDownloadAsset(asset, 1);
+            VerifyAndDownloadAsset(asset, 1,_smallWmv,true);
         }
 
         [TestMethod]
         [Priority(1)]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [DeploymentItem(@"Media\SmallWmv2.wmv", "Media")]
         public void ShouldDownloadSameAssetFile2TimesIdenticallyAsStorageSDK()
         {
             
@@ -470,7 +470,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             for (int i = 0; i < 2; i++)
             {
-                VerifyAndDownloadAsset(refreshedAsset, 2);
+                VerifyAndDownloadAsset(refreshedAsset, 2,_smallWmv,false);
             }
            
         }
@@ -482,7 +482,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         public void ShouldDownloadCommonEncryptionProtectedAssetFile()
         {
             IAsset asset = CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.CommonEncryptionProtected);
-            VerifyAndDownloadAsset(asset, 1);
+            VerifyAndDownloadAsset(asset, 1,_smallWmv,true);
         }
 
         [TestMethod]
@@ -495,7 +495,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             string name = Path.GetFileName(_smallWmv);
             IAssetFile file = asset.AssetFiles.Create(name);
             file.Upload(_smallWmv);
-            VerifyAndDownloadAsset(asset, 1);
+            VerifyAndDownloadAsset(asset, 1,_smallWmv,true);
         }
 
         [TestMethod]
@@ -504,7 +504,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         public void ShouldDownloadIngestEncryptedAssetFile()
         {
             IAsset asset = CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.StorageEncrypted);
-            VerifyAndDownloadAsset(asset, 1,false);
+            VerifyAndDownloadAsset(asset, 1,_smallWmv,true,false);
         }
 
         [TestMethod]
@@ -758,8 +758,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         /// </summary>
         /// <param name="asset">The asset.</param>
         /// <param name="expectedFileCount">The expected file count.</param>
+        /// <param name="inputFile">input file to be validated against the downloaded file</param>
+        /// <param name="inputFileValidation">if set to <c>true</c> performs input and WAMS downloaded file validation.</param>
         /// <param name="performStorageSdkDownloadVerification">if set to <c>true</c> also perform storage SDK download verification.</param>
-        private void VerifyAndDownloadAsset(IAsset asset, int expectedFileCount,bool performStorageSdkDownloadVerification = true)
+        private void VerifyAndDownloadAsset(IAsset asset, int expectedFileCount,string inputFile,bool inputFileValidation, bool performStorageSdkDownloadVerification = true)
         {
             Assert.AreEqual(expectedFileCount, asset.AssetFiles.Count(), "file count wrong");
 
@@ -787,7 +789,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                     Assert.AreEqual(100, _downloadProgress);
 
                     string hashValueForWAMSSDKDownload = GetHashValueForFileMd5CheckSum(downloadPathForWamsSdk);
-
+                    string hashValueForInputFile = GetHashValueForFileMd5CheckSum(inputFile);
+                    if (inputFileValidation)
+                    {
+                        Assert.AreEqual(hashValueForWAMSSDKDownload, hashValueForInputFile,
+                            "MD5 CheckSums for WAMS uploaded and downloaded file are different");
+                    }
                     //Comparing checksum if it is present
                     if (blob.Properties.ContentMD5 != null)
                     {
