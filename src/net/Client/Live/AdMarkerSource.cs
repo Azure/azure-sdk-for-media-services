@@ -1,4 +1,4 @@
-﻿// Copyright 2012 Microsoft Corporation
+﻿// Copyright 2014 Microsoft Corporation
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,27 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
-    /// The ingest streaming protocol.
+    /// An enum for the options allowed for an ad marker source.
     /// </summary>
-    public enum StreamingProtocol
+    public enum AdMarkerSource
     {
         /// <summary>
-        /// Smooth Streaming.
+        /// Programatically insers the ads in the live stream.
         /// </summary>
-        FragmentedMP4 = 0,
+        Api = 0,
 
         /// <summary>
-        /// RTMP.
+        /// Use the SCTE-35 signalling to insert the ads. Works for RTPMPEG2-TS channels only.
         /// </summary>
-        // ReSharper disable once InconsistentNaming
-        RTMP = 1,
-
-        /// <summary>
-        /// MPEG-2 TS over RTP.
-        /// </summary>
-        RTPMPEG2TS = 2
+        Scte35 = 1
     }
 }

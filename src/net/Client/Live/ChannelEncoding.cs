@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
@@ -36,5 +35,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Gets or sets the source audio streams.
         /// </summary>
         public ReadOnlyCollection<AudioStream> AudioStreams { get; set; }
+
+        /// <summary>
+        /// Gets or sets if the closed captions are ignored or not.
+        /// </summary>
+        public bool IgnoreCea708ClosedCaptions { get; set; }
+
+        /// <summary>
+        /// Gets or set the source of ad markers in the channel.
+        /// </summary>
+        public AdMarkerSource AdMarkerSource { get; set; }
     }
 }

@@ -500,9 +500,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <param name="duration">The duration of the ad marker.</param>
         /// <param name="cueId">optional cue id to use for the ad marker.</param>
-        public void StartAdvertisement(TimeSpan duration, int cueId)
+        /// <param name="showSlate">Indicates whether to show slate for the duration of the ad.</param>
+        public void StartAdvertisement(TimeSpan duration, int cueId, bool showSlate = true)
         {
-            AsyncHelper.Wait(StartAdvertisementAsync(duration, cueId));
+            AsyncHelper.Wait(StartAdvertisementAsync(duration, cueId, showSlate));
         }
 
         /// <summary>
@@ -510,8 +511,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <param name="duration">The duration of the ad marker.</param>
         /// <param name="cueId">optional cue id to use for the ad marker.</param>
+        /// <param name="showSlate">Indicates whether to show slate for the duration of the ad.</param>
         /// <returns>Task to wait on for operation completion.</returns>
-        public Task StartAdvertisementAsync(TimeSpan duration, int cueId)
+        public Task StartAdvertisementAsync(TimeSpan duration, int cueId, bool showSlate = true)
         {
             var uri = new Uri(
                 string.Format(CultureInfo.InvariantCulture, StreamingConstants.ChannelStartAdUriFormat, Id),
@@ -519,8 +521,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             var durationParameter = new BodyOperationParameter(StreamingConstants.StartAdDurationParameter, duration);
             var cueIdParameter = new BodyOperationParameter(StreamingConstants.StartAdCueIdParameter, cueId);
+            var showSlateParameter = new BodyOperationParameter(StreamingConstants.StartAdShowSlateParameter, showSlate);
 
-            return ExecuteActionAsync(uri, StreamingConstants.StartAdvertisementPollInterval, durationParameter, cueIdParameter);
+            return ExecuteActionAsync(uri, StreamingConstants.StartAdvertisementPollInterval, durationParameter, cueIdParameter, showSlateParameter);
         }
 
         /// <summary>
@@ -528,8 +531,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <param name="duration">The duration of the ad marker.</param>
         /// <param name="cueId">optional cue id to use for the ad marker.</param>
+        /// <param name="showSlate">Indicates whether to show slate for the duration of the ad.</param>
         /// <returns>Operation info that can be used to track the operation.</returns>
-        public IOperation SendStartAdvertisementOperation(TimeSpan duration, int cueId)
+        public IOperation SendStartAdvertisementOperation(TimeSpan duration, int cueId, bool showSlate = true)
         {
             var uri = new Uri(
                 string.Format(CultureInfo.InvariantCulture, StreamingConstants.ChannelStartAdUriFormat, Id),
@@ -537,8 +541,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             var durationParameter = new BodyOperationParameter(StreamingConstants.StartAdDurationParameter, duration);
             var cueIdParameter = new BodyOperationParameter(StreamingConstants.StartAdCueIdParameter, cueId);
+            var showSlateParameter = new BodyOperationParameter(StreamingConstants.StartAdShowSlateParameter, showSlate);
 
-            return SendOperation(uri, durationParameter, cueIdParameter);
+            return SendOperation(uri, durationParameter, cueIdParameter, showSlateParameter);
         }
 
         /// <summary>
@@ -546,10 +551,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <param name="duration">The duration of the ad marker.</param>
         /// <param name="cueId">optional cue id to use for the ad marker.</param>
+        /// <param name="showSlate">Indicates whether to show slate for the duration of the ad.</param>
         /// <returns>Task to wait on for operation sending completion.</returns>
-        public Task<IOperation> SendStartAdvertisementOperationAsync(TimeSpan duration, int cueId)
+        public Task<IOperation> SendStartAdvertisementOperationAsync(TimeSpan duration, int cueId, bool showSlate = true)
         {
-            return Task.Factory.StartNew(() => SendStartAdvertisementOperation(duration, cueId));
+            return Task.Factory.StartNew(() => SendStartAdvertisementOperation(duration, cueId, showSlate));
         }
 
         /// <summary>

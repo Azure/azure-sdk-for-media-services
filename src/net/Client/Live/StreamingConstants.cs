@@ -75,6 +75,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         internal const string ShowSlateAssetIdParameter = "assetId";
         internal const string StartAdDurationParameter = "duration";
         internal const string StartAdCueIdParameter = "cueId";
+        internal const string StartAdShowSlateParameter = "showSlate";
 
         #endregion Channel function parameter names
     }

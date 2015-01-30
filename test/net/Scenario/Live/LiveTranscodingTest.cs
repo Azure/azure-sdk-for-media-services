@@ -16,7 +16,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net;
+using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
 
@@ -47,7 +49,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
                     Output = MakeChannelOutput(),
                     EncodingType = ChannelEncodingType.Standard,
                     Encoding = MakeChannelEncoding(),
-                    Slate = new ChannelSlate {DefaultSlateAssetId = "1008", InsertSlateOnAdMarker = false}
+                    Slate = new ChannelSlate {DefaultSlateAssetId = null, InsertSlateOnAdMarker = false}
                 });
             channel.Start();
 
@@ -55,6 +57,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
             channel.HideSlate();
             
             channel.StartAdvertisement(TimeSpan.FromMinutes(10), 1000);
+            channel.EndAdvertisement();
+
+            channel.StartAdvertisement(TimeSpan.FromMinutes(10), 1000, false);
             channel.EndAdvertisement();
 
             channel.Stop();
@@ -66,7 +71,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
             return new ChannelInput
             {
                 KeyFrameInterval = TimeSpan.FromSeconds(2),
-                StreamingProtocol = StreamingProtocol.FragmentedMP4,
+                StreamingProtocol = StreamingProtocol.RTPMPEG2TS,
                 AccessControl = new ChannelAccessControl
                 {
                     IPAllowList = new List<IPRange>
@@ -113,8 +118,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
         {
             return new ChannelEncoding
             {
-                SystemPreset = "EncodingType",
-                AudioStreams = new List<AudioStream> {new AudioStream {Index = 103, Language = "zhn"}}.AsReadOnly(),
+                SystemPreset = "Default720p",
+                IgnoreCea708ClosedCaptions = false,
+                AdMarkerSource = AdMarkerSource.Api,
+                AudioStreams = new List<AudioStream> {new AudioStream {Index = 103, Language = "eng"}}.AsReadOnly(),
             };
         }
     }
