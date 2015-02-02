@@ -1,4 +1,4 @@
-﻿// Copyright 2012 Microsoft Corporation
+﻿// Copyright 2015 Microsoft Corporation
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,24 +15,18 @@
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
-    /// The ingest streaming protocol.
+    /// Specifies a video stream.
     /// </summary>
-    public enum StreamingProtocol
+    public class VideoStream
     {
         /// <summary>
-        /// Smooth Streaming.
+        /// Gets or sets the stream index when source from MPEG2-TS.
         /// </summary>
-        FragmentedMP4 = 0,
+        public int Index { get; set; }
 
         /// <summary>
-        /// RTMP.
+        /// Gets or sets the name of video stream.
         /// </summary>
-        // ReSharper disable once InconsistentNaming
-        RTMP = 1,
-
-        /// <summary>
-        /// MPEG-2 TS over RTP.
-        /// </summary>
-        RTPMPEG2TS = 2
+        public string Name { get; set; }
     }
 }
