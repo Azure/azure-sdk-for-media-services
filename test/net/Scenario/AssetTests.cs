@@ -564,19 +564,20 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [DeploymentItem(@".\Resources\interview.wmv", "Content")]
+        [DeploymentItem(@".\Media\SmallMP41.mp4", "Content")]
        public void ShouldCreateAssetWithSingleFile()
         {
-            string assetFilePath = @"Content\interview.wmv";
+            string assetFilePath = @"Content\SmallMP41.mp4";
 
-            IAsset asset = CreateAsset(_mediaContext, Path.GetFullPath(assetFilePath), AssetCreationOptions.None);
+            //In this case isPrimary is not set in the asset by passing false to CreateAsset.
+            IAsset asset = CreateAsset(_mediaContext, Path.GetFullPath(assetFilePath), AssetCreationOptions.None,false);
 
             Assert.AreEqual(AssetState.Initialized, asset.State);
             Assert.AreEqual(1, asset.AssetFiles.Count());
             Assert.AreEqual(1, asset.Locators.Count);
 
             IAssetFile assetFile = asset.AssetFiles.Single();
-            Assert.IsTrue(assetFile.IsPrimary);
+            Assert.AreNotEqual(asset.AssetType,AssetType.Unknown);
             Assert.AreEqual(Path.GetFileName(assetFilePath), assetFile.Name);
         }
 
@@ -732,7 +733,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         
         #region Helper/utility methods
 
-        public static IAsset CreateAsset(CloudMediaContext datacontext, string filePath, AssetCreationOptions options)
+        public static IAsset CreateAsset(CloudMediaContext datacontext, string filePath, AssetCreationOptions options, bool isSetPrimary = true)
         {
             IAsset asset = datacontext.Assets.Create(Guid.NewGuid().ToString(), options);
             IAccessPolicy policy = datacontext.AccessPolicies.Create("Write", TimeSpan.FromMinutes(5), AccessPermissions.Write);
@@ -746,9 +747,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                              blobTransferClient,
                              locator,
                              CancellationToken.None).Wait();
-            file.IsPrimary = true;
-            file.Update();
-
+            if (isSetPrimary)
+            {
+                file.IsPrimary = true;
+                file.Update();
+            }
             return asset;
         }
 
