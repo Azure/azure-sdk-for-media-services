@@ -126,6 +126,7 @@
     <Compile Include="StorageTransientErrorDetectionStrategyTests.cs" />
     <Compile Include="TestCloudMediaDataContext.cs" />
     <Compile Include="TestRetryAdapter.cs" />
+    <Compile Include="TestStreamingEndpointData.cs" />
     <Compile Include="TokenRestrictionTemplateSerializerTests.cs" />
     <Compile Include="WebRequestTransientErrorDetectionStrategyTests.cs" />
   </ItemGroup>

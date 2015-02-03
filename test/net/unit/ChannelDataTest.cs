@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -84,6 +85,27 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
             target.HideSlateAsync();
             target.StartAdvertisementAsync(TimeSpan.FromMinutes(10), 100, false);
             target.EndAdvertisementAsync();
+        }
+
+        /// <summary>
+        ///A test for Settings
+        ///</summary>
+        [TestMethod]
+        public void SettingsTestChannelSubProperties()
+        {
+            IChannel target = new ChannelData();
+
+            var input = new ChannelInput
+            {
+                AccessControl = new ChannelAccessControl
+                {
+                    IPAllowList = new List<IPRange> { new IPRange { Address = IPAddress.Parse("192.168.0.0"), SubnetPrefixLength = 24 } }
+                }
+            };
+
+            target.Input = input;
+
+            Assert.IsNotNull(target.Input.AccessControl.IPAllowList.FirstOrDefault());
         }
 
         static ChannelInput MakeChannelInput()
