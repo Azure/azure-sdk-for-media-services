@@ -1,4 +1,4 @@
-﻿// Copyright 2012 Microsoft Corporation
+﻿// Copyright 2014 Microsoft Corporation
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,24 +15,18 @@
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
-    /// The ingest streaming protocol.
+    /// Specify the channel encoding type
     /// </summary>
-    public enum StreamingProtocol
+    public enum ChannelEncodingType
     {
         /// <summary>
-        /// Smooth Streaming.
+        /// Channel has no encoding capability.
         /// </summary>
-        FragmentedMP4 = 0,
+        None = 0,
 
         /// <summary>
-        /// RTMP.
+        /// Channel has standard encoding capability.
         /// </summary>
-        // ReSharper disable once InconsistentNaming
-        RTMP = 1,
-
-        /// <summary>
-        /// MPEG-2 TS over RTP.
-        /// </summary>
-        RTPMPEG2TS = 2
+        Standard = 1
     }
 }
