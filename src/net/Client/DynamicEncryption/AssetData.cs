@@ -172,6 +172,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
                 case AssetType.SmoothStreaming:
                 case AssetType.MultiBitrateMP4:
+                case AssetType.LiveStreamOrArchive:
                     return true;
 
                 default:
@@ -190,6 +191,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 case AssetType.SmoothStreaming:
                 case AssetType.MultiBitrateMP4:
                 case AssetType.MediaServicesHLS:
+                case AssetType.LiveStreamOrArchive:
                     return true;
 
                 default:
@@ -250,7 +252,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 {
                     IAssetFile[] assetFiles = asset.AssetFiles.ToArray();
 
-                    if (assetFiles.Where(af => IsExtension(af.Name, ".m3u8")).Any())
+                    if (assetFiles.Length == 1)
+                    {
+                        // There is only a manifest (.ism) file in the asset.
+                        // TODO: We should check if the asset is FragBlob.
+                        assetType = AssetType.LiveStreamOrArchive;
+                    }
+                    else if (assetFiles.Where(af => IsExtension(af.Name, ".m3u8")).Any())
                     {
                         assetType = AssetType.MediaServicesHLS;
                     }

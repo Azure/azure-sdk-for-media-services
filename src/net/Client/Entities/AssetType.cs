@@ -11,6 +11,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         MP4,
         MultiBitrateMP4,
         SmoothStreaming,
-        MediaServicesHLS // Is this the best name for this?
+        MediaServicesHLS, // Is this the best name for this?
+        LiveStreamOrArchive
     }
 }
