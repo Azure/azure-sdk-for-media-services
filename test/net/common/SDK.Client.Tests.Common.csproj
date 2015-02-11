@@ -91,6 +91,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ErrorDetectionStrategyForRefreshToken.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SelfSignedCertificateFactory.cs" />
     <Compile Include="TestCloudMediaContext.cs" />
