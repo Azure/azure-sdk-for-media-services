@@ -91,32 +91,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
              CreateEncryptUpdateDelete(assetCreationOptions);
          }
 
-         //TODO: Test is failing complaining that storage encryption key is missing. Rule need to be confirmed
-         [Ignore]
-         [TestMethod]
-         public void CreateCommonEncryptedEncryptUpdateDeleteIngestManifestAsset()
-         {
-             AssetCreationOptions assetCreationOptions = AssetCreationOptions.CommonEncryptionProtected;
-             CreateEncryptUpdateDelete(assetCreationOptions);
-         }
-
-         //TODO: Test is failing complaining that storage encryption key is missing. Rule need to be confirmed
-         [Ignore]
-         [TestMethod]
-         public void CreateNoneEncryptedEncryptUpdateDeleteIngestManifestAsset()
-         {
-             AssetCreationOptions assetCreationOptions = AssetCreationOptions.None;
-             CreateEncryptUpdateDelete(assetCreationOptions);
-         }
-         //TODO: Test is failing complaining that storage encryption key is missing. Rule need to be confirmed
-         [Ignore]
-         [TestMethod]
-         public void CreateEnvelopeEncryptedEncryptUpdateDeleteIngestManifestAsset()
-         {
-             AssetCreationOptions assetCreationOptions = AssetCreationOptions.EnvelopeEncryptionProtected;
-             CreateEncryptUpdateDelete(assetCreationOptions);
-         }
-
          [TestMethod]
          public void IngestManifestFileCRUD()
          {

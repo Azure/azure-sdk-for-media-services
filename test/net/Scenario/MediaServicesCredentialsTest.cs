@@ -35,7 +35,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
     public class MediaServicesCredentialsTest
     {
         [TestMethod()]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void MediaServicesCredentialsTestReuseToken()
         {
             var context1 = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
@@ -59,7 +61,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod()]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void MediaServicesCredentialsTestTokenReaquire()
         {
             var context1 = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
@@ -186,7 +190,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod()]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void MediaServicesCredentialsTestSetAcsToken()
         {
             MediaServicesCredentials target = new MediaServicesCredentials("dummyClientId", "dummyClientSecret", "dummyScope", "dummyAcsBaseAddress");
@@ -203,7 +209,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         [TestMethod()]
         [ExpectedException(typeof(DataServiceQueryException))]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void MediaServicesCredentialsTestReuseInvalidToken()
         {
             var context1 = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
@@ -227,7 +235,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         
         [TestMethod()]
         [ExpectedException(typeof(DataServiceQueryException))]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void MediaServicesCredentialsTestReuseInvalidTokenBytes()
         {
             // Get the current time plus two hours and then remove the milliseconds component

@@ -43,6 +43,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.RequestAdapters
         /// <param name="context">The context.</param>
         public void Adapt(DataServiceContext context)
         {
+            if (context == null) { throw new ArgumentNullException("context"); }
             context.SendingRequest2 += this.AddRequestVersion;
         }
 

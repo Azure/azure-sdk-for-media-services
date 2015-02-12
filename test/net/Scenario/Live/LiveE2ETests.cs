@@ -52,6 +52,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
         /// Creates everything needed for streaming.
         /// </summary>
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void CreateStreamingTest()
         {
             IStreamingEndpoint streamingEndpoint = _dataContext.StreamingEndpoints.Create(
@@ -77,13 +79,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
             Assert.AreEqual(channel.Id, program.Channel.Id);
         }
 
-		[TestMethod]
-		public void StreamingEndpointCrossDomain()
-		{
-			var streamingEndpoint = ObtainTestStreamingEndpoint();
-		    
+        [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        public void StreamingEndpointCrossDomain()
+        {
+            var streamingEndpoint = ObtainTestStreamingEndpoint();
+
             var clientPolicy =
-		        @"<?xml version=""1.0"" encoding=""utf-8""?>
+                @"<?xml version=""1.0"" encoding=""utf-8""?>
 				<access-policy>
 				  <cross-domain-access>
 					<policy>
@@ -96,14 +100,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
 					</policy>
 				  </cross-domain-access>
 				</access-policy>";
-		    var xdomainPolicy =
-		        @"<?xml version=""1.0"" ?>
+            var xdomainPolicy =
+                @"<?xml version=""1.0"" ?>
 			    <cross-domain-policy>
 			      <allow-access-from domain=""*"" />
 			    </cross-domain-policy>";
 
-		    streamingEndpoint.CrossSiteAccessPolicies.ClientAccessPolicy = clientPolicy;
-		    streamingEndpoint.CrossSiteAccessPolicies.CrossDomainPolicy = xdomainPolicy;
+            streamingEndpoint.CrossSiteAccessPolicies.ClientAccessPolicy = clientPolicy;
+            streamingEndpoint.CrossSiteAccessPolicies.CrossDomainPolicy = xdomainPolicy;
 
             streamingEndpoint.Update();
 
@@ -112,15 +116,17 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
             Assert.AreEqual(xdomainPolicy, streamingEndpoint.CrossSiteAccessPolicies.CrossDomainPolicy);
 
             streamingEndpoint.Delete();
-		}
+        }
 
-		[TestMethod]
-		public void ChannelCrossDomain()
-		{
-			var channel = ObtainTestChannel();
-            
-			string clientPolicy =
-				@"<?xml version=""1.0"" encoding=""utf-8""?>
+        [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        public void ChannelCrossDomain()
+        {
+            var channel = ObtainTestChannel();
+
+            string clientPolicy =
+                @"<?xml version=""1.0"" encoding=""utf-8""?>
 				<access-policy>
 				  <cross-domain-access>
 					<policy>
@@ -134,90 +140,92 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
 				  </cross-domain-access>
 				</access-policy>";
 
-		    string xdomainPolicy =
-		        @"<?xml version=""1.0"" ?>
+            string xdomainPolicy =
+                @"<?xml version=""1.0"" ?>
 			    <cross-domain-policy>
 			      <allow-access-from domain=""*"" />
 			    </cross-domain-policy>";
 
-		    channel.CrossSiteAccessPolicies = new CrossSiteAccessPolicies
-		    {
-		        ClientAccessPolicy = clientPolicy,
-		        CrossDomainPolicy = xdomainPolicy
-		    };
+            channel.CrossSiteAccessPolicies = new CrossSiteAccessPolicies
+            {
+                ClientAccessPolicy = clientPolicy,
+                CrossDomainPolicy = xdomainPolicy
+            };
 
-			channel.Update();
+            channel.Update();
 
-			channel = GetTestChannel();
-			Assert.AreEqual(clientPolicy, channel.CrossSiteAccessPolicies.ClientAccessPolicy);
-			Assert.AreEqual(xdomainPolicy, channel.CrossSiteAccessPolicies.CrossDomainPolicy);
+            channel = GetTestChannel();
+            Assert.AreEqual(clientPolicy, channel.CrossSiteAccessPolicies.ClientAccessPolicy);
+            Assert.AreEqual(xdomainPolicy, channel.CrossSiteAccessPolicies.CrossDomainPolicy);
 
-			channel.Delete();
-		}
+            channel.Delete();
+        }
 
-		[TestMethod]
-		[Ignore] // need valid domain names
-		public void StreamingEndpointCustomDomain()
-		{
-			var target = ObtainTestStreamingEndpoint();
+        [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [Ignore] // need valid domain names
+        public void StreamingEndpointCustomDomain()
+        {
+            var target = ObtainTestStreamingEndpoint();
 
-			var domains = new[] { "a", "b" }.Select(i =>
-				string.Format("{0}{1}.testingcustomdomain.com", i, new Random().Next(1000, 9999).ToString()))
-				.ToList();
+            var domains = new[] { "a", "b" }.Select(i =>
+                string.Format("{0}{1}.testingcustomdomain.com", i, new Random().Next(1000, 9999).ToString()))
+                .ToList();
 
-			target.CustomHostNames = domains;
+            target.CustomHostNames = domains;
 
-			target.Update();
+            target.Update();
 
-			target = GetTestStreamingEndpoint();
-		    Assert.IsTrue(domains.SequenceEqual(target.CustomHostNames));
+            target = GetTestStreamingEndpoint();
+            Assert.IsTrue(domains.SequenceEqual(target.CustomHostNames));
 
-			target.Delete();
-		}
+            target.Delete();
+        }
 
         private IStreamingEndpoint ObtainTestStreamingEndpoint()
         {
             var result = _dataContext.StreamingEndpoints.Where(o => o.Name == TestStreamingEndpointName).FirstOrDefault();
-			if(result == null)
-			{
-			    result = _dataContext.StreamingEndpoints.Create(
-			        new StreamingEndpointCreationOptions(TestStreamingEndpointName, 2)
-			        {
-			            CrossSiteAccessPolicies = GetAccessPolicies(),
-			            AccessControl = GetAccessControl(),
-			            CacheControl = GetCacheControl()
-			        });
-			}
+            if (result == null)
+            {
+                result = _dataContext.StreamingEndpoints.Create(
+                    new StreamingEndpointCreationOptions(TestStreamingEndpointName, 2)
+                    {
+                        CrossSiteAccessPolicies = GetAccessPolicies(),
+                        AccessControl = GetAccessControl(),
+                        CacheControl = GetCacheControl()
+                    });
+            }
 
-			return result;
+            return result;
         }
 
-		private IStreamingEndpoint GetTestStreamingEndpoint()
-		{
-			return _dataContext.StreamingEndpoints.Where(o => o.Name == TestStreamingEndpointName).FirstOrDefault();
-		}
+        private IStreamingEndpoint GetTestStreamingEndpoint()
+        {
+            return _dataContext.StreamingEndpoints.Where(o => o.Name == TestStreamingEndpointName).FirstOrDefault();
+        }
 
         private IChannel GetTestChannel()
         {
             return _dataContext.Channels.Where(o => o.Name == TestChannelName).FirstOrDefault();
         }
 
-		private IChannel ObtainTestChannel()
-		{
-			var result = _dataContext.Channels.Where(o => o.Name == TestChannelName).FirstOrDefault();
-			if(result == null)
-			{
-			    result = _dataContext.Channels.Create(
-			        new ChannelCreationOptions
-			        {
-			            Name = TestChannelName,
-			            Input = MakeChannelInput(),
-			            Preview = MakeChannelPreview(),
-			            Output = MakeChannelOutput()
-			        });
-			}
-			return result;
-		}
+        private IChannel ObtainTestChannel()
+        {
+            var result = _dataContext.Channels.Where(o => o.Name == TestChannelName).FirstOrDefault();
+            if (result == null)
+            {
+                result = _dataContext.Channels.Create(
+                    new ChannelCreationOptions
+                    {
+                        Name = TestChannelName,
+                        Input = MakeChannelInput(),
+                        Preview = MakeChannelPreview(),
+                        Output = MakeChannelOutput()
+                    });
+            }
+            return result;
+        }
 
         private IAsset GetTestAsset()
         {
@@ -239,8 +247,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
                 foreach (var program in channel.Programs)
                 {
                     asset = _dataContext.Assets.Where(o => o.Id == program.AssetId).FirstOrDefault();
-					program.Delete();
-					if (asset != null)
+                    program.Delete();
+                    if (asset != null)
                     {
                         asset.Delete();
                     }

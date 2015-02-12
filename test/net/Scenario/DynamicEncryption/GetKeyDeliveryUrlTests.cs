@@ -17,7 +17,9 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Services.Client;
+using System.IdentityModel.Tokens;
 using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using Microsoft.Practices.TransientFaultHandling;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization;
@@ -38,6 +40,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void GetPlayReadyLicenseDeliveryUrl()
         {
             IContentKey contentKey = null;
@@ -73,6 +78,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void GetHlsKeyDeliveryUrlAndFetchKey()
         {
             IContentKey contentKey = null;
@@ -99,10 +107,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
                 // Enable once all accounts are enabled for per customer Key Delivery Urls
                 //Assert.IsTrue(keyDeliveryServiceUri.Host.StartsWith(_mediaContext.Credentials.ClientId));
-                
+
                 KeyDeliveryServiceClient keyClient = new KeyDeliveryServiceClient(RetryPolicy.DefaultFixed);
                 string rawkey = EncryptionUtils.GetKeyIdAsGuid(contentKey.Id).ToString();
-                byte[] key = keyClient.AcquireHlsKey(keyDeliveryServiceUri, TokenServiceClient.GetAuthTokenForKey(rawkey));
+                byte[] key = keyClient.AcquireHlsKeyWithBearerHeader(keyDeliveryServiceUri, TokenServiceClient.GetAuthTokenForKey(rawkey));
 
                 string expectedString = GetString(expectedKey);
                 string fetchedString = GetString(key);
@@ -114,10 +122,129 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             }
         }
 
-       
+        [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
+        [DeploymentItem("amscer.pfx") ]
+        public void GetHlsKeyDeliveryUrlAndFetchKeyWithJWTAuthentication()
+        {
+            IContentKey contentKey = null;
+            IContentKeyAuthorizationPolicy contentKeyAuthorizationPolicy = null;
+            IContentKeyAuthorizationPolicyOption policyOption = null;
+
+            try
+            {
+                byte[] expectedKey = null;
+                contentKey = CreateTestKey(_mediaContext, ContentKeyType.EnvelopeEncryption, out expectedKey);
+
+                var templatex509Certificate2 = new X509Certificate2("amscer.pfx", "AMSGIT");
+                SigningCredentials cred = new X509SigningCredentials(templatex509Certificate2);
+
+                TokenRestrictionTemplate tokenRestrictionTemplate = new TokenRestrictionTemplate(TokenType.JWT);
+                tokenRestrictionTemplate.PrimaryVerificationKey = new X509CertTokenVerificationKey(templatex509Certificate2);
+                
+                tokenRestrictionTemplate.Audience = new Uri("http://sampleIssuerUrl");
+                tokenRestrictionTemplate.Issuer = new Uri("http://sampleAudience");
+
+                string optionName = "GetHlsKeyDeliveryUrlAndFetchKeyWithJWTAuthentication";
+                string requirements = TokenRestrictionTemplateSerializer.Serialize(tokenRestrictionTemplate);
+                policyOption = ContentKeyAuthorizationPolicyOptionTests.CreateOption(_mediaContext, optionName, ContentKeyDeliveryType.BaselineHttp, requirements, null, ContentKeyRestrictionType.TokenRestricted);
+
+                JwtSecurityToken token = new JwtSecurityToken(issuer: tokenRestrictionTemplate.Issuer.AbsoluteUri, audience: tokenRestrictionTemplate.Audience.AbsoluteUri, notBefore: DateTime.Now.AddMinutes(-5), expires: DateTime.Now.AddMinutes(5), signingCredentials: cred);
+
+                JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
+                string jwtTokenString = handler.WriteToken(token);
+
+                List<IContentKeyAuthorizationPolicyOption> options = new List<IContentKeyAuthorizationPolicyOption>
+                {
+                    policyOption
+                };
+
+                contentKeyAuthorizationPolicy = CreateTestPolicy(_mediaContext, String.Empty, options, ref contentKey);
+
+                Uri keyDeliveryServiceUri = contentKey.GetKeyDeliveryUrl(ContentKeyDeliveryType.BaselineHttp);
+
+                Assert.IsNotNull(keyDeliveryServiceUri);
+
+                // Enable once all accounts are enabled for per customer Key Delivery Urls
+                //Assert.IsTrue(keyDeliveryServiceUri.Host.StartsWith(_mediaContext.Credentials.ClientId));
+
+                KeyDeliveryServiceClient keyClient = new KeyDeliveryServiceClient(RetryPolicy.DefaultFixed);
+                byte[] key = keyClient.AcquireHlsKeyWithBearerHeader(keyDeliveryServiceUri, jwtTokenString);
+
+                string expectedString = GetString(expectedKey);
+                string fetchedString = GetString(key);
+                Assert.AreEqual(expectedString, fetchedString);
+            }
+            finally
+            {
+                CleanupKeyAndPolicy(contentKey, contentKeyAuthorizationPolicy, policyOption);
+            }
+        }
 
         [TestMethod]
-        [ExpectedException(typeof (DataServiceQueryException))]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
+        public void GetHlsKeyDeliveryUrlAndFetchKeyWithSWTAuthentication()
+        {
+            IContentKey contentKey = null;
+            IContentKeyAuthorizationPolicy contentKeyAuthorizationPolicy = null;
+            IContentKeyAuthorizationPolicyOption policyOption = null;
+
+            try
+            {
+                byte[] expectedKey = null;
+                contentKey = CreateTestKey(_mediaContext, ContentKeyType.EnvelopeEncryption, out expectedKey);
+
+                var contentKeyId = Guid.Parse(contentKey.Id.Replace("nb:kid:UUID:",String.Empty));
+
+                TokenRestrictionTemplate tokenRestrictionTemplate = new TokenRestrictionTemplate(TokenType.SWT);
+                tokenRestrictionTemplate.PrimaryVerificationKey = new SymmetricVerificationKey(); // the default constructor automatically generates a random key
+                tokenRestrictionTemplate.Audience = new Uri("http://sampleissuerurl");
+                tokenRestrictionTemplate.Issuer = new Uri("http://sampleaudience");
+                tokenRestrictionTemplate.TokenType = TokenType.SWT;
+                tokenRestrictionTemplate.RequiredClaims.Add(new TokenClaim(TokenClaim.ContentKeyIdentifierClaimType,contentKeyId.ToString()) );
+
+                string optionName = "GetHlsKeyDeliveryUrlAndFetchKeyWithSWTAuthentication";
+                string requirements = TokenRestrictionTemplateSerializer.Serialize(tokenRestrictionTemplate);                
+                ContentKeyRestrictionType restrictionType = ContentKeyRestrictionType.TokenRestricted;
+                var _testOption = ContentKeyAuthorizationPolicyOptionTests.CreateOption(_mediaContext, optionName, ContentKeyDeliveryType.BaselineHttp, requirements, null, restrictionType);
+                
+                List<IContentKeyAuthorizationPolicyOption> options = new List<IContentKeyAuthorizationPolicyOption>
+                {
+                    _testOption
+                };
+
+                contentKeyAuthorizationPolicy = CreateTestPolicy(_mediaContext, String.Empty, options, ref contentKey);
+
+              
+                Uri keyDeliveryServiceUri = contentKey.GetKeyDeliveryUrl(ContentKeyDeliveryType.BaselineHttp);
+
+                Assert.IsNotNull(keyDeliveryServiceUri);
+
+                Assert.IsTrue(keyDeliveryServiceUri.Host.StartsWith(_mediaContext.Credentials.ClientId));
+
+                KeyDeliveryServiceClient keyClient = new KeyDeliveryServiceClient(RetryPolicy.DefaultFixed);
+                string swtTokenString = TokenRestrictionTemplateSerializer.GenerateTestToken(tokenRestrictionTemplate, tokenRestrictionTemplate.PrimaryVerificationKey, contentKeyId, DateTime.Now.AddDays(2));
+                byte[] key = keyClient.AcquireHlsKeyWithBearerHeader(keyDeliveryServiceUri, swtTokenString);
+
+                string expectedString = GetString(expectedKey);
+                string fetchedString = GetString(key);
+                Assert.AreEqual(expectedString, fetchedString);
+            }
+            finally
+            {
+                CleanupKeyAndPolicy(contentKey, contentKeyAuthorizationPolicy, policyOption);
+            }
+        }
+
+
+        [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [ExpectedException(typeof(DataServiceQueryException))]
         public void EnsurePlayReadyLicenseDeliveryUrlForEnvelopeKeyFails()
         {
             IContentKey contentKey = null;
@@ -146,7 +273,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof (DataServiceQueryException))]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [ExpectedException(typeof(DataServiceQueryException))]
         public void EnsureEnvelopeKeyDeliveryUrlForCommonKeyFails()
         {
             IContentKey contentKey = null;
@@ -179,7 +308,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof (DataServiceQueryException))]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [ExpectedException(typeof(DataServiceQueryException))]
         public void EnsureNoneKeyDeliveryUrlFails()
         {
             IContentKey contentKey = null;
@@ -229,10 +360,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             */
         }
 
-        public static IContentKey CreateTestKey(CloudMediaContext mediaContext,ContentKeyType contentKeyType, string name = "")
+        public static IContentKey CreateTestKey(CloudMediaContext mediaContext, ContentKeyType contentKeyType, string name = "")
         {
             byte[] key;
-            return CreateTestKey(mediaContext,contentKeyType, out key);
+            return CreateTestKey(mediaContext, contentKeyType, out key);
         }
 
         public static IContentKey CreateTestKey(CloudMediaContext mediaContext, ContentKeyType contentKeyType, out byte[] key, string name = "")
@@ -291,7 +422,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             {
                 throw new ArgumentNullException("bytes");
             }
-            char[] chars = new char[bytes.Length/sizeof (char)];
+            char[] chars = new char[bytes.Length / sizeof(char)];
             Buffer.BlockCopy(bytes, 0, chars, 0, bytes.Length);
             return new string(chars);
         }
