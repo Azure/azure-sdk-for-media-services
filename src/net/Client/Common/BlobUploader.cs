@@ -519,7 +519,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             if (blocksize > maxblocksize)
             {
-                throw new ArgumentException(StringTable.ErrorBlobTooBigToUpload);
+                throw new ArgumentException(CommonStringTable.ErrorBlobTooBigToUpload);
             }
 
             return (int)blocksize;

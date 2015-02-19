@@ -443,7 +443,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             long blockCount = ((int)Math.Floor((double)(fileSize / blocksize))) + 1;
             if (blockCount > maxblocks - 1 || (blocksize > maxblocksize))
             {
-                throw new ArgumentException(StringTable.ErrorBlobTooBigToUpload);
+                throw new ArgumentException(CommonStringTable.ErrorBlobTooBigToUpload);
             }
 
             return (int)blocksize;
