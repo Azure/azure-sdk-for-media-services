@@ -118,6 +118,10 @@
     <None Include="Properties\SlowCheetah\SlowCheetah.Transforms.targets" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\src\net\Client\Common\SDK.Client.Common.csproj">
+      <Project>{69f05191-c4fd-4362-94ed-aede3c50efad}</Project>
+      <Name>SDK.Client.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\src\net\Client\SDK.Client.csproj">
       <Project>{E194B46E-9063-4CFA-85FC-51E5AAD55586}</Project>
       <Name>SDK.Client</Name>

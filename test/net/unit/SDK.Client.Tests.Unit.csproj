@@ -132,6 +132,10 @@
     <Compile Include="WebRequestTransientErrorDetectionStrategyTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\src\net\Client\Common\SDK.Client.Common.csproj">
+      <Project>{69f05191-c4fd-4362-94ed-aede3c50efad}</Project>
+      <Name>SDK.Client.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\src\net\Client\SDK.Client.csproj">
       <Project>{e194b46e-9063-4cfa-85fc-51e5aad55586}</Project>
       <Name>SDK.Client</Name>
@@ -161,7 +165,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
- 
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
