@@ -51,6 +51,32 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             context2.Assets.FirstOrDefault();
         }
 
+        [TestMethod()]
+        [TestCategory("DailyBvtRun")]
+        public void MediaServicesThrowsArgumentExceptionOnNull()
+        {
+            string nonNull = "nonNull";
+
+            string[] argumentNames = {"clientId", "clientSecret", "scope", "acsBaseAddress" };
+            string[,] arguments = {{null, nonNull, nonNull, nonNull},
+                                   {nonNull, null, nonNull, nonNull},
+                                   {nonNull, nonNull, null, nonNull},
+                                   {nonNull, nonNull, nonNull, null}};
+
+            for (int i = 0; i < 4; i++)
+            {
+                try
+                {
+                    MediaServicesCredentials creds = new MediaServicesCredentials(arguments[i, 0], arguments[i, 1], arguments[i, 2], arguments[i, 3]);
+                }
+                catch (ArgumentException ae)
+                {
+                    string expectedMessage = string.Format(StringTable.ErrorArgCannotBeNullOrEmpty, argumentNames[i]);
+                    Assert.AreEqual(expectedMessage, ae.Message);
+                }
+            }
+        }
+
         private static void MakeRestCallAndVerifyToken(CloudMediaContext context)
         {
            context.Assets.FirstOrDefault();

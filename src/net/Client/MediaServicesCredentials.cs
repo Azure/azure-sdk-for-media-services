@@ -83,6 +83,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
         }
 
+        private void ValidateStringArgumentIsNotNullOrEmpty(string parameterValue, string parameterName)
+        { 
+            if (String.IsNullOrWhiteSpace(parameterValue))
+            { 
+                string message = String.Format(StringTable.ErrorArgCannotBeNullOrEmpty, parameterName);
+                throw new ArgumentException(message);
+            }        
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="OAuthDataServiceAdapter"/> class.
         /// </summary>
@@ -92,6 +101,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="acsBaseAddress">The acs base address.</param>
         public MediaServicesCredentials(string clientId, string clientSecret, string scope, string acsBaseAddress)
         {
+            ValidateStringArgumentIsNotNullOrEmpty(clientId, "clientId");
+            ValidateStringArgumentIsNotNullOrEmpty(clientSecret, "clientSecret");
+            ValidateStringArgumentIsNotNullOrEmpty(scope, "scope");
+            ValidateStringArgumentIsNotNullOrEmpty(acsBaseAddress, "acsBaseAddress");
+
             this.ClientId = clientId;
             this.ClientSecret = clientSecret;
             this.Scope = scope;
