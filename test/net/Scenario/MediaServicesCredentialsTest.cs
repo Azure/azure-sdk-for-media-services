@@ -52,7 +52,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod()]
-        [TestCategory("DailyBvtRun")]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void MediaServicesThrowsArgumentExceptionOnNull()
         {
             string nonNull = "nonNull";

@@ -336,7 +336,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         {
             IAsset asset = JobTests.CreateSmoothAsset(_mediaContext, _filePaths, AssetCreationOptions.StorageEncrypted);
 
-            Assert.AreEqual(true, asset.IsStreamable);
+            Assert.IsTrue(asset.IsStreamable);
             Assert.AreEqual(AssetType.SmoothStreaming, asset.AssetType);
             Assert.AreEqual(AssetCreationOptions.StorageEncrypted, asset.Options);
 
@@ -480,7 +480,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         {
             IAsset asset = AssetTests.CreateAsset(_mediaContext, WindowsAzureMediaServicesTestConfiguration.SmallIsm, AssetCreationOptions.None);
 
-            Assert.AreEqual(true, asset.IsStreamable);
+            Assert.IsTrue(asset.IsStreamable);
             Assert.AreEqual(AssetType.SmoothStreaming, asset.AssetType);
             Assert.AreEqual(AssetCreationOptions.None, asset.Options);
 
@@ -511,7 +511,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         {
             IAsset asset = AssetTests.CreateAsset(_mediaContext, WindowsAzureMediaServicesTestConfiguration.SmallIsm, AssetCreationOptions.StorageEncrypted);
 
-            Assert.AreEqual(true, asset.IsStreamable);
+            Assert.IsTrue(asset.IsStreamable);
             Assert.AreEqual(AssetType.SmoothStreaming, asset.AssetType);
             Assert.AreEqual(AssetCreationOptions.StorageEncrypted, asset.Options);
 

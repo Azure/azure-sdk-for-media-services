@@ -83,11 +83,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
         }
 
-        private void ValidateStringArgumentIsNotNullOrEmpty(string parameterValue, string parameterName)
+        private static void ValidateStringArgumentIsNotNullOrEmpty(string parameterValue, string parameterName)
         { 
             if (String.IsNullOrWhiteSpace(parameterValue))
-            { 
-                string message = String.Format(StringTable.ErrorArgCannotBeNullOrEmpty, parameterName);
+            {
+                string message = String.Format(CultureInfo.InvariantCulture, StringTable.ErrorArgCannotBeNullOrEmpty, parameterName);
                 throw new ArgumentException(message);
             }        
         }
@@ -173,10 +173,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
         public static DateTime ParseTokenExpiration(string token)
         {
-            if (String.IsNullOrWhiteSpace(token))
-            {
-                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, StringTable.ErrorArgCannotBeNullOrEmpty, "token"));
-            }
+            ValidateStringArgumentIsNotNullOrEmpty(token, "token");
 
             string expireOnValue = null;
 
