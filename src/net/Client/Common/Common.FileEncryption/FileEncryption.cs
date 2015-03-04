@@ -114,7 +114,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new ArgumentException("Cannot be null or empty", "fileName");
             }
 
-            using (CriticalSection.Enter(this._lockObject))
+            lock(this._lockObject)
             {
                 returnValue = this._initializationVectorListByFileName.ContainsKey(fileName);
             }
@@ -137,7 +137,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new ArgumentException("Cannot be null or empty", "fileName");
             }
 
-            using (CriticalSection.Enter(this._lockObject))
+            lock(this._lockObject)
             {
                 if (this._rng == null)
                 {
@@ -182,7 +182,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new ArgumentException("Cannot be null or empty", "fileName");
             }
 
-            using (CriticalSection.Enter(this._lockObject))
+            lock(this._lockObject)
             {
                 returnValue = this._initializationVectorListByFileName[fileName];
             }
@@ -204,7 +204,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new ArgumentException("Cannot be null or empty", "fileName");
             }
 
-            using (CriticalSection.Enter(this._lockObject))
+            lock(this._lockObject)
             {
                 if (!this._initializationVectorListByFileName.TryGetValue(fileName, out temp))
                 {
@@ -285,7 +285,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             ICryptoTransform transform = null;
 
-            using (CriticalSection.Enter(this._lockObject))
+            lock(this._lockObject)
             {
                 // Note that ECB encrypt is always used for AES-CTR whether doing encryption or decryption.
                 transform = this._key.CreateEncryptor();

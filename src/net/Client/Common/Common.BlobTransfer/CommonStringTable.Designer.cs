@@ -69,14 +69,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client {
             }
         }
         
-        /// <summary>
-        ///   Looks up a localized string similar to Guid.Empty is not a valid key identifier..
-        /// </summary>
-        internal static string ErrorInvalidKeyIdentifier {
-            get {
-                return ResourceManager.GetString("ErrorInvalidKeyIdentifier", resourceCulture);
-            }
-        }
         
         /// <summary>
         ///   Looks up a localized string similar to Specified localFileName is null or empty..

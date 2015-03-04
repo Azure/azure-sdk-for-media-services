@@ -502,9 +502,13 @@
     <None Include="Settings.stylecop" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="Common\SDK.Client.Common.csproj">
-      <Project>{69f05191-c4fd-4362-94ed-aede3c50efad}</Project>
-      <Name>SDK.Client.Common</Name>
+    <ProjectReference Include="Common\Common.BlobTransfer\SDK.Client.Common.BlobTransfer.csproj">
+      <Project>{f0c14570-44f9-4f3e-ac4f-d9965c4b1d06}</Project>
+      <Name>SDK.Client.Common.BlobTransfer</Name>
+    </ProjectReference>
+    <ProjectReference Include="Common\Common.FileEncryption\SDK.Client.Common.FileEncryption.csproj">
+      <Project>{630d064c-8d3d-4419-bcc9-a61ef577a387}</Project>
+      <Name>SDK.Client.Common.FileEncryption</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

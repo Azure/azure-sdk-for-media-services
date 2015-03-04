@@ -117,13 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ErrorBlobTooBigToUpload" xml:space="preserve">
-    <value>Specified blob is too big to be uploaded.</value>
-  </data>
   <data name="ErrorInvalidKeyIdentifier" xml:space="preserve">
     <value>Guid.Empty is not a valid key identifier.</value>
-  </data>
-  <data name="ErrorLocalFilenameIsNullOrEmpty" xml:space="preserve">
-    <value>Specified localFileName is null or empty.</value>
   </data>
 </root>
