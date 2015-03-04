@@ -59,7 +59,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
             Assert.AreEqual(encoding.AudioStreams[0].Index, target.Encoding.AudioStreams[0].Index);
             Assert.AreEqual(encoding.AudioStreams[0].Language, target.Encoding.AudioStreams[0].Language);
             Assert.AreEqual(encoding.VideoStreams[0].Index, target.Encoding.VideoStreams[0].Index);
-            Assert.AreEqual(encoding.VideoStreams[0].Name, target.Encoding.VideoStreams[0].Name);
             Assert.AreEqual(encoding.IgnoreCea708ClosedCaptions, target.Encoding.IgnoreCea708ClosedCaptions);
             Assert.AreEqual(encoding.AdMarkerSource, target.Encoding.AdMarkerSource);
 
@@ -162,7 +161,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
             {
                 SystemPreset = "Default720p",
                 AudioStreams = new List<AudioStream> { new AudioStream { Index = 103, Language = "zhn" } }.AsReadOnly(),
-                VideoStreams = new List<VideoStream> { new VideoStream { Index = 104, Name = "English"} }.AsReadOnly(),
+                VideoStreams = new List<VideoStream> { new VideoStream { Index = 104 } }.AsReadOnly(),
                 IgnoreCea708ClosedCaptions = true,
                 AdMarkerSource = AdMarkerSource.Api
             };

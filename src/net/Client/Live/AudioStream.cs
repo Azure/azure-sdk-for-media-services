@@ -25,11 +25,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public int Index { get; set; }
 
         /// <summary>
-        /// Gets or sets the name of audio stream.
-        /// </summary>
-        public string Name {get;  set; } 
-
-        /// <summary>
         /// Gets or sets the language in the ISO 639-2 format for the source audio stream.
         /// </summary>
         public string Language { get; set; }

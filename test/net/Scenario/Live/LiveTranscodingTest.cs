@@ -16,9 +16,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Collections.ObjectModel;
 using System.Net;
-using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
 
@@ -64,6 +63,50 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
 
             channel.Stop();
             channel.Delete();
+        }
+
+
+        [TestMethod]
+        [Priority(1)]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        public void TestStreamSelectionPersistence()
+        {
+            var channelOptions = new ChannelCreationOptions
+            {
+                Name = Guid.NewGuid().ToString().Substring(0, 30),
+                Input = MakeChannelInput(),
+                Preview = MakeChannelPreview(),
+                Output = MakeChannelOutput(),
+                EncodingType = ChannelEncodingType.Standard,
+                Encoding = new ChannelEncoding
+                {
+                    SystemPreset = "Default720p",
+                    VideoStreams = new List<VideoStream>
+                    {
+                        new VideoStream { Index = 0 }
+                    }.AsReadOnly(),
+                    AudioStreams = new List<AudioStream>
+                    {
+                        new AudioStream { Index = 1, Language = "eng" },
+                        new AudioStream { Index = 2, Language = "fra" },
+                        new AudioStream { Index = 3, Language = "esp" }
+                    }.AsReadOnly(),
+                },
+            };
+
+            IChannel channel = _mediaContext.Channels.Create(channelOptions);
+            Assert.AreEqual(channelOptions.Encoding.AudioStreams.Count, channel.Encoding.AudioStreams.Count);
+            for (int i = 0; i < channelOptions.Encoding.AudioStreams.Count; ++i)
+            {
+                Assert.AreEqual(channelOptions.Encoding.AudioStreams[i].Index, channel.Encoding.AudioStreams[i].Index);
+                Assert.AreEqual(channelOptions.Encoding.AudioStreams[i].Language, channel.Encoding.AudioStreams[i].Language);
+            }
+            Assert.AreEqual(channelOptions.Encoding.VideoStreams.Count, channel.Encoding.VideoStreams.Count);
+            for (int i = 0; i < channelOptions.Encoding.VideoStreams.Count; ++i)
+            {
+                Assert.AreEqual(channelOptions.Encoding.VideoStreams[i].Index, channel.Encoding.VideoStreams[i].Index);
+            }
         }
 
         static ChannelInput MakeChannelInput()
