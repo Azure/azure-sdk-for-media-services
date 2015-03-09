@@ -1,4 +1,4 @@
-﻿// Copyright 2012 Microsoft Corporation
+﻿// Copyright 2015 Microsoft Corporation
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,24 +15,18 @@
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
-    /// The ingest streaming protocol.
+    /// An entity class for storing the slate properties of a channel.
     /// </summary>
-    public enum StreamingProtocol
+    public class ChannelSlate
     {
         /// <summary>
-        /// Smooth Streaming.
+        /// Indicates whether or not slate is inserted automatically on Ad marker.
         /// </summary>
-        FragmentedMP4 = 0,
+        public bool InsertSlateOnAdMarker { get; set; }
 
         /// <summary>
-        /// RTMP.
+        /// The Id of the Asset to be used for default slate image.
         /// </summary>
-        // ReSharper disable once InconsistentNaming
-        RTMP = 1,
-
-        /// <summary>
-        /// MPEG-2 TS over RTP.
-        /// </summary>
-        RTPMPEG2TS = 2
+        public string DefaultSlateAssetId { get; set; }
     }
 }

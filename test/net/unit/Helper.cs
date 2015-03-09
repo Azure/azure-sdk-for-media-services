@@ -25,7 +25,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
     {
         public static CloudMediaContext GetMediaDataServiceContextForUnitTests(int delaymilliseconds = 0)
         {
-            CloudMediaContext mediaContext = new TestCloudMediaContext(new Uri("http://contoso.com"), new MediaServicesCredentials("", ""));
+            CloudMediaContext mediaContext = new TestCloudMediaContext(new Uri("http://contoso.com"), new MediaServicesCredentials("fakeClientId", "fakeClientSecret"));
             TestCloudMediaDataContext testCloudMediaDataContext = new TestCloudMediaDataContext(mediaContext,delaymilliseconds);
             mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(testCloudMediaDataContext);
             testCloudMediaDataContext.InitilizeStubData();

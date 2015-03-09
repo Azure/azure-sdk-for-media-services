@@ -166,6 +166,7 @@
     <Compile Include="Live\AsyncHelperTests.cs" />
     <Compile Include="Live\ChannelTests.cs" />
     <Compile Include="Live\LiveE2ETests.cs" />
+    <Compile Include="Live\LiveTranscodingTest.cs" />
     <Compile Include="Live\OperationTests.cs" />
     <Compile Include="Live\StreamingEndpointTests.cs" />
     <Compile Include="Live\ProgramTests.cs" />

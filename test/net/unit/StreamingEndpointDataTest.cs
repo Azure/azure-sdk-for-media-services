@@ -16,9 +16,15 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data.Services.Client;
 using System.Linq;
 using System.Net;
+using System.Reflection;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
+using Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit;
+using Moq;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
 {    
@@ -27,13 +33,20 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
     ///to contain all StreamingEndpointDataTest Unit Tests
     ///</summary>
     [TestClass]
-    [Ignore] //TODO: enable when the streaming endpoint is deployed in the test environment
     public class StreamingEndpointDataTest
     {
+        private CloudMediaContext _mediaContext;
+
+        [TestInitialize]
+        public void SetupTest()
+        {
+            _mediaContext = Helper.GetMediaDataServiceContextForUnitTests();
+        }
+
         /// <summary>
         ///A test for Settings
         ///</summary>
-        [TestMethod()]
+        [TestMethod]
         public void SettingsTestSubProperties()
         {
             IStreamingEndpoint target = new StreamingEndpointData();
@@ -47,26 +60,43 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
 
             Assert.AreEqual(60, target.CacheControl.MaxAge.Value.TotalSeconds);
         }
-
+        
         /// <summary>
         ///A test for Settings
         ///</summary>
         [TestMethod]
-        public void SettingsTestChannelSubProperties()
+        public void CdnSettingsTest()
         {
-            IChannel target = new ChannelData();
+            var dataContextMock = new Mock<IMediaDataServiceContext>();
+            var streamingEndpointMock = new Mock<IStreamingEndpoint>();
 
-            var input = new ChannelInput
+            var originCreationOptions = new StreamingEndpointCreationOptions("unittest", 1)
             {
-                 AccessControl = new ChannelAccessControl
-                 {
-                     IPAllowList = new List<IPRange> {new IPRange {Address = IPAddress.Parse("192.168.0.1/24"), SubnetPrefixLength = 24} }
-                 }
+                CdnEnabled = true
             };
+            var fakeResponse = new TestMediaDataServiceResponse(new Dictionary<string, string>
+            {
+                {StreamingConstants.OperationIdHeader, ""}
+            })
+            {
+                AsyncState = new TestStreamingEndpointData(originCreationOptions)
+            };
+            
+            dataContextMock.Setup(ctxt => ctxt.AddObject("StreamingEndpoints", It.IsAny<object>()));
+            dataContextMock.Setup(ctxt => ctxt.SaveChangesAsync(It.IsAny<object>()))
+                .Returns(() => Task<IMediaDataServiceResponse>.Factory.StartNew(() => fakeResponse));
+            dataContextMock.Setup(ctxt => ctxt.Execute<OperationData>(It.IsAny<Uri>()))
+                .Returns(() => new List<OperationData> {new OperationData {State = OperationState.Succeeded.ToString()}});
 
-            target.Input = input;
+            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
 
-            Assert.IsNotNull(target.Input.AccessControl.IPAllowList.FirstOrDefault());
+            var actual = _mediaContext.StreamingEndpoints.Create(originCreationOptions);
+
+            dataContextMock.Verify(ctxt => ctxt.SaveChangesAsync(It.IsAny<object>()), Times.Exactly(1));
+            
+            Assert.AreEqual(originCreationOptions.Name, actual.Name);
+            Assert.AreEqual(originCreationOptions.ScaleUnits, actual.ScaleUnits);
+            Assert.AreEqual(originCreationOptions.CdnEnabled, actual.CdnEnabled);
         }
     }
 }

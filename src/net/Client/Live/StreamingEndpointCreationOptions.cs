@@ -44,6 +44,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public int ScaleUnits { get; set; }
 
         /// <summary>
+        /// Gets or sets if CDN to be enabled on this Streaming Endpoint.
+        /// </summary>
+        public bool CdnEnabled { get; set; }
+
+        /// <summary>
         /// Gets or sets cross site access policies policies to the streaming endpoint such as client access policy and cross domain access policy.
         /// </summary>
         public CrossSiteAccessPolicies CrossSiteAccessPolicies { get; set; }

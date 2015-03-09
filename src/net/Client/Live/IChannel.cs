@@ -73,6 +73,21 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         ChannelOutput Output { get; set; }
 
         /// <summary>
+        /// Gets or sets the channel Encoding properties.
+        /// </summary>
+        ChannelEncoding Encoding { get; set; }
+
+        /// <summary>
+        /// Gets or sets the channel encoding type
+        /// </summary>
+        ChannelEncodingType EncodingType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the channel slate
+        /// </summary>
+        ChannelSlate Slate { get; set; }
+
+        /// <summary>
         /// Collection of programs associated with the channel.
         /// </summary>
         ProgramBaseCollection Programs { get; }
@@ -190,5 +205,117 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <returns>Task to wait on for operation sending completion.</returns>
         Task<IOperation> SendUpdateOperationAsync();
+
+        /// <summary>
+        /// Show a slate on the channel.
+        /// </summary>
+        /// <param name="duration">The duration of time to display the slate</param>
+        /// <param name="assetId">Optional asset id to be used for the slate.</param>
+        void ShowSlate(TimeSpan duration, string assetId);
+
+        /// <summary>
+        /// Show a slate on the channel asynchronously.
+        /// </summary>
+        /// <param name="duration">The duration of time to display the slate</param>
+        /// <param name="assetId">Optional asset id to be used for the slate.</param>
+        /// <returns>Task to wait on for operation completion.</returns>
+        Task ShowSlateAsync(TimeSpan duration, string assetId);
+
+        /// <summary>
+        /// Sends show slate operation to the service and returns. Use Operations collection to get operation's status.
+        /// </summary>
+        /// <param name="duration">The duration of time to display the slate</param>
+        /// <param name="assetId">Optional asset id to be used for the slate.</param>
+        /// <returns>Operation info that can be used to track the operation.</returns>
+        IOperation SendShowSlateOperation(TimeSpan duration, string assetId);
+
+        /// <summary>
+        /// Sends show slate operation to the service asynchronously. Use Operations collection to get operation's status.
+        /// </summary>
+        /// <param name="duration">The duration of time to display the slate</param>
+        /// <param name="assetId">Optional asset id to be used for the slate.</param>
+        /// <returns>Task to wait on for operation sending completion.</returns>
+        Task<IOperation> SendShowSlateOperationAsync(TimeSpan duration, string assetId);
+
+        /// <summary>
+        /// Hide the currently running slate if any.
+        /// </summary>
+        void HideSlate();
+
+        /// <summary>
+        /// Hide the currently running slate if any asynchronously.
+        /// </summary>
+        /// <returns>Task to wait on for operation completion.</returns>
+        Task HideSlateAsync();
+
+        /// <summary>
+        /// Sends hide slate operation to the service and returns. Use Operations collection to get operation's status.
+        /// </summary>
+        /// <returns>Operation info that can be used to track the operation.</returns>
+        IOperation SendHideSlateOperation();
+
+        /// <summary>
+        /// Sends hide slate operation to the service asynchronously. Use Operations collection to get operation's status.
+        /// </summary>
+        /// <returns>Task to wait on for operation sending completion.</returns>
+        Task<IOperation> SendHideSlateOperationAsync();
+
+        /// <summary>
+        /// Start an Ad marker on the channel.
+        /// </summary>
+        /// <param name="duration">The duration of the ad marker.</param>
+        /// <param name="cueId">optional cue id to use for the ad marker.</param>
+        /// <param name="showSlate">Indicates whether to show slate for the duration of the ad.</param>
+        void StartAdvertisement(TimeSpan duration, int cueId, bool showSlate = true);
+
+        /// <summary>
+        /// Start an Ad marker on the channel asynchronously.
+        /// </summary>
+        /// <param name="duration">The duration of the ad marker.</param>
+        /// <param name="cueId">optional cue id to use for the ad marker.</param>
+        /// <param name="showSlate">Indicates whether to show the slate for the duration of the ad.</param>
+        /// <returns>Task to wait on for operation completion.</returns>
+        Task StartAdvertisementAsync(TimeSpan duration, int cueId, bool showSlate = true);
+
+        /// <summary>
+        /// Sends start advertisement operation to the service and returns. Use Operations collection to get operation's status.
+        /// </summary>
+        /// <param name="duration">The duration of the ad marker.</param>
+        /// <param name="cueId">optional cue id to use for the ad marker.</param>
+        /// <param name="showSlate">Indicates whether to show slate for the duration of ad.</param>
+        /// <returns>Operation info that can be used to track the operation.</returns>
+        IOperation SendStartAdvertisementOperation(TimeSpan duration, int cueId, bool showSlate = true);
+
+        /// <summary>
+        /// Sends start advertisement operation to the service asynchronously. Use Operations collection to get operation's status.
+        /// </summary>
+        /// <param name="duration">The duration of the ad marker.</param>
+        /// <param name="cueId">optional cue id to use for the ad marker.</param>
+        /// <param name="showSlate">Indicates whether to show slate for the duration of the ad.</param>
+        /// <returns>Task to wait on for operation sending completion.</returns>
+        Task<IOperation> SendStartAdvertisementOperationAsync(TimeSpan duration, int cueId, bool showSlate = true);
+
+        /// <summary>
+        /// Ends the ad marker on the channel.
+        /// </summary>
+        void EndAdvertisement();
+
+        /// <summary>
+        /// Ends the ad marker on the channel asynchronously.
+        /// </summary>
+        /// <returns>Task to wait on for operation completion.</returns>
+        Task EndAdvertisementAsync();
+
+        /// <summary>
+        /// Sends end advertisement operation to the service and returns. Use Operations collection to get operation's status.
+        /// </summary>
+        /// <returns>Operation info that can be used to track the operation.</returns>
+        IOperation SendEndAdvertisementOperation();
+
+        /// <summary>
+        /// Sends end advertisement operation to the service asynchronously. Use Operations collection to get operation's status.
+        /// </summary>
+        /// <returns>Task to wait on for operation sending completion.</returns>
+        Task<IOperation> SendEndAdvertisementOperationAsync();
     }
 }

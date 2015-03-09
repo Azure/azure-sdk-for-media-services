@@ -104,6 +104,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
         }
 
+        private static void ValidateStringArgumentIsNotNullOrEmpty(string parameterValue, string parameterName)
+        { 
+            if (String.IsNullOrWhiteSpace(parameterValue))
+            {
+                string message = String.Format(CultureInfo.InvariantCulture, StringTable.ErrorArgCannotBeNullOrEmpty, parameterName);
+                throw new ArgumentException(message);
+            }        
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="OAuthDataServiceAdapter"/> class.
         /// </summary>
@@ -115,6 +124,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             SetMediaServiceCredentials(clientId, clientSecret, scope, acsBaseAddress);
             this._acsBaseAddressList = new List<string> {acsBaseAddress};
+            ValidateStringArgumentIsNotNullOrEmpty(clientId, "clientId");
+            ValidateStringArgumentIsNotNullOrEmpty(clientSecret, "clientSecret");
+            ValidateStringArgumentIsNotNullOrEmpty(scope, "scope");
+            ValidateStringArgumentIsNotNullOrEmpty(acsBaseAddress, "acsBaseAddress");
+
+            this.ClientId = clientId;
+            this.ClientSecret = clientSecret;
+            this.Scope = scope;
+            this.AcsBaseAddress = acsBaseAddress;
         }
 
         /// <summary>
@@ -210,10 +228,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
         public static DateTime ParseTokenExpiration(string token)
         {
-            if (String.IsNullOrWhiteSpace(token))
-            {
-                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, StringTable.ErrorArgCannotBeNullOrEmpty, "token"));
-            }
+            ValidateStringArgumentIsNotNullOrEmpty(token, "token");
 
             string expireOnValue = null;
 

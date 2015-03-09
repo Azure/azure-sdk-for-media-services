@@ -105,6 +105,7 @@
     <Compile Include="AssetEncryptionStateUnitTests.cs" />
     <Compile Include="AssetUnitTest.cs" />
     <Compile Include="CacheTest.cs" />
+    <Compile Include="ChannelDataTest.cs" />
     <Compile Include="CommonEncryptionTest.cs" />
     <Compile Include="ContentKeyTest.cs" />
     <Compile Include="CustomMediaRetryPolicyTests.cs" />
@@ -128,6 +129,7 @@
     <Compile Include="TestCloudMediaDataContext.cs" />
     <Compile Include="TestRetryAdapter.cs" />
     <Compile Include="TestSaveChangesErrorDetectionStrategy.cs" />
+    <Compile Include="TestStreamingEndpointData.cs" />
     <Compile Include="TokenRestrictionTemplateSerializerTests.cs" />
     <Compile Include="WebRequestTransientErrorDetectionStrategyTests.cs" />
   </ItemGroup>

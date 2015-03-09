@@ -185,25 +185,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             {
                 throw new ArgumentException(Resources.ErrorEmptyStreamingEndpointName);
             }
-            
-            var streamingEndpoint = new StreamingEndpointData
-            {
-                Name = options.Name,
-                Description = options.Description,
-                ScaleUnits = options.ScaleUnits,
-                CrossSiteAccessPolicies = options.CrossSiteAccessPolicies
-            };
 
-            if (options.CustomHostNames != null)
-            {
-                streamingEndpoint.CustomHostNames = (options.CustomHostNames as IList<string>) ??
-                                                    options.CustomHostNames.ToList();
-            }
-
-            ((IStreamingEndpoint) streamingEndpoint).AccessControl = options.AccessControl;
-            ((IStreamingEndpoint) streamingEndpoint).CacheControl = options.CacheControl;
-
-            streamingEndpoint.ValidateSettings();
+            var streamingEndpoint = new StreamingEndpointData(options);
 
             streamingEndpoint.SetMediaContext(MediaContext);
 
@@ -214,5 +197,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             return retryPolicy.ExecuteAsync(() => dataContext.SaveChangesAsync(streamingEndpoint));
         }
+
+        
     }
 }

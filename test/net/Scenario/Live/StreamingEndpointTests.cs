@@ -15,6 +15,7 @@
 // </license>
 
 using System;
+using System.Linq;
 using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
@@ -23,7 +24,6 @@ using Moq;
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 {
     [TestClass]
-    [Ignore] //TODO: enable when the streaming endpoint is deployed in the test environment
     public class StreamingEndpointTests
     {
         private CloudMediaContext _mediaContext;
@@ -37,11 +37,59 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [Priority(0)]
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
-        public void TestStreamingEndpointCreate()
+        public void StreamingEndpointCreate()
         {
             string testStreamingEndpointName = Guid.NewGuid().ToString().Substring(0, 30);
             var actual = _mediaContext.StreamingEndpoints.Create(testStreamingEndpointName, 0);
             Assert.AreEqual(testStreamingEndpointName, actual.Name);
+            actual.Delete();
+        }
+
+        [TestMethod]
+        [Priority(0)]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        public void StreamingEndpointVerifyCDNEnabledFlag()
+        {
+            var name = "StreamingEndpoint" + DateTime.UtcNow.ToString("hhmmss");
+            var option = new StreamingEndpointCreationOptions(name, 1)
+            {
+                CdnEnabled = true
+            };
+            var streamingEndpoint = _mediaContext.StreamingEndpoints.Create(option);
+            var createdToValidate = _mediaContext.StreamingEndpoints.Where(c => c.Id == streamingEndpoint.Id).FirstOrDefault();
+            Assert.IsNotNull(createdToValidate);
+            Assert.AreEqual(true, createdToValidate.CdnEnabled);
+            streamingEndpoint.Delete();
+            name = "CDNDisabled" + DateTime.UtcNow.ToString("hhmmss");
+            var disabledOption = new StreamingEndpointCreationOptions(name, 1)
+            {
+                CdnEnabled = false
+            };
+            streamingEndpoint = _mediaContext.StreamingEndpoints.Create(disabledOption);
+            createdToValidate = _mediaContext.StreamingEndpoints.Where(c => c.Id == streamingEndpoint.Id).FirstOrDefault();
+            Assert.IsNotNull(createdToValidate);
+            Assert.AreEqual(false, createdToValidate.CdnEnabled);
+            streamingEndpoint.Delete();
+        }
+
+        [TestMethod]
+        [Priority(0)]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        public void StreamingEndpointCreateStartStopDelete()
+        {
+            var name = "StreamingEndpoint" + DateTime.UtcNow.ToString("hhmmss");
+            var option = new StreamingEndpointCreationOptions(name, 1);
+            var streamingEndpoint = _mediaContext.StreamingEndpoints.Create(option);
+            Assert.IsNotNull(streamingEndpoint);
+            streamingEndpoint.Start();
+            Assert.AreEqual(StreamingEndpointState.Running,streamingEndpoint.State);
+            streamingEndpoint.Stop();
+            Assert.AreEqual(StreamingEndpointState.Stopped, streamingEndpoint.State);
+            streamingEndpoint.Delete();
+            var deleted = _mediaContext.StreamingEndpoints.Where(c => c.Id == streamingEndpoint.Id).FirstOrDefault();
+            Assert.IsNull(deleted);
         }
 
         #region Retry Logic tests
@@ -56,7 +104,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
             var dataContextMock = TestMediaServicesClassFactory.CreateSaveChangesMock(fakeException, 2, expected);
 
-            dataContextMock.Setup((ctxt) => ctxt.AddObject("StreamingEndpoints", It.IsAny<object>()));
+            dataContextMock.Setup(ctxt => ctxt.AddObject("StreamingEndpoints", It.IsAny<object>()));
 
             _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
 
@@ -68,7 +116,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             {
                 Assert.AreEqual(TestMediaDataServiceResponse.TestMediaDataServiceResponseExceptionMessage, x.Message);
             }
-            dataContextMock.Verify((ctxt) => ctxt.SaveChangesAsync(It.IsAny<object>()), Times.Exactly(2));
+            dataContextMock.Verify(ctxt => ctxt.SaveChangesAsync(It.IsAny<object>()), Times.Exactly(2));
         }
 
         [TestMethod]
@@ -82,7 +130,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
             var dataContextMock = TestMediaServicesClassFactory.CreateSaveChangesMock(fakeException, 10, expected);
 
-            dataContextMock.Setup((ctxt) => ctxt.AddObject("StreamingEndpoints", It.IsAny<object>()));
+            dataContextMock.Setup(ctxt => ctxt.AddObject("StreamingEndpoints", It.IsAny<object>()));
 
             _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
 
@@ -92,7 +140,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             }
             catch (WebException x)
             {
-                dataContextMock.Verify((ctxt) => ctxt.SaveChangesAsync(It.IsAny<object>()), Times.AtLeast(3));
+                dataContextMock.Verify(ctxt => ctxt.SaveChangesAsync(It.IsAny<object>()), Times.AtLeast(3));
                 Assert.AreEqual(fakeException, x);
                 throw;
             }
@@ -112,8 +160,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             var dataContextMock = TestMediaServicesClassFactory.CreateSaveChangesMock(fakeException, 2, data);
 
-            dataContextMock.Setup((ctxt) => ctxt.AttachTo("StreamingEndpoints", data));
-            dataContextMock.Setup((ctxt) => ctxt.DeleteObject(data));
+            dataContextMock.Setup(ctxt => ctxt.AttachTo("StreamingEndpoints", data));
+            dataContextMock.Setup(ctxt => ctxt.DeleteObject(data));
 
             _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
 
@@ -128,7 +176,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 Assert.AreEqual(TestMediaDataServiceResponse.TestMediaDataServiceResponseExceptionMessage, x.Message);
             }
 
-            dataContextMock.Verify((ctxt) => ctxt.SaveChangesAsync(data), Times.Exactly(2));
+            dataContextMock.Verify(ctxt => ctxt.SaveChangesAsync(data), Times.Exactly(2));
         }
 
         [TestMethod]
@@ -143,8 +191,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             var dataContextMock = TestMediaServicesClassFactory.CreateSaveChangesMock(fakeException, 2, data);
 
-            dataContextMock.Setup((ctxt) => ctxt.AttachTo("StreamingEndpoints", data));
-            dataContextMock.Setup((ctxt) => ctxt.DeleteObject(data));
+            dataContextMock.Setup(ctxt => ctxt.AttachTo("StreamingEndpoints", data));
+            dataContextMock.Setup(ctxt => ctxt.DeleteObject(data));
 
             _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
 
@@ -159,7 +207,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 Assert.AreEqual(TestMediaDataServiceResponse.TestMediaDataServiceResponseExceptionMessage, x.Message);
             }
 
-            dataContextMock.Verify((ctxt) => ctxt.SaveChanges(), Times.Exactly(2));
+            dataContextMock.Verify(ctxt => ctxt.SaveChangesAsync(data), Times.Exactly(2));
         }
 
         #endregion Retry Logic tests

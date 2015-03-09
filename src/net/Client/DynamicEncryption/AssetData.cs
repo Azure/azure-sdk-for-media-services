@@ -258,7 +258,19 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 {
                     IAssetFile[] assetFiles = asset.AssetFiles.ToArray();
 
-                    if (assetFiles.Where(af => IsExtension(af.Name, ".m3u8")).Any())
+                    if (assetFiles.Length == 1)
+                    {
+                        if (asset.Options.HasFlag(AssetCreationOptions.EnvelopeEncryptionProtected))
+                        {
+                            // We have no supported cases where Envelope Encryption is statically applied to a smooth streaming file.
+                            assetType = AssetType.Unknown;
+                        }
+                        else
+                        {
+                            assetType = AssetType.SmoothStreaming;
+                        }
+                    }
+                    else if (assetFiles.Where(af => IsExtension(af.Name, ".m3u8")).Any())
                     {
                         assetType = AssetType.MediaServicesHLS;
                     }
