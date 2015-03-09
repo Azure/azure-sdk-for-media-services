@@ -16,23 +16,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data.Services.Client;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Xml;
-using System.Xml.Linq;
-using System.Xml.XPath;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Queue;
-using Moq;
-using System.Net;
-using System.Threading.Tasks;
 using Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption;
+using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 {

@@ -39,7 +39,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Initializes a new instance of the <see cref="IngestManifestCollection"/> class.
         /// </summary>
         /// <param name="cloudMediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
-        [SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Justification = "By design")]
         internal IngestManifestCollection(MediaContextBase cloudMediaContext)
             : base(cloudMediaContext)
         {
