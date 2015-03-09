@@ -46,7 +46,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             if (string.IsNullOrWhiteSpace(localfile))
             {
-                throw new ArgumentException(StringTable.ErrorLocalFilenameIsNullOrEmpty);
+                throw new ArgumentException(CommonStringTable.ErrorLocalFilenameIsNullOrEmpty);
             }
 
             this.BytesTransferred = bytesTransferred;

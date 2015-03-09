@@ -212,8 +212,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new ArgumentNullException("asset");
             }
 
-            // Take the first asset file marked as primary (do not force a single one to avoid a potential runtime exception).
-            return asset.AssetFiles.Where(af => af.IsPrimary).FirstOrDefault();
+            // Take the first asset file marked as primary 
+            IAssetFile primaryFile =  asset.AssetFiles.Where(af => af.IsPrimary).FirstOrDefault();
+
+            //If the primary file is not set and only 1 file is present in asset, return that file as primary
+            //Fyi.. We are not doing update of assetFile via rest here.
+            if ((primaryFile == null) && ((asset.AssetFiles.Count() == 1)))
+            {
+                primaryFile = asset.AssetFiles.First();
+            }
+            return primaryFile;
         }
 
         private static bool IsExtension(string filepath, string extensionToCheck)

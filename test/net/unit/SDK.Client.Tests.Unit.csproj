@@ -108,6 +108,7 @@
     <Compile Include="ChannelDataTest.cs" />
     <Compile Include="CommonEncryptionTest.cs" />
     <Compile Include="ContentKeyTest.cs" />
+    <Compile Include="CustomMediaRetryPolicyTests.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="IngestManifestTest.cs" />
     <Compile Include="JobTemplateTests.cs" />
@@ -124,13 +125,23 @@
     <Compile Include="CollectionQueryTest.cs" />
     <Compile Include="SaveChangesErrorDetectionStrategyTest.cs" />
     <Compile Include="StorageTransientErrorDetectionStrategyTests.cs" />
+    <Compile Include="TestAzureMediaServicesClassFactoryForCustomRetryPolicy.cs" />
     <Compile Include="TestCloudMediaDataContext.cs" />
     <Compile Include="TestRetryAdapter.cs" />
+    <Compile Include="TestSaveChangesErrorDetectionStrategy.cs" />
     <Compile Include="TestStreamingEndpointData.cs" />
     <Compile Include="TokenRestrictionTemplateSerializerTests.cs" />
     <Compile Include="WebRequestTransientErrorDetectionStrategyTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\src\net\Client\Common\Common.BlobTransfer\SDK.Client.Common.BlobTransfer.csproj">
+      <Project>{f0c14570-44f9-4f3e-ac4f-d9965c4b1d06}</Project>
+      <Name>SDK.Client.Common.BlobTransfer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\src\net\Client\Common\Common.FileEncryption\SDK.Client.Common.FileEncryption.csproj">
+      <Project>{630d064c-8d3d-4419-bcc9-a61ef577a387}</Project>
+      <Name>SDK.Client.Common.FileEncryption</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\src\net\Client\SDK.Client.csproj">
       <Project>{e194b46e-9063-4cfa-85fc-51e5aad55586}</Project>
       <Name>SDK.Client</Name>
