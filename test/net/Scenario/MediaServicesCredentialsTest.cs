@@ -15,12 +15,15 @@
 // </license>
 
 using System;
+using System.Collections.Generic;
 using System.Data.Services.Client;
 using System.Linq;
 using System.Net;
 using System.Text;
+using Microsoft.Practices.TransientFaultHandling;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 {    
@@ -49,6 +52,34 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             var context2 = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext(credentials);
             context2.Assets.FirstOrDefault();
+        }
+
+        [TestMethod()]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
+        public void MediaServicesThrowsArgumentExceptionOnNull()
+        {
+            string nonNull = "nonNull";
+
+            string[] argumentNames = {"clientId", "clientSecret", "scope", "acsBaseAddress" };
+            string[,] arguments = {{null, nonNull, nonNull, nonNull},
+                                   {nonNull, null, nonNull, nonNull},
+                                   {nonNull, nonNull, null, nonNull},
+                                   {nonNull, nonNull, nonNull, null}};
+
+            for (int i = 0; i < 4; i++)
+            {
+                try
+                {
+                    MediaServicesCredentials creds = new MediaServicesCredentials(arguments[i, 0], arguments[i, 1], arguments[i, 2], arguments[i, 3]);
+                }
+                catch (ArgumentException ae)
+                {
+                    string expectedMessage = string.Format(StringTable.ErrorArgCannotBeNullOrEmpty, argumentNames[i]);
+                    Assert.AreEqual(expectedMessage, ae.Message);
+                }
+            }
         }
 
         private static void MakeRestCallAndVerifyToken(CloudMediaContext context)
@@ -84,9 +115,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod()]
-        [TestCategory("ClientSDK")]
-        [Owner("ClientSDK")]
-        [TestCategory("Bvt")]
+        [TestCategory("DailyBvtRun")]
         public void MediaServicesCredentialsTestGetToken()
         {
             MediaServicesCredentials target = WindowsAzureMediaServicesTestConfiguration.CreateMediaServicesCredentials();
@@ -99,6 +128,93 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             Assert.IsNotNull(target.AccessToken);
             Assert.IsTrue(target.AccessToken.Length > 0);
             Assert.IsTrue(target.TokenExpiration > DateTime.UtcNow.AddHours(1));
+        }
+
+        [TestMethod()]
+        [TestCategory("DailyBvtRun")]
+        public void MediaServicesCredentialsPassingAcsEndPoint()
+        {
+            var context1 = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
+            string account = WindowsAzureMediaServicesTestConfiguration.MediaServiceAccountName;
+            string key = WindowsAzureMediaServicesTestConfiguration.MediaServiceAccountKey;
+            MediaServicesCredentials credentials = new MediaServicesCredentials(account, key,WindowsAzureMediaServicesTestConfiguration.MediaServicesAccessScope,WindowsAzureMediaServicesTestConfiguration.MediaServicesAcsBaseAddress);
+            Assert.IsNull(credentials.AccessToken);
+            Assert.IsTrue(credentials.TokenExpiration < DateTime.UtcNow);
+
+            credentials.RefreshToken();
+
+            Assert.IsNotNull(credentials.AccessToken);
+            Assert.IsTrue(credentials.AccessToken.Length > 0);
+            Assert.IsTrue(credentials.TokenExpiration > DateTime.UtcNow);
+        }
+
+        [TestMethod()]
+        [TestCategory("DailyBvtRun")]
+        public void MediaServicesCredentialsAcsEndPointListWithWrongOneFirst()
+        {
+            string account = WindowsAzureMediaServicesTestConfiguration.MediaServiceAccountName;
+            string key = WindowsAzureMediaServicesTestConfiguration.MediaServiceAccountKey;
+            MediaServicesCredentials credentials = new MediaServicesCredentials(account, key, WindowsAzureMediaServicesTestConfiguration.MediaServicesAccessScope, new List<string> { "http://dummyacsendpoint", WindowsAzureMediaServicesTestConfiguration.MediaServicesAcsBaseAddress});
+            Assert.IsNull(credentials.AccessToken);
+            Assert.IsTrue(credentials.TokenExpiration < DateTime.UtcNow);
+
+            credentials.RefreshToken();
+
+            Assert.IsNotNull(credentials.AccessToken);
+            Assert.IsTrue(credentials.AccessToken.Length > 0);
+            Assert.IsTrue(credentials.TokenExpiration > DateTime.UtcNow);
+            
+        }
+
+
+        [TestMethod()]
+        [TestCategory("DailyBvtRun")]
+        public void MediaServicesCredentialsAcsEndPointListWithWrongOneLast()
+        {
+            string account = WindowsAzureMediaServicesTestConfiguration.MediaServiceAccountName;
+            string key = WindowsAzureMediaServicesTestConfiguration.MediaServiceAccountKey;
+            MediaServicesCredentials credentials = new MediaServicesCredentials(account, key, WindowsAzureMediaServicesTestConfiguration.MediaServicesAccessScope, new List<string> { WindowsAzureMediaServicesTestConfiguration.MediaServicesAcsBaseAddress, "http://dummyacsendpoint"});
+            Assert.IsNull(credentials.AccessToken);
+            Assert.IsTrue(credentials.TokenExpiration < DateTime.UtcNow);
+
+            credentials.RefreshToken();
+
+            Assert.IsNotNull(credentials.AccessToken);
+            Assert.IsTrue(credentials.AccessToken.Length > 0);
+            Assert.IsTrue(credentials.TokenExpiration > DateTime.UtcNow);
+        }
+
+        [TestMethod()]
+        [ExpectedException(typeof(WebException))]
+        [TestCategory("DailyBvtRun")]
+        public void MediaServicesCredentialsAcsEndPointCustomRetryPolicy()
+        {
+            string account = WindowsAzureMediaServicesTestConfiguration.MediaServiceAccountName;
+            string key = WindowsAzureMediaServicesTestConfiguration.MediaServiceAccountKey;
+            var retryStrategy = new Incremental(1, TimeSpan.FromSeconds(1),TimeSpan.FromSeconds(2));
+            var errorDetectionStrategy = new ErrorDetectionStrategyForRefreshToken();
+            MediaServicesCredentials credentials = new MediaServicesCredentials(account, key,
+                WindowsAzureMediaServicesTestConfiguration.MediaServicesAccessScope,
+                new List<string>
+                {
+                    "http://dummyacsendpoint"
+                })
+            {
+
+                RefreshTokenRetryPolicy = new RetryPolicy(errorDetectionStrategy, retryStrategy)
+            };
+
+            Assert.IsNull(credentials.AccessToken);
+            Assert.IsTrue(credentials.TokenExpiration < DateTime.UtcNow);
+            try
+            {
+                credentials.RefreshToken();
+            }
+            catch (WebException)
+            {
+                Assert.IsTrue(errorDetectionStrategy.Invoked);
+                throw;
+            }
         }
 
         [TestMethod()]

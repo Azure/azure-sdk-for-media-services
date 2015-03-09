@@ -15,6 +15,7 @@
 // </license>
 
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Globalization;
 using System.Collections.Specialized;
@@ -36,16 +37,32 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private const string ExpiresOnLabel = "ExpiresOn";
 
         // ACS related constants
-        private static readonly Uri _mediaServicesAcsBaseAddress = new Uri("https://wamsprodglobal001acs.accesscontrol.windows.net");
+        private static readonly Uri _mediaServicesAcsBaseAddress1 = new Uri("https://wamsprodglobal001acs.accesscontrol.windows.net");
+        private static readonly Uri _mediaServicesAcsBaseAddress2 = new Uri("https://wamsprodglobal002acs.accesscontrol.windows.net");
+
         private const string MediaServicesAccessScope = "urn:WindowsAzureMediaServices";
         private const string AuthorizationHeader = "Authorization";
         private const string BearerTokenFormat = "Bearer {0}";
         private const string GrantType = "client_credentials";
+        private List<string> _acsBaseAddressList;
+        private Random _random;
+
+        /// <summary>
+        /// The access control endpoints to authenticate against.
+        /// </summary>
+        public IList<string> AcsBaseAddressList
+        {
+            get { return _acsBaseAddressList.AsReadOnly(); }
+        }
 
         /// <summary>
         /// The access control endpoint to authenticate against.
         /// </summary>
-        public string AcsBaseAddress { get; set; }
+        public string AcsBaseAddress
+        {
+            get { return _acsBaseAddressList[0]; }
+            set {_acsBaseAddressList.Clear();_acsBaseAddressList.Add(value);}
+        }
 
         /// <summary>
         /// The Microsoft WindowsAzure Media Services account key to authenticate with.
@@ -73,14 +90,27 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public DateTime TokenExpiration { get; set; }
 
         /// <summary>
+        /// RetryPolicy used for acquiring a token
+        /// </summary>
+        public RetryPolicy RefreshTokenRetryPolicy { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="OAuthDataServiceAdapter"/> class.
         /// </summary>
         /// <param name="clientId">The client id.</param>
         /// <param name="clientSecret">The client secret.</param>
-        /// <param name="scope">The scope.</param>
         public MediaServicesCredentials(string clientId, string clientSecret)
-            : this(clientId, clientSecret, MediaServicesAccessScope, _mediaServicesAcsBaseAddress.AbsoluteUri)
+            : this(clientId, clientSecret, MediaServicesAccessScope, new List<string>{_mediaServicesAcsBaseAddress1.AbsoluteUri,_mediaServicesAcsBaseAddress2.AbsoluteUri})
         {
+        }
+
+        private static void ValidateStringArgumentIsNotNullOrEmpty(string parameterValue, string parameterName)
+        { 
+            if (String.IsNullOrWhiteSpace(parameterValue))
+            {
+                string message = String.Format(CultureInfo.InvariantCulture, StringTable.ErrorArgCannotBeNullOrEmpty, parameterName);
+                throw new ArgumentException(message);
+            }        
         }
 
         /// <summary>
@@ -92,6 +122,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="acsBaseAddress">The acs base address.</param>
         public MediaServicesCredentials(string clientId, string clientSecret, string scope, string acsBaseAddress)
         {
+            SetMediaServiceCredentials(clientId, clientSecret, scope, acsBaseAddress);
+            this._acsBaseAddressList = new List<string> {acsBaseAddress};
+            ValidateStringArgumentIsNotNullOrEmpty(clientId, "clientId");
+            ValidateStringArgumentIsNotNullOrEmpty(clientSecret, "clientSecret");
+            ValidateStringArgumentIsNotNullOrEmpty(scope, "scope");
+            ValidateStringArgumentIsNotNullOrEmpty(acsBaseAddress, "acsBaseAddress");
+
             this.ClientId = clientId;
             this.ClientSecret = clientSecret;
             this.Scope = scope;
@@ -99,31 +136,50 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="OAuthDataServiceAdapter"/> class.
+        /// </summary>
+        /// <param name="clientId">The client id.</param>
+        /// <param name="clientSecret">The client secret.</param>
+        /// <param name="scope">The scope.</param>
+        /// <param name="acsBaseAddressList">List of acs base address.</param>
+        public MediaServicesCredentials(string clientId, string clientSecret, string scope, IList<string> acsBaseAddressList)
+        {
+            SetMediaServiceCredentials(clientId, clientSecret, scope, acsBaseAddressList[0]);
+            if ((acsBaseAddressList != null) && (acsBaseAddressList.Count != 0))
+            {
+                _acsBaseAddressList = new List<string>(acsBaseAddressList);
+            }
+            else
+            {
+                _acsBaseAddressList = new List<string>{_mediaServicesAcsBaseAddress1.AbsoluteUri,_mediaServicesAcsBaseAddress2.AbsoluteUri};
+
+            }
+        }
+        /// <summary>
         /// Requests ACS token from the server and stores it for future use.
         /// </summary>
         public void RefreshToken()
         {
+            int index = _random.Next(_acsBaseAddressList.Count);
             using (WebClient client = new WebClient())
             {
-                client.BaseAddress = this.AcsBaseAddress;
-
-                var oauthRequestValues = new NameValueCollection
-                {
-                    {"grant_type", GrantType},
-                    {"client_id", this.ClientId},
-                    {"client_secret", this.ClientSecret},
-                    {"scope", this.Scope},
-                };
-
-                RetryPolicy retryPolicy = new RetryPolicy(new WebRequestTransientErrorDetectionStrategy(), RetryStrategyFactory.DefaultStrategy());
-
-                retryPolicy.ExecuteAction(
-                    () =>
-                    {
-                        byte[] responseBytes = client.UploadValues("/v2/OAuth2-13", "POST", oauthRequestValues);
-                        SetAcsToken(responseBytes);
-                    });
+                        var oauthRequestValues = new NameValueCollection
+                        {
+                            {"grant_type", GrantType},
+                            {"client_id", this.ClientId},
+                            {"client_secret", this.ClientSecret},
+                            {"scope", this.Scope},
+                        };
+                        RefreshTokenRetryPolicy.ExecuteAction(
+                            () =>
+                            {
+                                index = (++index) % (_acsBaseAddressList.Count);
+                                client.BaseAddress = _acsBaseAddressList[index];
+                                byte[] responseBytes = client.UploadValues("/v2/OAuth2-13", "POST", oauthRequestValues);
+                                SetAcsToken(responseBytes);
+                            });
             }
+
         }
 
         /// <summary>
@@ -138,6 +194,19 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 this.AccessToken = tokenResponse.AccessToken;
                 this.TokenExpiration = ParseTokenExpiration(tokenResponse.AccessToken);
             }
+        }
+
+        private void SetMediaServiceCredentials(string clientId, string clientSecret, string scope, string acsBaseAddress)
+        {
+            this.ClientId = clientId;
+            this.ClientSecret = clientSecret;
+            this.Scope = scope;
+            if (RefreshTokenRetryPolicy == null)
+            {
+                this.RefreshTokenRetryPolicy = new RetryPolicy(new WebRequestTransientErrorDetectionStrategy(),
+                    RetryStrategyFactory.DefaultStrategy());
+            }
+            this._random = new Random();
         }
 
         private static DateTime DecodeExpiry(string expiry)
@@ -159,10 +228,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
         public static DateTime ParseTokenExpiration(string token)
         {
-            if (String.IsNullOrWhiteSpace(token))
-            {
-                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, StringTable.ErrorArgCannotBeNullOrEmpty, "token"));
-            }
+            ValidateStringArgumentIsNotNullOrEmpty(token, "token");
 
             string expireOnValue = null;
 

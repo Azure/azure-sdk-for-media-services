@@ -126,6 +126,39 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
         /// <summary>
+        /// Default constructor for serailization
+        /// </summary>
+        public StreamingEndpointData()
+        {
+        }
+
+        /// <summary>
+        /// Create streaming endpoint data from the creation options.
+        /// </summary>
+        /// <param name="options">Streaming endpoint creation options.</param>
+        /// <returns></returns>
+        internal StreamingEndpointData(StreamingEndpointCreationOptions options)
+        {
+
+            Name = options.Name;
+            Description = options.Description;
+            ScaleUnits = options.ScaleUnits;
+            CdnEnabled = options.CdnEnabled;
+            CrossSiteAccessPolicies = options.CrossSiteAccessPolicies;
+
+            if (options.CustomHostNames != null)
+            {
+                CustomHostNames = (options.CustomHostNames as IList<string>) ??
+                                  options.CustomHostNames.ToList();
+            }
+
+            _accessControl = options.AccessControl;
+            _cacheControl = options.CacheControl;
+
+            ValidateSettings();
+        }
+
+        /// <summary>
         /// Starts the streaming endpoint.
         /// </summary>
         public void Start()
@@ -326,7 +359,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Set array property empty array if it is null because OData does not support 
         /// empty collection 
         /// </summary>
-        internal override void ValidateSettings()
+        internal override sealed void ValidateSettings()
         {
             if (CustomHostNames == null)
             {

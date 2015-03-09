@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -58,7 +59,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
             Assert.AreEqual(encoding.AudioStreams[0].Index, target.Encoding.AudioStreams[0].Index);
             Assert.AreEqual(encoding.AudioStreams[0].Language, target.Encoding.AudioStreams[0].Language);
             Assert.AreEqual(encoding.VideoStreams[0].Index, target.Encoding.VideoStreams[0].Index);
-            Assert.AreEqual(encoding.VideoStreams[0].Name, target.Encoding.VideoStreams[0].Name);
             Assert.AreEqual(encoding.IgnoreCea708ClosedCaptions, target.Encoding.IgnoreCea708ClosedCaptions);
             Assert.AreEqual(encoding.AdMarkerSource, target.Encoding.AdMarkerSource);
 
@@ -84,6 +84,27 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
             target.HideSlateAsync();
             target.StartAdvertisementAsync(TimeSpan.FromMinutes(10), 100, false);
             target.EndAdvertisementAsync();
+        }
+
+        /// <summary>
+        ///A test for Settings
+        ///</summary>
+        [TestMethod]
+        public void SettingsTestChannelSubProperties()
+        {
+            IChannel target = new ChannelData();
+
+            var input = new ChannelInput
+            {
+                AccessControl = new ChannelAccessControl
+                {
+                    IPAllowList = new List<IPRange> { new IPRange { Address = IPAddress.Parse("192.168.0.0"), SubnetPrefixLength = 24 } }
+                }
+            };
+
+            target.Input = input;
+
+            Assert.IsNotNull(target.Input.AccessControl.IPAllowList.FirstOrDefault());
         }
 
         static ChannelInput MakeChannelInput()
@@ -140,7 +161,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
             {
                 SystemPreset = "Default720p",
                 AudioStreams = new List<AudioStream> { new AudioStream { Index = 103, Language = "zhn" } }.AsReadOnly(),
-                VideoStreams = new List<VideoStream> { new VideoStream { Index = 104, Name = "English"} }.AsReadOnly(),
+                VideoStreams = new List<VideoStream> { new VideoStream { Index = 104 } }.AsReadOnly(),
                 IgnoreCea708ClosedCaptions = true,
                 AdMarkerSource = AdMarkerSource.Api
             };

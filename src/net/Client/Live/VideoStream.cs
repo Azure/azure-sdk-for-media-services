@@ -23,10 +23,5 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Gets or sets the stream index when source from MPEG2-TS.
         /// </summary>
         public int Index { get; set; }
-
-        /// <summary>
-        /// Gets or sets the name of video stream.
-        /// </summary>
-        public string Name { get; set; }
     }
 }

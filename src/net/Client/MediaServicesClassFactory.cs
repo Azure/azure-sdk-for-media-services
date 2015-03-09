@@ -15,6 +15,7 @@
 // </license>
 
 using System;
+using Microsoft.WindowsAzure.MediaServices.Client.RequestAdapters;
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
@@ -26,7 +27,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <returns>The new DataServiceContext instance.</returns>
         public abstract IMediaDataServiceContext CreateDataServiceContext();
-
+        /// <summary>
+        /// Creates a ClientRequestIdAdapter
+        /// </summary>
+        /// <returns>The new ClientRequestIdAdapter instance.</returns>
+        public abstract IWebRequestAdapter CreateClientRequestIdAdapter();
         /// <summary>
         /// Creates retry policy used for working with Azure blob storage.
         /// </summary>

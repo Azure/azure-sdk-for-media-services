@@ -39,7 +39,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             if (string.IsNullOrEmpty(localFileName))
             {
-                throw new ArgumentException(StringTable.ErrorLocalFilenameIsNullOrEmpty);
+                throw new ArgumentException(CommonStringTable.ErrorLocalFilenameIsNullOrEmpty);
             }
 
             if (url == null)

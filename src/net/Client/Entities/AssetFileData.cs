@@ -122,15 +122,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
             finally
             {
-                if(locator!=null)
-                {
-                    locator.Delete();
-                }
-                if(accessPolicy!=null)
-                {
-                    accessPolicy.Delete();
-                }
-                
+                Cleanup(null,null,locator,accessPolicy);             
             }
         }
 
@@ -251,6 +243,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 }
 
                 fileEncryption = new FileEncryption(contentKeyData.GetClearKeyValue(), EncryptionUtils.GetKeyIdAsGuid(contentKeyData.Id));
+                ulong iv = Convert.ToUInt64(this.InitializationVector, CultureInfo.InvariantCulture);
+                fileEncryption.SetInitializationVectorForFile(this.Name,iv);
             }
 
             EventHandler<BlobTransferProgressChangedEventArgs> handler = (s, e) => OnUploadProgressChanged(path, e);
@@ -271,7 +265,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 ts=>
                 {
                     blobTransferClient.TransferProgressChanged -= handler;
-                    this.PostUploadAction(ts, path, fileEncryption, assetCreationOptions, token);
+                    this.PostUploadAction(ts, path, token);
                 });
         }
 
@@ -301,10 +295,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
 
-        private void PostUploadAction(Task task,string path, FileEncryption fileEncryption, AssetCreationOptions assetCreationOptions, CancellationToken token)
+        private void PostUploadAction(Task task,string path, CancellationToken token)
         {
-            try
-            {
                 task.ThrowIfFaulted();
                 token.ThrowIfCancellationRequested();
 
@@ -316,28 +308,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 // Set the ContentFileSize base on the local file size
                 this.ContentFileSize = fileInfo.Length;
 
-                // Update the files associated with the asset with the encryption related metadata.
-                if (assetCreationOptions.HasFlag(AssetCreationOptions.StorageEncrypted))
-                {
-                    AssetBaseCollection.AddEncryptionMetadataToAssetFile(this, fileEncryption);
-                }
-                else if (assetCreationOptions.HasFlag(AssetCreationOptions.CommonEncryptionProtected))
-                {
-                    AssetBaseCollection.SetAssetFileForCommonEncryption(this);
-                }
-                else if (assetCreationOptions.HasFlag(AssetCreationOptions.EnvelopeEncryptionProtected))
-                {
-                    AssetBaseCollection.SetAssetFileForEnvelopeEncryption(this);
-                }
                 this.Update();
-            }
-            finally
-            {
-                if (fileEncryption != null)
-                {
-                    fileEncryption.Dispose();
-                }
-            }
         }
         #endregion
 

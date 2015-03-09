@@ -99,53 +99,46 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 cancelation.ThrowIfCancellationRequested();
                 dataContext = MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
 
-                bool isEncrypted = _parentAsset.Options.HasFlag(AssetCreationOptions.CommonEncryptionProtected) || _parentAsset.Options.HasFlag(AssetCreationOptions.StorageEncrypted) ||
-                                   _parentAsset.Options.HasFlag(AssetCreationOptions.EnvelopeEncryptionProtected);
-
-                string scheme = null;
-                string schemeVersion = null;
-                string encryptionKeyId = null;
-
-                if (_parentAsset.Options.HasFlag(AssetCreationOptions.StorageEncrypted))
-                {
-                    IContentKey storageEncryptionKey = _parentAsset.ContentKeys.Where(c => c.ContentKeyType == ContentKeyType.StorageEncryption).FirstOrDefault();
-                    cancelation.ThrowIfCancellationRequested();
-                    if (storageEncryptionKey != null)
-                    {
-                        encryptionKeyId = storageEncryptionKey.Id.ToString();
-                    }
-                    else
-                    {
-                        throw new InvalidOperationException(String.Format(CultureInfo.InvariantCulture, StringTable.StorageEncryptionContentKeyIsMissing, _parentAsset.Id));
-                    }
-
-                    scheme = FileEncryption.SchemeName;
-                    schemeVersion = FileEncryption.SchemeVersion;
-                }
-                else if (_parentAsset.Options.HasFlag(AssetCreationOptions.CommonEncryptionProtected))
-                {
-                    scheme = CommonEncryption.SchemeName;
-                    schemeVersion = CommonEncryption.SchemeVersion;
-                }
-                else if (_parentAsset.Options.HasFlag(AssetCreationOptions.EnvelopeEncryptionProtected))
-                {
-                    scheme = EnvelopeEncryption.SchemeName;
-                    schemeVersion = EnvelopeEncryption.SchemeVersion;
-                }
+                FileEncryption fileEncryption = null;
 
                 // Set a MIME type based on the extension of the file name
                 string mimeType = AssetFileData.GetMimeType(name);
                 assetFile = new AssetFileData
                 {
                     Name = name,
-                    IsEncrypted = isEncrypted,
-                    EncryptionScheme = scheme,
-                    EncryptionVersion = schemeVersion,
-                    EncryptionKeyId = encryptionKeyId,
                     ParentAssetId = _parentAsset.Id,
                     MimeType = mimeType,
                 };
-
+                try
+                {
+                    // Update the files associated with the asset with the encryption related metadata.
+                    if (_parentAsset.Options.HasFlag(AssetCreationOptions.StorageEncrypted))
+                    {
+                        IContentKey storageEncryptionKey = _parentAsset.ContentKeys.Where(c => c.ContentKeyType == ContentKeyType.StorageEncryption).FirstOrDefault();
+                        cancelation.ThrowIfCancellationRequested();
+                        if (storageEncryptionKey == null)
+                        {
+                            throw new InvalidOperationException(String.Format(CultureInfo.InvariantCulture, StringTable.StorageEncryptionContentKeyIsMissing, _parentAsset.Id));
+                        }
+                        fileEncryption = new FileEncryption(storageEncryptionKey.GetClearKeyValue(), EncryptionUtils.GetKeyIdAsGuid(storageEncryptionKey.Id));
+                        AssetBaseCollection.AddEncryptionMetadataToAssetFile(assetFile, fileEncryption);
+                    }
+                    else if (_parentAsset.Options.HasFlag(AssetCreationOptions.CommonEncryptionProtected))
+                    {
+                        AssetBaseCollection.SetAssetFileForCommonEncryption(assetFile);
+                    }
+                    else if (_parentAsset.Options.HasFlag(AssetCreationOptions.EnvelopeEncryptionProtected))
+                    {
+                        AssetBaseCollection.SetAssetFileForEnvelopeEncryption(assetFile);
+                    }
+                }
+                finally
+                {
+                    if (fileEncryption != null)
+                    {
+                        fileEncryption.Dispose();
+                    }
+                }
                 dataContext.AddObject(AssetFileCollection.FileSet, assetFile);
                 cancelation.ThrowIfCancellationRequested();
                 cancelation.ThrowIfCancellationRequested();

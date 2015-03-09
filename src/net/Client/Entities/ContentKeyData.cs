@@ -219,7 +219,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 {
                     IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
 
-                    MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy(dataContext as IRetryPolicyAdapter);
+                    MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetQueryRetryPolicy(dataContext as IRetryPolicyAdapter);
 
                     Uri uriGetKeyDeliveryUrl = new Uri(string.Format(CultureInfo.InvariantCulture, "/ContentKeys('{0}')/GetKeyDeliveryUrl", this.Id), UriKind.Relative);
 
