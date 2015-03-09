@@ -15,6 +15,8 @@
 // </license>
 
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
 {
     /// <summary>
@@ -26,9 +28,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
         /// The undefined value is used to avoid defaulting to one of supported types.
         /// </summary>
         Undefined = 0,
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "SWT")]
+        [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "SWT")]
         SWT = 1,
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "JWT")]
+        [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "JWT")]
         JWT = 2
     }
 }

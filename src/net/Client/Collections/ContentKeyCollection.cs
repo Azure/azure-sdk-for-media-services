@@ -16,7 +16,6 @@
 
 
 using System;
-using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
@@ -86,7 +85,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
 
             IMediaDataServiceContext dataContext = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
-            X509Certificate2 certToUse = ContentKeyBaseCollection.GetCertificateToEncryptContentKey(MediaContext, ContentKeyType.CommonEncryption);
+            X509Certificate2 certToUse = GetCertificateToEncryptContentKey(MediaContext, ContentKeyType.CommonEncryption);
 
             ContentKeyData contentKeyData = null;
 

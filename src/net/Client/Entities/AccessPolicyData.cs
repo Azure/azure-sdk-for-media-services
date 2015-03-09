@@ -16,6 +16,7 @@
 
 using System;
 using System.Data.Services.Common;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
@@ -34,7 +35,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <value>
         /// The duration in minutes.
         /// </value>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Remains for interface compatibility.")]
+        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Remains for interface compatibility.")]
         public double DurationInMinutes { get; set; }
 
         /// <summary>

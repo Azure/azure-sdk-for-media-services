@@ -16,7 +16,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data.Services.Client;
 using System.Data.Services.Common;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;

@@ -14,10 +14,8 @@
 // limitations under the License.
 // </license>
 
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Data.Services.Client;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
 {

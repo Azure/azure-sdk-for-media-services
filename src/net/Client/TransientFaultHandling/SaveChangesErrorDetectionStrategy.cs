@@ -15,11 +15,6 @@
 // </license>
 
 using System;
-using System.Collections.ObjectModel;
-using System.Data.Services.Client;
-using System.Linq;
-using System.Net;
-using Microsoft.Practices.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling
 {

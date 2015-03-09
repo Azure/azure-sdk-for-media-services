@@ -17,8 +17,6 @@
 using System;
 using System.Linq;
 using System.Threading;
-using Microsoft.WindowsAzure.MediaServices.Client.OAuth;
-using Microsoft.WindowsAzure.MediaServices.Client.RequestAdapters;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -63,7 +61,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="accountName">The Microsoft WindowsAzure Media Services account name to authenticate with.</param>
         /// <param name="accountKey">The Microsoft WindowsAzure Media Services account key to authenticate with.</param>
         public CloudMediaContext(string accountName, string accountKey)
-            : this(CloudMediaContext._mediaServicesUri, new MediaServicesCredentials(accountName, accountKey))
+            : this(_mediaServicesUri, new MediaServicesCredentials(accountName, accountKey))
         {
         }
 

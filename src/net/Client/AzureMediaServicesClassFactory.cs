@@ -18,7 +18,6 @@ using System;
 using System.Data.Services.Client;
 using System.Data.Services.Common;
 using System.Net;
-using Microsoft.Practices.TransientFaultHandling;
 using Microsoft.WindowsAzure.MediaServices.Client.OAuth;
 using Microsoft.WindowsAzure.MediaServices.Client.RequestAdapters;
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;

@@ -15,7 +15,6 @@
 // </license>
 
 
-
 using System.Runtime.Serialization;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization

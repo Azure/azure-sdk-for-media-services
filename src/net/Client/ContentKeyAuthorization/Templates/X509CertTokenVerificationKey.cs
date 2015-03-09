@@ -15,6 +15,7 @@
 // </license>
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IdentityModel.Tokens;
 using System.Runtime.Serialization;
 using System.Security.Cryptography.X509Certificates;
@@ -50,7 +51,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
         }
 
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2208:InstantiateArgumentExceptionsCorrectly")]
+        [SuppressMessage("Microsoft.Usage", "CA2208:InstantiateArgumentExceptionsCorrectly")]
         public override byte[] RawBody
         {
             get

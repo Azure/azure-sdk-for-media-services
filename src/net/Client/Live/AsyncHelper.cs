@@ -13,12 +13,13 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.MediaServices.Client.Properties;
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
-using System.Collections.Generic;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -75,7 +76,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             do
             {
-                System.Threading.Thread.Sleep(pollInterval);
+                Thread.Sleep(pollInterval);
 
                 IMediaDataServiceContext dataContext = context.MediaServicesClassFactory.CreateDataServiceContext();
                 Uri uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Operations('{0}')", operationId), UriKind.Relative);

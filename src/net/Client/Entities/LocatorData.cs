@@ -234,7 +234,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     "locatorId");
             }
 
-            return String.Concat((string)LocatorData.LocatorIdentifierPrefix, locatorIdGuid.ToString());
+            return String.Concat((string)LocatorIdentifierPrefix, locatorIdGuid.ToString());
         }
         private static LocatorType GetExposedType(int type)
         {
