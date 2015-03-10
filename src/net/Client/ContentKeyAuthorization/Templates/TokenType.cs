@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="TokenType.cs" company="Microsoft">Copyright 2012 Microsoft Corporation</copyright>
+// <copyright file="TokenType.cs" company="Microsoft">Copyright 2014 Microsoft Corporation</copyright>
 // <license>
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
 // </license>
 
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
 {
     /// <summary>
@@ -26,9 +28,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
         /// The undefined value is used to avoid defaulting to one of supported types.
         /// </summary>
         Undefined = 0,
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "SWT")]
+        [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "SWT")]
         SWT = 1,
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "JWT")]
+        [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "JWT")]
         JWT = 2
     }
 }

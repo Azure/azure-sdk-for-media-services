@@ -21,6 +21,7 @@ using System.Data.Services.Client;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -918,7 +919,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             byte[] retrievedBuffer = File.ReadAllBytes(filepath);
 
             // Validate MD5 Value
-            var md5Check = System.Security.Cryptography.MD5.Create();
+            var md5Check = MD5.Create();
             md5Check.TransformBlock(retrievedBuffer, 0, retrievedBuffer.Length, null, 0);
             md5Check.TransformFinalBlock(new byte[0], 0, 0);
 

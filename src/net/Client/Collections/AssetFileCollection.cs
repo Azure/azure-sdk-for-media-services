@@ -139,7 +139,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                         fileEncryption.Dispose();
                     }
                 }
-                dataContext.AddObject(AssetFileCollection.FileSet, assetFile);
+                dataContext.AddObject(FileSet, assetFile);
                 cancelation.ThrowIfCancellationRequested();
                 cancelation.ThrowIfCancellationRequested();
                 MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy(dataContext as IRetryPolicyAdapter);

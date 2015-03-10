@@ -23,8 +23,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Win32;
-using Microsoft.WindowsAzure.Storage.RetryPolicies;
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
+using Microsoft.WindowsAzure.Storage.RetryPolicies;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -462,7 +462,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <param name="fileName">Name of the destinationPath.</param>
         /// <returns>The MIME type.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "All exception needs to be caught and return null in case of error.")]
+        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "All exception needs to be caught and return null in case of error.")]
         internal static string GetMimeType(string fileName)
         {
             string mimeType = null;

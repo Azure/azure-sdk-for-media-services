@@ -14,17 +14,17 @@
 // limitations under the License.
 // </license>
 
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Data.Services.Client;
-    using System.Data.Services.Common;
-    using System.IO;
-    using System.Linq;
-    using System.Security.Cryptography.X509Certificates;
-    using System.Text.RegularExpressions;
-    using System.Threading.Tasks;
-    using System.Xml.Linq;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Data.Services.Client;
+using System.Data.Services.Common;
+using System.IO;
+using System.Linq;
+using System.Security.Cryptography.X509Certificates;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using System.Xml.Linq;
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client

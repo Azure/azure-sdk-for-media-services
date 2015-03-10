@@ -223,7 +223,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             get
             {
-                System.Uri uri;
+                Uri uri;
                 if (System.Uri.TryCreate(this.Uri, UriKind.Absolute, out uri))
                 {
                     return uri;

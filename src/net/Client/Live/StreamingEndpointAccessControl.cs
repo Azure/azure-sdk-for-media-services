@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -26,13 +27,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Gets or sets the list of IP-s allowed.
         /// This is the public class exposed to SDK interfaces and used by users
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public IList<IPRange> IPAllowList { get; set; }
 
         /// <summary>
         /// Gets or sets the list of Akamai Signature Header Authentication keys.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public IList<AkamaiSignatureHeaderAuthenticationKey> AkamaiSignatureHeaderAuthenticationKeyList { get; set; }
     }
 }

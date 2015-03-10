@@ -15,10 +15,10 @@
 // </license>
 
 using System;
-using System.Text;
-using System.Runtime.Serialization;
-using System.Xml;
 using System.IO;
+using System.Runtime.Serialization;
+using System.Text;
+using System.Xml;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
 {

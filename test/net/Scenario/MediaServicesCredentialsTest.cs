@@ -23,7 +23,6 @@ using System.Text;
 using Microsoft.Practices.TransientFaultHandling;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
-using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 {    
@@ -228,7 +227,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             string testAcsResponse = "{\"token_type\":\"http://schemas.xmlsoap.org/ws/2009/11/swt-token-profile-1.0\",\"access_token\":\"http%3a%2f%2fschemas.xmlsoap.org%2fws%2f2005%2f05%2fidentity%2fclaims%2fnameidentifier=mediacreator&urn%3aSubscriptionId=3c5e503f-adcb-4aa5-a549-f34931566d6c&http%3a%2f%2fschemas.microsoft.com%2faccesscontrolservice%2f2010%2f07%2fclaims%2fidentityprovider=https%3a%2f%2fwamsprodglobal001acs.accesscontrol.windows.net%2f&Audience=urn%3aWindowsAzureMediaServices&ExpiresOn=1386947515&Issuer=https%3a%2f%2fwamsprodglobal001acs.accesscontrol.windows.net%2f&HMACSHA256=8RMeaHPfHHWAqlDSAvg0YDOpYhzjBGAsKZMMNeAwLsE%3d\",\"expires_in\":\"5999\",\"scope\":\"urn:WindowsAzureMediaServices\"}";
             string expectedToken = "http%3a%2f%2fschemas.xmlsoap.org%2fws%2f2005%2f05%2fidentity%2fclaims%2fnameidentifier=mediacreator&urn%3aSubscriptionId=3c5e503f-adcb-4aa5-a549-f34931566d6c&http%3a%2f%2fschemas.microsoft.com%2faccesscontrolservice%2f2010%2f07%2fclaims%2fidentityprovider=https%3a%2f%2fwamsprodglobal001acs.accesscontrol.windows.net%2f&Audience=urn%3aWindowsAzureMediaServices&ExpiresOn=1386947515&Issuer=https%3a%2f%2fwamsprodglobal001acs.accesscontrol.windows.net%2f&HMACSHA256=8RMeaHPfHHWAqlDSAvg0YDOpYhzjBGAsKZMMNeAwLsE%3d";
             long expectedTicks = 635225443150000000;
-            byte[] acsResponse = new System.Text.UTF8Encoding().GetBytes(testAcsResponse);
+            byte[] acsResponse = new UTF8Encoding().GetBytes(testAcsResponse);
             target.SetAcsToken(acsResponse);
 
             Assert.AreEqual(expectedToken, target.AccessToken);
@@ -282,7 +281,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             builder.Append(EncodeExpiry(timeToEncode));
             builder.Append("&Issuer=https%3a%2f%2fwamsprodglobal001acs.accesscontrol.windows.net%2f&HMACSHA256=8RMeaHPfHHWAqlDSAvg0YDOpYhzjBGAsKZMMNeAwLsE%3d\",\"expires_in\":\"5999\",\"scope\":\"urn:WindowsAzureMediaServices\"}");
             string badAcsResponse = builder.ToString();
-            byte[] acsResponse = new System.Text.UTF8Encoding().GetBytes(badAcsResponse);
+            byte[] acsResponse = new UTF8Encoding().GetBytes(badAcsResponse);
             credentials.SetAcsToken(acsResponse);
 
             Assert.AreEqual(timeToEncode.ToString(), credentials.TokenExpiration.ToString());

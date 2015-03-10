@@ -16,14 +16,14 @@
 
 using System;
 using System.Collections.Generic;
-using System.Net;
-using System.Globalization;
 using System.Collections.Specialized;
+using System.Globalization;
 using System.IO;
+using System.Net;
 using System.Runtime.Serialization.Json;
 using System.Web;
-using Microsoft.WindowsAzure.MediaServices.Client.OAuth;
 using Microsoft.Practices.TransientFaultHandling;
+using Microsoft.WindowsAzure.MediaServices.Client.OAuth;
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client

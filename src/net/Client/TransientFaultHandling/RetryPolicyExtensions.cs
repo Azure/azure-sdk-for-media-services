@@ -17,6 +17,7 @@
 
 using System;
 using Microsoft.Practices.TransientFaultHandling;
+using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.RetryPolicies;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling
@@ -63,7 +64,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling
                 int statusCode, 
                 Exception lastException, 
                 out TimeSpan retryInterval, 
-                WindowsAzure.Storage.OperationContext operationContext)
+                OperationContext operationContext)
             {
                 retryInterval = TimeSpan.FromMilliseconds(100);
 

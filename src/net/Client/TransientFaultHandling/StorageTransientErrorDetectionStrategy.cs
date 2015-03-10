@@ -19,14 +19,10 @@ using System;
 using System.Data.Services.Client;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Sockets;
 using System.Text.RegularExpressions;
-using Microsoft.Practices.TransientFaultHandling;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Shared.Protocol;
 using Microsoft.WindowsAzure.Storage.Table.Protocol;
-
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling
 {

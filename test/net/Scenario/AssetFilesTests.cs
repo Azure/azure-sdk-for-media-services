@@ -20,6 +20,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -27,7 +29,6 @@ using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 using Microsoft.WindowsAzure.Storage;
 using Moq;
-using System.Net;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 {
@@ -283,7 +284,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestMethod]
         [Timeout(60000)]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        [ExpectedException(typeof(System.IO.DirectoryNotFoundException))]
+        [ExpectedException(typeof(DirectoryNotFoundException))]
         public void ShouldThrowFileIOExceptionWhenAccessToLocalFolderisNotThere()
         {
             string fileUploaded = _smallWmv;
@@ -525,7 +526,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         private void SetFileAsset(AssetFileData file, IAsset asset)
         {
             typeof(AssetFileData)
-                .GetField("_asset", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                .GetField("_asset", BindingFlags.NonPublic | BindingFlags.Instance)
                 .SetValue(file, asset);
         }
 
