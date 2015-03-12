@@ -27,14 +27,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
 
         private readonly Dictionary<string, string> _headers;
 
-        public TestMediaDataServiceResponse()
+        public TestMediaDataServiceResponse(Dictionary<string, string> headers = null)
         {
-            _headers = new Dictionary<string, string>();
-        }
-
-        public TestMediaDataServiceResponse(Dictionary<string, string> headers)
-        {
-            _headers = headers ?? new Dictionary<string, string>();
+            _headers = headers;
         }
 
         #region IMediaDataServiceResponse Members
@@ -62,6 +57,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
 
         public IEnumerator<OperationResponse> GetEnumerator()
         {
+            if (_headers == null)
+            {
+                throw new NotImplementedException(TestMediaDataServiceResponseExceptionMessage);
+            }
+
             return new List<OperationResponse> {new InvokeResponse(_headers)}.GetEnumerator();
         }
 

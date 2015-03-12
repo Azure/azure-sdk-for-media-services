@@ -16,10 +16,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data.Services.Client;
-using System.Linq;
-using System.Net;
-using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
