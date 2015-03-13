@@ -89,9 +89,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
                     {
                         new AudioStream { Index = 1, Language = "eng" },
                         new AudioStream { Index = 2, Language = "fra" },
-                        new AudioStream { Index = 3, Language = "esp" }
-                    }.AsReadOnly(),
-                },
+                        new AudioStream { Index = 3, Language = "spa" }
+                    }.AsReadOnly()
+                }
             };
 
             IChannel channel = _mediaContext.Channels.Create(channelOptions);
@@ -106,6 +106,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
             {
                 Assert.AreEqual(channelOptions.Encoding.VideoStreams[i].Index, channel.Encoding.VideoStreams[i].Index);
             }
+
+            channel.Delete();
         }
 
         static ChannelInput MakeChannelInput()
@@ -163,7 +165,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
                 SystemPreset = "Default720p",
                 IgnoreCea708ClosedCaptions = false,
                 AdMarkerSource = AdMarkerSource.Api,
-                AudioStreams = new List<AudioStream> {new AudioStream {Index = 103, Language = "eng"}}.AsReadOnly(),
+                AudioStreams = new List<AudioStream> {new AudioStream {Index = 103, Language = "eng"}}.AsReadOnly()
             };
         }
     }
