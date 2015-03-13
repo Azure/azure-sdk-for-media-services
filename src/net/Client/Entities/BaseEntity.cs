@@ -15,6 +15,7 @@
 // </license>
 
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
+
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     public abstract class BaseEntity : IMediaContextContainer

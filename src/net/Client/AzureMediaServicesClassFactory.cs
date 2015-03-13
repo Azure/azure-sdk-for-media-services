@@ -18,7 +18,6 @@ using System;
 using System.Data.Services.Client;
 using System.Data.Services.Common;
 using System.Net;
-using Microsoft.Practices.TransientFaultHandling;
 using Microsoft.WindowsAzure.MediaServices.Client.OAuth;
 using Microsoft.WindowsAzure.MediaServices.Client.RequestAdapters;
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
@@ -30,6 +29,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// </summary>
     public class AzureMediaServicesClassFactory : MediaServicesClassFactory
     {
+        /// <summary>
+        /// The certificate thumbprint for Nimbus services.
+        /// </summary>
+        internal const string NimbusRestApiCertificateThumbprint = "AC24B49ADEF9D6AA17195E041D3F8D07C88EC145";
+
+        /// <summary>
+        /// The certificate subject for Nimbus services.
+        /// </summary>
+        internal const string NimbusRestApiCertificateSubject = "CN=NimbusRestApi";
+
         private readonly Uri _azureMediaServicesEndpoint;
         private readonly OAuthDataServiceAdapter _dataServiceAdapter;
         private readonly ServiceVersionAdapter _serviceVersionAdapter;
@@ -39,11 +48,24 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private const int ConnectionRetryMaxAttempts = 4;
         private const int ConnectionRetrySleepQuantum = 100;
 
-        private static Cache<Uri>  _endpointCache = new Cache<Uri>();
-
+        private static Cache<Uri> _endpointCache = new Cache<Uri>();
+        private IWebRequestAdapter _clientRequestIdAdapter ;
         public AzureMediaServicesClassFactory()
         {
-            
+
+        }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MediaServicesClassFactory" /> class.
+        /// </summary>
+        /// <param name="azureMediaServicesEndpoint">The Windows Azure Media Services endpoint to use.</param>
+        /// <param name="mediaContext">The <seealso cref="CloudMediaContext" /> instance.</param>
+        public AzureMediaServicesClassFactory(Uri azureMediaServicesEndpoint, CloudMediaContext mediaContext)
+        {
+            _dataServiceAdapter = new OAuthDataServiceAdapter(mediaContext.Credentials, NimbusRestApiCertificateThumbprint,NimbusRestApiCertificateSubject);
+            _serviceVersionAdapter = new ServiceVersionAdapter(KnownApiVersions.Current);
+            _userAgentAdapter = new UserAgentAdapter(KnownClientVersions.Current);
+            _mediaContext = mediaContext;
+            _azureMediaServicesEndpoint = CreateAzureMediaServicesEndPoint(azureMediaServicesEndpoint, mediaContext);
         }
 
         /// <summary>
@@ -60,17 +82,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             this._serviceVersionAdapter = serviceVersionAdapter;
             this._mediaContext = mediaContext;
             _userAgentAdapter = userAgentAdapter;
-            var clientRequestIdAdapter = new ClientRequestIdAdapter();
-
-            string cacheKey = string.Format(
-				"{0},{1}",
-				mediaContext.Credentials.ClientId,
-				azureMediaServicesEndpoint.ToString());
-
-            this._azureMediaServicesEndpoint = _endpointCache.GetOrAdd(
-				cacheKey,
-                () => GetAccountApiEndpoint(this._dataServiceAdapter, this._serviceVersionAdapter, azureMediaServicesEndpoint, userAgentAdapter,clientRequestIdAdapter),
-                () => mediaContext.Credentials.TokenExpiration);
+            _azureMediaServicesEndpoint = CreateAzureMediaServicesEndPoint(azureMediaServicesEndpoint, mediaContext);
         }
 
         /// <summary>
@@ -101,7 +113,18 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
         }
 
-       
+        /// <summary>
+        /// Creates a clientRequestIdAdapter
+        /// </summary>
+        /// <returns>The new DataServiceContext instance.</returns>
+        public override IWebRequestAdapter CreateClientRequestIdAdapter()
+        {
+            if (_clientRequestIdAdapter == null)
+            {
+                _clientRequestIdAdapter = new ClientRequestIdAdapter();
+            }
+            return _clientRequestIdAdapter;
+        }
         /// <summary>
         /// Creates retry policy for working with Azure blob storage.
         /// </summary>
@@ -118,7 +141,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             return retryPolicy;
         }
 
-       /// <summary>
+        /// <summary>
         /// Creates retry policy for saving changes in Media Services REST layer.
         /// </summary>
         /// <returns>Retry policy.</returns>
@@ -129,7 +152,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 retryCount: ConnectionRetryMaxAttempts,
                 minBackoff: TimeSpan.FromMilliseconds(ConnectionRetrySleepQuantum),
                 maxBackoff: TimeSpan.FromMilliseconds(ConnectionRetrySleepQuantum * 16),
-                deltaBackoff: TimeSpan.FromMilliseconds(ConnectionRetrySleepQuantum) 
+                deltaBackoff: TimeSpan.FromMilliseconds(ConnectionRetrySleepQuantum)
                 );
             retryPolicy.RetryPolicyAdapter = adapter;
             return retryPolicy;
@@ -167,7 +190,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             return retryPolicy;
         }
 
-        private Uri GetAccountApiEndpoint(OAuthDataServiceAdapter dataServiceAdapter, ServiceVersionAdapter versionAdapter, Uri apiServer, UserAgentAdapter userAgentAdapter,ClientRequestIdAdapter clientRequestIdAdapter)
+        private Uri GetAccountApiEndpoint(OAuthDataServiceAdapter dataServiceAdapter, ServiceVersionAdapter versionAdapter, Uri apiServer, UserAgentAdapter userAgentAdapter, IWebRequestAdapter clientRequestIdAdapter)
         {
             MediaRetryPolicy retryPolicy = new MediaRetryPolicy(
                 GetWebRequestTransientErrorDetectionStrategy(),
@@ -176,19 +199,19 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             Uri apiEndpoint = null;
             retryPolicy.ExecuteAction(
                     () =>
+                    {
+                        HttpWebRequest request = (HttpWebRequest)WebRequest.Create(apiServer);
+                        request.AllowAutoRedirect = false;
+                        dataServiceAdapter.AddAccessTokenToRequest(request);
+                        versionAdapter.AddVersionToRequest(request);
+                        userAgentAdapter.AddUserAgentToRequest(request);
+                        clientRequestIdAdapter.AddClientRequestId(request);
+
+                        using (WebResponse response = request.GetResponse())
                         {
-                            HttpWebRequest request = (HttpWebRequest) WebRequest.Create(apiServer);
-                            request.AllowAutoRedirect = false;
-                            dataServiceAdapter.AddAccessTokenToRequest(request);
-                            versionAdapter.AddVersionToRequest(request);
-                            userAgentAdapter.AddUserAgentToRequest(request);
-                            clientRequestIdAdapter.AddClientRequestId(request);
-                           
-                            using (WebResponse response = request.GetResponse())
-                            {
-                                apiEndpoint = GetAccountApiEndpointFromResponse(response);
-                            }
+                            apiEndpoint = GetAccountApiEndpointFromResponse(response);
                         }
+                    }
                 );
 
             return apiEndpoint;
@@ -210,7 +233,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             throw new InvalidOperationException("Unexpected response code.");
         }
-        
+
         private void OnReadingEntity(object sender, ReadingWritingEntityEventArgs args)
         {
             IMediaContextContainer mediaContextContainer = args.Entity as IMediaContextContainer;
@@ -218,6 +241,19 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             {
                 mediaContextContainer.SetMediaContext(this._mediaContext);
             }
+        }
+
+        private Uri CreateAzureMediaServicesEndPoint(Uri azureMediaServicesEndpoint, MediaContextBase mediaContext)
+        {
+            string cacheKey = string.Format(
+                "{0},{1}",
+                mediaContext.Credentials.ClientId,
+                azureMediaServicesEndpoint.ToString());
+
+            return (_endpointCache.GetOrAdd(
+                cacheKey,
+                () => GetAccountApiEndpoint(_dataServiceAdapter,_serviceVersionAdapter, azureMediaServicesEndpoint, _userAgentAdapter,CreateClientRequestIdAdapter()),
+                () => mediaContext.Credentials.TokenExpiration));
         }
     }
 }

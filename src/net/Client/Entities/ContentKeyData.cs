@@ -16,8 +16,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data.Services.Common;
 using System.Data.Services.Client;
+using System.Data.Services.Common;
 using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
@@ -41,7 +41,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public Task<byte[]> GetClearKeyValueAsync()
         {
             // Start a new task here because the ExecutAsync on the DataContext returns a Task<string>
-            return System.Threading.Tasks.Task.Factory.StartNew<byte[]>(() =>
+            return Task.Factory.StartNew<byte[]>(() =>
             {
                 byte[] returnValue = null;
                 if (this.GetMediaContext() != null)
@@ -93,7 +93,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
 
             // Start a new task here because the ExecutAsync on the DataContext returns a Task<string>
-            return System.Threading.Tasks.Task.Factory.StartNew<byte[]>(() =>
+            return Task.Factory.StartNew<byte[]>(() =>
                 {
                     byte[] returnValue = null;
 
@@ -212,14 +212,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         public Task<Uri> GetKeyDeliveryUrlAsync(ContentKeyDeliveryType contentKeyDeliveryType)
         {
-            return System.Threading.Tasks.Task.Factory.StartNew<Uri>(() =>
+            return Task.Factory.StartNew<Uri>(() =>
             {
                 Uri returnValue = null;
                 if (this.GetMediaContext() != null)
                 {
                     IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
 
-                    MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy(dataContext as IRetryPolicyAdapter);
+                    MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetQueryRetryPolicy(dataContext as IRetryPolicyAdapter);
 
                     Uri uriGetKeyDeliveryUrl = new Uri(string.Format(CultureInfo.InvariantCulture, "/ContentKeys('{0}')/GetKeyDeliveryUrl", this.Id), UriKind.Relative);
 

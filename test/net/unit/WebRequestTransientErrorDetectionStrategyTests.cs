@@ -15,16 +15,12 @@
 // </license>
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Data.Services.Client;
-using System.Linq;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
-using Moq;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
 {
@@ -62,7 +58,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
         [TestMethod]
         public void WebRequestTransientErrorDetectionStrategyTestIOException()
         {
-            var exception = new System.IO.IOException();
+            var exception = new IOException();
 
             bool actual = new WebRequestTransientErrorDetectionStrategy().IsTransient(exception);
 

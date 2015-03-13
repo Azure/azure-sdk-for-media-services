@@ -123,6 +123,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="fileEncryption">The file encryption to use.</param>
         internal static void AddEncryptionMetadataToAssetFile(AssetFileData file, FileEncryption fileEncryption)
         {
+            if (!fileEncryption.IsInitializationVectorPresent(file.Name))
+            {
+                fileEncryption.CreateInitializationVectorForFile(file.Name);
+            }
+
             ulong iv = fileEncryption.GetInitializationVectorForFile(file.Name);
 
             file.IsEncrypted = true;

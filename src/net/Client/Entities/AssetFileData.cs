@@ -23,8 +23,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Win32;
-using Microsoft.WindowsAzure.Storage.RetryPolicies;
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
+using Microsoft.WindowsAzure.Storage.RetryPolicies;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -122,15 +122,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
             finally
             {
-                if(locator!=null)
-                {
-                    locator.Delete();
-                }
-                if(accessPolicy!=null)
-                {
-                    accessPolicy.Delete();
-                }
-                
+                Cleanup(null,null,locator,accessPolicy);             
             }
         }
 
@@ -251,6 +243,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 }
 
                 fileEncryption = new FileEncryption(contentKeyData.GetClearKeyValue(), EncryptionUtils.GetKeyIdAsGuid(contentKeyData.Id));
+                ulong iv = Convert.ToUInt64(this.InitializationVector, CultureInfo.InvariantCulture);
+                fileEncryption.SetInitializationVectorForFile(this.Name,iv);
             }
 
             EventHandler<BlobTransferProgressChangedEventArgs> handler = (s, e) => OnUploadProgressChanged(path, e);
@@ -271,7 +265,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 ts=>
                 {
                     blobTransferClient.TransferProgressChanged -= handler;
-                    this.PostUploadAction(ts, path, fileEncryption, assetCreationOptions, token);
+                    this.PostUploadAction(ts, path, token);
                 });
         }
 
@@ -301,10 +295,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
 
-        private void PostUploadAction(Task task,string path, FileEncryption fileEncryption, AssetCreationOptions assetCreationOptions, CancellationToken token)
+        private void PostUploadAction(Task task,string path, CancellationToken token)
         {
-            try
-            {
                 task.ThrowIfFaulted();
                 token.ThrowIfCancellationRequested();
 
@@ -316,28 +308,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 // Set the ContentFileSize base on the local file size
                 this.ContentFileSize = fileInfo.Length;
 
-                // Update the files associated with the asset with the encryption related metadata.
-                if (assetCreationOptions.HasFlag(AssetCreationOptions.StorageEncrypted))
-                {
-                    AssetBaseCollection.AddEncryptionMetadataToAssetFile(this, fileEncryption);
-                }
-                else if (assetCreationOptions.HasFlag(AssetCreationOptions.CommonEncryptionProtected))
-                {
-                    AssetBaseCollection.SetAssetFileForCommonEncryption(this);
-                }
-                else if (assetCreationOptions.HasFlag(AssetCreationOptions.EnvelopeEncryptionProtected))
-                {
-                    AssetBaseCollection.SetAssetFileForEnvelopeEncryption(this);
-                }
                 this.Update();
-            }
-            finally
-            {
-                if (fileEncryption != null)
-                {
-                    fileEncryption.Dispose();
-                }
-            }
         }
         #endregion
 
@@ -491,7 +462,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <param name="fileName">Name of the destinationPath.</param>
         /// <returns>The MIME type.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "All exception needs to be caught and return null in case of error.")]
+        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "All exception needs to be caught and return null in case of error.")]
         internal static string GetMimeType(string fileName)
         {
             string mimeType = null;

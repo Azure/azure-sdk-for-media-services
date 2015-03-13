@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="ContentKeyAuthorizationPolicyOptionData.cs" company="Microsoft">Copyright 2012 Microsoft Corporation</copyright>
+// <copyright file="ContentKeyAuthorizationPolicyOptionData.cs" company="Microsoft">Copyright 2014 Microsoft Corporation</copyright>
 // <license>
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,9 +16,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Data.Services.Client;
 using System.Data.Services.Common;
+using System.Threading.Tasks;
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization

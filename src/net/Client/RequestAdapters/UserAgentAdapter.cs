@@ -24,7 +24,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.RequestAdapters
     /// <summary>
     /// UserAgentAdapter is used to add user agent specific information to http request. 
     /// </summary>
-    public class UserAgentAdapter
+    public class UserAgentAdapter : IDataServiceContextAdapter
     {
        
         private const string _userAgentPrefix = "Azure Media Services .NET SDK v";

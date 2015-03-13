@@ -22,7 +22,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
-    
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>

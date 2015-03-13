@@ -30,6 +30,8 @@ Source in GitHub at https://github.com/WindowsAzure/azure-sdk-for-media-services
     </dependencies>
     <references>
       <reference file="Microsoft.WindowsAzure.MediaServices.Client.dll" />
+      <reference file="Microsoft.WindowsAzure.MediaServices.Client.Common.BlobTransfer.dll" />
+      <reference file="Microsoft.WindowsAzure.MediaServices.Client.Common.FileEncryption.dll" />
     </references>
   </metadata>
 </package>

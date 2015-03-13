@@ -17,10 +17,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
-using System.Net;
 using Moq;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests

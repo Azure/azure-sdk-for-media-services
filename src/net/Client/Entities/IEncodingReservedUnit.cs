@@ -12,8 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // </license>
+
 using System;
 using System.Threading.Tasks;
+
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
