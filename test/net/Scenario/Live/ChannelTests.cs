@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
@@ -38,15 +39,29 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [Priority(1)]
         public void ChannelTestReset()
         {
+            var channelName = Guid.NewGuid().ToString().Substring(0, 30);
+
             IChannel channel = _mediaContext.Channels.Create(
                 new ChannelCreationOptions
                 {
-                    Name = Guid.NewGuid().ToString().Substring(0, 30),
+                    Name = channelName,
                     Input = MakeChannelInput(),
                     Preview = MakeChannelPreview(),
                     Output = MakeChannelOutput()
                 });
+            Assert.AreEqual(ChannelState.Stopped, channel.State);
+
+            channel.Start();
+            Assert.AreEqual(ChannelState.Running, channel.State);
+
             channel.Reset();
+
+            channel.Stop();
+            Assert.AreEqual(ChannelState.Stopped, channel.State);
+
+            channel.Delete();
+            channel = _mediaContext.Channels.Where(c => c.Name == channelName).SingleOrDefault();
+            Assert.IsNull(channel);
         }
 
         [TestMethod]
@@ -55,15 +70,21 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [Priority(1)]
         public void ChannelTestCreateTrivial()
         {
+            var channelName = Guid.NewGuid().ToString().Substring(0, 30);
+
             IChannel channel = _mediaContext.Channels.Create(
                 new ChannelCreationOptions
                 {
-                    Name = Guid.NewGuid().ToString().Substring(0, 30),
+                    Name = channelName,
                     Input = MakeChannelInput(),
                     Preview = MakeChannelPreview(),
                     Output = MakeChannelOutput()
                 });
+            Assert.AreEqual(ChannelState.Stopped, channel.State);
+
             channel.Delete();
+            channel = _mediaContext.Channels.Where(c => c.Name == channelName).SingleOrDefault();
+            Assert.IsNull(channel);
         }
 
         #region Helper/utility methods
