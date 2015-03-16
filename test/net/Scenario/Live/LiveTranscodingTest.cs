@@ -46,22 +46,32 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
                     Preview = MakeChannelPreview(),
                     Output = MakeChannelOutput(),
                     EncodingType = ChannelEncodingType.Standard,
-                    Encoding = MakeChannelEncoding(),
-                    Slate = new ChannelSlate {DefaultSlateAssetId = null, InsertSlateOnAdMarker = false}
+                    Encoding = MakeChannelEncoding()
                 });
-            channel.Start();
 
-            channel.ShowSlate(TimeSpan.FromMinutes(5), Guid.NewGuid().ToString());
-            channel.HideSlate();
-            
-            channel.StartAdvertisement(TimeSpan.FromMinutes(10), 1000);
-            channel.EndAdvertisement();
+            try
+            {
+                channel.Start();
+                try
+                {
+                    channel.ShowSlate(TimeSpan.FromMinutes(5), null);
+                    channel.HideSlate();
 
-            channel.StartAdvertisement(TimeSpan.FromMinutes(10), 1000, false);
-            channel.EndAdvertisement();
+                    channel.StartAdvertisement(TimeSpan.FromMinutes(10), 1000);
+                    channel.EndAdvertisement();
 
-            channel.Stop();
-            channel.Delete();
+                    channel.StartAdvertisement(TimeSpan.FromMinutes(10), 1000, false);
+                    channel.EndAdvertisement();
+                }
+                finally 
+                {
+                    channel.Stop();
+                }
+            }
+            finally 
+            {
+                channel.Delete();
+            }
         }
 
 
