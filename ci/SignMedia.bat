@@ -6,6 +6,8 @@ del /q c:\packages\*.*
 
 echo Copying managed desktop library DLLs to signing source directory
 copy /y .\Publish\Build\Release\Microsoft.WindowsAzure.MediaServices.Client.dll c:\signing\tosign\
+copy /y .\Publish\Build\Release\Microsoft.WindowsAzure.MediaServices.Client.Common.FileEncryption.dll c:\signing\tosign\
+copy /y .\Publish\Build\Release\Microsoft.WindowsAzure.MediaServices.Client.Common.BlobTransfer.dll c:\signing\tosign\
 if %ERRORLEVEL% neq 0 goto copyfailed
 echo OK
 
@@ -23,6 +25,10 @@ echo Creating \drop\WAMSSDK\lib\net45
 md .\drop\WAMSSDK\lib\net45
 echo Copy MediaServices.Client.dll
 copy /y c:\signing\signed\Microsoft.WindowsAzure.MediaServices.Client.dll .\drop\WAMSSDK\lib\net45\
+echo Copy Microsoft.WindowsAzure.MediaServices.Client.Common.FileEncryption.dll
+copy /y c:\signing\signed\Microsoft.WindowsAzure.MediaServices.Client.Common.FileEncryption.dll .\drop\WAMSSDK\lib\net45\
+echo Copy Microsoft.WindowsAzure.MediaServices.Client.Common.BlobTransfer.dll
+copy /y c:\signing\signed\Microsoft.WindowsAzure.MediaServices.Client.Common.BlobTransfer.dll .\drop\WAMSSDK\lib\net45\
 echo Copy MediaServices.Client.pdb
 copy /y .\Publish\Build\Release\Microsoft.WindowsAzure.MediaServices.Client.pdb .\drop\WAMSSDK\lib\net45\
 echo Copy Nuget spec

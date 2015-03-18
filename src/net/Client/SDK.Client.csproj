@@ -403,8 +403,8 @@
     <Compile Include="Entities\LocatorData.cs" />
     <Compile Include="Entities\LocatorType.cs" />
     <Compile Include="MediaContextBase.cs" />	
-    <Compile Include="Properties\AssemblyInfo.cs" Condition=" '$(SigningFlag)' == 'NOTSIGNED' " /> 
-    <Compile Include="Properties\DelaySign_AssemblyInfo.cs" Condition=" '$(SigningFlag)' == 'DELAYSIGNED' "/>    
+    <Compile Include="Properties\AssemblyInfo.cs" /> 
+       
     <Compile Include="Properties\Resources1.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
