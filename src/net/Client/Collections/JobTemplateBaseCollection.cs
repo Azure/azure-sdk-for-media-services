@@ -14,6 +14,8 @@
 // limitations under the License.
 // </license>
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
@@ -30,7 +32,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Initializes a new instance of the <see cref="JobTemplateBaseCollection"/> class.
         /// </summary>
         /// <param name="cloudMediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Justification = "By design")]
+        [SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Justification = "By design")]
         internal JobTemplateBaseCollection(MediaContextBase cloudMediaContext)
             : base(cloudMediaContext)
         {

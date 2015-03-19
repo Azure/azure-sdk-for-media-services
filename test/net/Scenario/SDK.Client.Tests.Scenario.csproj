@@ -140,9 +140,7 @@
     <CodeAnalysisRuleSet>\Build\NimbusFXCopRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
-  <PropertyGroup>
-    <SignAssembly>false</SignAssembly>
-  </PropertyGroup>
+  
   <ItemGroup>
     <CodeAnalysisDependentAssemblyPaths Condition=" '$(VS100COMNTOOLS)' != '' " Include="$(VS100COMNTOOLS)..\IDE\PrivateAssemblies">
       <Visible>False</Visible>
@@ -166,6 +164,7 @@
     <Compile Include="Live\AsyncHelperTests.cs" />
     <Compile Include="Live\ChannelTests.cs" />
     <Compile Include="Live\LiveE2ETests.cs" />
+    <Compile Include="Live\LiveTranscodingTest.cs" />
     <Compile Include="Live\OperationTests.cs" />
     <Compile Include="Live\StreamingEndpointTests.cs" />
     <Compile Include="Live\ProgramTests.cs" />
@@ -344,6 +343,14 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\src\net\Client\Common\Common.BlobTransfer\SDK.Client.Common.BlobTransfer.csproj">
+      <Project>{f0c14570-44f9-4f3e-ac4f-d9965c4b1d06}</Project>
+      <Name>SDK.Client.Common.BlobTransfer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\src\net\Client\Common\Common.FileEncryption\SDK.Client.Common.FileEncryption.csproj">
+      <Project>{630d064c-8d3d-4419-bcc9-a61ef577a387}</Project>
+      <Name>SDK.Client.Common.FileEncryption</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\src\net\client\SDK.Client.csproj">
       <Project>{e194b46e-9063-4cfa-85fc-51e5aad55586}</Project>
       <Name>SDK.Client</Name>

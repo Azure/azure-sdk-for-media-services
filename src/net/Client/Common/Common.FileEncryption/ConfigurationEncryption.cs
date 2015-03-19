@@ -56,7 +56,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             if (keyIdentifier == Guid.Empty)
             {
-                throw new ArgumentException(StringTable.ErrorInvalidKeyIdentifier);
+                throw new ArgumentException(CommonStringsFileEncryption.ErrorInvalidKeyIdentifier);
             }
 
             this.InternalInit(keyIdentifier, contentKey, initializationVector);

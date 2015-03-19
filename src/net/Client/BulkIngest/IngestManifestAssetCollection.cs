@@ -207,7 +207,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                            };
 
             
-            dataContext.AddObject(IngestManifestAssetCollection.EntitySet,data);
+            dataContext.AddObject(EntitySet,data);
             dataContext.AttachTo(AssetCollection.AssetSet, asset);
             dataContext.SetLink(data,"Asset",asset);
 

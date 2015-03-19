@@ -16,23 +16,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data.Services.Client;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Xml;
-using System.Xml.Linq;
-using System.Xml.XPath;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Queue;
-using Moq;
-using System.Net;
-using System.Threading.Tasks;
 using Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption;
+using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 {
@@ -335,6 +324,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         public void ValidateEffectiveEncryptionStatusOfStorageEncryptedSmooth()
         {
             IAsset asset = JobTests.CreateSmoothAsset(_mediaContext, _filePaths, AssetCreationOptions.StorageEncrypted);
+
+            Assert.IsTrue(asset.IsStreamable);
+            Assert.AreEqual(AssetType.SmoothStreaming, asset.AssetType);
+            Assert.AreEqual(AssetCreationOptions.StorageEncrypted, asset.Options);
+
             // There is no asset delivery policy so streaming should be blocked
             AssetDeliveryProtocol protocolsToTest = AssetDeliveryProtocol.SmoothStreaming |
                                                     AssetDeliveryProtocol.Dash |
@@ -465,6 +459,69 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             ValidateAssetEncryptionState(envelopeHls, AssetDeliveryProtocol.HLS, AssetEncryptionState.StaticEnvelopeEncryption);
 
             CleanupAsset(envelopeHls);
+        }
+
+        [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [DeploymentItem(@"Media\Small.ism", "Media")]
+        public void ValidateEffectiveEncryptionStatusOfSimulatedLiveStream()
+        {
+            IAsset asset = AssetTests.CreateAsset(_mediaContext, WindowsAzureMediaServicesTestConfiguration.SmallIsm, AssetCreationOptions.None);
+
+            Assert.IsTrue(asset.IsStreamable);
+            Assert.AreEqual(AssetType.SmoothStreaming, asset.AssetType);
+            Assert.AreEqual(AssetCreationOptions.None, asset.Options);
+
+            AssetDeliveryProtocol protocolsToTest = AssetDeliveryProtocol.SmoothStreaming |
+                                                    AssetDeliveryProtocol.Dash |
+                                                    AssetDeliveryProtocol.HLS |
+                                                    AssetDeliveryProtocol.Hds;
+
+            List<TestCase> testCases = GetTestsCasesForProtocolCombination(protocolsToTest, AssetEncryptionState.ClearOutput);
+            ValidateAssetEncryptionState(asset, testCases);
+
+            SetupCommonPolicy(asset, AssetDeliveryProtocol.HLS | AssetDeliveryProtocol.Dash | AssetDeliveryProtocol.SmoothStreaming);
+
+            UpdateTestCasesForAddedPolicy(testCases, asset.DeliveryPolicies);
+
+            ValidateAssetEncryptionState(asset, testCases);
+
+            CleanupAsset(asset);
+        }
+
+        [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [DeploymentItem(@"Media\Small.ism", "Media")]
+        [DeploymentItem(@"Media\Small.ismc", "Media")]
+        [DeploymentItem(@"Media\Small.ismv", "Media")]
+        public void ValidateEffectiveEncryptionStatusOfStorageEncryptedSimulatedLiveStream()
+        {
+            IAsset asset = AssetTests.CreateAsset(_mediaContext, WindowsAzureMediaServicesTestConfiguration.SmallIsm, AssetCreationOptions.StorageEncrypted);
+
+            Assert.IsTrue(asset.IsStreamable);
+            Assert.AreEqual(AssetType.SmoothStreaming, asset.AssetType);
+            Assert.AreEqual(AssetCreationOptions.StorageEncrypted, asset.Options);
+
+            // There is no asset delivery policy so streaming should be blocked
+            AssetDeliveryProtocol protocolsToTest = AssetDeliveryProtocol.SmoothStreaming |
+                                                    AssetDeliveryProtocol.Dash |
+                                                    AssetDeliveryProtocol.HLS |
+                                                    AssetDeliveryProtocol.Hds;
+
+            List<TestCase> testCases = GetTestsCasesForProtocolCombination(protocolsToTest, AssetEncryptionState.StorageEncryptedWithNoDeliveryPolicy);
+            ValidateAssetEncryptionState(asset, testCases);
+
+            SetupEnvelopePolicy(asset, AssetDeliveryProtocol.HLS);
+            UpdateTestCasesForAddedPolicy(testCases, asset.DeliveryPolicies);
+            ValidateAssetEncryptionState(asset, testCases);
+
+            SetupCommonPolicy(asset, AssetDeliveryProtocol.SmoothStreaming | AssetDeliveryProtocol.Dash);
+            UpdateTestCasesForAddedPolicy(testCases, asset.DeliveryPolicies);
+            ValidateAssetEncryptionState(asset, testCases);
+
+            CleanupAsset(asset);
         }
 
         private static void CleanupAsset(IAsset asset)

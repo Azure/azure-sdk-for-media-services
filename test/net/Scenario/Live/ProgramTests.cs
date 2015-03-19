@@ -14,11 +14,11 @@
 // limitations under the License.
 // </license>
 
+using System;
+using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
-using System.Net;
 using Moq;
-using System;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 {

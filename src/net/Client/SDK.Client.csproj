@@ -164,14 +164,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BlobTransfer\BlobDownloader.cs" />
-    <Compile Include="BlobTransfer\BlobTransferBase.cs" />
-    <Compile Include="BlobTransfer\BlobTransferClient.cs" />
-    <Compile Include="BlobTransfer\BlobTransferContext.cs" />
-    <Compile Include="BlobTransfer\BlobUploader.cs" />
-    <Compile Include="BlobTransfer\MemoryManager.cs" />
-    <Compile Include="BlobTransfer\MemoryManagerFactory.cs" />
-    <Compile Include="BlobTransfer\ServicePointModifier.cs" />
     <Compile Include="Collections\EncodingReservedUnitCollection.cs" />
     <Compile Include="ContentKeyAuthorization\ContentKeyAuthorizationPolicyCollection.cs" />
     <Compile Include="ContentKeyAuthorization\ContentKeyAuthorizationPolicyData.cs" />
@@ -243,10 +235,6 @@
     <Compile Include="AzureMediaServicesClassFactory.cs" />
     <Compile Include="Entities\AssetType.cs" />
     <Compile Include="Entities\BaseEntity.cs" />
-    <Compile Include="BlobTransferCompleteEventArgs.cs" />
-    <Compile Include="BlobTransferProgressChangedEventArgs.cs" />
-    <Compile Include="BlobTransferSpeedCalculator.cs" />
-    <Compile Include="BlobTransferType.cs" />
     <Compile Include="BulkIngest\IIngestManifest.cs" />
     <Compile Include="BulkIngest\IIngestManifestAsset.cs" />
     <Compile Include="BulkIngest\IIngestManifestFile.cs" />
@@ -275,14 +263,19 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Entities\IEncodingReservedUnit.cs" />
+    <Compile Include="Live\AdMarkerSource.cs" />
     <Compile Include="Live\AkamaiAccessControlData.cs" />
     <Compile Include="Live\AkamaiSignatureHeaderAuthenticationKey.cs" />
     <Compile Include="Live\AsyncHelper.cs" />
+    <Compile Include="Live\AudioStream.cs" />
     <Compile Include="Live\ChannelAccessControl.cs" />
     <Compile Include="Live\ChannelAccessControlData.cs" />
     <Compile Include="Live\ChannelBaseCollection.cs" />
     <Compile Include="Live\ChannelCreationOptions.cs" />
     <Compile Include="Live\ChannelData.cs" />
+    <Compile Include="Live\ChannelEncoding.cs" />
+    <Compile Include="Live\ChannelEncodingData.cs" />
+    <Compile Include="Live\ChannelEncodingType.cs" />
     <Compile Include="Live\ChannelEndpoint.cs" />
     <Compile Include="Live\ChannelEndpointData.cs" />
     <Compile Include="Live\ChannelInput.cs" />
@@ -291,6 +284,7 @@
     <Compile Include="Live\ChannelOutputHls.cs" />
     <Compile Include="Live\ChannelPreview.cs" />
     <Compile Include="Live\ChannelPreviewData.cs" />
+    <Compile Include="Live\ChannelSlate.cs" />
     <Compile Include="Live\ChannelState.cs" />
     <Compile Include="Live\CloudMediaContext.cs" />
     <Compile Include="Live\CrossSiteAccessPolicies.cs" />
@@ -320,15 +314,18 @@
     <Compile Include="Live\StreamingEndpointData.cs" />
     <Compile Include="Live\StreamingEndpointState.cs" />
     <Compile Include="Live\StreamingProtocol.cs" />
+    <Compile Include="Live\VideoStream.cs" />
     <Compile Include="MediaQueryable.cs" />
     <Compile Include="MediaQueryProvider.cs" />
     <Compile Include="MediaServicesCredentials.cs" />
     <Compile Include="Cache.cs" />
+    <Compile Include="Encryption\NullableFileEncryption.cs" />
+    <Compile Include="RequestAdapters\IDataServiceContextAdapter.cs" />
+    <Compile Include="RequestAdapters\IWebRequestAdapter.cs" />
     <Compile Include="ReservedUnitType.cs" />
     <Compile Include="TransientFaultHandling\IRetryPolicyAdapter.cs" />
     <Compile Include="TransientFaultHandling\RetryPolicyExtensions.cs" />
     <Compile Include="TransientFaultHandling\StorageTransientErrorDetectionStrategy.cs" />
-    <Compile Include="TransientFaultHandling\ExceptionExtensions.cs" />
     <Compile Include="TransientFaultHandling\MediaErrorDetectionStrategy.cs" />
     <Compile Include="TransientFaultHandling\MediaRetryPolicy.cs" />
     <Compile Include="TransientFaultHandling\QueryErrorDetectionStrategy.cs" />
@@ -364,17 +361,10 @@
     <Compile Include="Entities\JobTemplateType.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Encryption\EnvelopeEncryption.cs" />
-    <Compile Include="Encryption\CommonEncryption.cs" />
-    <Compile Include="Encryption\ConfigurationEncryption.cs" />
     <Compile Include="Collections\ContentKeyCollection.cs" />
     <Compile Include="Entities\ContentKeyData.cs" />
     <Compile Include="Entities\ContentKeyType.cs" />
-    <Compile Include="Encryption\CriticalSection.cs" />
-    <Compile Include="Encryption\EncryptionUtils.cs" />
     <Compile Include="ErrorDetail.cs" />
-    <Compile Include="Encryption\FileEncryption.cs" />
-    <Compile Include="Encryption\FileEncryptionTransform.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Entities\IAccessPolicy.cs" />
     <Compile Include="Entities\IJobTemplate.cs" />
@@ -405,7 +395,6 @@
     <Compile Include="Entities\ITaskTemplate.cs" />
     <Compile Include="Entities\JobData.cs" />
     <Compile Include="Entities\MediaProcessorData.cs" />
-    <Compile Include="Encryption\NullableFileEncryption.cs" />
     <Compile Include="OAuth\OAuth2TokenResponse.cs" />
     <Compile Include="OAuth\OAuthDataServiceAdapter.cs" />
     <Compile Include="Entities\OutputAsset.cs" />
@@ -413,8 +402,10 @@
     <Compile Include="Collections\LinkCollection.cs" />
     <Compile Include="Entities\LocatorData.cs" />
     <Compile Include="Entities\LocatorType.cs" />
-    <Compile Include="MediaContextBase.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="MediaContextBase.cs" />	
+    <Compile Include="Properties\AssemblyInfo.cs" Condition=" '$(SigningFlag)' == 'NOTSIGNED' " /> 
+    <Compile Include="Properties\DelaySign_AssemblyInfo.cs" Condition=" '$(SigningFlag)' == 'DELAYSIGNED' "/>
+       
     <Compile Include="Properties\Resources1.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -519,7 +510,16 @@
     <None Include="Properties\SlowCheetah\SlowCheetah.Transforms.targets" />
     <None Include="Settings.stylecop" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="Common\Common.BlobTransfer\SDK.Client.Common.BlobTransfer.csproj">
+      <Project>{f0c14570-44f9-4f3e-ac4f-d9965c4b1d06}</Project>
+      <Name>SDK.Client.Common.BlobTransfer</Name>
+    </ProjectReference>
+    <ProjectReference Include="Common\Common.FileEncryption\SDK.Client.Common.FileEncryption.csproj">
+      <Project>{630d064c-8d3d-4419-bcc9-a61ef577a387}</Project>
+      <Name>SDK.Client.Common.FileEncryption</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <TransformOnBuild>true</TransformOnBuild>

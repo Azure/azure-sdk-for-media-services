@@ -19,8 +19,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
-    
+
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>

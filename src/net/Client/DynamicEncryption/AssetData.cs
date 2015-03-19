@@ -16,13 +16,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Data.Services.Common;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption;
-using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -212,8 +208,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new ArgumentNullException("asset");
             }
 
-            // Take the first asset file marked as primary (do not force a single one to avoid a potential runtime exception).
-            return asset.AssetFiles.Where(af => af.IsPrimary).FirstOrDefault();
+            // Take the first asset file marked as primary 
+            IAssetFile primaryFile =  asset.AssetFiles.Where(af => af.IsPrimary).FirstOrDefault();
+
+            //If the primary file is not set and only 1 file is present in asset, return that file as primary
+            //Fyi.. We are not doing update of assetFile via rest here.
+            if ((primaryFile == null) && ((asset.AssetFiles.Count() == 1)))
+            {
+                primaryFile = asset.AssetFiles.First();
+            }
+            return primaryFile;
         }
 
         private static bool IsExtension(string filepath, string extensionToCheck)
@@ -250,7 +254,19 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 {
                     IAssetFile[] assetFiles = asset.AssetFiles.ToArray();
 
-                    if (assetFiles.Where(af => IsExtension(af.Name, ".m3u8")).Any())
+                    if (assetFiles.Length == 1)
+                    {
+                        if (asset.Options.HasFlag(AssetCreationOptions.EnvelopeEncryptionProtected))
+                        {
+                            // We have no supported cases where Envelope Encryption is statically applied to a smooth streaming file.
+                            assetType = AssetType.Unknown;
+                        }
+                        else
+                        {
+                            assetType = AssetType.SmoothStreaming;
+                        }
+                    }
+                    else if (assetFiles.Where(af => IsExtension(af.Name, ".m3u8")).Any())
                     {
                         assetType = AssetType.MediaServicesHLS;
                     }

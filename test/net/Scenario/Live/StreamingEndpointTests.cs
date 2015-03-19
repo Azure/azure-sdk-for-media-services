@@ -15,15 +15,13 @@
 // </license>
 
 using System;
-using System.Net;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
-using Moq;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 {
     [TestClass]
-    [Ignore] //TODO: enable when the streaming endpoint is deployed in the test environment
     public class StreamingEndpointTests
     {
         private CloudMediaContext _mediaContext;
@@ -37,131 +35,59 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [Priority(0)]
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
-        public void TestStreamingEndpointCreate()
+        public void StreamingEndpointCreate()
         {
             string testStreamingEndpointName = Guid.NewGuid().ToString().Substring(0, 30);
             var actual = _mediaContext.StreamingEndpoints.Create(testStreamingEndpointName, 0);
             Assert.AreEqual(testStreamingEndpointName, actual.Name);
-        }
-
-        #region Retry Logic tests
-
-        [TestMethod]
-        [Priority(0)]
-        [TestCategory("ClientSDK")]
-        [Owner("ClientSDK")]
-        public void TestStreamingEndpointCreateRetry()
-        {
-            var expected = new ChannelData { Name = "testData" };
-            var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
-            var dataContextMock = TestMediaServicesClassFactory.CreateSaveChangesMock(fakeException, 2, expected);
-
-            dataContextMock.Setup((ctxt) => ctxt.AddObject("StreamingEndpoints", It.IsAny<object>()));
-
-            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
-
-            try
-            {
-                var actual = _mediaContext.StreamingEndpoints.Create("unittest", 0);
-            }
-            catch (NotImplementedException x)
-            {
-                Assert.AreEqual(TestMediaDataServiceResponse.TestMediaDataServiceResponseExceptionMessage, x.Message);
-            }
-            dataContextMock.Verify((ctxt) => ctxt.SaveChangesAsync(It.IsAny<object>()), Times.Exactly(2));
-        }
-
-        [TestMethod]
-        [Priority(0)]
-        [ExpectedException(typeof(WebException))]
-        [TestCategory("ClientSDK")]
-        [Owner("ClientSDK")]
-        public void TestStreamingEndpointCreateFailedRetry()
-        {
-            var expected = new ChannelData { Name = "testData" };
-            var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
-            var dataContextMock = TestMediaServicesClassFactory.CreateSaveChangesMock(fakeException, 10, expected);
-
-            dataContextMock.Setup((ctxt) => ctxt.AddObject("StreamingEndpoints", It.IsAny<object>()));
-
-            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
-
-            try
-            {
-                var actual = _mediaContext.StreamingEndpoints.Create("unittest", 0);
-            }
-            catch (WebException x)
-            {
-                dataContextMock.Verify((ctxt) => ctxt.SaveChangesAsync(It.IsAny<object>()), Times.AtLeast(3));
-                Assert.AreEqual(fakeException, x);
-                throw;
-            }
-
-            Assert.Fail("Expected exception");
+            actual.Delete();
         }
 
         [TestMethod]
         [Priority(0)]
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
-        public void TestDeleteRetry()
+        public void StreamingEndpointVerifyCDNEnabledFlag()
         {
-            var data = new StreamingEndpointData { Name = "testData", Id = "1" };
-
-            var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
-
-            var dataContextMock = TestMediaServicesClassFactory.CreateSaveChangesMock(fakeException, 2, data);
-
-            dataContextMock.Setup((ctxt) => ctxt.AttachTo("StreamingEndpoints", data));
-            dataContextMock.Setup((ctxt) => ctxt.DeleteObject(data));
-
-            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
-
-            data.SetMediaContext(_mediaContext);
-
-            try
+            var name = "StreamingEndpoint" + DateTime.UtcNow.ToString("hhmmss");
+            var option = new StreamingEndpointCreationOptions(name, 1)
             {
-                data.Delete();
-            }
-            catch (NotImplementedException x)
+                CdnEnabled = true
+            };
+            var streamingEndpoint = _mediaContext.StreamingEndpoints.Create(option);
+            var createdToValidate = _mediaContext.StreamingEndpoints.Where(c => c.Id == streamingEndpoint.Id).FirstOrDefault();
+            Assert.IsNotNull(createdToValidate);
+            Assert.AreEqual(true, createdToValidate.CdnEnabled);
+            streamingEndpoint.Delete();
+            name = "CDNDisabled" + DateTime.UtcNow.ToString("hhmmss");
+            var disabledOption = new StreamingEndpointCreationOptions(name, 1)
             {
-                Assert.AreEqual(TestMediaDataServiceResponse.TestMediaDataServiceResponseExceptionMessage, x.Message);
-            }
-
-            dataContextMock.Verify((ctxt) => ctxt.SaveChangesAsync(data), Times.Exactly(2));
+                CdnEnabled = false
+            };
+            streamingEndpoint = _mediaContext.StreamingEndpoints.Create(disabledOption);
+            createdToValidate = _mediaContext.StreamingEndpoints.Where(c => c.Id == streamingEndpoint.Id).FirstOrDefault();
+            Assert.IsNotNull(createdToValidate);
+            Assert.AreEqual(false, createdToValidate.CdnEnabled);
+            streamingEndpoint.Delete();
         }
 
         [TestMethod]
         [Priority(0)]
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
-        public void TestSendDeleteOperationRetry()
+        public void StreamingEndpointCreateStartStopDelete()
         {
-            var data = new StreamingEndpointData { Name = "testData", Id = "1" };
-
-            var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
-
-            var dataContextMock = TestMediaServicesClassFactory.CreateSaveChangesMock(fakeException, 2, data);
-
-            dataContextMock.Setup((ctxt) => ctxt.AttachTo("StreamingEndpoints", data));
-            dataContextMock.Setup((ctxt) => ctxt.DeleteObject(data));
-
-            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
-
-            data.SetMediaContext(_mediaContext);
-
-            try
-            {
-                data.SendDeleteOperation();
-            }
-            catch (NotImplementedException x)
-            {
-                Assert.AreEqual(TestMediaDataServiceResponse.TestMediaDataServiceResponseExceptionMessage, x.Message);
-            }
-
-            dataContextMock.Verify((ctxt) => ctxt.SaveChanges(), Times.Exactly(2));
+            var name = "StreamingEndpoint" + DateTime.UtcNow.ToString("hhmmss");
+            var option = new StreamingEndpointCreationOptions(name, 1);
+            var streamingEndpoint = _mediaContext.StreamingEndpoints.Create(option);
+            Assert.IsNotNull(streamingEndpoint);
+            streamingEndpoint.Start();
+            Assert.AreEqual(StreamingEndpointState.Running,streamingEndpoint.State);
+            streamingEndpoint.Stop();
+            Assert.AreEqual(StreamingEndpointState.Stopped, streamingEndpoint.State);
+            streamingEndpoint.Delete();
+            var deleted = _mediaContext.StreamingEndpoints.Where(c => c.Id == streamingEndpoint.Id).FirstOrDefault();
+            Assert.IsNull(deleted);
         }
-
-        #endregion Retry Logic tests
     }
 }

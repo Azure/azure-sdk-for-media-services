@@ -14,10 +14,11 @@
 
 using System;
 using System.Data.Services.Common;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses")]
+    [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses")]
     [DataServiceKey("Id")]
     internal class OperationData : IOperation
     {

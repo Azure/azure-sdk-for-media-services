@@ -14,6 +14,8 @@
 // limitations under the License.
 // </license>
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
@@ -30,7 +32,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Initializes a new instance of the <see cref="MediaProcessorBaseCollection"/> class.
         /// </summary>
         /// <param name="cloudMediaContext">The cloud media context.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Justification = "By design")]
+        [SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Justification = "By design")]
         internal MediaProcessorBaseCollection(MediaContextBase cloudMediaContext)
             : base(cloudMediaContext)
         {

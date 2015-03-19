@@ -17,8 +17,6 @@
 using System;
 using System.Linq;
 using System.Threading;
-using Microsoft.WindowsAzure.MediaServices.Client.OAuth;
-using Microsoft.WindowsAzure.MediaServices.Client.RequestAdapters;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -54,11 +52,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private StorageAccountBaseCollection _storageAccounts;
         private EncodingReservedUnitCollection _encodingReservedUnits;
         private MediaServicesClassFactory _classFactory;
-        private OAuthDataServiceAdapter dataServiceAdapter;
-        private ServiceVersionAdapter versionAdapter;
         private Uri apiServer;
-        private UserAgentAdapter userAgentAdapter;
-       
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CloudMediaContext"/> class.
@@ -66,7 +61,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="accountName">The Microsoft WindowsAzure Media Services account name to authenticate with.</param>
         /// <param name="accountKey">The Microsoft WindowsAzure Media Services account key to authenticate with.</param>
         public CloudMediaContext(string accountName, string accountKey)
-            : this(CloudMediaContext._mediaServicesUri, new MediaServicesCredentials(accountName, accountKey))
+            : this(_mediaServicesUri, new MediaServicesCredentials(accountName, accountKey))
         {
         }
 
@@ -114,11 +109,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             this.ParallelTransferThreadCount = 10;
             this.NumberOfConcurrentTransfers = 2;
             this.Credentials = credentials;
-            dataServiceAdapter = new OAuthDataServiceAdapter(credentials, NimbusRestApiCertificateThumbprint, NimbusRestApiCertificateSubject);
-            versionAdapter = new ServiceVersionAdapter(KnownApiVersions.Current);
-            userAgentAdapter = new UserAgentAdapter(KnownClientVersions.Current);
-           
-
         }
 
         public override MediaServicesClassFactory MediaServicesClassFactory
@@ -127,7 +117,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             {
                 if (_classFactory == null)
                 {
-                    Interlocked.CompareExchange(ref _classFactory, new AzureMediaServicesClassFactory(apiServer, dataServiceAdapter, versionAdapter, this, userAgentAdapter), null);
+                    Interlocked.CompareExchange(ref _classFactory, new AzureMediaServicesClassFactory(apiServer, this), null);
+
                 }
                 return _classFactory;
             }

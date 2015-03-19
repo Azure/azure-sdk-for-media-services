@@ -29,5 +29,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         // ReSharper disable once InconsistentNaming
         RTMP = 1,
+
+        /// <summary>
+        /// MPEG-2 TS over RTP.
+        /// </summary>
+        RTPMPEG2TS = 2
     }
 }

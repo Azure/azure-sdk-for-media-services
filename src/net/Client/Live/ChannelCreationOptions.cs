@@ -55,6 +55,21 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public ChannelOutput Output { get; set; }
 
         /// <summary>
+        /// Gets or sets the channel encoding properties.
+        /// </summary>
+        public ChannelEncoding Encoding { get; set; }
+
+        /// <summary>
+        /// Gets or sets the channel encoding type property.
+        /// </summary>
+        public ChannelEncodingType EncodingType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the channel slate.
+        /// </summary>
+        public ChannelSlate Slate { get; set; }
+
+        /// <summary>
         /// Creates an instance of ChannelCreationOptions class.
         /// </summary>
         public ChannelCreationOptions() {}

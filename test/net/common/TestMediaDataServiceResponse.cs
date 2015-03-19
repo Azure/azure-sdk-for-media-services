@@ -25,6 +25,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
     {
         public const string TestMediaDataServiceResponseExceptionMessage = "TestMediaDataServiceResponseExceptionMessage";
 
+        private readonly Dictionary<string, string> _headers;
+
+        public TestMediaDataServiceResponse(Dictionary<string, string> headers = null)
+        {
+            _headers = headers;
+        }
+
         #region IMediaDataServiceResponse Members
 
         public IDictionary<string, string> BatchHeaders
@@ -50,7 +57,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
 
         public IEnumerator<OperationResponse> GetEnumerator()
         {
-            throw new NotImplementedException(TestMediaDataServiceResponseExceptionMessage);
+            if (_headers == null)
+            {
+                throw new NotImplementedException(TestMediaDataServiceResponseExceptionMessage);
+            }
+
+            return new List<OperationResponse> {new InvokeResponse(_headers)}.GetEnumerator();
         }
 
         #endregion

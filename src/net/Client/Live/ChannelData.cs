@@ -14,7 +14,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data.Services.Client;
 using System.Data.Services.Common;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -34,6 +36,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
         private ProgramBaseCollection _programCollection;
 
+        private ChannelEncoding _encoding;
+
         protected override string EntitySetName { get { return ChannelBaseCollection.ChannelSet; } }
 
         /// <summary>
@@ -49,7 +53,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets or sets channel creation date.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public DateTime Created { get; set; }
 
         /// <summary>
@@ -60,7 +64,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets or sets state of the channel.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public string State { get; set; }
 
         /// <summary>
@@ -72,6 +76,20 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             {
                 return (ChannelState)Enum.Parse(typeof(ChannelState), State, true);
             } 
+        }
+
+        /// <summary>
+        /// Gets or sets the channel encoding type
+        /// </summary>
+        public string EncodingType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the channel encoding type
+        /// </summary>
+        ChannelEncodingType IChannel.EncodingType
+        {
+            get { return (ChannelEncodingType)Enum.Parse(typeof(ChannelEncodingType), EncodingType, true); }
+            set { EncodingType = value.ToString(); }
         }
 
         /// <summary>
@@ -136,6 +154,29 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
         }
 
+        /// <summary>
+        /// Gets or sets the channel Encoding properties.
+        /// </summary>
+        public ChannelEncodingData Encoding
+        {
+            get { return _encoding == null ? null : new ChannelEncodingData(_encoding); }
+            set { _encoding = (ChannelEncoding)value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the channel Encoding properties.
+        /// </summary>
+        ChannelEncoding IChannel.Encoding
+        {
+            get { return _encoding; }
+            set { _encoding = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the channel slate
+        /// </summary>
+        public ChannelSlate Slate { get; set; }
+
         #region IChannel Methods
         /// <summary>
         /// Starts the channel.
@@ -151,7 +192,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>Task to wait on for operation completion.</returns>
         public Task StartAsync()
         {
-            var uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Channels('{0}')/Start", Id), UriKind.Relative);
+            var uri = new Uri(
+                string.Format(CultureInfo.InvariantCulture, StreamingConstants.ChannelStartUriFormat, Id), 
+                UriKind.Relative);
 
             return ExecuteActionAsync(uri, StreamingConstants.StartChannelPollInterval);
         }
@@ -162,7 +205,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>Operation info that can be used to track the operation.</returns>
         public IOperation SendStartOperation()
         {
-            var uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Channels('{0}')/Start", Id), UriKind.Relative);
+            var uri = new Uri(
+                string.Format(CultureInfo.InvariantCulture, StreamingConstants.ChannelStartUriFormat, Id), 
+                UriKind.Relative);
 
             return SendOperation(uri);
         }
@@ -190,7 +235,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>Task to wait on for operation completion.</returns>
         public Task ResetAsync()
         {
-            var uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Channels('{0}')/Reset", Id), UriKind.Relative);
+            var uri = new Uri(
+                string.Format(CultureInfo.InvariantCulture, StreamingConstants.ChannelResetUriFormat, Id), 
+                UriKind.Relative);
 
             return ExecuteActionAsync(uri, StreamingConstants.StartChannelPollInterval);
         }
@@ -201,7 +248,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>Operation info that can be used to track the operation.</returns>
         public IOperation SendResetOperation()
         {
-            var uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Channels('{0}')/Reset", Id), UriKind.Relative);
+            var uri = new Uri(
+                string.Format(CultureInfo.InvariantCulture, StreamingConstants.ChannelResetUriFormat, Id), 
+                UriKind.Relative);
 
             return SendOperation(uri);
         }
@@ -229,7 +278,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>Task to wait on for operation completion.</returns>
         public Task StopAsync()
         {
-            var uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Channels('{0}')/Stop", Id), UriKind.Relative);
+            var uri = new Uri(
+                string.Format(CultureInfo.InvariantCulture, StreamingConstants.ChannelStopUriFormat, Id), 
+                UriKind.Relative);
 
             return ExecuteActionAsync(uri, StreamingConstants.StopChannelPollInterval);
         }
@@ -240,7 +291,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>Operation info that can be used to track the operation.</returns>
         public IOperation SendStopOperation()
         {
-            var uri = new Uri(string.Format(CultureInfo.InvariantCulture, "/Channels('{0}')/Stop", Id), UriKind.Relative);
+            var uri = new Uri(
+                string.Format(CultureInfo.InvariantCulture, StreamingConstants.ChannelStopUriFormat, Id), 
+                UriKind.Relative);
 
             return SendOperation(uri);
         }
@@ -342,6 +395,212 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             return Task.Factory.StartNew(() => SendDeleteOperation());
         }
+
+        /// <summary>
+        /// Show a slate on the channel.
+        /// </summary>
+        /// <param name="duration">The duration of time to display the slate</param>
+        /// <param name="assetId">Optional asset id to be used for the slate.</param>
+        public void ShowSlate(TimeSpan duration, string assetId)
+        {
+            AsyncHelper.Wait(ShowSlateAsync(duration, assetId));
+        }
+
+        /// <summary>
+        /// Show a slate on the channel asynchronously.
+        /// </summary>
+        /// <param name="duration">The duration of time to display the slate</param>
+        /// <param name="assetId">Optional asset id to be used for the slate.</param>
+        /// <returns>Task to wait on for operation completion.</returns>
+        public Task ShowSlateAsync(TimeSpan duration, string assetId)
+        {
+            var uri = new Uri(
+                string.Format(CultureInfo.InvariantCulture, StreamingConstants.ChannelShowSlateUriFormat, Id),
+                UriKind.Relative);
+
+            var durationParameter = new BodyOperationParameter(StreamingConstants.ShowSlateDurationParameter, duration);
+            var assetIdParameter = new BodyOperationParameter(StreamingConstants.ShowSlateAssetIdParameter, assetId);
+
+            return ExecuteActionAsync(uri, StreamingConstants.ShowSlatePollInterval, durationParameter, assetIdParameter);
+        }
+
+        /// <summary>
+        /// Sends show slate operation to the service and returns. Use Operations collection to get operation's status.
+        /// </summary>
+        /// <param name="duration">The duration of time to display the slate</param>
+        /// <param name="assetId">Optional asset id to be used for the slate.</param>
+        /// <returns>Operation info that can be used to track the operation.</returns>
+        public IOperation SendShowSlateOperation(TimeSpan duration, string assetId)
+        {
+            var uri = new Uri(
+                string.Format(CultureInfo.InvariantCulture, StreamingConstants.ChannelShowSlateUriFormat, Id),
+                UriKind.Relative);
+
+            var durationParameter = new BodyOperationParameter(StreamingConstants.ShowSlateDurationParameter, duration);
+            var assetIdParameter = new BodyOperationParameter(StreamingConstants.ShowSlateAssetIdParameter, assetId);
+
+            return SendOperation(uri, durationParameter, assetIdParameter);
+        }
+
+        /// <summary>
+        /// Sends show slate operation to the service asynchronously. Use Operations collection to get operation's status.
+        /// </summary>
+        /// <param name="duration">The duration of time to display the slate</param>
+        /// <param name="assetId">Optional asset id to be used for the slate.</param>
+        /// <returns>Task to wait on for operation sending completion.</returns>
+        public Task<IOperation> SendShowSlateOperationAsync(TimeSpan duration, string assetId)
+        {
+            return Task.Factory.StartNew(() => SendShowSlateOperation(duration, assetId));
+        }
+
+        /// <summary>
+        /// Hide the currently running slate if any.
+        /// </summary>
+        public void HideSlate()
+        {
+            AsyncHelper.Wait(HideSlateAsync());
+        }
+
+        /// <summary>
+        /// Hide the currently running slate if any asynchronously.
+        /// </summary>
+        /// <returns>Task to wait on for operation completion.</returns>
+        public Task HideSlateAsync()
+        {
+            var uri = new Uri(
+                string.Format(CultureInfo.InvariantCulture, StreamingConstants.ChannelHideSlateUriFormat, Id),
+                UriKind.Relative);
+
+            return ExecuteActionAsync(uri, StreamingConstants.HideSlatePollInterval);
+        }
+
+        /// <summary>
+        /// Sends hide slate operation to the service and returns. Use Operations collection to get operation's status.
+        /// </summary>
+        /// <returns>Operation info that can be used to track the operation.</returns>
+        public IOperation SendHideSlateOperation()
+        {
+            var uri = new Uri(
+                string.Format(CultureInfo.InvariantCulture, StreamingConstants.ChannelHideSlateUriFormat, Id),
+                UriKind.Relative);
+
+            return SendOperation(uri);
+        }
+
+        /// <summary>
+        /// Sends hide slate operation to the service asynchronously. Use Operations collection to get operation's status.
+        /// </summary>
+        /// <returns>Task to wait on for operation sending completion.</returns>
+        public Task<IOperation> SendHideSlateOperationAsync()
+        {
+            return Task.Factory.StartNew(() => SendHideSlateOperation());
+        }
+
+        /// <summary>
+        /// Start an Ad marker on the channel.
+        /// </summary>
+        /// <param name="duration">The duration of the ad marker.</param>
+        /// <param name="cueId">optional cue id to use for the ad marker.</param>
+        /// <param name="showSlate">Indicates whether to show slate for the duration of the ad.</param>
+        public void StartAdvertisement(TimeSpan duration, int cueId, bool showSlate = true)
+        {
+            AsyncHelper.Wait(StartAdvertisementAsync(duration, cueId, showSlate));
+        }
+
+        /// <summary>
+        /// Start an Ad marker on the channel asynchronously.
+        /// </summary>
+        /// <param name="duration">The duration of the ad marker.</param>
+        /// <param name="cueId">optional cue id to use for the ad marker.</param>
+        /// <param name="showSlate">Indicates whether to show slate for the duration of the ad.</param>
+        /// <returns>Task to wait on for operation completion.</returns>
+        public Task StartAdvertisementAsync(TimeSpan duration, int cueId, bool showSlate = true)
+        {
+            var uri = new Uri(
+                string.Format(CultureInfo.InvariantCulture, StreamingConstants.ChannelStartAdUriFormat, Id),
+                UriKind.Relative);
+
+            var durationParameter = new BodyOperationParameter(StreamingConstants.StartAdDurationParameter, duration);
+            var cueIdParameter = new BodyOperationParameter(StreamingConstants.StartAdCueIdParameter, cueId);
+            var showSlateParameter = new BodyOperationParameter(StreamingConstants.StartAdShowSlateParameter, showSlate);
+
+            return ExecuteActionAsync(uri, StreamingConstants.StartAdvertisementPollInterval, durationParameter, cueIdParameter, showSlateParameter);
+        }
+
+        /// <summary>
+        /// Sends start advertisement operation to the service and returns. Use Operations collection to get operation's status.
+        /// </summary>
+        /// <param name="duration">The duration of the ad marker.</param>
+        /// <param name="cueId">optional cue id to use for the ad marker.</param>
+        /// <param name="showSlate">Indicates whether to show slate for the duration of the ad.</param>
+        /// <returns>Operation info that can be used to track the operation.</returns>
+        public IOperation SendStartAdvertisementOperation(TimeSpan duration, int cueId, bool showSlate = true)
+        {
+            var uri = new Uri(
+                string.Format(CultureInfo.InvariantCulture, StreamingConstants.ChannelStartAdUriFormat, Id),
+                UriKind.Relative);
+
+            var durationParameter = new BodyOperationParameter(StreamingConstants.StartAdDurationParameter, duration);
+            var cueIdParameter = new BodyOperationParameter(StreamingConstants.StartAdCueIdParameter, cueId);
+            var showSlateParameter = new BodyOperationParameter(StreamingConstants.StartAdShowSlateParameter, showSlate);
+
+            return SendOperation(uri, durationParameter, cueIdParameter, showSlateParameter);
+        }
+
+        /// <summary>
+        /// Sends start advertisement operation to the service asynchronously. Use Operations collection to get operation's status.
+        /// </summary>
+        /// <param name="duration">The duration of the ad marker.</param>
+        /// <param name="cueId">optional cue id to use for the ad marker.</param>
+        /// <param name="showSlate">Indicates whether to show slate for the duration of the ad.</param>
+        /// <returns>Task to wait on for operation sending completion.</returns>
+        public Task<IOperation> SendStartAdvertisementOperationAsync(TimeSpan duration, int cueId, bool showSlate = true)
+        {
+            return Task.Factory.StartNew(() => SendStartAdvertisementOperation(duration, cueId, showSlate));
+        }
+
+        /// <summary>
+        /// Ends the ad marker on the channel.
+        /// </summary>
+        public void EndAdvertisement()
+        {
+            AsyncHelper.Wait(EndAdvertisementAsync());
+        }
+
+        /// <summary>
+        /// Ends the ad marker on the channel asynchronously.
+        /// </summary>
+        /// <returns>Task to wait on for operation completion.</returns>
+        public Task EndAdvertisementAsync()
+        {
+            var uri = new Uri(
+                string.Format(CultureInfo.InvariantCulture, StreamingConstants.ChannelEndAdUriFormat, Id),
+                UriKind.Relative);
+
+            return ExecuteActionAsync(uri, StreamingConstants.EndAdvertisementPollInterval);
+        }
+
+        /// <summary>
+        /// Sends end advertisement operation to the service and returns. Use Operations collection to get operation's status.
+        /// </summary>
+        /// <returns>Operation info that can be used to track the operation.</returns>
+        public IOperation SendEndAdvertisementOperation()
+        {
+            var uri = new Uri(
+                string.Format(CultureInfo.InvariantCulture, StreamingConstants.ChannelEndAdUriFormat, Id),
+                UriKind.Relative);
+
+            return SendOperation(uri);
+        }
+
+        /// <summary>
+        /// Sends end advertisement operation to the service asynchronously. Use Operations collection to get operation's status.
+        /// </summary>
+        /// <returns>Task to wait on for operation sending completion.</returns>
+        public Task<IOperation> SendEndAdvertisementOperationAsync()
+        {
+            return Task.Factory.StartNew(() => SendEndAdvertisementOperation());
+        }
         
         public override void SetMediaContext(MediaContextBase value)
         {
@@ -353,6 +612,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             _input = null;
             _preview = null;
+            _encoding = null;
             base.Refresh();
         }
 
@@ -370,6 +630,19 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             if (_preview != null && _preview.Endpoints == null)
             {
                 _preview.Endpoints = new List<ChannelEndpoint>().AsReadOnly();
+            }
+
+            if (_encoding != null)
+            {
+                if (_encoding.AudioStreams == null)
+                {
+                    _encoding.AudioStreams = new List<AudioStream>().AsReadOnly();
+                }
+
+                if (_encoding.VideoStreams == null)
+                {
+                    _encoding.VideoStreams = new List<VideoStream>().AsReadOnly();
+                }
             }
         }
 
