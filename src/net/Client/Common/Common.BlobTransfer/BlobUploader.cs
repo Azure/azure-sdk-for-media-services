@@ -107,6 +107,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 {
                     blob.UploadFromByteArray(new byte[1], 0, 0, options: blobRequestOptions);
                 }
+                else if (fileSize < cloudBlockBlobUploadDownloadSizeLimit)
+                {
+                    AccessCondition accessCondition = AccessCondition.GenerateEmptyCondition();
+                    OperationContext operationContext = new OperationContext();
+                    operationContext.ClientRequestID = DateTime.UtcNow.ToString("s", CultureInfo.InvariantCulture);
+                    blob.UploadFromFile(localFile, FileMode.Open, accessCondition: accessCondition, options: blobRequestOptions, operationContext: operationContext);
+                }
                 else
                 {
                     int numThreads = Environment.ProcessorCount * parallelTransferThreadCount;

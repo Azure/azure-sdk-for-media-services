@@ -34,6 +34,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private readonly TimeSpan SasPolicyActivationMaxTimeThreshold = TimeSpan.FromSeconds(5);
         private readonly BlobTransferSpeedCalculator _uploadDownloadSpeedCalculator = 
             new BlobTransferSpeedCalculator(SpeedCalculatorCapacity);
+        protected readonly long cloudBlockBlobUploadDownloadSizeLimit = 32 * 1024 * 1024;
 
         public event EventHandler<BlobTransferCompleteEventArgs> TransferCompleted;
 

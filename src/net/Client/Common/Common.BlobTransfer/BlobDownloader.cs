@@ -87,6 +87,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             CloudBlockBlob blob = null;
             BlobTransferContext transferContext = new BlobTransferContext();
             transferContext.Exceptions = new ConcurrentBag<Exception>();
+
             try
             {
                 blob = GetCloudBlockBlob(uri, client, retryPolicy, getSharedAccessSignature);
@@ -123,6 +124,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     {
                     }
 
+                }
+                else if (sizeToDownload < cloudBlockBlobUploadDownloadSizeLimit)
+                {
+                    AccessCondition accessCondition = AccessCondition.GenerateEmptyCondition();
+                    OperationContext operationContext = new OperationContext();
+                    operationContext.ClientRequestID = DateTime.UtcNow.ToString("s", CultureInfo.InvariantCulture);
+                    blob.DownloadToFile(localFile, FileMode.OpenOrCreate, accessCondition : accessCondition , options: blobRequestOptions , operationContext : operationContext);
                 }
                 else
                 {

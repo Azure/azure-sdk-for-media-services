@@ -245,7 +245,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
-        [Timeout(60000)]
+        [Timeout(600000)]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldDownloadManyConcurrentSmallFiles()
         {
@@ -256,8 +256,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             Assert.AreEqual(assetFile.Asset.Id, asset.Id);
             Assert.AreEqual(1, asset.Locators.Count);
-            VerifyAndDownloadAssetFileNTimes(assetFile, asset,10,0,true);
-
+            VerifyAndDownloadAssetFileNTimes(assetFile, asset,100,0,true);
         }
         [TestMethod]
         [Timeout(60000)]
