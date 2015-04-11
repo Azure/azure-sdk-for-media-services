@@ -22,7 +22,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     internal static class ServicePointModifier
     {
         private const int DefaultConnectionLimitMultiplier = 8;
+        private const int MaxConnectionLimit = 30;
         private static readonly TimeSpan DefaultConnectionLeaseTimeout = TimeSpan.FromMinutes(5);
+
+ 	    public static int DefaultConnectionLimit()
+        {
+            return Math.Min(MaxConnectionLimit, Environment.ProcessorCount * DefaultConnectionLimitMultiplier);
+        }
 
         public static void SetConnectionPropertiesForSmallPayloads(
             Uri uri,
