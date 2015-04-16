@@ -592,8 +592,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             var uri = new Uri(
                 string.Format(CultureInfo.InvariantCulture, StreamingConstants.ChannelEndAdUriFormat, Id),
                 UriKind.Relative);
+            var cueIdParameter = new BodyOperationParameter(StreamingConstants.StartAdCueIdParameter, cueId);
 
-            return SendOperation(uri);
+            return SendOperation(uri, cueIdParameter);
         }
 
         /// <summary>
