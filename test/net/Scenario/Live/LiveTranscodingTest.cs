@@ -58,10 +58,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
                     channel.HideSlate();
 
                     channel.StartAdvertisement(TimeSpan.FromMinutes(10), 1000);
-                    channel.EndAdvertisement();
+                    channel.EndAdvertisement(1000);
 
-                    channel.StartAdvertisement(TimeSpan.FromMinutes(10), 1000, false);
-                    channel.EndAdvertisement();
+                    channel.StartAdvertisement(TimeSpan.FromMinutes(10), 1001, false);
+                    channel.EndAdvertisement(1001);
                 }
                 finally 
                 {

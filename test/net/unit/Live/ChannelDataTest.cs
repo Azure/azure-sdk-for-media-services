@@ -83,7 +83,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
             target.ShowSlateAsync(TimeSpan.FromMinutes(5), Guid.NewGuid().ToString());
             target.HideSlateAsync();
             target.StartAdvertisementAsync(TimeSpan.FromMinutes(10), 100, false);
-            target.EndAdvertisementAsync();
+            target.EndAdvertisementAsync(100);
         }
 
         /// <summary>
