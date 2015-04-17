@@ -579,7 +579,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 string.Format(CultureInfo.InvariantCulture, StreamingConstants.ChannelEndAdUriFormat, Id),
                 UriKind.Relative);
 
-            return ExecuteActionAsync(uri, StreamingConstants.EndAdvertisementPollInterval);
+            var cueIdParameter = new BodyOperationParameter(StreamingConstants.StartAdCueIdParameter, cueId);
+            return ExecuteActionAsync(uri, StreamingConstants.EndAdvertisementPollInterval, cueIdParameter);
         }
 
         /// <summary>
