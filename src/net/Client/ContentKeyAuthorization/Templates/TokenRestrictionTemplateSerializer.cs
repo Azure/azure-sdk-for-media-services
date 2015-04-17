@@ -52,6 +52,18 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
         {
             DataContractSerializer serializer = GetSerializer();
 
+            if (template.TokenType == TokenType.SWT)
+            {
+                if (!Uri.IsWellFormedUriString(template.Issuer, UriKind.Absolute))
+                {
+                    throw new InvalidDataContractException(String.Format(CultureInfo.InvariantCulture, StringTable.InvalidAbsoluteUriInSWTToken,"template.Issuer"));
+                }
+                if (!Uri.IsWellFormedUriString(template.Audience, UriKind.Absolute))
+                {
+                    throw new InvalidDataContractException(String.Format(CultureInfo.InvariantCulture, StringTable.InvalidAbsoluteUriInSWTToken,"template.Audience"));
+                }
+            }
+
             return MediaServicesLicenseTemplateSerializer.SerializeToXml(template, serializer);
         }
 
@@ -137,9 +149,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
                 builder.AppendFormat("{0}={1}&", HttpUtility.UrlEncode(claim.ClaimType), HttpUtility.UrlEncode(claimValue));
             }
 
-            builder.AppendFormat("Audience={0}&", HttpUtility.UrlEncode(tokenTemplate.Audience.AbsoluteUri));
+            builder.AppendFormat("Audience={0}&", HttpUtility.UrlEncode(tokenTemplate.Audience));
             builder.AppendFormat("ExpiresOn={0}&", GenerateTokenExpiry(tokenExpiration.Value));
-            builder.AppendFormat("Issuer={0}", HttpUtility.UrlEncode(tokenTemplate.Issuer.AbsoluteUri));
+            builder.AppendFormat("Issuer={0}", HttpUtility.UrlEncode(tokenTemplate.Issuer));
 
             SymmetricVerificationKey signingKey = (SymmetricVerificationKey)signingKeyToUse;
             using (var signatureAlgorithm = new HMACSHA256(signingKey.KeyValue))

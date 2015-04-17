@@ -41,8 +41,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             TokenRestrictionTemplate tokenRestrictionTemplate = new TokenRestrictionTemplate(TokenType.JWT);
             tokenRestrictionTemplate.PrimaryVerificationKey = new SymmetricVerificationKey(); // the default constructor automatically generates a random key
-            tokenRestrictionTemplate.Audience = new Uri("http://sampleIssuerUrl");
-            tokenRestrictionTemplate.Issuer = new Uri("http://sampleAudience");
+            tokenRestrictionTemplate.Audience = "http://sampleIssuerUrl";
+            tokenRestrictionTemplate.Issuer = "http://sampleAudience";
 
             string optionName = "integrationtest-crud-749";
             string requirements = TokenRestrictionTemplateSerializer.Serialize(tokenRestrictionTemplate);
