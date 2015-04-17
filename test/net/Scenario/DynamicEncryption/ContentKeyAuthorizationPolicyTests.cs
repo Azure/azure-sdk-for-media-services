@@ -180,8 +180,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             TokenRestrictionTemplate tokenRestrictionTemplate = new TokenRestrictionTemplate(TokenType.JWT);
             tokenRestrictionTemplate.PrimaryVerificationKey = new SymmetricVerificationKey(); // the default constructor automatically generates a random key
-            tokenRestrictionTemplate.Audience = new Uri("urn:someaudience");
-            tokenRestrictionTemplate.Issuer = new Uri("http://someissuerurl");
+            tokenRestrictionTemplate.Audience = "urn:someaudience";
+            tokenRestrictionTemplate.Issuer = "http://someissuerurl";
 
             string requirements = TokenRestrictionTemplateSerializer.Serialize(tokenRestrictionTemplate);
             string configuration = MediaServicesLicenseTemplateSerializer.Serialize(responseTemplate);

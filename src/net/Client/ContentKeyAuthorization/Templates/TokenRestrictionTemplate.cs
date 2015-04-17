@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Runtime.Serialization;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
@@ -74,39 +75,39 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
         /// A Uri describing the issuer of the token.  Must match the value in the token for the token to be considered valid.
         /// </summary>
         [DataMember(IsRequired = true)]
-        public Uri Issuer
+        public string Issuer
         {
             get { return _issuer; }
             set
             {
-                if (value == null)
+                if (String.IsNullOrEmpty(value))
                 {
-                    throw new ArgumentNullException("value");
+                    throw new ArgumentException(String.Format(CultureInfo.InvariantCulture,StringTable.ArgumentStringIsNullOrEmpty, "Issuer"));
                 }
 
                 _issuer = value;
             }
         }
-        private Uri _issuer;
+        private string _issuer;
 
         /// <summary>
         /// The Audience or Scope of the token.  Must match the value in the token for the token to be considered valid.
         /// </summary>
         [DataMember(IsRequired = true)]
-        public Uri Audience
+        public string Audience
         {
             get { return _audience; }
             set
             {
-                if (value == null)
+                if (String.IsNullOrEmpty(value))
                 {
-                    throw new ArgumentNullException("value");
+                    throw new ArgumentException(String.Format(CultureInfo.InvariantCulture, StringTable.ArgumentStringIsNullOrEmpty, "Audience"));
                 }
 
                 _audience = value;
             }
         }
-        private Uri _audience;
+        private string _audience;
 
         /// <summary>
         /// The first key tried to validate the signature of an incoming token.
@@ -120,7 +121,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
             {
                 if (value == null)
                 {
-                    throw new ArgumentNullException("value");
+                    throw new ArgumentNullException("PrimaryVerificationKey");
                 }
 
                 _primaryVerificationKey = value;

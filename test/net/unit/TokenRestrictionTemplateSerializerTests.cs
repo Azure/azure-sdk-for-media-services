@@ -26,8 +26,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
     [TestClass]
     public class TokenRestrictionTemplateSerializerTests
     {
-        public static readonly Uri _sampleIssuer = new Uri("http://sampleIssuerUrl");
-        public static readonly Uri _sampleAudience = new Uri("http://sampleAudience");
+        public static readonly string _sampleIssuer = "http://sampleIssuerUrl";
+        public static readonly string _sampleAudience = "http://sampleAudience";
 
         [TestMethod]
         public void RoundTripTest()

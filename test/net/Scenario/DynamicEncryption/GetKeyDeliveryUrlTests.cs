@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Services.Client;
 using System.IdentityModel.Tokens;
+using System.Runtime.Serialization;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.Practices.TransientFaultHandling;
@@ -127,7 +128,28 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [Owner("ClientSDK")]
         [TestCategory("Bvt")]
         [DeploymentItem("amscer.pfx") ]
-        public void GetHlsKeyDeliveryUrlAndFetchKeyWithJWTAuthentication()
+        public void GetHlsKeyDeliveryUrlAndFetchKeyWithJWTAuthenticationWhenIssuerIsURI()
+        {
+
+            string audience = "http://sampleAudience";
+            string issuer = "http://sampleIssuerUrl";
+            FetchKeyWithJWTAuth(audience, issuer);
+        }
+
+        [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
+        [DeploymentItem("amscer.pfx")]
+        public void GetHlsKeyDeliveryUrlAndFetchKeyWithJWTAuthenticationWhenIssuerIsStringGuid()
+        {
+
+            string audience = Guid.NewGuid().ToString();
+            string issuer = Guid.NewGuid().ToString();
+            FetchKeyWithJWTAuth(audience, issuer);
+        }
+
+        private void FetchKeyWithJWTAuth(string audience, string issuer)
         {
             IContentKey contentKey = null;
             IContentKeyAuthorizationPolicy contentKeyAuthorizationPolicy = null;
@@ -143,15 +165,17 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
                 TokenRestrictionTemplate tokenRestrictionTemplate = new TokenRestrictionTemplate(TokenType.JWT);
                 tokenRestrictionTemplate.PrimaryVerificationKey = new X509CertTokenVerificationKey(templatex509Certificate2);
-                
-                tokenRestrictionTemplate.Audience = new Uri("http://sampleIssuerUrl");
-                tokenRestrictionTemplate.Issuer = new Uri("http://sampleAudience");
+                tokenRestrictionTemplate.Audience = audience;
+                tokenRestrictionTemplate.Issuer = issuer;
 
                 string optionName = "GetHlsKeyDeliveryUrlAndFetchKeyWithJWTAuthentication";
                 string requirements = TokenRestrictionTemplateSerializer.Serialize(tokenRestrictionTemplate);
-                policyOption = ContentKeyAuthorizationPolicyOptionTests.CreateOption(_mediaContext, optionName, ContentKeyDeliveryType.BaselineHttp, requirements, null, ContentKeyRestrictionType.TokenRestricted);
+                policyOption = ContentKeyAuthorizationPolicyOptionTests.CreateOption(_mediaContext, optionName,
+                    ContentKeyDeliveryType.BaselineHttp, requirements, null, ContentKeyRestrictionType.TokenRestricted);
 
-                JwtSecurityToken token = new JwtSecurityToken(issuer: tokenRestrictionTemplate.Issuer.AbsoluteUri, audience: tokenRestrictionTemplate.Audience.AbsoluteUri, notBefore: DateTime.Now.AddMinutes(-5), expires: DateTime.Now.AddMinutes(5), signingCredentials: cred);
+                JwtSecurityToken token = new JwtSecurityToken(issuer: tokenRestrictionTemplate.Issuer,
+                    audience: tokenRestrictionTemplate.Audience, notBefore: DateTime.Now.AddMinutes(-5),
+                    expires: DateTime.Now.AddMinutes(5), signingCredentials: cred);
 
                 JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
                 string jwtTokenString = handler.WriteToken(token);
@@ -187,7 +211,36 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [TestCategory("Bvt")]
-        public void GetHlsKeyDeliveryUrlAndFetchKeyWithSWTAuthentication()
+        public void GetHlsKeyDeliveryUrlAndFetchKeyWithSWTAuthenticationWhenIssuerIsUri()
+        {
+
+            string audience = "http://sampleAudience";
+            string issuer = "http://sampleIssuerUrl";
+            FetchKeyWithSWTToken(audience, issuer);
+        }
+
+        [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
+        [ExpectedException(typeof(InvalidDataContractException))]
+        public void GetHlsKeyDeliveryUrlAndFetchKeyWithSWTAuthenticationWhenIssuerIsStringGuidShouldThrow()
+        {
+
+            string audience = "http://www.microsoft.com";
+            string issuer = Guid.NewGuid().ToString();
+            try
+            {
+                FetchKeyWithSWTToken(audience, issuer);
+            }
+            catch (InvalidDataContractException ex)
+            {
+                Assert.IsTrue(ex.Message == "SWT token type template validation error.  template.Issuer is not valid absolute Uri.");
+                throw;
+            }
+        }
+
+        private void FetchKeyWithSWTToken(string audience, string issuer)
         {
             IContentKey contentKey = null;
             IContentKeyAuthorizationPolicy contentKeyAuthorizationPolicy = null;
@@ -198,20 +251,24 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 byte[] expectedKey = null;
                 contentKey = CreateTestKey(_mediaContext, ContentKeyType.EnvelopeEncryption, out expectedKey);
 
-                var contentKeyId = Guid.Parse(contentKey.Id.Replace("nb:kid:UUID:",String.Empty));
+                var contentKeyId = Guid.Parse(contentKey.Id.Replace("nb:kid:UUID:", String.Empty));
 
                 TokenRestrictionTemplate tokenRestrictionTemplate = new TokenRestrictionTemplate(TokenType.SWT);
-                tokenRestrictionTemplate.PrimaryVerificationKey = new SymmetricVerificationKey(); // the default constructor automatically generates a random key
-                tokenRestrictionTemplate.Audience = new Uri("http://sampleissuerurl");
-                tokenRestrictionTemplate.Issuer = new Uri("http://sampleaudience");
+                tokenRestrictionTemplate.PrimaryVerificationKey = new SymmetricVerificationKey();
+                    // the default constructor automatically generates a random key
+
+                tokenRestrictionTemplate.Audience = audience;
+                tokenRestrictionTemplate.Issuer = issuer;
                 tokenRestrictionTemplate.TokenType = TokenType.SWT;
-                tokenRestrictionTemplate.RequiredClaims.Add(new TokenClaim(TokenClaim.ContentKeyIdentifierClaimType,contentKeyId.ToString()) );
+                tokenRestrictionTemplate.RequiredClaims.Add(new TokenClaim(TokenClaim.ContentKeyIdentifierClaimType,
+                    contentKeyId.ToString()));
 
                 string optionName = "GetHlsKeyDeliveryUrlAndFetchKeyWithSWTAuthentication";
-                string requirements = TokenRestrictionTemplateSerializer.Serialize(tokenRestrictionTemplate);                
+                string requirements = TokenRestrictionTemplateSerializer.Serialize(tokenRestrictionTemplate);
                 ContentKeyRestrictionType restrictionType = ContentKeyRestrictionType.TokenRestricted;
-                var _testOption = ContentKeyAuthorizationPolicyOptionTests.CreateOption(_mediaContext, optionName, ContentKeyDeliveryType.BaselineHttp, requirements, null, restrictionType);
-                
+                var _testOption = ContentKeyAuthorizationPolicyOptionTests.CreateOption(_mediaContext, optionName,
+                    ContentKeyDeliveryType.BaselineHttp, requirements, null, restrictionType);
+
                 List<IContentKeyAuthorizationPolicyOption> options = new List<IContentKeyAuthorizationPolicyOption>
                 {
                     _testOption
@@ -219,7 +276,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
                 contentKeyAuthorizationPolicy = CreateTestPolicy(_mediaContext, String.Empty, options, ref contentKey);
 
-              
+
                 Uri keyDeliveryServiceUri = contentKey.GetKeyDeliveryUrl(ContentKeyDeliveryType.BaselineHttp);
 
                 Assert.IsNotNull(keyDeliveryServiceUri);
@@ -227,7 +284,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 Assert.IsTrue(keyDeliveryServiceUri.Host.StartsWith(_mediaContext.Credentials.ClientId));
 
                 KeyDeliveryServiceClient keyClient = new KeyDeliveryServiceClient(RetryPolicy.DefaultFixed);
-                string swtTokenString = TokenRestrictionTemplateSerializer.GenerateTestToken(tokenRestrictionTemplate, tokenRestrictionTemplate.PrimaryVerificationKey, contentKeyId, DateTime.Now.AddDays(2));
+                string swtTokenString = TokenRestrictionTemplateSerializer.GenerateTestToken(tokenRestrictionTemplate,
+                    tokenRestrictionTemplate.PrimaryVerificationKey, contentKeyId, DateTime.Now.AddDays(2));
                 byte[] key = keyClient.AcquireHlsKeyWithBearerHeader(keyDeliveryServiceUri, swtTokenString);
 
                 string expectedString = GetString(expectedKey);
