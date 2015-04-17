@@ -475,7 +475,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SWT token type template validation error.  {0} is not valid absolute Uri. &quot;.
+        ///   Looks up a localized string similar to SWT token type template validation error.  {0} is not valid absolute Uri..
         /// </summary>
         internal static string InvalidAbsoluteUriInSWTToken {
             get {

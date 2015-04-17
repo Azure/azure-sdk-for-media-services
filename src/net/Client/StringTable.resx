@@ -326,12 +326,11 @@
     <value>System can't detect default Azure storage account associated with Media services account. Please contact support.</value>
   </data>
   <data name="InvalidAbsoluteUriInSWTToken" xml:space="preserve">
-    <value>SWT token type template validation error.  {0} is not valid absolute Uri. "</value>
+    <value>SWT token type template validation error.  {0} is not valid absolute Uri.</value>
   </data>
   <data name="UnableToParseExpirationFromToken" xml:space="preserve">
     <value>Unable to parse expiration from token.  Please check the format of the token to ensure it is valid.</value>
   </data>
-
   <data name="ArgumentStringIsNullOrEmpty" xml:space="preserve">
     <value> {0} string value is null or empty</value>
   </data>

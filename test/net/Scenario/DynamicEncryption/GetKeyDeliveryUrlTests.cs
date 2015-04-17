@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Services.Client;
 using System.IdentityModel.Tokens;
+using System.Runtime.Serialization;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.Practices.TransientFaultHandling;
@@ -222,12 +223,21 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [TestCategory("Bvt")]
-        public void GetHlsKeyDeliveryUrlAndFetchKeyWithSWTAuthenticationWhenIssuerIsStringGuid()
+        [ExpectedException(typeof(InvalidDataContractException))]
+        public void GetHlsKeyDeliveryUrlAndFetchKeyWithSWTAuthenticationWhenIssuerIsStringGuidShouldThrow()
         {
 
-            string audience = Guid.NewGuid().ToString();
+            string audience = "http://www.microsoft.com";
             string issuer = Guid.NewGuid().ToString();
-            FetchKeyWithSWTToken(audience, issuer);
+            try
+            {
+                FetchKeyWithSWTToken(audience, issuer);
+            }
+            catch (InvalidDataContractException ex)
+            {
+                Assert.IsTrue(ex.Message == "SWT token type template validation error.  template.Issuer is not valid absolute Uri.");
+                throw;
+            }
         }
 
         private void FetchKeyWithSWTToken(string audience, string issuer)
