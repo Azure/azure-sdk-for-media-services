@@ -37,7 +37,7 @@ if %ERRORLEVEL% neq 0 goto copyfailed
 echo OK
 
 echo Creating Media SDK NuGet Packages....
-nuget.exe pack .\drop\WAMSSDK\windowsazure.mediaservices.nuspec -o .\drop -Symbols
+.\.nuget\nuget.exe pack .\drop\WAMSSDK\windowsazure.mediaservices.nuspec -o .\drop -Symbols
 if %ERRORLEVEL% neq 0 goto packagingfailed
 echo OK
 
