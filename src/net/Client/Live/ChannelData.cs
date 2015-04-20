@@ -562,44 +562,50 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Ends the ad marker on the channel.
         /// </summary>
-        public void EndAdvertisement()
+        /// <param name="cueId">The cue id of the ad marker to end.</param>
+        public void EndAdvertisement(int cueId)
         {
-            AsyncHelper.Wait(EndAdvertisementAsync());
+            AsyncHelper.Wait(EndAdvertisementAsync(cueId));
         }
 
         /// <summary>
         /// Ends the ad marker on the channel asynchronously.
         /// </summary>
+        /// <param name="cueId">The cue id of the ad marker to end.</param>
         /// <returns>Task to wait on for operation completion.</returns>
-        public Task EndAdvertisementAsync()
+        public Task EndAdvertisementAsync(int cueId)
         {
             var uri = new Uri(
                 string.Format(CultureInfo.InvariantCulture, StreamingConstants.ChannelEndAdUriFormat, Id),
                 UriKind.Relative);
 
-            return ExecuteActionAsync(uri, StreamingConstants.EndAdvertisementPollInterval);
+            var cueIdParameter = new BodyOperationParameter(StreamingConstants.StartAdCueIdParameter, cueId);
+            return ExecuteActionAsync(uri, StreamingConstants.EndAdvertisementPollInterval, cueIdParameter);
         }
 
         /// <summary>
         /// Sends end advertisement operation to the service and returns. Use Operations collection to get operation's status.
         /// </summary>
+        /// <param name="cueId">The cue id of the ad marker to end.</param>
         /// <returns>Operation info that can be used to track the operation.</returns>
-        public IOperation SendEndAdvertisementOperation()
+        public IOperation SendEndAdvertisementOperation(int cueId)
         {
             var uri = new Uri(
                 string.Format(CultureInfo.InvariantCulture, StreamingConstants.ChannelEndAdUriFormat, Id),
                 UriKind.Relative);
+            var cueIdParameter = new BodyOperationParameter(StreamingConstants.StartAdCueIdParameter, cueId);
 
-            return SendOperation(uri);
+            return SendOperation(uri, cueIdParameter);
         }
 
         /// <summary>
         /// Sends end advertisement operation to the service asynchronously. Use Operations collection to get operation's status.
         /// </summary>
+        /// <param name="cueId">The cue id of the ad marker to end.</param>
         /// <returns>Task to wait on for operation sending completion.</returns>
-        public Task<IOperation> SendEndAdvertisementOperationAsync()
+        public Task<IOperation> SendEndAdvertisementOperationAsync(int cueId)
         {
-            return Task.Factory.StartNew(() => SendEndAdvertisementOperation());
+            return Task.Factory.StartNew(() => SendEndAdvertisementOperation(cueId));
         }
         
         public override void SetMediaContext(MediaContextBase value)
