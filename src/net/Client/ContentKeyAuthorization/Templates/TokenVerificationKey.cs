@@ -23,6 +23,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
     [KnownType(typeof(SymmetricVerificationKey))]
     [KnownType(typeof(AsymmetricTokenVerificationKey))]
     [KnownType(typeof(X509CertTokenVerificationKey))]
+    [KnownType(typeof(RSATokenVerificationKey))]
     public abstract class TokenVerificationKey
     {
 

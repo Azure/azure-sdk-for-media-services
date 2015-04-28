@@ -15,6 +15,7 @@
 // </license>
 
 using System;
+using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
@@ -44,7 +45,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
         {
             var target = new Cache<string>();
             target.GetOrAdd("k", () => "v1", () => DateTime.UtcNow.AddMilliseconds(100));
-            System.Threading.Thread.Sleep(1000);
+            Thread.Sleep(1000);
             var actual = target.GetOrAdd("k", () => "v2", () => DateTime.UtcNow.AddMilliseconds(100));
             Assert.AreEqual("v2", actual);
         }
