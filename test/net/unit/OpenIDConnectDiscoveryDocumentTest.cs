@@ -55,9 +55,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
             Assert.AreEqual(0,jsonWebKey.X5c.Count, "x5c should not contain elements ");
             Assert.IsNull(jsonWebKey.X5t, "x5t field should be null");
 
-            RSATokenVerificationKey tokenVerificationKey = jsonWebKey.AsTokenVerificationKey() as RSATokenVerificationKey;
+            RsaTokenVerificationKey tokenVerificationKey = jsonWebKey.AsTokenVerificationKey() as RsaTokenVerificationKey;
             Assert.IsNotNull(tokenVerificationKey);
-            RSAParameters parameters = tokenVerificationKey.GetRSAParameters();
+            RSAParameters parameters = tokenVerificationKey.GetRsaParameters();
             Assert.IsNotNull(parameters);
             Assert.IsNotNull(parameters.Modulus);
             Assert.IsNotNull(parameters.Exponent);

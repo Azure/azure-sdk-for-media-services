@@ -236,37 +236,37 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
         public void RSATokenVerificationKeySerializeShouldIncudePrpoperTypeAttribbute()
         {
             TokenRestrictionTemplate template = new TokenRestrictionTemplate(TokenType.JWT);
-            RSATokenVerificationKey tokenVerificationKey = new RSATokenVerificationKey();
+            RsaTokenVerificationKey tokenVerificationKey = new RsaTokenVerificationKey();
             template.PrimaryVerificationKey = tokenVerificationKey;
             var templateAsString = TokenRestrictionTemplateSerializer.Serialize(template);
-            Assert.IsTrue(templateAsString.Contains("<PrimaryVerificationKey i:type=\"RSATokenVerificationKey\">"));
+            Assert.IsTrue(templateAsString.Contains("<PrimaryVerificationKey i:type=\"RsaTokenVerificationKey\">"));
         }
 
         [TestMethod]
         public void RSATokenVerificationKeyRoundTrip()
         {
             TokenRestrictionTemplate template = new TokenRestrictionTemplate(TokenType.JWT);
-            RSATokenVerificationKey tokenVerificationKey = new RSATokenVerificationKey();
+            RsaTokenVerificationKey tokenVerificationKey = new RsaTokenVerificationKey();
             RSAParameters inputRsaParameters;
             using (RSACryptoServiceProvider provider = new RSACryptoServiceProvider())
             {
                 inputRsaParameters = provider.ExportParameters(true);
 
-                tokenVerificationKey.InitFromRSAParameters(inputRsaParameters);
+                tokenVerificationKey.InitFromRsaParameters(inputRsaParameters);
             }
             Assert.IsNotNull(tokenVerificationKey.RawBody);
             template.Audience = _sampleAudience;
             template.Issuer = _sampleIssuer;
             template.PrimaryVerificationKey = tokenVerificationKey;
             var templateAsString = TokenRestrictionTemplateSerializer.Serialize(template);
-            Assert.IsTrue(templateAsString.Contains("<PrimaryVerificationKey i:type=\"RSATokenVerificationKey\">"));
+            Assert.IsTrue(templateAsString.Contains("<PrimaryVerificationKey i:type=\"RsaTokenVerificationKey\">"));
             TokenRestrictionTemplate output = TokenRestrictionTemplateSerializer.Deserialize(templateAsString);
             Assert.AreEqual(TokenType.JWT, output.TokenType);
             Assert.IsNotNull(output.PrimaryVerificationKey);
-            Assert.IsNotNull(output.PrimaryVerificationKey as RSATokenVerificationKey);
-            RSATokenVerificationKey key = output.PrimaryVerificationKey as RSATokenVerificationKey;
+            Assert.IsNotNull(output.PrimaryVerificationKey as RsaTokenVerificationKey);
+            RsaTokenVerificationKey key = output.PrimaryVerificationKey as RsaTokenVerificationKey;
             Assert.IsNotNull(key.RawBody);
-            RSAParameters outputRsaParametersutParameters = key.GetRSAParameters();
+            RSAParameters outputRsaParametersutParameters = key.GetRsaParameters();
             Assert.IsNotNull(outputRsaParametersutParameters);
             Assert.IsNotNull(outputRsaParametersutParameters.Exponent);
             Assert.IsNotNull(outputRsaParametersutParameters.Modulus);

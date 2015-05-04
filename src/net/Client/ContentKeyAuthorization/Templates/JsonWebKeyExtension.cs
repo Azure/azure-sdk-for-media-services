@@ -39,14 +39,14 @@ namespace Microsoft.IdentityModel.Protocols
 
             if (!String.IsNullOrEmpty(jwk.N) && !String.IsNullOrEmpty(jwk.E))
             {
-                RSATokenVerificationKey rsaToken = new RSATokenVerificationKey();
+                RsaTokenVerificationKey rsaToken = new RsaTokenVerificationKey();
                 RSAParameters rsaParams = new RSAParameters()
                     {
                         Modulus = EncodeUtilities.Base64UrlDecode(jwk.N),
                         Exponent = EncodeUtilities.Base64UrlDecode(jwk.E)
                     };
 
-                rsaToken.InitFromRSAParameters(rsaParams);
+                rsaToken.InitFromRsaParameters(rsaParams);
                 return rsaToken;
             }
             throw new NotSupportedException(StringTable.NotSupportedJwkToTokenVerificationKeyConversion);

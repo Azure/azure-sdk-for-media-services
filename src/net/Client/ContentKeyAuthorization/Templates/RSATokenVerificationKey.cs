@@ -24,20 +24,21 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
 {
     [DataContract(Namespace = "http://schemas.microsoft.com/Azure/MediaServices/KeyDelivery/TokenRestrictionTemplate/v1")]
-    public class RSATokenVerificationKey:AsymmetricTokenVerificationKey
+    public class RsaTokenVerificationKey:AsymmetricTokenVerificationKey
     {
 
         private JObject _key;
         private static object _lock = new object();
 
-        public void InitFromRSAParameters(RSAParameters parameters)
+        public void InitFromRsaParameters(RSAParameters parameters)
         {
-            _key =
-                new JObject(
-                    new JProperty("e", Convert.ToBase64String(parameters.Exponent)),
-                    new JProperty("n", Convert.ToBase64String(parameters.Modulus)));
             lock (_lock)
             {
+                _key =
+               new JObject(
+                   new JProperty("e", Convert.ToBase64String(parameters.Exponent)),
+                   new JProperty("n", Convert.ToBase64String(parameters.Modulus)));
+
                 RawBody = Encoding.UTF8.GetBytes(_key.ToString());
             }
         }
@@ -62,7 +63,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
 
             }
         }
-        public RSAParameters GetRSAParameters()
+        public RSAParameters GetRsaParameters()
         {
             lock (_lock)
             {

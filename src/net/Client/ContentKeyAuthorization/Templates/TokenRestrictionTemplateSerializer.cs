@@ -37,7 +37,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
             typeof(SymmetricVerificationKey),
             typeof(AsymmetricTokenVerificationKey),
             typeof(X509CertTokenVerificationKey),
-            typeof(RSATokenVerificationKey),
+            typeof(RsaTokenVerificationKey),
             };
 
             return new DataContractSerializer(typeof(TokenRestrictionTemplate), knownTypeList);

@@ -304,8 +304,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
                 TokenRestrictionTemplate tokenRestrictionTemplate = new TokenRestrictionTemplate(TokenType.JWT);
 
-                var tokenVerificationKey   = new RSATokenVerificationKey();
-                tokenVerificationKey.InitFromRSAParameters(RSAParams);
+                var tokenVerificationKey   = new RsaTokenVerificationKey();
+                tokenVerificationKey.InitFromRsaParameters(RSAParams);
                 tokenRestrictionTemplate.PrimaryVerificationKey = tokenVerificationKey;
 
                 tokenRestrictionTemplate.Audience = "http://sampleIssuerUrl";
