@@ -1,5 +1,5 @@
 # Windows Azure Media Services SDK .NET 4.5
-
+[![Build status](https://ci.appveyor.com/api/projects/status/q9n34o6oq95t7rmp?svg=true)](https://ci.appveyor.com/project/gtrifonov/azure-sdk-for-media-services)
 Windows Azure Media Services allows you to build a media distribution solution that can stream audio and video to Windows, iOS, Android, and other devices and platforms.To learn more, visit our [Developer Center](http://www.windowsazure.com/en-us/develop/media-services/).
 
 ## Release Notes
