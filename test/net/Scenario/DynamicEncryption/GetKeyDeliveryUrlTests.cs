@@ -245,7 +245,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             try
             {
                 byte[] expectedKey = null;
-                contentKey = CreateTestKey(_mediaContext, ContentKeyType.EnvelopeEncryption, out expectedKey);
+                contentKey = CreateTestKey(_mediaContext, ContentKeyType.EnvelopeEncryption, out expectedKey, "GetHlsKeyDeliveryUrlAndFetchKeyWithADJWTAuthUsingADOpenConnectDiscovery"+Guid.NewGuid().ToString());
 
                 TokenRestrictionTemplate tokenRestrictionTemplate = new TokenRestrictionTemplate(TokenType.JWT);
                 tokenRestrictionTemplate.OpenIdConnectDiscoveryDocument = new OpenIdConnectDiscoveryDocument("https://login.windows.net/common/.well-known/openid-configuration");

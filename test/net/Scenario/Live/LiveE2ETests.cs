@@ -88,23 +88,23 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
 
             var clientPolicy =
                 @"<?xml version=""1.0"" encoding=""utf-8""?>
-				<access-policy>
-				  <cross-domain-access>
-					<policy>
-					  <allow-from http-request-headers=""*"" http-methods=""*"">
-						<domain uri=""*""/>
-					  </allow-from>
-					  <grant-to>
-						<resource path=""/"" include-subpaths=""true""/>
-					  </grant-to>
-					</policy>
-				  </cross-domain-access>
-				</access-policy>";
+                <access-policy>
+                  <cross-domain-access>
+                    <policy>
+                      <allow-from http-request-headers=""*"" http-methods=""*"">
+                        <domain uri=""*""/>
+                      </allow-from>
+                      <grant-to>
+                        <resource path=""/"" include-subpaths=""true""/>
+                      </grant-to>
+                    </policy>
+                  </cross-domain-access>
+                </access-policy>";
             var xdomainPolicy =
                 @"<?xml version=""1.0"" ?>
-			    <cross-domain-policy>
-			      <allow-access-from domain=""*"" />
-			    </cross-domain-policy>";
+                <cross-domain-policy>
+                  <allow-access-from domain=""*"" />
+                </cross-domain-policy>";
 
             streamingEndpoint.CrossSiteAccessPolicies.ClientAccessPolicy = clientPolicy;
             streamingEndpoint.CrossSiteAccessPolicies.CrossDomainPolicy = xdomainPolicy;
@@ -127,24 +127,24 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
 
             string clientPolicy =
                 @"<?xml version=""1.0"" encoding=""utf-8""?>
-				<access-policy>
-				  <cross-domain-access>
-					<policy>
-					  <allow-from http-request-headers=""*"" http-methods=""*"">
-						<domain uri=""*""/>
-					  </allow-from>
-					  <grant-to>
-						<resource path=""/"" include-subpaths=""true""/>
-					  </grant-to>
-					</policy>
-				  </cross-domain-access>
-				</access-policy>";
+                <access-policy>
+                  <cross-domain-access>
+                    <policy>
+                      <allow-from http-request-headers=""*"" http-methods=""*"">
+                        <domain uri=""*""/>
+                      </allow-from>
+                      <grant-to>
+                        <resource path=""/"" include-subpaths=""true""/>
+                      </grant-to>
+                    </policy>
+                  </cross-domain-access>
+                </access-policy>";
 
             string xdomainPolicy =
                 @"<?xml version=""1.0"" ?>
-			    <cross-domain-policy>
-			      <allow-access-from domain=""*"" />
-			    </cross-domain-policy>";
+                <cross-domain-policy>
+                  <allow-access-from domain=""*"" />
+                </cross-domain-policy>";
 
             channel.CrossSiteAccessPolicies = new CrossSiteAccessPolicies
             {
