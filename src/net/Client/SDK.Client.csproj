@@ -124,17 +124,22 @@
     <AssemblyOriginatorKeyFile>..\..\..\MSSharedLibSN1024.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Data.Edm, Version=5.6.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Data.Edm, Version=5.6.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\Microsoft.Data.Edm.5.6.3\lib\net40\Microsoft.Data.Edm.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.Data.Edm.5.6.4\lib\net40\Microsoft.Data.Edm.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Data.OData, Version=5.6.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="Microsoft.Data.OData, Version=5.6.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\Microsoft.Data.OData.5.6.3\lib\net40\Microsoft.Data.OData.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.Data.OData.5.6.4\lib\net40\Microsoft.Data.OData.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Data.Services.Client, Version=5.6.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="Microsoft.Data.Services.Client, Version=5.6.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\Microsoft.Data.Services.Client.5.6.3\lib\net40\Microsoft.Data.Services.Client.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.Data.Services.Client.5.6.4\lib\net40\Microsoft.Data.Services.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Protocol.Extensions, Version=1.0.2.31, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.IdentityModel.Protocol.Extensions.1.0.2.205111437\lib\net45\Microsoft.IdentityModel.Protocol.Extensions.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Practices.TransientFaultHandling.Core, Version=5.1.1209.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -144,19 +149,22 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\packages\WindowsAzure.Storage.4.3.0\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\Newtonsoft.Json.6.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.IdentityModel" />
+    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=4.0.20511.1437, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\System.IdentityModel.Tokens.Jwt.4.0.2.205111437\lib\net45\System.IdentityModel.Tokens.Jwt.dll</HintPath>
+    </Reference>
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Spatial, Version=5.6.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="System.Spatial, Version=5.6.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\System.Spatial.5.6.3\lib\net40\System.Spatial.dll</HintPath>
+      <HintPath>..\..\..\packages\System.Spatial.5.6.4\lib\net40\System.Spatial.dll</HintPath>
     </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
@@ -176,18 +184,24 @@
     <Compile Include="ContentKeyAuthorization\IContentKeyAuthorizationPolicyOption.cs" />
     <Compile Include="ContentKeyAuthorization\Templates\AGCandColorStripeRestriction.cs" />
     <Compile Include="ContentKeyAuthorization\Templates\AsymmetricTokenVerificationKey.cs" />
+    <Compile Include="ContentKeyAuthorization\Templates\EncodeUtilities.cs" />
     <Compile Include="ContentKeyAuthorization\Templates\ErrorMessages.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>ErrorMessages.resx</DependentUpon>
     </Compile>
     <Compile Include="ContentKeyAuthorization\Templates\ExplicitAnalogTelevisionRestriction.cs" />
+    <Compile Include="ContentKeyAuthorization\Templates\JsonWebKeyExtension.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="ContentKeyAuthorization\Templates\MediaServicesLicenseTemplateSerializer.cs" />
+    <Compile Include="ContentKeyAuthorization\Templates\OpenIdConnectDiscoveryDocument.cs" />
     <Compile Include="ContentKeyAuthorization\Templates\PlayReadyContentKey.cs" />
     <Compile Include="ContentKeyAuthorization\Templates\PlayReadyLicenseResponseTemplate.cs" />
     <Compile Include="ContentKeyAuthorization\Templates\PlayReadyLicenseTemplate.cs" />
     <Compile Include="ContentKeyAuthorization\Templates\PlayReadyLicenseType.cs" />
     <Compile Include="ContentKeyAuthorization\Templates\PlayReadyPlayRight.cs" />
+    <Compile Include="ContentKeyAuthorization\Templates\RSATokenVerificationKey.cs" />
     <Compile Include="ContentKeyAuthorization\Templates\ScmsRestriction.cs" />
     <Compile Include="ContentKeyAuthorization\Templates\SymmetricVerificationKey.cs" />
     <Compile Include="ContentKeyAuthorization\Templates\TokenClaim.cs" />
@@ -402,10 +416,9 @@
     <Compile Include="Collections\LinkCollection.cs" />
     <Compile Include="Entities\LocatorData.cs" />
     <Compile Include="Entities\LocatorType.cs" />
-    <Compile Include="MediaContextBase.cs" />	
-    <Compile Include="Properties\AssemblyInfo.cs" Condition=" '$(SigningFlag)' == 'NOTSIGNED' " /> 
-    <Compile Include="Properties\DelaySign_AssemblyInfo.cs" Condition=" '$(SigningFlag)' == 'DELAYSIGNED' "/>
-       
+    <Compile Include="MediaContextBase.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" Condition=" '$(SigningFlag)' == 'NOTSIGNED' " />
+    <Compile Include="Properties\DelaySign_AssemblyInfo.cs" Condition=" '$(SigningFlag)' == 'DELAYSIGNED' " />
     <Compile Include="Properties\Resources1.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

@@ -20,7 +20,7 @@ using System.Linq;
 using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
+namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit.Live
 {
     [TestClass]
     public class ChannelDataTest

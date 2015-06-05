@@ -15,18 +15,11 @@
 // </license>
 
 using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Net;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
-using Moq;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
 {

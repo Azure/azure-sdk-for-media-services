@@ -20,6 +20,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization;
+using System.Security.Cryptography;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
 {
@@ -117,6 +118,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
         }
 
         [TestMethod]
+        [ExpectedException(typeof(InvalidDataContractException))]
         public void InputMissingPrimaryKeyShouldThrow()
         {
             string tokenTemplate = "<TokenRestrictionTemplate xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://schemas.microsoft.com/Azure/MediaServices/KeyDelivery/TokenRestrictionTemplate/v1\"><AlternateVerificationKeys><TokenVerificationKey i:type=\"SymmetricVerificationKey\"><KeyValue>GG07fDPZ+HMD2vcoknMqYjEJMb7LSq8zUmdCYMvRCevnQK//ilbhODO/FydMrHiwZGmI6XywvOOU7SSzRPlI3Q==</KeyValue></TokenVerificationKey></AlternateVerificationKeys><Audience>http://sampleaudience/</Audience><Issuer>http://sampleissuerurl/</Issuer><RequiredClaims><TokenClaim><ClaimType>urn:microsoft:azure:mediaservices:contentkeyidentifier</ClaimType><ClaimValue i:nil=\"true\" /></TokenClaim><TokenClaim><ClaimType>urn:myservice:claims:rental</ClaimType><ClaimValue>true</ClaimValue></TokenClaim></RequiredClaims></TokenRestrictionTemplate>";
@@ -126,9 +128,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
                 TokenRestrictionTemplate template = TokenRestrictionTemplateSerializer.Deserialize(tokenTemplate);
                 Assert.Fail("Should throw");
             }
-            catch (SerializationException e)
+            catch (InvalidDataContractException e)
             {
-                Assert.IsTrue(e.Message.Contains("Expecting element 'PrimaryVerificationKey'."));
+                Assert.IsTrue(e.Message.Contains("Both PrimaryVerificationKey and OpenIdConnectDiscoveryDocument are null"));
+                throw;
             }
         }
 
@@ -140,6 +143,166 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
             TokenRestrictionTemplate template = TokenRestrictionTemplateSerializer.Deserialize(tokenTemplate);
             Assert.IsNotNull(template);
             Assert.AreEqual(TokenType.SWT, template.TokenType);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidDataContractException))]
+        public void TokenRestrictionTemplateDeserializeNilOpenConnectIdDocumentNoPrimaryKey()
+        {
+            string body =
+                @"<TokenRestrictionTemplate xmlns:i=""http://www.w3.org/2001/XMLSchema-instance"" xmlns=""http://schemas.microsoft.com/Azure/MediaServices/KeyDelivery/TokenRestrictionTemplate/v1"" ><AlternateVerificationKeys /><Audience>http://sampleissuerurl/</Audience><Issuer>http://sampleaudience/</Issuer><OpenIdConnectDiscoveryDocument i:nil=""true""><OpenIdDiscoveryUri ></OpenIdDiscoveryUri></OpenIdConnectDiscoveryDocument></TokenRestrictionTemplate>";
+
+            try
+            {
+                var template = TokenRestrictionTemplateSerializer.Deserialize(body);
+            }
+            catch (Exception ex)
+            {
+                Assert.AreEqual("Both PrimaryVerificationKey and OpenIdConnectDiscoveryDocument are null", ex.Message);
+                throw;
+            }
+
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidDataContractException))]
+        public void TokenRestrictionTemplateDeserializeNilOpenConnectIdDocumentUriNoPrimaryKey()
+        {
+            string body =
+                @"<TokenRestrictionTemplate xmlns:i=""http://www.w3.org/2001/XMLSchema-instance"" xmlns=""http://schemas.microsoft.com/Azure/MediaServices/KeyDelivery/TokenRestrictionTemplate/v1"" ><AlternateVerificationKeys /><Audience>http://sampleissuerurl/</Audience><Issuer>http://sampleaudience/</Issuer><OpenIdConnectDiscoveryDocument ><OpenIdDiscoveryUri i:nil=""true""></OpenIdDiscoveryUri></OpenIdConnectDiscoveryDocument></TokenRestrictionTemplate>";
+            try
+            {
+                var template = TokenRestrictionTemplateSerializer.Deserialize(body);
+            }
+            catch (Exception ex)
+            {
+                Assert.AreEqual("OpenIdConnectDiscoveryDocument.OpenIdDiscoveryUri string value is null or empty", ex.Message);
+                throw;
+            }
+
+
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidDataContractException))]
+        public void TokenRestrictionTemplateDeserializeNotAbsoluteDiscoveryUri()
+        {
+            string body =
+                @"<TokenRestrictionTemplate xmlns:i=""http://www.w3.org/2001/XMLSchema-instance"" xmlns=""http://schemas.microsoft.com/Azure/MediaServices/KeyDelivery/TokenRestrictionTemplate/v1"" ><AlternateVerificationKeys /><Audience>http://sampleissuerurl/</Audience><Issuer>http://sampleaudience/</Issuer><OpenIdConnectDiscoveryDocument ><OpenIdDiscoveryUri >RelativeUri</OpenIdDiscoveryUri></OpenIdConnectDiscoveryDocument></TokenRestrictionTemplate>";
+
+            try
+            {
+                var template = TokenRestrictionTemplateSerializer.Deserialize(body);
+            }
+            catch (Exception ex)
+            {
+                Assert.AreEqual("String representation of OpenIdConnectDiscoveryDocument.OpenIdDiscoveryUri is not valid absolute Uri.", ex.Message);
+                throw;
+            }
+
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidDataContractException))]
+        public void TokenRestrictionTemplateSerializeNotPrimaryKeyAndNoOpenConnectIdDocument()
+        {
+            TokenRestrictionTemplate template = new TokenRestrictionTemplate(TokenType.JWT);
+            template.Audience = _sampleAudience;
+            template.Issuer = _sampleIssuer;
+            try
+            {
+                TokenRestrictionTemplateSerializer.Serialize(template);
+            }
+            catch (Exception ex)
+            {
+                Assert.AreEqual("Both PrimaryVerificationKey and OpenIdConnectDiscoveryDocument are null", ex.Message);
+                throw;
+            }
+
+
+        }
+
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidDataContractException), "Both PrimaryVerificationKey and OpenIdConnectDiscoveryDocument are null")]
+        public void InputMissingPrimaryKeyShouldNotThrow()
+        {
+            string tokenTemplate = "<TokenRestrictionTemplate xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://schemas.microsoft.com/Azure/MediaServices/KeyDelivery/TokenRestrictionTemplate/v1\"><AlternateVerificationKeys><TokenVerificationKey i:type=\"SymmetricVerificationKey\"><KeyValue>GG07fDPZ+HMD2vcoknMqYjEJMb7LSq8zUmdCYMvRCevnQK//ilbhODO/FydMrHiwZGmI6XywvOOU7SSzRPlI3Q==</KeyValue></TokenVerificationKey></AlternateVerificationKeys><Audience>http://sampleaudience/</Audience><Issuer>http://sampleissuerurl/</Issuer><RequiredClaims><TokenClaim><ClaimType>urn:microsoft:azure:mediaservices:contentkeyidentifier</ClaimType><ClaimValue i:nil=\"true\" /></TokenClaim><TokenClaim><ClaimType>urn:myservice:claims:rental</ClaimType><ClaimValue>true</ClaimValue></TokenClaim></RequiredClaims></TokenRestrictionTemplate>";
+            TokenRestrictionTemplate template = TokenRestrictionTemplateSerializer.Deserialize(tokenTemplate);
+
+        }
+
+        [TestMethod]
+        public void RSATokenVerificationKeySerializeShouldIncudePrpoperTypeAttribbute()
+        {
+            TokenRestrictionTemplate template = new TokenRestrictionTemplate(TokenType.JWT);
+            RsaTokenVerificationKey tokenVerificationKey = new RsaTokenVerificationKey();
+            template.PrimaryVerificationKey = tokenVerificationKey;
+            var templateAsString = TokenRestrictionTemplateSerializer.Serialize(template);
+            Assert.IsTrue(templateAsString.Contains("<PrimaryVerificationKey i:type=\"RsaTokenVerificationKey\">"));
+        }
+
+        [TestMethod]
+        public void RSATokenVerificationKeyRoundTrip()
+        {
+            TokenRestrictionTemplate template = new TokenRestrictionTemplate(TokenType.JWT);
+            RsaTokenVerificationKey tokenVerificationKey = new RsaTokenVerificationKey();
+            RSAParameters inputRsaParameters;
+            using (RSACryptoServiceProvider provider = new RSACryptoServiceProvider())
+            {
+                inputRsaParameters = provider.ExportParameters(true);
+
+                tokenVerificationKey.InitFromRsaParameters(inputRsaParameters);
+            }
+            Assert.IsNotNull(tokenVerificationKey.RawBody);
+            template.Audience = _sampleAudience;
+            template.Issuer = _sampleIssuer;
+            template.PrimaryVerificationKey = tokenVerificationKey;
+            var templateAsString = TokenRestrictionTemplateSerializer.Serialize(template);
+            Assert.IsTrue(templateAsString.Contains("<PrimaryVerificationKey i:type=\"RsaTokenVerificationKey\">"));
+            TokenRestrictionTemplate output = TokenRestrictionTemplateSerializer.Deserialize(templateAsString);
+            Assert.AreEqual(TokenType.JWT, output.TokenType);
+            Assert.IsNotNull(output.PrimaryVerificationKey);
+            Assert.IsNotNull(output.PrimaryVerificationKey as RsaTokenVerificationKey);
+            RsaTokenVerificationKey key = output.PrimaryVerificationKey as RsaTokenVerificationKey;
+            Assert.IsNotNull(key.RawBody);
+            RSAParameters outputRsaParametersutParameters = key.GetRsaParameters();
+            Assert.IsNotNull(outputRsaParametersutParameters);
+            Assert.IsNotNull(outputRsaParametersutParameters.Exponent);
+            Assert.IsNotNull(outputRsaParametersutParameters.Modulus);
+            //Check that we are storing only public signing key
+            Assert.IsNull(outputRsaParametersutParameters.P);
+            Assert.IsNull(outputRsaParametersutParameters.Q);
+            Assert.IsNull(outputRsaParametersutParameters.D);
+            Assert.IsNull(outputRsaParametersutParameters.DP);
+            Assert.IsNull(outputRsaParametersutParameters.DQ);
+            //Checking that public key matching
+            Assert.IsTrue(inputRsaParameters.Exponent.SequenceEqual(outputRsaParametersutParameters.Exponent), "Exponent value mismatch");
+            Assert.IsTrue(inputRsaParameters.Modulus.SequenceEqual(outputRsaParametersutParameters.Modulus), "Modulus value mismatch");
+
+        }
+
+        [TestMethod]
+        public void OpenIdDocumentAsVerificationKeyRoundTrip()
+        {
+            string openConnectId = "https://openconnectIddiscoveryUri";
+            string expectedElement =
+                "<OpenIdConnectDiscoveryDocument><OpenIdDiscoveryUri>https://openconnectIddiscoveryUri</OpenIdDiscoveryUri>";
+
+            TokenRestrictionTemplate template = new TokenRestrictionTemplate(TokenType.JWT);
+            template.Audience = _sampleAudience;
+            template.Issuer = _sampleIssuer;
+            template.OpenIdConnectDiscoveryDocument = new OpenIdConnectDiscoveryDocument(openConnectId);
+            var templateAsString = TokenRestrictionTemplateSerializer.Serialize(template);
+            Assert.IsTrue(templateAsString.Contains("<PrimaryVerificationKey i:nil=\"true\" />"));
+            Assert.IsTrue(templateAsString.Contains(expectedElement));
+            TokenRestrictionTemplate output = TokenRestrictionTemplateSerializer.Deserialize(templateAsString);
+            Assert.IsNotNull(output);
+            Assert.IsNotNull(output.OpenIdConnectDiscoveryDocument);
+            Assert.IsNull(output.PrimaryVerificationKey);
+            Assert.AreEqual(0, output.AlternateVerificationKeys.Count);
+            Assert.AreEqual(output.OpenIdConnectDiscoveryDocument.OpenIdDiscoveryUri, openConnectId);
+
         }
     }
 }

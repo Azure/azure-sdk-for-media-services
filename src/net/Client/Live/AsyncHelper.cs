@@ -38,12 +38,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             try
             {
-                task.Wait();
                 return task.Result;
             }
             catch (AggregateException exception)
             {
-                throw exception.InnerException;
+                throw exception.Flatten().InnerException;
             }
         }
 
@@ -59,7 +58,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
             catch (AggregateException exception)
             {
-                throw exception.InnerException;
+                throw exception.Flatten().InnerException;
             }
         }
 

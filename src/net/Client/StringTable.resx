@@ -332,6 +332,16 @@
     <value>Unable to parse expiration from token.  Please check the format of the token to ensure it is valid.</value>
   </data>
   <data name="ArgumentStringIsNullOrEmpty" xml:space="preserve">
-    <value> {0} string value is null or empty</value>
+    <value>{0} string value is null or empty</value>
   </data>
+  <data name="NotSupportedJwkToTokenVerificationKeyConversion" xml:space="preserve">
+    <value>Can't convert JsonWebKey to TokenVerificationKey</value>
+  </data>
+  <data name="PrimaryVerificationKeyAndOpenIdConnectDiscoveryDocumentAreNull" xml:space="preserve">
+    <value>Both PrimaryVerificationKey and OpenIdConnectDiscoveryDocument are null</value>
+  </data>
+  <data name="StringIsNotAbsoluteUri" xml:space="preserve">
+    <value>String representation of {0} is not valid absolute Uri.</value>
+  </data>
+  
 </root>

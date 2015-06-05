@@ -70,7 +70,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to  {0} string value is null or empty.
+        ///   Looks up a localized string similar to {0} string value is null or empty.
         /// </summary>
         internal static string ArgumentStringIsNullOrEmpty {
             get {
@@ -655,6 +655,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Can&apos;t convert JsonWebKey to TokenVerificationKey.
+        /// </summary>
+        internal static string NotSupportedJwkToTokenVerificationKeyConversion {
+            get {
+                return ResourceManager.GetString("NotSupportedJwkToTokenVerificationKeyConversion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Output asset for non submitted job does not contain Locators..
         /// </summary>
         internal static string NotSupportedLocators {
@@ -682,11 +691,29 @@ namespace Microsoft.WindowsAzure.MediaServices.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Both PrimaryVerificationKey and OpenIdConnectDiscoveryDocument are null.
+        /// </summary>
+        internal static string PrimaryVerificationKeyAndOpenIdConnectDiscoveryDocumentAreNull {
+            get {
+                return ResourceManager.GetString("PrimaryVerificationKeyAndOpenIdConnectDiscoveryDocumentAreNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Asset creation options indicates that storage encryption is used for given asset with id {0}. Please verify that asset has corresponding content key..
         /// </summary>
         internal static string StorageEncryptionContentKeyIsMissing {
             get {
                 return ResourceManager.GetString("StorageEncryptionContentKeyIsMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to String representation of {0} is not valid absolute Uri..
+        /// </summary>
+        internal static string StringIsNotAbsoluteUri {
+            get {
+                return ResourceManager.GetString("StringIsNotAbsoluteUri", resourceCulture);
             }
         }
         
