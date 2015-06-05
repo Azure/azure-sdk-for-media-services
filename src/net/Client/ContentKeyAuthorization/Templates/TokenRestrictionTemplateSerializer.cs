@@ -37,6 +37,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
             typeof(SymmetricVerificationKey),
             typeof(AsymmetricTokenVerificationKey),
             typeof(X509CertTokenVerificationKey),
+            typeof(RsaTokenVerificationKey),
             };
 
             return new DataContractSerializer(typeof(TokenRestrictionTemplate), knownTypeList);
@@ -50,6 +51,26 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
         /// <returns>An xml string representation of the TokenRestrictionTemplate instance</returns>
         public static string Serialize(TokenRestrictionTemplate template)
         {
+            if (template.PrimaryVerificationKey == null &&
+                template.OpenIdConnectDiscoveryDocument == null)
+            {
+                throw new InvalidDataContractException(StringTable.PrimaryVerificationKeyAndOpenIdConnectDiscoveryDocumentAreNull);
+            }
+
+            if (template.OpenIdConnectDiscoveryDocument != null &&
+                String.IsNullOrEmpty(template.OpenIdConnectDiscoveryDocument.OpenIdDiscoveryUri))
+            {
+                throw new InvalidDataContractException(String.Format(CultureInfo.InvariantCulture,StringTable.ArgumentStringIsNullOrEmpty,"OpenIdDiscoveryUri"));
+            }
+
+            Uri openIdDiscoveryUri;
+            if (template.OpenIdConnectDiscoveryDocument != null && !Uri.TryCreate(template.OpenIdConnectDiscoveryDocument.OpenIdDiscoveryUri, UriKind.Absolute, out openIdDiscoveryUri))
+            {
+                throw new InvalidDataContractException(String.Format(CultureInfo.InvariantCulture, StringTable.StringIsNotAbsoluteUri, "OpenIdConnectDiscoveryDocument.OpenIdDiscoveryUri"));
+            }
+
+           
+
             DataContractSerializer serializer = GetSerializer();
 
             if (template.TokenType == TokenType.SWT)
@@ -101,6 +122,23 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
                 }
             }
 
+            if (templateToReturn.PrimaryVerificationKey == null && templateToReturn.OpenIdConnectDiscoveryDocument == null)
+            {
+               throw new InvalidDataContractException(StringTable.PrimaryVerificationKeyAndOpenIdConnectDiscoveryDocumentAreNull);
+            }
+
+            if (templateToReturn.OpenIdConnectDiscoveryDocument != null && String.IsNullOrEmpty(templateToReturn.OpenIdConnectDiscoveryDocument.OpenIdDiscoveryUri))
+            {
+                throw new InvalidDataContractException(String.Format(CultureInfo.InvariantCulture, StringTable.ArgumentStringIsNullOrEmpty, "OpenIdConnectDiscoveryDocument.OpenIdDiscoveryUri"));
+            }
+
+            Uri openIdDiscoveryUri;
+            if (templateToReturn.OpenIdConnectDiscoveryDocument != null && !Uri.TryCreate(templateToReturn.OpenIdConnectDiscoveryDocument.OpenIdDiscoveryUri, UriKind.Absolute, out openIdDiscoveryUri))
+            {
+                throw new InvalidDataContractException(String.Format(CultureInfo.InvariantCulture, StringTable.StringIsNotAbsoluteUri, "OpenIdConnectDiscoveryDocument.OpenIdDiscoveryUri"));
+            }
+
+            
             return templateToReturn;
         }
 

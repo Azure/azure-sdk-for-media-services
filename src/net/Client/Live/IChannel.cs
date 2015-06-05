@@ -298,24 +298,28 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Ends the ad marker on the channel.
         /// </summary>
-        void EndAdvertisement();
+        /// <param name="cueId">The cue id of the ad marker to end.</param>
+        void EndAdvertisement(int cueId);
 
         /// <summary>
         /// Ends the ad marker on the channel asynchronously.
         /// </summary>
         /// <returns>Task to wait on for operation completion.</returns>
-        Task EndAdvertisementAsync();
+        /// <param name="cueId">The cue id of the ad marker to end.</param>
+        Task EndAdvertisementAsync(int cueId);
 
         /// <summary>
         /// Sends end advertisement operation to the service and returns. Use Operations collection to get operation's status.
         /// </summary>
         /// <returns>Operation info that can be used to track the operation.</returns>
-        IOperation SendEndAdvertisementOperation();
+        /// <param name="cueId">The cue id of the ad marker to end.</param>
+        IOperation SendEndAdvertisementOperation(int cueId);
 
         /// <summary>
         /// Sends end advertisement operation to the service asynchronously. Use Operations collection to get operation's status.
         /// </summary>
         /// <returns>Task to wait on for operation sending completion.</returns>
-        Task<IOperation> SendEndAdvertisementOperationAsync();
+        /// <param name="cueId">The cue id of the ad marker to end.</param>
+        Task<IOperation> SendEndAdvertisementOperationAsync(int cueId);
     }
 }

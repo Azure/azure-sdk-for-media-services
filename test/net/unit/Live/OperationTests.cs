@@ -20,7 +20,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
 using Moq;
 
-namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
+namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit.Live
 {
     
     
@@ -35,7 +35,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestInitialize]
         public void SetupTest()
         {
-            _mediaContext = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
+            _mediaContext = Helper.GetMediaDataServiceContextForUnitTests();
         }
 
         /// <summary>

@@ -20,7 +20,7 @@ using System.Linq;
 using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
+namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit.Live
 {
     [TestClass]
     public class ChannelDataTest
@@ -83,7 +83,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
             target.ShowSlateAsync(TimeSpan.FromMinutes(5), Guid.NewGuid().ToString());
             target.HideSlateAsync();
             target.StartAdvertisementAsync(TimeSpan.FromMinutes(10), 100, false);
-            target.EndAdvertisementAsync();
+            target.EndAdvertisementAsync(100);
         }
 
         /// <summary>

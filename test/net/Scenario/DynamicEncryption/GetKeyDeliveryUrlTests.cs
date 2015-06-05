@@ -16,16 +16,21 @@
 
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data.Services.Client;
+using System.Globalization;
 using System.IdentityModel.Tokens;
 using System.Runtime.Serialization;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Practices.TransientFaultHandling;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.DynamicEncryption;
+using AuthenticationContext = Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationContext;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 {
@@ -206,6 +211,113 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 CleanupKeyAndPolicy(contentKey, contentKeyAuthorizationPolicy, policyOption);
             }
         }
+
+        [TestMethod]
+        public void GetHlsKeyDeliveryUrlAndFetchKeyWithADJWTAuthUsingADOpenConnectDiscovery()
+        {
+            //
+            // The Client ID is used by the application to uniquely identify itself to Azure AD.
+            // The App Key is a credential used by the application to authenticate to Azure AD.
+            // The Tenant is the name of the Azure AD tenant in which this application is registered.
+            // The AAD Instance is the instance of Azure, for example public Azure or Azure China.
+            // The Authority is the sign-in URL of the tenant.
+            //
+            string aadInstance = ConfigurationManager.AppSettings["ida:AADInstance"];
+            string tenant = ConfigurationManager.AppSettings["ida:Tenant"];
+            string clientId = ConfigurationManager.AppSettings["ida:ClientId"];
+            string appKey = ConfigurationManager.AppSettings["ida:AppKey"];
+
+            string authority = String.Format(CultureInfo.InvariantCulture, aadInstance, tenant);
+
+            //
+            // To authenticate to the To Do list service, the client needs to know the service's App ID URI.
+            // To contact the To Do list service we need it's URL as well.
+            //
+            string appResourceId = ConfigurationManager.AppSettings["app:AppResourceId"];
+
+            IContentKey contentKey = null;
+            IContentKeyAuthorizationPolicy contentKeyAuthorizationPolicy = null;
+            IContentKeyAuthorizationPolicyOption policyOption = null;
+
+            var authContext = new AuthenticationContext(authority);
+            var clientCredential = new ClientCredential(clientId, appKey);
+
+            try
+            {
+                byte[] expectedKey = null;
+                contentKey = CreateTestKey(_mediaContext, ContentKeyType.EnvelopeEncryption, out expectedKey, "GetHlsKeyDeliveryUrlAndFetchKeyWithADJWTAuthUsingADOpenConnectDiscovery"+Guid.NewGuid().ToString());
+
+                TokenRestrictionTemplate tokenRestrictionTemplate = new TokenRestrictionTemplate(TokenType.JWT);
+                tokenRestrictionTemplate.OpenIdConnectDiscoveryDocument = new OpenIdConnectDiscoveryDocument("https://login.windows.net/common/.well-known/openid-configuration");
+                var result = authContext.AcquireToken(appResourceId, clientCredential);
+                string jwtTokenString = result.AccessToken;
+                
+                JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
+                Assert.IsTrue(handler.CanReadToken(jwtTokenString));
+                JwtSecurityToken token = handler.ReadToken(jwtTokenString) as JwtSecurityToken;
+                Assert.IsNotNull(token);
+
+                tokenRestrictionTemplate.Audience =  token.Audiences.First();
+                tokenRestrictionTemplate.Issuer = token.Issuer;
+
+                string optionName = "GetHlsKeyDeliveryUrlAndFetchKeyWithJWTAuthentication";
+                string requirements = TokenRestrictionTemplateSerializer.Serialize(tokenRestrictionTemplate);
+                policyOption = ContentKeyAuthorizationPolicyOptionTests.CreateOption(_mediaContext, optionName, ContentKeyDeliveryType.BaselineHttp, requirements, null, ContentKeyRestrictionType.TokenRestricted);
+
+                List<IContentKeyAuthorizationPolicyOption> options = new List<IContentKeyAuthorizationPolicyOption>
+                {
+                    policyOption
+                };
+
+                contentKeyAuthorizationPolicy = CreateTestPolicy(_mediaContext, String.Empty, options, ref contentKey);
+
+                Uri keyDeliveryServiceUri = contentKey.GetKeyDeliveryUrl(ContentKeyDeliveryType.BaselineHttp);
+                Assert.IsNotNull(keyDeliveryServiceUri);
+
+                // Enable once all accounts are enabled for per customer Key Delivery Urls
+                //Assert.IsTrue(keyDeliveryServiceUri.Host.StartsWith(_mediaContext.Credentials.ClientId));
+
+                KeyDeliveryServiceClient keyClient = new KeyDeliveryServiceClient(RetryPolicy.DefaultFixed);
+                byte[] key = keyClient.AcquireHlsKeyWithBearerHeader(keyDeliveryServiceUri, jwtTokenString);
+
+                string expectedString = GetString(expectedKey);
+                string fetchedString = GetString(key);
+                Assert.AreEqual(expectedString, fetchedString);
+            }
+            finally
+            {
+                CleanupKeyAndPolicy(contentKey, contentKeyAuthorizationPolicy, policyOption);
+            }
+        }
+
+        [TestMethod]
+        public void FetchKeyWithRSATokenValidationKeyAsPrimaryVerificationKey()
+        {
+
+            //Create a new RSACryptoServiceProvider object. 
+            using (RSACryptoServiceProvider RSA = new RSACryptoServiceProvider())
+            {
+                //Export the key information to an RSAParameters object. 
+                //Pass false to export the public key information or pass 
+                //true to export public and private key information.
+                RSAParameters RSAParams = RSA.ExportParameters(true);
+
+                TokenRestrictionTemplate tokenRestrictionTemplate = new TokenRestrictionTemplate(TokenType.JWT);
+
+                var tokenVerificationKey   = new RsaTokenVerificationKey();
+                tokenVerificationKey.InitFromRsaParameters(RSAParams);
+                tokenRestrictionTemplate.PrimaryVerificationKey = tokenVerificationKey;
+
+                tokenRestrictionTemplate.Audience = "http://sampleIssuerUrl";
+                tokenRestrictionTemplate.Issuer = "http://sampleAudience";
+                string requirements = TokenRestrictionTemplateSerializer.Serialize(tokenRestrictionTemplate);
+            }
+
+           
+
+
+        }
+       
 
         [TestMethod]
         [TestCategory("ClientSDK")]

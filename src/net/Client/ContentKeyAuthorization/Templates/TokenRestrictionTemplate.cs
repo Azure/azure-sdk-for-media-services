@@ -112,22 +112,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
         /// <summary>
         /// The first key tried to validate the signature of an incoming token.
         /// </summary>
-        [DataMember(IsRequired = true)]
-        public TokenVerificationKey PrimaryVerificationKey
-        {
-            get { return _primaryVerificationKey; }
-
-            set
-            {
-                if (value == null)
-                {
-                    throw new ArgumentNullException("PrimaryVerificationKey");
-                }
-
-                _primaryVerificationKey = value;
-            }
-        }
-        private TokenVerificationKey _primaryVerificationKey;
+       [DataMember]
+        public TokenVerificationKey PrimaryVerificationKey { get; set; }
 
         /// <summary>
         /// A list of additional token keys that will be tried if the token signature cannot be validted with the PrimaryVerificationKey 
@@ -143,6 +129,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
 
         [DataMember(IsRequired = false)]
         public TokenType TokenType { get; set; }
+
+        [DataMember(IsRequired = false)]
+        public OpenIdConnectDiscoveryDocument OpenIdConnectDiscoveryDocument { get; set; }
 
     }
 }
