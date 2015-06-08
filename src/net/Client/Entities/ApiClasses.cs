@@ -99,13 +99,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             get;
             set;
         }
-        
         /// <include file='Documentation.xml' path='Documentation/Member[@name="IAssetFile.ContentFileSize"]'/>
         long ContentFileSize
         {
             get; set;
         }
-        
         /// <include file='Documentation.xml' path='Documentation/Member[@name="IAssetFile.ContentChecksum"]'/>
         [Obsolete]
         string ContentChecksum
@@ -144,6 +142,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
         /// <include file='Documentation.xml' path='Documentation/Member[@name="IAssetFile.InitializationVector"]'/>
         string InitializationVector
+        {
+            get;
+        }
+        /// <include file='Documentation.xml' path='Documentation/Member[@name="IAssetFile.AssetFileOptions"]'/>
+        AssetFileOptions AssetFileOptions
         {
             get;
         }

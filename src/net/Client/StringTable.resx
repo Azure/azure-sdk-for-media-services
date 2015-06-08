@@ -343,5 +343,10 @@
   <data name="StringIsNotAbsoluteUri" xml:space="preserve">
     <value>String representation of {0} is not valid absolute Uri.</value>
   </data>
-  
+  <data name="NotSupportedFragblobDownload" xml:space="preserve">
+    <value>Data for Fragmented AssetFiles cannot be downloaded.</value>
+  </data>
+  <data name="NotSupportedFragblobUpload" xml:space="preserve">
+    <value>Data for Fragmented AssetFiles cannot be uploaded.</value>
+  </data>
 </root>

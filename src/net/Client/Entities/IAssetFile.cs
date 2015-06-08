@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
-    /// Represents an file belonging to an Asset.
+    /// Represents a file belonging to an Asset.
     /// </summary>
     /// <see cref="IAsset.AssetFiles"/>
     public partial interface IAssetFile
