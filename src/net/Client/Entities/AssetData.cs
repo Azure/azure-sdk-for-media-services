@@ -35,8 +35,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private const string DeliveryPoliciesPropertyName = "DeliveryPolicies";
         private const string LocatorsPropertyName = "Locators";
         private const string ParentAssetsPropertyName = "ParentAssets";
+        private const string FilterPropertyName = "AssetFilters";
 
         private AssetFileCollection _fileCollection;
+        private AssetFilterBaseCollection _filterCollection;
         private ReadOnlyCollection<ILocator> _locatorCollection;
         private IList<IContentKey> _contentKeyCollection;
         private ReadOnlyCollection<IAsset> _parentAssetCollection;
@@ -54,7 +56,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             this.ContentKeys = new List<ContentKeyData>();
             this.DeliveryPolicies = new List<AssetDeliveryPolicyData>();
             this.Files = new List<AssetFileData>();
-            
+            this.AssetFilters = new List<AssetFilterData>();
         }
 
         /// <summary>
@@ -90,9 +92,29 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
         }
 
-
         public List<AssetFileData> Files { get; set; }
 
+        /// <summary>
+        /// Get a collection of filters for this asset
+        /// </summary>
+        AssetFilterBaseCollection IAsset.AssetFilters 
+        {
+            get
+            {
+                if (((this._filterCollection == null) || (this.AssetFilters == null)) && !string.IsNullOrWhiteSpace(this.Id))
+                {
+                    IMediaDataServiceContext dataContext = this._mediaContextBase.MediaServicesClassFactory.CreateDataServiceContext();
+                    dataContext.AttachTo(AssetCollection.AssetSet, this);
+                    LoadProperty(dataContext, FilterPropertyName);
+
+                    this._filterCollection = new AssetFilterBaseCollection(_mediaContextBase, this, this.AssetFilters ?? new List<AssetFilterData>());
+                }
+
+                return this._filterCollection;
+            }
+        }
+
+        public List<AssetFilterData> AssetFilters { get; set; }
 
         /// <summary>
         /// Gets or sets the locators.
@@ -196,6 +218,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             InvalidateContentKeysCollection();
             InvalidateDeliveryPoliciesCollection();
             InvalidateFilesCollection();
+            InvalidateFilterCollection();
             if (context != null)
             {
                 this._fileCollection = new AssetFileCollection(context, this);
@@ -342,6 +365,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             this.Files.Clear();
             this._fileCollection = null;
+        }
+
+
+        private void InvalidateFilterCollection()
+        {
+            this.AssetFilters.Clear();
+            this._filterCollection = null;
         }
 
         public override void SetMediaContext(MediaContextBase value)

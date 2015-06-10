@@ -145,6 +145,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
         }
 
+        public AssetFilterBaseCollection AssetFilters
+        {
+            get { throw new NotSupportedException(); }
+        }
+
 
         /// <summary>
         /// Updates this instance.
@@ -179,6 +184,5 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             throw new NotImplementedException();
         }
-
     }
 }

@@ -53,7 +53,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private EncodingReservedUnitCollection _encodingReservedUnits;
         private MediaServicesClassFactory _classFactory;
         private Uri apiServer;
-
+        private StreamingFilterBaseCollection _streamingFilters;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CloudMediaContext"/> class.
@@ -358,6 +358,22 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     Interlocked.CompareExchange(ref _encodingReservedUnits, new EncodingReservedUnitCollection(this), null);
                 }
                 return this._encodingReservedUnits;
+            }
+        }
+
+        /// <summary>
+        /// Gets the collection of Filters (account level Filter)
+        /// </summary>
+        public override StreamingFilterBaseCollection Filters
+        {
+            get
+            {
+                if (_streamingFilters == null)
+                {
+                    Interlocked.CompareExchange(ref _streamingFilters, new StreamingFilterBaseCollection(this), null);
+                }
+                return this._streamingFilters;
+
             }
         }
     }

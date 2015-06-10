@@ -15,8 +15,6 @@
 // </license>
 
 using System;
-using System.Text;
-using System.Web;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
 {
@@ -62,7 +60,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
                         s += "=";
                         break; // One pad char
                     default:
-                        throw new System.Exception(
+                        throw new Exception(
                             "Illegal base64url string!");
                 }
                 return s;

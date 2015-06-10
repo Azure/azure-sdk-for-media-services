@@ -14,18 +14,18 @@
 // limitations under the License.
 // </license>
 
-using Microsoft.WindowsAzure.MediaServices.Client;
-using Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization;
 using System;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.WindowsAzure.MediaServices.Client;
+using Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization;
 
 namespace Microsoft.IdentityModel.Protocols
 {
     public static class JsonWebKeyExtension
     {
-        public static TokenVerificationKey AsTokenVerificationKey(this Microsoft.IdentityModel.Protocols.JsonWebKey jwk)
+        public static TokenVerificationKey AsTokenVerificationKey(this JsonWebKey jwk)
         {
             X509Certificate2 cert = null;
             X509CertTokenVerificationKey key = null;

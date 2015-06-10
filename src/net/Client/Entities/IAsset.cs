@@ -33,6 +33,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         AssetFileBaseCollection AssetFiles { get; }
 
         /// <summary>
+        /// Get a collection of filters for this asset
+        /// </summary>
+        AssetFilterBaseCollection AssetFilters { get; }
+
+        /// <summary>
         /// Gets the Locators associated with this asset.
         /// </summary>
         /// <value>A Collection of <see cref="ILocator"/> that are associated with the Asset.</value>

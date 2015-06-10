@@ -26,6 +26,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// <remarks>This is used when creating task to specify properties for a Task's output.</remarks>
     internal partial class OutputAsset : BaseEntity<IAsset>, IAsset
     {
+      
         /// <summary>
         /// Gets the delivery policies associated with the asset.
         /// </summary>

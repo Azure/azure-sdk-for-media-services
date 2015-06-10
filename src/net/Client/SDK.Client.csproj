@@ -172,7 +172,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+   
+    <Compile Include="Collections\AssetFilterBaseCollection.cs" />
     <Compile Include="Collections\EncodingReservedUnitCollection.cs" />
+    <Compile Include="Collections\StreamingFilterBaseCollection.cs" />
     <Compile Include="ContentKeyAuthorization\ContentKeyAuthorizationPolicyCollection.cs" />
     <Compile Include="ContentKeyAuthorization\ContentKeyAuthorizationPolicyData.cs" />
     <Compile Include="ContentKeyAuthorization\ContentKeyAuthorizationPolicyOptionCollection.cs" />
@@ -223,6 +226,7 @@
     <Compile Include="DynamicEncryption\IAssetDeliveryPolicy.cs" />
     <Compile Include="DynamicEncryption\MediaContextBase.cs" />
     <Compile Include="DynamicEncryption\OutputAsset.cs" />
+    <Compile Include="Entities\AssetFilterData.cs" />
     <Compile Include="Entities\EncodingReservedUnitData.cs" />
     <Compile Include="Entities\AccessPermissions.cs" />
     <Compile Include="Collections\AccessPolicyBaseCollection.cs">
@@ -276,8 +280,27 @@
     <Compile Include="DataServiceAsyncExtensions.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Entities\FilterTrackCompareOperator.cs" />
     <Compile Include="Entities\IEncodingReservedUnit.cs" />
     <Compile Include="Live\AdMarkerSource.cs" />
+    <Compile Include="Entities\IFilterTrackPropertyCondition.cs" />
+    <Compile Include="Entities\IStreamingAssetFilter.cs" />
+    <Compile Include="Entities\IStreamingFilter.cs" />
+    <Compile Include="Entities\PresentationTimeRange.cs" />
+    <Compile Include="Entities\PresentationTimeRangeData.cs" />
+    <Compile Include="Entities\StreamingFilterData.cs" />
+    <Compile Include="Entities\FilterTrackBitrateRangeCondition.cs" />
+    <Compile Include="Entities\FilterTrackBitrateRange.cs" />
+    <Compile Include="Entities\FilterTrackPropertyBaseCondition.cs" />
+    <Compile Include="Entities\FilterTrackBitrateRangeData.cs" />
+    <Compile Include="Entities\FilterTrackFourCCCondition.cs" />
+    <Compile Include="Entities\FilterTrackLanguageCondition.cs" />
+    <Compile Include="Entities\FilterTrackNameCondition.cs" />
+    <Compile Include="Entities\FilterTrackPropertyConditionData.cs" />
+    <Compile Include="Entities\FilterTrackSelectStatement.cs" />
+    <Compile Include="Entities\FilterTrackSelectStatementData.cs" />
+    <Compile Include="Entities\FilterTrackType.cs" />
+    <Compile Include="Entities\FilterTrackTypeCondition.cs" />
     <Compile Include="Live\AkamaiAccessControlData.cs" />
     <Compile Include="Live\AkamaiSignatureHeaderAuthenticationKey.cs" />
     <Compile Include="Live\AsyncHelper.cs" />
