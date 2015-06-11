@@ -45,7 +45,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Updates this filter instance asynchronously.
         /// </summary>
         /// <returns>Task to wait on for operation completion.</returns>
-        Task UpdateAsync();
+        Task<IMediaDataServiceResponse> UpdateAsync();
 
         /// <summary>
         /// Updates this filter instance.
@@ -56,7 +56,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Asynchronously revokes the specified filter
         /// </summary>
         /// <returns>A function delegate that returns the future result to be available through the Task&lt;IStreamingFilter&gt;.</returns>
-        Task DeleteAsync();
+        Task<IMediaDataServiceResponse> DeleteAsync();
 
         /// <summary>
         /// Deletes the specified filter

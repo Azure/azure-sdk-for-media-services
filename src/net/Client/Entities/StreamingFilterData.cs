@@ -95,7 +95,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Updates Filter asynchronouslly
         /// </summary>
         /// <returns></returns>
-        public virtual Task UpdateAsync()
+        public virtual Task<IMediaDataServiceResponse> UpdateAsync()
         {
             Validate();
 
@@ -127,7 +127,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Deletes this instance asynchronously.
         /// </summary>        
-        public virtual Task DeleteAsync()
+        public virtual Task<IMediaDataServiceResponse> DeleteAsync()
         {
             Validate();
 
