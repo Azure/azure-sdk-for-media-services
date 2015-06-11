@@ -21,6 +21,7 @@ using System.Data.Services.Common;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption;
+using Microsoft.WindowsAzure.MediaServices.Client.RequestAdapters;
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
@@ -297,24 +298,32 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw exception.InnerException;
             }
         }
+        /// <summary>
+        /// Deletes this asset instance including underlying azure storage container
+        /// </summary>
+        public Task DeleteAsync()
+        {
+            return DeleteAsync(false);
+        }
 
         /// <summary>
         /// Asynchronously deletes this asset instance.
         /// </summary>
+        /// <param name="keepAzureStorageContainer">Instructs if azure storage container for asset need to be preserved during delete operation</param>
         /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
-        public Task DeleteAsync()
+        public Task<IMediaDataServiceResponse> DeleteAsync(bool keepAzureStorageContainer)
         {
             AssetCollection.VerifyAsset(this);
 
+            AssetDeleteOptionsRequestAdapter deleteRequestAdapter = new AssetDeleteOptionsRequestAdapter(keepAzureStorageContainer);
+            IMediaDataServiceContext dataContext = this._mediaContextBase.MediaServicesClassFactory.CreateDataServiceContext(new[] { deleteRequestAdapter });
 
-            IMediaDataServiceContext dataContext = this._mediaContextBase.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AttachTo(AssetCollection.AssetSet, this);
             this.InvalidateContentKeysCollection();
             this.InvalidateDeliveryPoliciesCollection();
             dataContext.DeleteObject(this);
 
             MediaRetryPolicy retryPolicy = this._mediaContextBase.MediaServicesClassFactory.GetSaveChangesRetryPolicy(dataContext as IRetryPolicyAdapter);
-
             return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(this));
         }
 
@@ -328,17 +337,32 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
         /// <summary>
-        /// Deletes this asset instance.
+        /// Deletes this asset instance including underlying azure storage container
+        /// </summary>
+        public void Delete(bool keepAzureStorageContainer)
+        {
+            try
+            {
+                var result = this.DeleteAsync(keepAzureStorageContainer).Result;
+            }
+            catch (AggregateException exception)
+            {
+                throw exception.Flatten().InnerException;
+            }
+        }
+
+        /// <summary>
+        /// Deletes this asset instance 
         /// </summary>
         public void Delete()
         {
             try
             {
-                this.DeleteAsync().Wait();
+                var result = this.DeleteAsync(false).Result;
             }
             catch (AggregateException exception)
             {
-                throw exception.InnerException;
+                throw exception.Flatten().InnerException;
             }
         }
 

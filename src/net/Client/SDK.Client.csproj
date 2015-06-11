@@ -172,7 +172,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-   
     <Compile Include="Collections\AssetFilterBaseCollection.cs" />
     <Compile Include="Collections\EncodingReservedUnitCollection.cs" />
     <Compile Include="Collections\StreamingFilterBaseCollection.cs" />
@@ -358,6 +357,7 @@
     <Compile Include="Cache.cs" />
     <Compile Include="Encryption\NullableFileEncryption.cs" />
     <Compile Include="RequestAdapters\IDataServiceContextAdapter.cs" />
+    <Compile Include="RequestAdapters\AssetDeleteOptionsRequestAdapter.cs" />
     <Compile Include="RequestAdapters\IWebRequestAdapter.cs" />
     <Compile Include="ReservedUnitType.cs" />
     <Compile Include="TransientFaultHandling\IRetryPolicyAdapter.cs" />

@@ -177,6 +177,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             throw new NotImplementedException();
         }
 
+
+        public Task<IMediaDataServiceResponse> DeleteAsync(bool leaveAzureStorageContainer)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Deletes this instance.
         /// </summary>

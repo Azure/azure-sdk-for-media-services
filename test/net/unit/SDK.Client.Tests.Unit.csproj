@@ -110,6 +110,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssetDeleteOptionsRequestAdapterTests.cs" />
     <Compile Include="AssetEncryptionStateUnitTests.cs" />
     <Compile Include="AssetUnitTest.cs" />
     <Compile Include="CacheTest.cs" />

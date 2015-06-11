@@ -23,6 +23,8 @@ using Microsoft.WindowsAzure.Storage.Blob;
 using Moq;
 using System.Net;
 using Microsoft.WindowsAzure.Storage.RetryPolicies;
+using System.Collections.Generic;
+using Microsoft.WindowsAzure.MediaServices.Client.RequestAdapters;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
 {
@@ -34,6 +36,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
         }
 
         public override IMediaDataServiceContext CreateDataServiceContext()
+        {
+            return _dataContext;
+        }
+
+        public override IMediaDataServiceContext CreateDataServiceContext(IEnumerable<IDataServiceContextAdapter> adapters)
         {
             return _dataContext;
         }

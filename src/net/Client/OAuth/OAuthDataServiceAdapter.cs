@@ -21,6 +21,7 @@ using System.Globalization;
 using System.Net;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.WindowsAzure.MediaServices.Client.RequestAdapters;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.OAuth
 {
@@ -28,7 +29,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.OAuth
     /// <summary>
     /// An OAuth adapter for a data service.
     /// </summary>
-    public class OAuthDataServiceAdapter
+    public class OAuthDataServiceAdapter : IDataServiceContextAdapter
     {
         private const string AuthorizationHeader = "Authorization";
         private const string BearerTokenFormat = "Bearer {0}";

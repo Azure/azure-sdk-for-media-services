@@ -78,15 +78,28 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         void Update();
 
         /// <summary>
-        /// Asynchronously deletes this asset instance.
+        /// Asynchronously deletes this asset instance including underlying azure storage container
         /// </summary>
         /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
         Task DeleteAsync();
 
         /// <summary>
-        /// Deletes this asset instance.
+        /// Asynchronously deletes this asset instance.
+        /// </summary>
+        /// <param name="keepAzureStorageContainer">Instructs if azure storage container for asset need to be preserved during delete operation</param>
+        /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
+        Task<IMediaDataServiceResponse> DeleteAsync(bool keepAzureStorageContainer);
+
+        /// <summary>
+        /// Deletes this asset instance including underlying azure storage container
         /// </summary>
         void Delete();
+        
+        /// <summary>
+        /// Deletes this asset instance 
+        /// <param name="keepAzureStorageContainer">Instructs if azure storage container for asset need to be preserved during delete operation</param>
+        /// </summary>
+        void Delete(bool keepAzureStorageContainer);
       
     }
 }
