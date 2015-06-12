@@ -18,6 +18,7 @@
 
 using System;
 using System.Data.Services.Client;
+using Microsoft.WindowsAzure.Storage.Blob.Protocol;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.RequestAdapters
 {
@@ -50,7 +51,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.RequestAdapters
         private void AddAssetDeleteUriParameter(object sender, BuildingRequestEventArgs e)
         {
             UriBuilder builder = new UriBuilder(e.RequestUri);
-            builder.Query = e.RequestUri.Query + "&keepcontainer=" + _keepAzureStorageContainer.ToString().ToLower();
+            var namevalue = "keepcontainer=" + _keepAzureStorageContainer.ToString().ToLower();
+            builder.Query = String.IsNullOrEmpty(e.RequestUri.Query) ? namevalue :"&" + namevalue;
             e.RequestUri = builder.Uri;
         }
     }
