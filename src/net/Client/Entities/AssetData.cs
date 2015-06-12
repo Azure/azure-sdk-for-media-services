@@ -306,18 +306,18 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             return DeleteAsync(false);
         }
 
+
         /// <summary>
         /// Asynchronously deletes this asset instance.
         /// </summary>
-        /// <param name="keepAzureStorageContainer">Instructs if azure storage container for asset need to be preserved during delete operation</param>
-        /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
+        /// <param name="keepAzureStorageContainer">if set to <c>true</c> underlying storage asset container is preserved during the delete operation.</param>
+        /// <returns>Task of type <see cref="IMediaDataServiceResponse"/></returns>
         public Task<IMediaDataServiceResponse> DeleteAsync(bool keepAzureStorageContainer)
         {
             AssetCollection.VerifyAsset(this);
 
             AssetDeleteOptionsRequestAdapter deleteRequestAdapter = new AssetDeleteOptionsRequestAdapter(keepAzureStorageContainer);
             IMediaDataServiceContext dataContext = this._mediaContextBase.MediaServicesClassFactory.CreateDataServiceContext(new[] { deleteRequestAdapter });
-
             dataContext.AttachTo(AssetCollection.AssetSet, this);
             this.InvalidateContentKeysCollection();
             this.InvalidateDeliveryPoliciesCollection();
@@ -337,13 +337,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
         /// <summary>
-        /// Deletes this asset instance including underlying azure storage container
+        /// Deletes this asset instance
         /// </summary>
-        public void Delete(bool keepAzureStorageContainer)
+        /// <param name="keepAzureStorageContainer">if set to <c>true</c> underlying storage asset container is preserved during the delete operation.</param>
+        /// <returns>IMediaDataServiceResponse.</returns>
+        public IMediaDataServiceResponse Delete(bool keepAzureStorageContainer)
         {
             try
             {
-                var result = this.DeleteAsync(keepAzureStorageContainer).Result;
+                return DeleteAsync(keepAzureStorageContainer).Result;
             }
             catch (AggregateException exception)
             {

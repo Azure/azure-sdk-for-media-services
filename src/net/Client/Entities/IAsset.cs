@@ -86,20 +86,21 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Asynchronously deletes this asset instance.
         /// </summary>
-        /// <param name="keepAzureStorageContainer">Instructs if azure storage container for asset need to be preserved during delete operation</param>
-        /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
+        /// <param name="keepAzureStorageContainer">if set to <c>true</c> underlying storage asset container is preserved during the delete operation.</param>
+        /// <returns>Task of type <see cref="IMediaDataServiceResponse"/></returns>
         Task<IMediaDataServiceResponse> DeleteAsync(bool keepAzureStorageContainer);
 
         /// <summary>
         /// Deletes this asset instance including underlying azure storage container
         /// </summary>
         void Delete();
-        
+
         /// <summary>
-        /// Deletes this asset instance 
-        /// <param name="keepAzureStorageContainer">Instructs if azure storage container for asset need to be preserved during delete operation</param>
+        /// Deletes this asset instance
         /// </summary>
-        void Delete(bool keepAzureStorageContainer);
+        /// <param name="keepAzureStorageContainer">if set to <c>true</c> underlying storage asset container is preserved during the delete operation.</param>
+        /// <returns>IMediaDataServiceResponse.</returns>
+        IMediaDataServiceResponse Delete(bool keepAzureStorageContainer);
       
     }
 }

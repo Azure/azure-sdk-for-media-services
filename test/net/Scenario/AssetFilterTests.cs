@@ -17,9 +17,14 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Services.Client;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
+using Microsoft.WindowsAzure.Storage;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 {
@@ -170,6 +175,72 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             globalFilter = _mediaContext.Filters.Where(c => c.Name == filterName).FirstOrDefault();
             Assert.IsNull(globalFilter);
 
+        }
+
+        [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [DeploymentItem(@"Configuration\MP4 to Smooth Streams.xml", "Configuration")]
+        [DeploymentItem(@"Media\SmallMP41.mp4", "Media")]
+        public void ApplyDynamicManifestFilter()
+        {
+            const string typeAudio = "Type=\"audio\"";
+            const string typeVideo = "Type=\"video\"";
+
+            string configuration = File.ReadAllText(WindowsAzureMediaServicesTestConfiguration.DefaultMp4ToSmoothConfig);
+            IAsset inputAsset = AssetTests.CreateAsset(_mediaContext, WindowsAzureMediaServicesTestConfiguration.SmallMp41, AssetCreationOptions.None);
+            IMediaProcessor mediaProcessor = JobTests.GetMediaProcessor(_mediaContext, WindowsAzureMediaServicesTestConfiguration.MpPackagerName);
+            IJob job = JobTests.CreateAndSubmitOneTaskJob(_mediaContext, "ApplyDynamicManifestFilter" + Guid.NewGuid().ToString().Substring(0, 5), mediaProcessor, configuration, inputAsset, TaskOptions.None);
+            JobTests.WaitForJob(job.Id, JobState.Finished, JobTests.VerifyAllTasksFinished);
+
+
+            var outputAsset = job.OutputMediaAssets.FirstOrDefault();
+            outputAsset = _mediaContext.Assets.Where(c => c.Id == outputAsset.Id).FirstOrDefault();
+            var assetFile = outputAsset.AssetFiles.Where(c => c.Name.EndsWith(".ism")).First();
+
+            IAccessPolicy policy = _mediaContext.AccessPolicies.Create("ApplyDynamicManifestFilter" + Guid.NewGuid().ToString().Substring(0, 5), TimeSpan.FromDays(30), AccessPermissions.Read);
+            ILocator originLocator = _mediaContext.Locators.CreateLocator(LocatorType.OnDemandOrigin, outputAsset, policy, DateTime.UtcNow.AddMinutes(-5));
+            
+            string urlForClientStreaming = originLocator.Path + assetFile.Name + "/manifest";
+            HttpClient client = new HttpClient();
+            var message = client.GetAsync(urlForClientStreaming).Result;
+            var content = message.Content;
+            var result = content.ReadAsStringAsync().Result;
+            Assert.AreEqual(message.StatusCode,HttpStatusCode.OK);
+            Assert.IsTrue(result.Length >0);
+            
+            Assert.IsTrue(result.Contains(typeAudio));
+            
+            Assert.IsTrue(result.Contains(typeVideo));
+
+            var manifestLength = result.Length;
+
+           // string filterName = "ApplyDynamicManifestFilter_" + DateTime.Now;
+            string filterName = "ApplyDynamicManifestFilter_" + Guid.NewGuid().ToString().Substring(0,5);
+            List<FilterTrackSelectStatement> filterTrackSelectStatements = new List<FilterTrackSelectStatement>();
+            FilterTrackSelectStatement filterTrackSelectStatement = new FilterTrackSelectStatement();
+            filterTrackSelectStatement.PropertyConditions = new List<IFilterTrackPropertyCondition>();
+            filterTrackSelectStatement.PropertyConditions.Add(new FilterTrackTypeCondition(FilterTrackType.Video, FilterTrackCompareOperator.NotEqual));
+            filterTrackSelectStatements.Add(filterTrackSelectStatement);
+            IStreamingFilter filter = _mediaContext.Filters.Create(filterName, new PresentationTimeRange(), filterTrackSelectStatements);
+            Assert.IsNotNull(filter);
+
+
+            var filterUrlForClientStreaming = originLocator.Path + assetFile.Name + String.Format("/manifest(filter={0})",filterName);
+            HttpClient filterclient = new HttpClient();
+            var filtermessage = filterclient.GetAsync(filterUrlForClientStreaming).Result;
+            Assert.AreEqual(filtermessage.StatusCode, HttpStatusCode.OK);
+            var filtercontent = filtermessage.Content;
+            var filterresult = filtercontent.ReadAsStringAsync().Result;
+            Assert.IsTrue(filterresult.Length > 0);
+            Assert.AreNotEqual(manifestLength, filterresult);
+            Assert.IsTrue(filterresult.Contains(typeAudio));
+            Assert.IsFalse(filterresult.Contains(typeVideo));
+
+            outputAsset.DeleteAsync();
+            inputAsset.DeleteAsync();
+            job.DeleteAsync();
+            filter.DeleteAsync();
         }
         
     }

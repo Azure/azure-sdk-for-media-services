@@ -21,14 +21,26 @@ using System.Data.Services.Client;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.RequestAdapters
 {
+    /// <summary>
+    /// Modifies request to add Asset delete options parameters 
+    /// </summary>
     public class AssetDeleteOptionsRequestAdapter: IDataServiceContextAdapter
     {
-        private bool _keepAzureStorageContainer;
+        private readonly bool _keepAzureStorageContainer;
 
+        /// <summary>
+        /// Initilizes a new instance of <see cref="AssetDeleteOptionsRequestAdapter"/>
+        /// </summary>
+        /// <param name="keepAzureStorageContainer"> Determines whether or not the underlying storage asset container is preseved during the delete operation</param>
         public AssetDeleteOptionsRequestAdapter(bool keepAzureStorageContainer)
         {
             _keepAzureStorageContainer = keepAzureStorageContainer;
         }
+
+        /// <summary>
+        /// Adapting <see cref="DataServiceContext"/> context to include additional url parameters ot http headers
+        /// </summary>
+        /// <param name="context"></param>
         public void Adapt(DataServiceContext context)
         {
             if (context == null) { throw new ArgumentNullException("context"); }
