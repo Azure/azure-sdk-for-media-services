@@ -94,6 +94,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public string EncryptionKeyId {get;set;}
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public string InitializationVector {get;set;}
+        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        public int Options {get;set;}
+
+        AssetFileOptions IAssetFile.AssetFileOptions
+        {
+            get
+            {
+                return GetExposedOptions(Options);
+            }
+        }
        
     }
 

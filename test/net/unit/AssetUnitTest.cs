@@ -136,7 +136,26 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
             CallUpdateUploadDownloadAndDelete(file, "AssetFileCreateEnvelopeEncryptedFile");
         }
 
+        [TestMethod]
+        public void AssetFileDownloadUploadThrowsExceptionForFragblob()
+        {
+            var fragblob= new Mock<AssetFileData>().Object;
+            fragblob.Options = 1;
 
+            try
+            {
+                fragblob.Upload("/foo/bar");
+                Assert.Fail();
+            }
+            catch (NotSupportedException) { }
+
+            try
+            {
+                fragblob.Download("foo.bar");
+                Assert.Fail();
+            }
+            catch (NotSupportedException) { }
+        }
 
         [TestMethod]
         public void AssetCreateAsync()
