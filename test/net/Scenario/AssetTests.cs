@@ -755,6 +755,36 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        public void ShouldDeleteAssetAndKeepAzureContainer()
+        {
+            IAsset asset = CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.None);
+            Assert.AreEqual(AssetState.Initialized, asset.State);
+            foreach (ILocator locator in asset.Locators)
+            {
+                locator.Delete();
+            }
+
+            var result = asset.DeleteAsync(true).Result;
+
+            Assert.IsNull(_mediaContext.Assets.Where(a => a.Id == asset.Id).SingleOrDefault());
+
+            CloudMediaContext newContext = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
+
+            Assert.IsNull(newContext.Assets.Where(a => a.Id == asset.Id).SingleOrDefault());
+
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(WindowsAzureMediaServicesTestConfiguration.ClientStorageConnectionString);
+            string containername = asset.Id.Replace("nb:cid:UUID:", "asset-");
+            var client = storageAccount.CreateCloudBlobClient();
+            var container = client.GetContainerReference(containername);
+            Assert.IsTrue(container.Exists(), "Asset container {0} can't be found", container);
+
+
+        }
+
+        [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         [TestCategory("Bvt")]
         public void ShouldDeleteEmptyAsset()
         {

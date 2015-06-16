@@ -33,6 +33,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         AssetFileBaseCollection AssetFiles { get; }
 
         /// <summary>
+        /// Get a collection of filters for this asset
+        /// </summary>
+        AssetFilterBaseCollection AssetFilters { get; }
+
+        /// <summary>
         /// Gets the Locators associated with this asset.
         /// </summary>
         /// <value>A Collection of <see cref="ILocator"/> that are associated with the Asset.</value>
@@ -73,15 +78,29 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         void Update();
 
         /// <summary>
-        /// Asynchronously deletes this asset instance.
+        /// Asynchronously deletes this asset instance including underlying azure storage container
         /// </summary>
         /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
         Task DeleteAsync();
 
         /// <summary>
-        /// Deletes this asset instance.
+        /// Asynchronously deletes this asset instance.
+        /// </summary>
+        /// <param name="keepAzureStorageContainer">if set to <c>true</c> underlying storage asset container is preserved during the delete operation.</param>
+        /// <returns>Task of type <see cref="IMediaDataServiceResponse"/></returns>
+        Task<IMediaDataServiceResponse> DeleteAsync(bool keepAzureStorageContainer);
+
+        /// <summary>
+        /// Deletes this asset instance including underlying azure storage container
         /// </summary>
         void Delete();
+
+        /// <summary>
+        /// Deletes this asset instance
+        /// </summary>
+        /// <param name="keepAzureStorageContainer">if set to <c>true</c> underlying storage asset container is preserved during the delete operation.</param>
+        /// <returns>IMediaDataServiceResponse.</returns>
+        IMediaDataServiceResponse Delete(bool keepAzureStorageContainer);
       
     }
 }

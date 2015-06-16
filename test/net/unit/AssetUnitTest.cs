@@ -497,6 +497,27 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
         }
 
         [TestMethod]
+        public void TestAssetDeleteRetryWithKeepAzureContainerOption()
+        {
+            var data = new AssetData { Name = "testData" };
+
+            var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
+
+            var dataContextMock = TestMediaServicesClassFactory.CreateSaveChangesMock(fakeException, 2, data);
+
+            dataContextMock.Setup((ctxt) => ctxt.AttachTo("Assets", data));
+            dataContextMock.Setup((ctxt) => ctxt.DeleteObject(data));
+
+            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
+
+            data.SetMediaContext(_mediaContext);
+
+            var result = data.DeleteAsync(true).Result;
+
+            dataContextMock.Verify((ctxt) => ctxt.SaveChangesAsync(data), Times.Exactly(2));
+        }
+
+        [TestMethod]
         public void TestAssetGetContentKeysRetry()
         {
             var data = new AssetData { Name = "testData", Id = "testId" };

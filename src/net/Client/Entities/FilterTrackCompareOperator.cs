@@ -1,5 +1,6 @@
-﻿// Copyright 2014 Microsoft Corporation
-// 
+﻿//-----------------------------------------------------------------------
+// <copyright file="FilterTrackCompareOperator.cs" company="Microsoft">Copyright 2015 Microsoft Corporation</copyright>
+// <license>
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -11,13 +12,16 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+// </license>
 
-using System.Data.Services.Client;
-
-namespace Microsoft.WindowsAzure.MediaServices.Client.RequestAdapters
+namespace Microsoft.WindowsAzure.MediaServices.Client
 {
-    public interface IDataServiceContextAdapter
+    /// <summary>
+    /// Compare operator
+    /// </summary>
+    public enum FilterTrackCompareOperator
     {
-        void Adapt(DataServiceContext context);
+        Equal = 0,
+        NotEqual
     }
 }

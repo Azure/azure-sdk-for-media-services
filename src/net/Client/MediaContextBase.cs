@@ -109,6 +109,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public abstract IngestManifestCollection IngestManifests { get; }
         public abstract IngestManifestAssetCollection IngestManifestAssets { get; }
         public abstract LocatorBaseCollection Locators { get; }
+        public abstract StreamingFilterBaseCollection Filters { get; }
 
         /// <summary>
         /// Gets or sets the number of threads to use to for each blob transfer.
