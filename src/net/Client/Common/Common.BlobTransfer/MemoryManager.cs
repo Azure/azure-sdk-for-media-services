@@ -26,7 +26,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
         private int _buffersInUse;
 
-        public MemoryManager(int bufferSize, long capacity = 0x4000000L)
+        public MemoryManager(int bufferSize)
+            : this(bufferSize, Environment.Is64BitProcess ? 0x40000000L : 0x4000000L)
+        {
+        }
+
+        public MemoryManager(int bufferSize, long capacity)
         {
             long num = capacity / ((long)bufferSize);
             int cellsCount = (int)Math.Min(0x2000L, num);
