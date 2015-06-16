@@ -99,7 +99,7 @@
    <Target Name="Build" DependsOnTargets="RestorePackages;Clean;BuildDebug;BuildRelease" />
   
    <!-- Publish any build artificates to the Publish directory -->
-  <Target Name="Publish" DependsOnTargets="Build">
+  <Target Name="Publish" DependsOnTargets="UnitTestRun">
     
     <!-- Copy code artifacts -->
     <Message Importance="high" Text="Publishing ..." ContinueOnError="false" />
@@ -149,7 +149,7 @@
       ContinueOnError="false" />   
   </Target>
   
-  <Target Name="UnitTestRun" DependsOnTargets="Clean;BuildDebug;BuildRelease">
+  <Target Name="UnitTestRun" DependsOnTargets="Clean;Build">
     <Message Importance="high" Text="Running Unit tests..." />
     <Message Importance="high" Text="You are required to have installed a version of Visual Studio with support for MSTest (and MSTest on your path)." />
     <MakeDir Directories="$(TestOutputDirectory)" ContinueOnError="false" />
