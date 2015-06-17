@@ -225,6 +225,7 @@
     <Compile Include="DynamicEncryption\IAssetDeliveryPolicy.cs" />
     <Compile Include="DynamicEncryption\MediaContextBase.cs" />
     <Compile Include="DynamicEncryption\OutputAsset.cs" />
+    <Compile Include="Entities\AssetFileOptions.cs" />
     <Compile Include="Entities\AssetFilterData.cs" />
     <Compile Include="Entities\EncodingReservedUnitData.cs" />
     <Compile Include="Entities\AccessPermissions.cs" />
