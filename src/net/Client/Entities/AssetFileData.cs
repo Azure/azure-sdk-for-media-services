@@ -276,13 +276,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetBlobStorageClientRetryPolicy();
 
             return blobTransferClient.UploadBlob(
-					new Uri(locator.BaseUri), 
-					path, 
-					null, 
-					fileEncryption, 
-					token, 
-					retryPolicy.AsAzureStorageClientRetryPolicy(), 
-					() => locator.ContentAccessComponent)
+                    new Uri(locator.BaseUri), 
+                    path, 
+                    null, 
+                    fileEncryption, 
+                    token, 
+                    retryPolicy.AsAzureStorageClientRetryPolicy(), 
+                    () => locator.ContentAccessComponent)
                 .ContinueWith(
                 ts=>
                 {
@@ -362,14 +362,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 blobTransferClient.TransferProgressChanged += this.OnDownloadBlobTransferProgressChanged;
 
                 blobTransferClient.DownloadBlob(
-						uriBuilder.Uri, 
-						destinationPath, 
-						fileEncryption, 
-						iv, 
-						cancellationToken, 
-						retryPolicy, 
-						() => locator.ContentAccessComponent)
-					.Wait(cancellationToken);
+                        uriBuilder.Uri, 
+                        destinationPath, 
+                        fileEncryption, 
+                        iv, 
+                        cancellationToken, 
+                        retryPolicy, 
+                        () => locator.ContentAccessComponent)
+                    .Wait(cancellationToken);
 
                 cancellationToken.ThrowIfCancellationRequested(() => this.Cleanup(null, fileEncryption, null, null));
             },
@@ -560,12 +560,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                             t.ThrowIfFaulted(() => this.Cleanup(null, null, locator, accessPolicy));
                             cancellationToken.ThrowIfCancellationRequested(() => this.Cleanup(null, null, locator, accessPolicy));
 
-							var blobTransfer = GetMediaContext().MediaServicesClassFactory.GetBlobTransferClient();
+                            var blobTransfer = GetMediaContext().MediaServicesClassFactory.GetBlobTransferClient();
 
-							blobTransfer.NumberOfConcurrentTransfers = this.GetMediaContext().NumberOfConcurrentTransfers;
-							blobTransfer.ParallelTransferThreadCount = this.GetMediaContext().ParallelTransferThreadCount;
+                            blobTransfer.NumberOfConcurrentTransfers = this.GetMediaContext().NumberOfConcurrentTransfers;
+                            blobTransfer.ParallelTransferThreadCount = this.GetMediaContext().ParallelTransferThreadCount;
 
-							UploadAsync(path, blobTransfer, locator, cancellationToken).Wait();
+                            UploadAsync(path, blobTransfer, locator, cancellationToken).Wait();
                             locator.Delete(); 
                             cancellationToken.ThrowIfCancellationRequested(() => this.Cleanup(null, null, null, accessPolicy));
                             accessPolicy.Delete();
