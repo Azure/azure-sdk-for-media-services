@@ -27,6 +27,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Channel has standard encoding capability.
         /// </summary>
-        Standard = 1
+        Standard = 1,
+
+        /// <summary>
+        /// Channel has premium encoding capability.
+        /// </summary>
+        Premium = 2,
     }
 }
