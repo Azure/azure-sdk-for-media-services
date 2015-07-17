@@ -25,16 +25,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// </summary>
     public partial class CloudMediaContext : MediaContextBase
     {
-        /// <summary>
-        /// The certificate thumbprint for Nimbus services.
-        /// </summary>
-        internal const string NimbusRestApiCertificateThumbprint = "AC24B49ADEF9D6AA17195E041D3F8D07C88EC145";
-
-        /// <summary>
-        /// The certificate subject for Nimbus services.
-        /// </summary>
-        internal const string NimbusRestApiCertificateSubject = "CN=NimbusRestApi";
-
         private static readonly Uri _mediaServicesUri = new Uri("https://media.windows.net/");
 
         private AssetCollection _assets;
@@ -53,7 +43,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private EncodingReservedUnitCollection _encodingReservedUnits;
         private MediaServicesClassFactory _classFactory;
         private Uri apiServer;
-
+        private StreamingFilterBaseCollection _streamingFilters;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CloudMediaContext"/> class.
@@ -358,6 +348,22 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     Interlocked.CompareExchange(ref _encodingReservedUnits, new EncodingReservedUnitCollection(this), null);
                 }
                 return this._encodingReservedUnits;
+            }
+        }
+
+        /// <summary>
+        /// Gets the collection of Filters (account level Filter)
+        /// </summary>
+        public override StreamingFilterBaseCollection Filters
+        {
+            get
+            {
+                if (_streamingFilters == null)
+                {
+                    Interlocked.CompareExchange(ref _streamingFilters, new StreamingFilterBaseCollection(this), null);
+                }
+                return this._streamingFilters;
+
             }
         }
     }

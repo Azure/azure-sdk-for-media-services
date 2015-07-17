@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
 
@@ -46,7 +47,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
                     Preview = MakeChannelPreview(),
                     Output = MakeChannelOutput(),
                     EncodingType = ChannelEncodingType.Standard,
-                    Encoding = MakeChannelEncoding()
+                    Encoding = MakeChannelEncoding(ChannelEncodingType.Standard)
                 });
 
             try
@@ -120,6 +121,38 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
             channel.Delete();
         }
 
+        [TestMethod]
+        [Priority(1)]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        public void LivePremiumEncodingChannelTest()
+        {
+            IChannel channel = _mediaContext.Channels.Create(
+                new ChannelCreationOptions
+                {
+                    Name = Guid.NewGuid().ToString().Substring(0, 30),
+                    Input = MakeChannelInput(),
+                    Preview = MakeChannelPreview(),
+                    Output = MakeChannelOutput(),
+                    EncodingType = ChannelEncodingType.Premium,
+                    Encoding = MakeChannelEncoding(ChannelEncodingType.Premium)
+                });
+
+            try
+            {
+                channel.Start();
+
+                Thread.Sleep(1000 * 10);
+
+                channel.Stop();
+            }
+            finally
+            {
+                channel.Delete();
+            }
+        }
+
+
         static ChannelInput MakeChannelInput()
         {
             return new ChannelInput
@@ -168,11 +201,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
             };
         }
 
-        static ChannelEncoding MakeChannelEncoding()
+        static ChannelEncoding MakeChannelEncoding(ChannelEncodingType encodingType)
         {
             return new ChannelEncoding
             {
-                SystemPreset = "Default720p",
+                SystemPreset = encodingType == ChannelEncodingType.Standard ? "Default720p" : "Default1080p",
                 IgnoreCea708ClosedCaptions = false,
                 AdMarkerSource = AdMarkerSource.Api,
                 AudioStreams = new List<AudioStream> {new AudioStream {Index = 103, Language = "eng"}}.AsReadOnly()

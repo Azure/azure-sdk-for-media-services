@@ -65,8 +65,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 		public BlobTransferClient(TimeSpan forceSharedAccessSignatureRetry = default(TimeSpan))
 		{
 			_forceSharedAccessSignatureRetry = forceSharedAccessSignatureRetry;
-			ParallelTransferThreadCount = 10;
-			NumberOfConcurrentTransfers = 2;
+            ParallelTransferThreadCount = ServicePointModifier.DefaultConnectionLimit();
+            NumberOfConcurrentTransfers = ServicePointModifier.DefaultConnectionLimit();
 		}
 
 		/// <summary>

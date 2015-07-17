@@ -136,7 +136,26 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
             CallUpdateUploadDownloadAndDelete(file, "AssetFileCreateEnvelopeEncryptedFile");
         }
 
+        [TestMethod]
+        public void AssetFileDownloadUploadThrowsExceptionForFragblob()
+        {
+            var fragblob= new Mock<AssetFileData>().Object;
+            fragblob.Options = 1;
 
+            try
+            {
+                fragblob.Upload("/foo/bar");
+                Assert.Fail();
+            }
+            catch (NotSupportedException) { }
+
+            try
+            {
+                fragblob.Download("foo.bar");
+                Assert.Fail();
+            }
+            catch (NotSupportedException) { }
+        }
 
         [TestMethod]
         public void AssetCreateAsync()
@@ -492,6 +511,27 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
             data.SetMediaContext(_mediaContext);
 
             data.Delete();
+
+            dataContextMock.Verify((ctxt) => ctxt.SaveChangesAsync(data), Times.Exactly(2));
+        }
+
+        [TestMethod]
+        public void TestAssetDeleteRetryWithKeepAzureContainerOption()
+        {
+            var data = new AssetData { Name = "testData" };
+
+            var fakeException = new WebException("test", WebExceptionStatus.ConnectionClosed);
+
+            var dataContextMock = TestMediaServicesClassFactory.CreateSaveChangesMock(fakeException, 2, data);
+
+            dataContextMock.Setup((ctxt) => ctxt.AttachTo("Assets", data));
+            dataContextMock.Setup((ctxt) => ctxt.DeleteObject(data));
+
+            _mediaContext.MediaServicesClassFactory = new TestMediaServicesClassFactory(dataContextMock.Object);
+
+            data.SetMediaContext(_mediaContext);
+
+            var result = data.DeleteAsync(true).Result;
 
             dataContextMock.Verify((ctxt) => ctxt.SaveChangesAsync(data), Times.Exactly(2));
         }

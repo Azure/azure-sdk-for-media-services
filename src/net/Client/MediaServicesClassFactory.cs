@@ -17,16 +17,31 @@
 using System;
 using Microsoft.WindowsAzure.MediaServices.Client.RequestAdapters;
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
+using System.Collections.Generic;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     public abstract class MediaServicesClassFactory
     {
         /// <summary>
-        /// Creates a data service context.
+        /// Creates instance of <see cref="IMediaDataServiceContext"/>.Deafault list of <see cref="IDataServiceContextAdapter"/> applied .
         /// </summary>
-        /// <returns>The new DataServiceContext instance.</returns>
+        /// <returns>The new  <see cref="IMediaDataServiceContext"/> instance.</returns>
         public abstract IMediaDataServiceContext CreateDataServiceContext();
+
+        /// <summary>
+        /// Creates instance of <see cref="IMediaDataServiceContext"/> with contains additional applyed <see cref="IDataServiceContextAdapter"/> adapters 
+        /// </summary>
+        /// <param name="adapters">list of <see cref="IDataServiceContextAdapter"/> which will be applied additionally on top of default adapters</param>
+        /// <returns><see cref="IMediaDataServiceContext"/></returns>
+        public abstract IMediaDataServiceContext CreateDataServiceContext(IEnumerable<IDataServiceContextAdapter> adapters);
+
+        /// <summary>
+        /// Returns list of <see cref="IDataServiceContextAdapter"/> which applied by default for each request  
+        /// </summary>
+        /// <returns></returns>
+        public abstract IEnumerable<IDataServiceContextAdapter> GetDefaultDataContextAdapters();
+
         /// <summary>
         /// Creates a ClientRequestIdAdapter
         /// </summary>

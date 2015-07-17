@@ -23,6 +23,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Security.Cryptography;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Auth;
 using Microsoft.WindowsAzure.Storage.Blob;
@@ -49,14 +50,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             long start = 0,
             long length = -1,
             int parallelTransferThreadCount = 10,
-            int numberOfConcurrentTransfers = 2)
+            int numberOfConcurrentTransfers = default(int))
         {
             if (client != null && getSharedAccessSignature != null)
             {
                 throw new InvalidOperationException("The arguments client and getSharedAccessSignature cannot both be non-null");
             }
 
-            SetConnectionLimits(uri, Environment.ProcessorCount * numberOfConcurrentTransfers * parallelTransferThreadCount);
+            SetConnectionLimits(uri, numberOfConcurrentTransfers);
 
             Task task =
                 Task.Factory.StartNew(
@@ -81,12 +82,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             long length = -1,
             int parallelTransferThreadCount = 10)
         {
-            int numThreads = Environment.ProcessorCount * parallelTransferThreadCount;
             ManualResetEvent downloadCompletedSignal = new ManualResetEvent(false);
             BlobRequestOptions blobRequestOptions = new BlobRequestOptions { RetryPolicy = retryPolicy };
             CloudBlockBlob blob = null;
             BlobTransferContext transferContext = new BlobTransferContext();
             transferContext.Exceptions = new ConcurrentBag<Exception>();
+
             try
             {
                 blob = GetCloudBlockBlob(uri, client, retryPolicy, getSharedAccessSignature);
@@ -111,6 +112,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
                     sizeToDownload = length;
                 }
+                transferContext.Length = sizeToDownload;
+                transferContext.LocalFilePath = localFile;
+                transferContext.OnComplete = () => downloadCompletedSignal.Set();
+                transferContext.Blob = blob;
+                transferContext.FileEncryption = fileEncryption;
+                transferContext.InitializationVector = initializationVector;
+                transferContext.InitialOffset = start;
+
                 if (sizeToDownload == 0)
                 {
                     using (FileStream stream =
@@ -124,8 +133,45 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     }
 
                 }
+                else if (sizeToDownload < cloudBlockBlobUploadDownloadSizeLimit)
+                {
+                    AccessCondition accessCondition = AccessCondition.GenerateEmptyCondition();
+                    OperationContext operationContext = new OperationContext();
+                    operationContext.ClientRequestID = DateTime.UtcNow.ToString("s", CultureInfo.InvariantCulture);
+                    using (FileStream fileStream = new FileStream(
+                        transferContext.LocalFilePath,
+                        FileMode.OpenOrCreate,
+                        FileAccess.ReadWrite,
+                        FileShare.Read
+                        ))
+                    {
+                        blob.DownloadToStream(fileStream, accessCondition: accessCondition, options: blobRequestOptions, operationContext: operationContext);
+                        if (fileEncryption != null)
+                        {
+                            using (MemoryStream msDecrypt = new MemoryStream())
+                            {
+                                //Using CryptoTransform APIs per Quintin's suggestion.
+                                using (FileEncryptionTransform fileEncryptionTransform = fileEncryption.GetTransform(initializationVector, 0))
+                                {
+                                    fileStream.Position = 0;
+                                    fileStream.CopyTo(msDecrypt);
+                                    msDecrypt.Position = 0;
+                                    fileStream.Position = 0;
+                                    using (CryptoStream csEncrypt = new CryptoStream(msDecrypt, fileEncryptionTransform, CryptoStreamMode.Read))
+                                    {
+                                        csEncrypt.CopyTo(fileStream);                                   
+                                    }
+                                }
+                            }
+                            
+                        }
+                   }
+                    InvokeProgressCallback(transferContext, sizeToDownload, sizeToDownload);
+                    transferContext.OnComplete();
+                }
                 else
                 {
+                    int numThreads = parallelTransferThreadCount;
                     int blockSize = GetBlockSize(blob.Properties.Length);
 
                     transferContext.BlocksToTransfer = PrepareUploadDownloadQueue(sizeToDownload, blockSize,
@@ -138,12 +184,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     }
                     transferContext.BlockSize = blockSize;
                     transferContext.CancellationToken = cancellationToken;
-                    transferContext.Blob = blob;
                     transferContext.BlobRequestOptions = blobRequestOptions;
-                    transferContext.Length = sizeToDownload;
-
-                    transferContext.LocalFilePath = localFile;
-                    transferContext.OnComplete = () => downloadCompletedSignal.Set();
                     transferContext.MemoryManager = MemoryManagerFactory.GetMemoryManager(blockSize);
                     transferContext.Client = client;
                     transferContext.RetryPolicy = retryPolicy;
@@ -151,9 +192,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     transferContext.ShouldDoFileIO = shouldDoFileIO;
                     transferContext.BufferStreams = new ConcurrentDictionary<byte[], MemoryStream>();
                     transferContext.ClientRequestId = DateTime.UtcNow.ToString("s", CultureInfo.InvariantCulture);
-                    transferContext.FileEncryption = fileEncryption;
-                    transferContext.InitializationVector = initializationVector;
-                    transferContext.InitialOffset = start;
 
                     using (FileStream stream = new FileStream(
                         transferContext.LocalFilePath,

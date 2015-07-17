@@ -79,6 +79,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
         }
 
+        /// <summary>
+        /// Gets the <see cref="Client.AssetFileOptions"/> for this AssetFile
+        /// </summary>
+        private static AssetFileOptions GetExposedOptions(int options)
+        {
+            return (AssetFileOptions) options;
+        }
 
         /// <summary>
         /// Asynchronously downloads the represented file to the specified destination path.
@@ -92,6 +99,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </returns>
         public Task DownloadAsync(string destinationPath, BlobTransferClient blobTransferClient, ILocator locator, CancellationToken cancellationToken)
         {
+            if (this.IsFragmented())
+            {
+                throw new NotSupportedException(StringTable.NotSupportedFragblobDownload);
+            }
+
             MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetBlobStorageClientRetryPolicy();
             return this.DownloadToFileAsync(destinationPath, blobTransferClient, locator, retryPolicy.AsAzureStorageClientRetryPolicy(), cancellationToken);
         }
@@ -103,6 +115,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="destinationPath">The path to download the file to.</param>
         public void Download(string destinationPath)
         {
+            if (this.IsFragmented())
+            {
+                throw new NotSupportedException(StringTable.NotSupportedFragblobDownload);
+            }
+
             IAccessPolicy accessPolicy = null;
             ILocator locator = null;
             try
@@ -209,6 +226,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
         public Task UploadAsync(string path, BlobTransferClient blobTransferClient, ILocator locator, CancellationToken token)
         {
+            if (this.IsFragmented())
+            {
+                throw new NotSupportedException(StringTable.NotSupportedFragblobUpload);
+            }
+
             if (blobTransferClient == null)
             {
                 throw new ArgumentNullException("blobTransferClient");
@@ -254,13 +276,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetBlobStorageClientRetryPolicy();
 
             return blobTransferClient.UploadBlob(
-					new Uri(locator.BaseUri), 
-					path, 
-					null, 
-					fileEncryption, 
-					token, 
-					retryPolicy.AsAzureStorageClientRetryPolicy(), 
-					() => locator.ContentAccessComponent)
+                    new Uri(locator.BaseUri), 
+                    path, 
+                    null, 
+                    fileEncryption, 
+                    token, 
+                    retryPolicy.AsAzureStorageClientRetryPolicy(), 
+                    () => locator.ContentAccessComponent)
                 .ContinueWith(
                 ts=>
                 {
@@ -340,14 +362,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 blobTransferClient.TransferProgressChanged += this.OnDownloadBlobTransferProgressChanged;
 
                 blobTransferClient.DownloadBlob(
-						uriBuilder.Uri, 
-						destinationPath, 
-						fileEncryption, 
-						iv, 
-						cancellationToken, 
-						retryPolicy, 
-						() => locator.ContentAccessComponent)
-					.Wait(cancellationToken);
+                        uriBuilder.Uri, 
+                        destinationPath, 
+                        fileEncryption, 
+                        iv, 
+                        cancellationToken, 
+                        retryPolicy, 
+                        () => locator.ContentAccessComponent)
+                    .Wait(cancellationToken);
 
                 cancellationToken.ThrowIfCancellationRequested(() => this.Cleanup(null, fileEncryption, null, null));
             },
@@ -493,6 +515,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="path">The path of a file to upload</param>
         public void Upload(string path)
         {
+            if (this.IsFragmented())
+            {
+                throw new NotSupportedException(StringTable.NotSupportedFragblobUpload);
+            }
+
             UploadAsync(path, CancellationToken.None).Wait();
         }
 
@@ -533,17 +560,22 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                             t.ThrowIfFaulted(() => this.Cleanup(null, null, locator, accessPolicy));
                             cancellationToken.ThrowIfCancellationRequested(() => this.Cleanup(null, null, locator, accessPolicy));
 
-							var blobTransfer = GetMediaContext().MediaServicesClassFactory.GetBlobTransferClient();
+                            var blobTransfer = GetMediaContext().MediaServicesClassFactory.GetBlobTransferClient();
 
-							blobTransfer.NumberOfConcurrentTransfers = this.GetMediaContext().NumberOfConcurrentTransfers;
-							blobTransfer.ParallelTransferThreadCount = this.GetMediaContext().ParallelTransferThreadCount;
+                            blobTransfer.NumberOfConcurrentTransfers = this.GetMediaContext().NumberOfConcurrentTransfers;
+                            blobTransfer.ParallelTransferThreadCount = this.GetMediaContext().ParallelTransferThreadCount;
 
-							UploadAsync(path, blobTransfer, locator, cancellationToken).Wait();
+                            UploadAsync(path, blobTransfer, locator, cancellationToken).Wait();
                             locator.Delete(); 
                             cancellationToken.ThrowIfCancellationRequested(() => this.Cleanup(null, null, null, accessPolicy));
                             accessPolicy.Delete();
                         },
                     cancellationToken);
+        }
+
+        private bool IsFragmented()
+        {
+            return GetExposedOptions(Options).HasFlag(Client.AssetFileOptions.Fragmented);
         }
     }
 }
