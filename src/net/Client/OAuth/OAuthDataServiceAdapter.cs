@@ -53,10 +53,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.OAuth
             this._credentials = credentials;
             this._trustedRestCertificateHash = trustedRestCertificateHash;
             this._trustedRestSubject = trustedRestSubject;
-
-            #if DEBUG
-            ServicePointManager.ServerCertificateValidationCallback = this.ValidateCertificate;
-            #endif
         }
 
         /// <summary>
@@ -96,27 +92,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.OAuth
                     this._credentials.RefreshToken();
                 }
             }
-        }
-
-        private bool ValidateCertificate(object s, X509Certificate cert, X509Chain chain, SslPolicyErrors error)
-        {
-            if (error.HasFlag(SslPolicyErrors.RemoteCertificateNameMismatch) || error.HasFlag(SslPolicyErrors.RemoteCertificateChainErrors))
-            {
-
-                // This is for local deployments. DevFabric generates its own certificate for load-balancing / port forwarding.
-                const string AzureDevFabricCertificateSubject = "CN=127.0.0.1, O=TESTING ONLY, OU=Windows Azure DevFabric";
-                if (cert.Subject == AzureDevFabricCertificateSubject)
-                {
-                    return true;
-                }
-                var cert2 = new X509Certificate2(cert);
-                if (this._trustedRestSubject == cert2.Subject && cert2.Thumbprint == this._trustedRestCertificateHash)
-                {
-                    return true;
-                }
-            }
-
-            return error == SslPolicyErrors.None;
         }
 
         /// <summary> 

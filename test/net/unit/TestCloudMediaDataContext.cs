@@ -25,6 +25,7 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Practices.TransientFaultHandling;
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
@@ -141,8 +142,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
                     }
                 });
 
-			_persistedChanges.Add(JobBaseCollection.JobSet,
-			   new List<JobData>
+            _persistedChanges.Add(JobBaseCollection.JobSet,
+               new List<JobData>
                 {
                     new JobData()
                     {
@@ -150,7 +151,17 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
                         Name = "Mock Job",
                     }
                 });
-		}
+
+            _persistedChanges.Add(AssetFilterBaseCollection.AssetFilterSet,
+               new List<AssetFilterData>
+                {
+                    new AssetFilterData()
+                    {
+                        Id= Guid.NewGuid().ToString(),
+                        Name = "Mock Asset Filter",
+                    }
+                });
+        }
 
         public bool IgnoreResourceNotFoundException { get; set; }
 
@@ -175,7 +186,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
         public IQueryable<TIinterface> CreateQuery<TIinterface, TData>(string entitySetName)
         {
             IQueryable<TIinterface> inner = (IQueryable<TIinterface>)this.CreateQuery<TData>(entitySetName);
-            var result = new MediaQueryable<TIinterface, TData>(inner);
+            var result = new MediaQueryable<TIinterface, TData>(inner, new MediaRetryPolicy(new QueryErrorDetectionStrategy(), new ExponentialBackoff()));
             return result;
         }
 
@@ -265,16 +276,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
             }
             if (entity is JobTemplateData)
             {
-				JobTemplateData data = (JobTemplateData)(entity);
+                JobTemplateData data = (JobTemplateData)(entity);
                 switch (propertyName)
                 {
-					case "TaskTemplates":
-						data.TaskTemplates = CreateQuery<TaskTemplateData>("TaskTemplates").ToList();
+                    case "TaskTemplates":
+                        data.TaskTemplates = CreateQuery<TaskTemplateData>("TaskTemplates").ToList();
                         break;
                     default: break;
                 }
             }
-			return null;
+            return null;
         }
 
         public void UpdateObject(object entity)
@@ -316,9 +327,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
 
         public void AddRelatedObject(object source, string sourceProperty, object target)
         {
-			MethodInfo methodInfo = this.GetType().GetMethods().Where(c => c.Name == "AddObject" && c.IsGenericMethod).First();
-			methodInfo = methodInfo.MakeGenericMethod(new[] { target.GetType() });
-			methodInfo.Invoke(this, new[] { sourceProperty, target });           
+            MethodInfo methodInfo = this.GetType().GetMethods().Where(c => c.Name == "AddObject" && c.IsGenericMethod).First();
+            methodInfo = methodInfo.MakeGenericMethod(new[] { target.GetType() });
+            methodInfo.Invoke(this, new[] { sourceProperty, target });           
         }
 
         public Task<IEnumerable<T>> ExecuteAsync<T>(DataServiceQueryContinuation<T> continuation, object state)
@@ -366,9 +377,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
             throw new NotImplementedException();
         }
 
-        public Task<IMediaDataServiceResponse> SaveChangesAsync(object state)
+        private Func<object, IMediaDataServiceResponse> SaveChangesFunc(object state)
         {
-            return Task.Factory.StartNew((object c) =>
+            return (object c) =>
             {
                 if (_delaymilliseconds > 0)
                 {
@@ -384,7 +395,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
                             var addRamgeMethodInfo = _persistedChanges[pendingChange.Key].GetType().GetMethods().Where(m => m.Name == "AddRange").FirstOrDefault();
                             if (addRamgeMethodInfo != null)
                             {
-                                addRamgeMethodInfo.Invoke(_persistedChanges[pendingChange.Key], new[] { pendingChange.Value });
+                                addRamgeMethodInfo.Invoke(_persistedChanges[pendingChange.Key], new[] {pendingChange.Value});
                             }
 
                         }
@@ -399,25 +410,32 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
                 if (state != null)
                 {
                     response.AsyncState = state;
-                    state.GetType().InvokeMember("Id", BindingFlags.Instance | BindingFlags.Public | BindingFlags.SetProperty, Type.DefaultBinder, state, new[] { "nb:kid:UUID:" + Guid.NewGuid() });
+                    if (state.GetType().GetProperty("Id") != null)
+                    {
+                        state.GetType().InvokeMember("Id", BindingFlags.Instance | BindingFlags.Public | BindingFlags.SetProperty, Type.DefaultBinder, state, new[] {"nb:kid:UUID:" + Guid.NewGuid()});
+                    }
                     if (state is IMediaContextContainer)
                     {
-                        ((IMediaContextContainer)state).SetMediaContext(_mediaContextBase);
+                        ((IMediaContextContainer) state).SetMediaContext(_mediaContextBase);
                     }
 
                     if (state is LocatorData)
                     {
-                        ((LocatorData)state).BaseUri = "http://contoso.com/" + Guid.NewGuid().ToString();
-                        ((LocatorData)state).Path = "http://contoso.com/" + Guid.NewGuid().ToString();
-						((LocatorData)state).ContentAccessComponent = Guid.NewGuid().ToString();
+                        ((LocatorData) state).BaseUri = "http://contoso.com/" + Guid.NewGuid().ToString();
+                        ((LocatorData) state).Path = "http://contoso.com/" + Guid.NewGuid().ToString();
+                        ((LocatorData) state).ContentAccessComponent = Guid.NewGuid().ToString();
                     }
                     if (state is AssetData)
                     {
-                        ((AssetData)state).Uri = "http://contoso.com/" + Guid.NewGuid().ToString();
+                        ((AssetData) state).Uri = "http://contoso.com/" + Guid.NewGuid().ToString();
                     }
                 }
                 return response;
-            },
+            };
+        }
+        public Task<IMediaDataServiceResponse> SaveChangesAsync(object state)
+        {
+            return Task.Factory.StartNew( SaveChangesFunc(state),
                 state,
                 CancellationToken.None);
         }
@@ -425,6 +443,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
         public Task<IMediaDataServiceResponse> SaveChangesAsync(SaveChangesOptions options, object state)
         {
             return SaveChangesAsync(state);
+        }
+
+        public Task<IMediaDataServiceResponse> SaveChangesAsync(SaveChangesOptions options, object state, CancellationToken token)
+        {
+            return Task.Factory.StartNew(SaveChangesFunc(state),
+                state,
+                token);
         }
 
         private MethodInfo MakeMethodGeneric(object entity, string methodName)

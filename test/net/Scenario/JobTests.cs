@@ -113,6 +113,39 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [Owner("ClientSDK")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         [TestCategory("Bvt")]
+        public void CreateJobFromTemplate()
+        {
+            IAsset asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.StorageEncrypted);
+            IMediaProcessor mediaProcessor = GetMediaProcessor(_mediaContext, WindowsAzureMediaServicesTestConfiguration.MpEncoderName);
+            string name = GenerateName("Job For Template");
+
+            IJob job = _mediaContext.Jobs.Create(name);
+            job.Priority = InitialJobPriority;
+            ITask task = job.Tasks.AddNew("Task1", mediaProcessor, GetWamePreset(mediaProcessor), TaskOptions.None);
+            task.InputAssets.Add(asset);
+            task.OutputAssets.AddNew("JobTemplateOutPutAsset", AssetCreationOptions.None);
+
+            DateTime timebeforeSubmit = DateTime.UtcNow;
+            job.Submit();
+            Task jobRunningTask = job.GetExecutionProgressTask(CancellationToken.None);
+            jobRunningTask.Wait();
+            IJobTemplate template = job.SaveAsTemplate("JobTemplate" + Guid.NewGuid().ToString().Substring(0, 10));
+            var jobfromTemplate = _mediaContext.Jobs.Create("JobFromTemplate" + Guid.NewGuid().ToString().Substring(0, 10), template, new[]{asset});
+            jobfromTemplate.Submit();
+            jobRunningTask = jobfromTemplate.GetExecutionProgressTask(CancellationToken.None);
+            jobRunningTask.Wait();
+
+            var refreshed = _mediaContext.Jobs.Where(c => c.Id == jobfromTemplate.Id).FirstOrDefault();
+            Assert.IsNull(refreshed);
+
+
+        }
+
+        [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [TestCategory("Bvt")]
         public void ShouldReportJobProgress()
         {
             IAsset asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.StorageEncrypted);
@@ -199,6 +232,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             string name = GenerateName("ShouldFinishJobWithSuccessWhenPresetISUTF8");
             IJob job = CreateAndSubmitOneTaskJob(_mediaContext, name, mediaProcessor, presetXml, asset, TaskOptions.None);
             WaitForJob(job.Id, JobState.Finished, VerifyAllTasksFinished);
+            var task = job.Tasks.First();
+            var assets = task.OutputAssets.ToList();
+            var firstasset = assets.First();
+            var files = firstasset.AssetFiles.ToList();
+            Assert.IsNull(files);
         }
 
         [TestMethod]
@@ -474,6 +512,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             IMediaProcessor mediaProcessor = GetMediaProcessor(_mediaContext, WindowsAzureMediaServicesTestConfiguration.MpPackagerName);
             IJob job = CreateAndSubmitOneTaskJob(_mediaContext, GenerateName("ShouldSubmitAndFihishMp4ToSmoothJob"), mediaProcessor, configuration, asset, TaskOptions.None);
             WaitForJob(job.Id, JobState.Finished, VerifyAllTasksFinished);
+
         }
 
         [TestMethod]
