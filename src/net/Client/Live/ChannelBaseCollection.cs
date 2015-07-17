@@ -36,7 +36,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         internal ChannelBaseCollection(MediaContextBase cloudMediaContext)
             : base(cloudMediaContext)
         {
-			Queryable = MediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<IChannel, ChannelData>(ChannelSet);
+            Queryable = MediaContext.MediaServicesClassFactory.CreateDataServiceContext().CreateQuery<IChannel, ChannelData>(ChannelSet);
         }
 
         /// <summary>

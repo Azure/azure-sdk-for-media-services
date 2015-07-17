@@ -149,7 +149,7 @@
       ContinueOnError="false" />   
   </Target>
   
-  <Target Name="UnitTestRun" DependsOnTargets="Clean;Build">
+  <Target Name="UnitTestRun" DependsOnTargets="Build">
     <Message Importance="high" Text="Running Unit tests..." />
     <Message Importance="high" Text="You are required to have installed a version of Visual Studio with support for MSTest (and MSTest on your path)." />
     <MakeDir Directories="$(TestOutputDirectory)" ContinueOnError="false" />

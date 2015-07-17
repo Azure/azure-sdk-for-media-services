@@ -25,16 +25,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// </summary>
     public partial class CloudMediaContext : MediaContextBase
     {
-        /// <summary>
-        /// The certificate thumbprint for Nimbus services.
-        /// </summary>
-        internal const string NimbusRestApiCertificateThumbprint = "AC24B49ADEF9D6AA17195E041D3F8D07C88EC145";
-
-        /// <summary>
-        /// The certificate subject for Nimbus services.
-        /// </summary>
-        internal const string NimbusRestApiCertificateSubject = "CN=NimbusRestApi";
-
         private static readonly Uri _mediaServicesUri = new Uri("https://media.windows.net/");
 
         private AssetCollection _assets;

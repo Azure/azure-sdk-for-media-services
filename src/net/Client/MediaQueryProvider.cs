@@ -40,7 +40,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
 
             var result = (IQueryable<TElement>)_inner.CreateQuery<TElement>(expression).Cast<TData>();
-            return (IQueryable<TElement>)new MediaQueryable<TElement, TData>(result);
+            return (IQueryable<TElement>)new MediaQueryable<TElement, TData>(result, _queryRetryPolicy);
         }
 
         public IQueryable CreateQuery(Expression expression)

@@ -33,6 +33,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             _mediaContext = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
         }
 
+
+        [TestMethod]
+        public void SimpleChannelQueries()
+        {
+            var i = _mediaContext.Assets.Count();
+            var channel = _mediaContext.Channels.Where(c => c.Name == Guid.NewGuid().ToString()).FirstOrDefault();
+            var programs = _mediaContext.Programs.Where(c => c.Name == Guid.NewGuid().ToString()).FirstOrDefault();
+
+        }
+
         [TestMethod]
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
