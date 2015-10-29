@@ -186,6 +186,7 @@
     <Compile Include="ContentKeyAuthorization\IContentKeyAuthorizationPolicyOption.cs" />
     <Compile Include="ContentKeyAuthorization\Templates\AGCandColorStripeRestriction.cs" />
     <Compile Include="ContentKeyAuthorization\Templates\AsymmetricTokenVerificationKey.cs" />
+    <Compile Include="ContentKeyAuthorization\Templates\ContentKeySpecs.cs" />
     <Compile Include="ContentKeyAuthorization\Templates\EncodeUtilities.cs" />
     <Compile Include="ContentKeyAuthorization\Templates\ErrorMessages.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -212,6 +213,7 @@
     <Compile Include="ContentKeyAuthorization\Templates\TokenType.cs" />
     <Compile Include="ContentKeyAuthorization\Templates\TokenVerificationKey.cs" />
     <Compile Include="ContentKeyAuthorization\Templates\UnknownOutputPassingOptions.cs" />
+    <Compile Include="ContentKeyAuthorization\Templates\WidevineMessage.cs" />
     <Compile Include="ContentKeyAuthorization\Templates\X509CertTokenVerificationKey.cs" />
     <Compile Include="DynamicEncryption\AssetData.cs" />
     <Compile Include="DynamicEncryption\AssetDeliveryPolicyCollection.cs" />
