@@ -55,5 +55,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption
         /// The initialization vector to use for envelope encryption.
         /// </summary>
         EnvelopeEncryptionIV,
+
+        /// <summary>
+        /// Widevine DRM acquisition url
+        /// </summary>
+        WidevineLicenseAcquisitionUrl
     }
 }

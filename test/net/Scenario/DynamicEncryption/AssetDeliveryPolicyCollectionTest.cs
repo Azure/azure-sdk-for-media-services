@@ -180,6 +180,46 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [TestCategory("Bvt")]
+        public void ProgressiveAssetDeliveryPolicyTestAttach()
+        {
+            var asset = _mediaContext.Assets.Create("Asset for EnvelopeAssetDeliveryPolicyTestAttach", AssetCreationOptions.None);
+
+            
+           IAssetDeliveryPolicy policy = _mediaContext.AssetDeliveryPolicies.Create("", AssetDeliveryPolicyType.NoDynamicEncryption,AssetDeliveryProtocol.ProgressiveDownload,null);
+
+           
+           asset.DeliveryPolicies.Add(policy);
+
+            asset = _mediaContext.Assets.Where(a => a.Id == asset.Id).Single();
+            var check = asset.DeliveryPolicies[0];
+           // Assert.AreEqual(policy.Id, check.Id);
+            Assert.AreEqual(1, asset.DeliveryPolicies.Count);
+
+            List<IAssetDeliveryPolicy> policies = asset.DeliveryPolicies.ToList();
+            foreach (IAssetDeliveryPolicy current in policies)
+            {
+                asset.DeliveryPolicies.Remove(current);
+                current.Delete();
+            }
+
+            asset.Delete();
+        }
+
+      
+
+        [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
+        public void ListAllPolicies()
+        {
+            var policies = _mediaContext.AssetDeliveryPolicies.ToList();
+        }
+
+        [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void PlayReadyAssetDeliveryPolicyTestAttach()
         {
             var asset = _mediaContext.Assets.Create("Asset for PlayReadyAssetDeliveryPolicyTestAttach", AssetCreationOptions.None);

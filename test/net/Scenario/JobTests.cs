@@ -136,7 +136,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             jobRunningTask.Wait();
 
             var refreshed = _mediaContext.Jobs.Where(c => c.Id == jobfromTemplate.Id).FirstOrDefault();
-            Assert.IsNull(refreshed);
+            Assert.IsNotNull(refreshed);
 
 
         }
@@ -220,7 +220,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        public void ShouldFinishJobWithSuccessWhenPresetISUTF8()
+        public void ShouldFinishJobWithThumbnailPreset()
         {
             IAsset asset = AssetTests.CreateAsset(_mediaContext, _smallWmv, AssetCreationOptions.StorageEncrypted);
             IMediaProcessor mediaProcessor = GetMediaProcessor(_mediaContext, WindowsAzureMediaServicesTestConfiguration.MpEncoderName);
@@ -236,7 +236,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             var assets = task.OutputAssets.ToList();
             var firstasset = assets.First();
             var files = firstasset.AssetFiles.ToList();
-            Assert.IsNull(files);
+            Assert.IsNotNull(files);
+            Assert.IsTrue(files.Count >1);
         }
 
         [TestMethod]

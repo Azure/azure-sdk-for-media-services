@@ -25,6 +25,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.DynamicEncryption
     public class KeyDeliveryServiceClient
     {
         private readonly RetryPolicy _retryPolicy;
+        private const string AuthenticationSchema = "Bearer";
 
         public KeyDeliveryServiceClient(RetryPolicy retryPolicy)
         {
@@ -34,8 +35,29 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.DynamicEncryption
         public byte[] AcquireHlsKeyWithBearerHeader(Uri keydeliveryUri, string authToken)
         {
             var kdClient = new HttpClient();
-            kdClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authToken);
+            kdClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(AuthenticationSchema, authToken);
             return GetKey(keydeliveryUri, kdClient);
+        }
+
+        public byte[] AcquireWidevineLicenseWithBearerHeader(Uri keydeliveryUri, string authToken, byte[] licenseChallenge)
+        {
+            var kdClient = new HttpClient();
+            kdClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(AuthenticationSchema, authToken);
+
+            return _retryPolicy.ExecuteAction(() =>
+            {
+                HttpResponseMessage response = kdClient.PostAsync(keydeliveryUri, new ByteArrayContent(licenseChallenge)).Result;
+                response.EnsureSuccessStatusCode();
+                byte[] hlsContentKey = response.Content.ReadAsStreamAsync().ContinueWith(t =>
+                {
+                    Stream stream = t.Result;
+                    var bytes = new byte[stream.Length];
+                    stream.Read(bytes, 0, (int)stream.Length);
+                    return bytes;
+                }).Result;
+
+                return hlsContentKey;
+            });
         }
 
         private byte[] GetKey(Uri keydeliveryUri, HttpClient kdClient)
