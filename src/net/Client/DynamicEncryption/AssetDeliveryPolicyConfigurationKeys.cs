@@ -59,6 +59,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption
         /// <summary>
         /// Widevine DRM acquisition url
         /// </summary>
-        WidevineLicenseAcquisitionUrl
+        WidevineLicenseAcquisitionUrl,
+		
+	/// <summary>
+        /// Base Widevine url that will have KID=<Guid> appended.
+        /// </summary>
+	WidevineBaseLicenseAcquisitionUrl
     }
 }
