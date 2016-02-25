@@ -62,7 +62,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption
         WidevineLicenseAcquisitionUrl,
 		
 	/// <summary>
-        /// Base Widevine url that will have KID=<Guid> appended for Envelope.
+        /// Base Widevine url that will have KID=<Guid> appended.
         /// </summary>
 	WidevineBaseLicenseAcquisitionUrl
     }
