@@ -115,6 +115,7 @@
     <Compile Include="AssetFilterTests.cs" />
     <Compile Include="AssetUnitTest.cs" />
     <Compile Include="CacheTest.cs" />
+    <Compile Include="FairPlayTests.cs" />
     <Compile Include="Live\ChannelDataTest.cs" />
     <Compile Include="CommonEncryptionTest.cs" />
     <Compile Include="ContentKeyTest.cs" />

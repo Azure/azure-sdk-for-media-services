@@ -19,6 +19,8 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
+using System.Net;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
@@ -37,7 +39,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public const string ContentKeySet = "ContentKeys";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LocatorBaseCollection"/> class.
+        /// Initializes a new instance of the <see cref="ContentKeyBaseCollection"/> class.
         /// </summary>
         /// <param name="cloudMediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
         [SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors",
@@ -166,6 +168,61 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 ProtectionKeyType = (int)ProtectionKeyType.X509CertificateThumbprint,
                 Name = name,
                 Checksum = EncryptionUtils.CalculateChecksum(contentKey, keyId)
+            };
+
+            return contentKeyData;
+        }
+
+        /// <summary>
+        /// Creates the FairPlay ASk.
+        /// </summary>
+        /// <param name="keyId">The key id.</param>
+        /// <param name="contentKey">The content key data.</param>
+        /// <param name="name">The name.</param>
+        /// <param name="cert">The cert.</param>
+        /// <returns>The content key.</returns>
+        internal static ContentKeyData InitializeFairPlayASk(Guid keyId, byte[] contentKey, string name, X509Certificate2 cert)
+        {
+            byte[] encryptedContentKey = CommonEncryption.EncryptContentKeyToCertificate(cert, contentKey);
+
+            ContentKeyData contentKeyData = new ContentKeyData
+            {
+                Id = EncryptionUtils.GetKeyIdentifierAsString(keyId),
+                EncryptedContentKey = Convert.ToBase64String(encryptedContentKey),
+                ContentKeyType = (int)ContentKeyType.FairPlayASk,
+                ProtectionKeyId = cert.Thumbprint,
+                ProtectionKeyType = (int)ProtectionKeyType.X509CertificateThumbprint,
+                Name = name,
+                Checksum = EncryptionUtils.CalculateChecksum(contentKey, keyId)
+            };
+
+            return contentKeyData;
+        }
+
+        /// <summary>
+        /// Creates FairPlay Pfx Password.
+        /// </summary>
+        /// <param name="keyId">The key id.</param>
+        /// <param name="contentKey">The content key data.</param>
+        /// <param name="name">The name.</param>
+        /// <param name="cert">The cert.</param>
+        /// <returns>The content key.</returns>
+        internal static ContentKeyData InitializeFairPlayPfxPassword(Guid keyId, byte[] contentKey, string name, X509Certificate2 cert)
+        {
+            RSACryptoServiceProvider rsaPublicKey = cert.PublicKey.Key as RSACryptoServiceProvider;
+
+            RSAOAEPKeyExchangeFormatter keyFormatter = new RSAOAEPKeyExchangeFormatter(rsaPublicKey);
+
+            byte[] encryptedContentKey = keyFormatter.CreateKeyExchange(contentKey);
+
+            ContentKeyData contentKeyData = new ContentKeyData
+            {
+                Id = EncryptionUtils.GetKeyIdentifierAsString(keyId),
+                EncryptedContentKey = Convert.ToBase64String(encryptedContentKey),
+                ContentKeyType = (int)ContentKeyType.FairPlayPfxPassword,
+                ProtectionKeyId = cert.Thumbprint,
+                ProtectionKeyType = (int)ProtectionKeyType.X509CertificateThumbprint,
+                Name = name,
             };
 
             return contentKeyData;
