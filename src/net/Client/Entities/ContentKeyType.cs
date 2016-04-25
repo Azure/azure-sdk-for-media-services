@@ -45,6 +45,21 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Specifies a content key for Envelope encryption.  Only used internally.
         /// </summary>
-        EnvelopeEncryption = 4
+        EnvelopeEncryption = 4,
+
+        /// <summary>
+        /// Specifies a content key for common encryption with cbcs.
+        /// </summary>
+        CommonEncryptionCbcs = 6,
+
+        /// <summary>
+        /// Application Secret key for FairPlay.
+        /// </summary>
+        FairPlayASk = 7,
+
+        /// <summary>
+        /// Password for FairPlay application certificate.
+        /// </summary>
+        FairPlayPfxPassword = 8,
     }
 }

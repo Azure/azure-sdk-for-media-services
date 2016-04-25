@@ -194,6 +194,7 @@
       <DependentUpon>ErrorMessages.resx</DependentUpon>
     </Compile>
     <Compile Include="ContentKeyAuthorization\Templates\ExplicitAnalogTelevisionRestriction.cs" />
+    <Compile Include="ContentKeyAuthorization\Templates\FairPlayConfiguration.cs" />
     <Compile Include="ContentKeyAuthorization\Templates\JsonWebKeyExtension.cs">
       <SubType>Code</SubType>
     </Compile>

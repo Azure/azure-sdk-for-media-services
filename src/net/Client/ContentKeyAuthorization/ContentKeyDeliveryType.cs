@@ -39,6 +39,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
         /// <summary>
         /// Use Widevine license server.
         /// </summary>
-        Widevine
+        Widevine,
+
+        /// <summary>
+        /// Send FairPlay SPC to Key Delivery server and get CKC back.
+        /// </summary>
+        FairPlay
     }
 }
