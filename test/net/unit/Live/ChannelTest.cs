@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
@@ -49,6 +50,17 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
             }
 
             dataContextMock.Verify(ctxt => ctxt.SaveChangesAsync(It.IsAny<object>()), Times.Exactly(2));
+        }
+
+
+        [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [Priority(0)]
+        public void TestChannelQueryRetry()
+        {
+            CloudMediaContext mediaContext = Helper.GetMediaDataServiceContextForUnitTests(0);
+            var result = mediaContext.Channels.FirstOrDefault();
         }
 
         [TestMethod]

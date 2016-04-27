@@ -32,7 +32,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption
         EnvelopeKeyAcquisitionUrl,
 
         /// <summary>
-        /// Base key url that will have KID=<Guid> appended for Envelope.
+        /// Base key URL that will have KID=<Guid> appended for Envelope.
         /// </summary>
         EnvelopeBaseKeyAcquisitionUrl,
         
@@ -42,7 +42,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption
         EnvelopeEncryptionIVAsBase64,
 
         /// <summary>
-        /// The PlayReady License Acquisition Url to use for common encryption.
+        /// The PlayReady License Acquisition URL to use for common encryption.
         /// </summary>
         PlayReadyLicenseAcquisitionUrl,
 
@@ -55,5 +55,31 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption
         /// The initialization vector to use for envelope encryption.
         /// </summary>
         EnvelopeEncryptionIV,
+
+        /// <summary>
+        /// Widevine DRM acquisition URL
+        /// </summary>
+        WidevineLicenseAcquisitionUrl,
+
+        /// <summary>
+        /// Base Widevine URL that will have KID=<Guid> appended.
+        /// </summary>
+        WidevineBaseLicenseAcquisitionUrl,
+
+        /// <summary>
+        /// FairPlay license acquisition URL.
+        /// </summary>
+        FairPlayLicenseAcquisitionUrl,
+
+        /// <summary>
+        /// Base FairPlay license acquisition URL that will have KID=<Guid> appended.
+        /// </summary>
+        FairPlayBaseLicenseAcquisitionUrl,
+
+        /// <summary>
+        /// Initialization Vector that will be used for encrypting the content. Must match
+        /// IV in the AssetDeliveryPolicy.
+        /// </summary>
+        CommonEncryptionIVForCbcs,
     }
 }

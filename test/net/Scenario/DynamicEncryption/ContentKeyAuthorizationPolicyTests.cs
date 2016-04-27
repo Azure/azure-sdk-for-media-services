@@ -18,8 +18,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Cryptography.X509Certificates;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization;
+using Microsoft.WindowsAzure.MediaServices.Client.FairPlay;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
 using Moq;
 
@@ -192,6 +194,66 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             var option1 = ContentKeyAuthorizationPolicyOptionTests.CreateOption(_mediaContext, optionName, ContentKeyDeliveryType.PlayReadyLicense, requirements, configuration, restrictionType);
             policy.Options.Add(option1);
 
+        }
+
+        [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [Priority(0)]
+        [TestCategory("Bvt")]
+        [DeploymentItem("amscer.pfx")]
+        public void TestCreateFairPlayAuthorizationPolicy()
+        {
+            Guid keyId = Guid.NewGuid();
+            byte[] contentKey = Guid.NewGuid().ToByteArray();
+            IContentKey key = _mediaContext.ContentKeys.Create(keyId, contentKey, "testKey", ContentKeyType.CommonEncryptionCbcs);
+
+            byte[] askBytes = Guid.NewGuid().ToByteArray();
+            var askId = Guid.NewGuid();
+            IContentKey askKey = _mediaContext.ContentKeys.Create(askId, askBytes, "askKey", ContentKeyType.FairPlayASk);
+
+            string pfxPassword = "AMSGIT";
+            var pfxPasswordId = Guid.NewGuid();
+            byte[] pfxPasswordBytes = System.Text.Encoding.UTF8.GetBytes(pfxPassword);
+            IContentKey pfxPasswordKey = _mediaContext.ContentKeys.Create(pfxPasswordId, pfxPasswordBytes, "pfxPasswordKey", ContentKeyType.FairPlayPfxPassword);
+
+            byte[] iv = Guid.NewGuid().ToByteArray();
+
+            var restrictions = new List<ContentKeyAuthorizationPolicyRestriction>
+            {
+                new ContentKeyAuthorizationPolicyRestriction 
+                { 
+                    Name = "Open", 
+                    KeyRestrictionType = (int)ContentKeyRestrictionType.Open, 
+                    Requirements = null
+                }
+            };
+
+            var appCert = new X509Certificate2("amscer.pfx", pfxPassword, X509KeyStorageFlags.Exportable);
+
+            string configuration = FairPlayConfiguration.CreateSerializedFairPlayOptionConfiguration(
+                appCert,
+                pfxPassword,
+                pfxPasswordId,
+                askId,
+                iv);
+
+            var policyOption = _mediaContext.ContentKeyAuthorizationPolicyOptions.Create(
+                "fairPlayTest",
+                ContentKeyDeliveryType.FairPlay,
+                restrictions,
+                configuration);
+
+            var contentKeyAuthorizationPolicy = _mediaContext.ContentKeyAuthorizationPolicies.CreateAsync("Key no restrictions").Result;
+            contentKeyAuthorizationPolicy.Options.Add(policyOption);
+
+            key.AuthorizationPolicyId = contentKeyAuthorizationPolicy.Id;
+            key = key.UpdateAsync().Result;
+
+            key.Delete();
+            pfxPasswordKey.Delete();
+            askKey.Delete();
+            contentKeyAuthorizationPolicy.Delete();
         }
 
         #region Retry Logic tests

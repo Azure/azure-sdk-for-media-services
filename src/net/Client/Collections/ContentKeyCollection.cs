@@ -16,6 +16,7 @@
 
 
 using System;
+using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
@@ -64,7 +65,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </returns>
         public override Task<IContentKey> CreateAsync(Guid keyId, byte[] contentKey, string name, ContentKeyType contentKeyType)
         {
-            if ((contentKeyType != ContentKeyType.CommonEncryption) && (contentKeyType != ContentKeyType.EnvelopeEncryption))
+            var allowedKeyTypes = new[] 
+            { 
+                ContentKeyType.CommonEncryption, 
+                ContentKeyType.CommonEncryptionCbcs, 
+                ContentKeyType.EnvelopeEncryption, 
+                ContentKeyType.FairPlayASk,
+                ContentKeyType.FairPlayPfxPassword,
+            };
+
+            if (!allowedKeyTypes.Contains(contentKeyType))
             {
                 throw new ArgumentException(StringTable.ErrorUnsupportedContentKeyType, "contentKey");
             }
@@ -79,7 +89,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new ArgumentNullException("contentKey");
             }
 
-            if (contentKey.Length != EncryptionUtils.KeySizeInBytesForAes128)
+            if (contentKeyType != ContentKeyType.FairPlayPfxPassword && 
+                contentKey.Length != EncryptionUtils.KeySizeInBytesForAes128)
             {
                 throw new ArgumentException(StringTable.ErrorCommonEncryptionKeySize, "contentKey");
             }
@@ -93,9 +104,22 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             {
                 contentKeyData = InitializeCommonContentKey(keyId, contentKey, name, certToUse);
             }
+            else if (contentKeyType == ContentKeyType.CommonEncryptionCbcs)
+            {
+                contentKeyData = InitializeCommonContentKey(keyId, contentKey, name, certToUse);
+                contentKeyData.ContentKeyType = (int)ContentKeyType.CommonEncryptionCbcs;
+            }
             else if (contentKeyType == ContentKeyType.EnvelopeEncryption)
             {
                 contentKeyData = InitializeEnvelopeContentKey(keyId, contentKey, name, certToUse);
+            }
+            else if (contentKeyType == ContentKeyType.FairPlayPfxPassword)
+            {
+                contentKeyData = InitializeFairPlayPfxPassword(keyId, contentKey, name, certToUse);
+            }
+            else if (contentKeyType == ContentKeyType.FairPlayASk)
+            {
+                contentKeyData = InitializeFairPlayASk(keyId, contentKey, name, certToUse);
             }
 
             dataContext.AddObject(ContentKeySet, contentKeyData);

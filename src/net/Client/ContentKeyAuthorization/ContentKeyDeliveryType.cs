@@ -34,6 +34,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization
         /// <summary>
         /// Use MPEG Baseline HTTP key protocol.
         /// </summary>
-        BaselineHttp
+        BaselineHttp,
+
+        /// <summary>
+        /// Use Widevine license server.
+        /// </summary>
+        Widevine,
+
+        /// <summary>
+        /// Send FairPlay SPC to Key Delivery server and get CKC back.
+        /// </summary>
+        FairPlay
     }
 }

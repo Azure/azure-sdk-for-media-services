@@ -31,6 +31,8 @@ using Microsoft.WindowsAzure.MediaServices.Client.ContentKeyAuthorization;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.DynamicEncryption;
 using AuthenticationContext = Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationContext;
+using Microsoft.WindowsAzure.MediaServices.Client.Widevine;
+using Newtonsoft.Json;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 {
@@ -121,6 +123,131 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 string expectedString = GetString(expectedKey);
                 string fetchedString = GetString(key);
                 Assert.AreEqual(expectedString, fetchedString);
+            }
+            finally
+            {
+                CleanupKeyAndPolicy(contentKey, contentKeyAuthorizationPolicy, policyOption);
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
+        public void GetWidevineKeyDeliveryUrlAndFetchLicense()
+        {
+            IContentKey contentKey = null;
+            IContentKeyAuthorizationPolicy contentKeyAuthorizationPolicy = null;
+            IContentKeyAuthorizationPolicyOption policyOption = null;
+
+            try
+            {
+                byte[] expectedKey = null;
+                contentKey = CreateTestKey(_mediaContext, ContentKeyType.CommonEncryption, out expectedKey);
+
+                policyOption = ContentKeyAuthorizationPolicyOptionTests.CreateOption(_mediaContext, String.Empty, ContentKeyDeliveryType.Widevine, null, "{}", ContentKeyRestrictionType.Open);
+
+                List<IContentKeyAuthorizationPolicyOption> options = new List<IContentKeyAuthorizationPolicyOption>
+                {
+                    policyOption
+                };
+
+                contentKeyAuthorizationPolicy = CreateTestPolicy(_mediaContext, String.Empty, options, ref contentKey);
+
+                Uri keyDeliveryServiceUri = contentKey.GetKeyDeliveryUrl(ContentKeyDeliveryType.Widevine);
+
+                Assert.IsNotNull(keyDeliveryServiceUri);
+
+                KeyDeliveryServiceClient keyClient = new KeyDeliveryServiceClient(RetryPolicy.DefaultFixed);
+                string rawkey = EncryptionUtils.GetKeyIdAsGuid(contentKey.Id).ToString();
+
+                string payload = "CAEShAEKTAgAEkgAAAACAAAQWPXbhtb/q43f3SfuC2VP3q0jeAECW3emQkWn2wXCYVOnvlWPDNqh8VVIB4GmsNA8eVVFigXkQWIGN0GlgMKjpUESLAoqChQIARIQJMPCzl2bViyMQEtyK/gtmRABGhAyNWY3ODMzMTcyMmJjM2EyGAEgv5iQkAUaIC3ON1zVgeV0rP7w2VmVLGorqClcMQO4BdbHPyk3GsnY";
+
+                byte[] license = keyClient.AcquireWidevineLicenseWithBearerHeader(
+                    keyDeliveryServiceUri, 
+                    TokenServiceClient.GetAuthTokenForKey(rawkey),
+                    Convert.FromBase64String(payload));
+
+                string expectedString = Convert.ToBase64String(license);
+                Assert.AreEqual("CAIS", expectedString.Substring(0, 4));
+            }
+            finally
+            {
+                CleanupKeyAndPolicy(contentKey, contentKeyAuthorizationPolicy, policyOption);
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
+        public void GetWidevineKeyDeliveryUrlAndFetchLicenseWithPolicy()
+        {
+            IContentKey contentKey = null;
+            IContentKeyAuthorizationPolicy contentKeyAuthorizationPolicy = null;
+            IContentKeyAuthorizationPolicyOption policyOption = null;
+
+            try
+            {
+                byte[] expectedKey = null;
+                contentKey = CreateTestKey(_mediaContext, ContentKeyType.CommonEncryption, out expectedKey);
+
+                var template = new WidevineMessage
+                {
+                    allowed_track_types = AllowedTrackTypes.SD_HD,
+                    content_key_specs = new[]
+                    {
+                        new ContentKeySpecs 
+                        { 
+                            key_id = contentKey.Id, 
+                            required_output_protection = new RequiredOutputProtection { hdcp = Hdcp.HDCP_NONE}, 
+                            security_level = 1, 
+                            track_type = "SD"
+                        }
+                    },
+                    policy_overrides = new 
+                    {
+                        can_play = true,
+                        can_persist = true,
+                        can_renew = true,
+                        license_duration_seconds = 10,
+                        renewal_delay_seconds = 3,
+                    }
+                };
+
+                string configuration = JsonConvert.SerializeObject(template);
+
+                policyOption = ContentKeyAuthorizationPolicyOptionTests.CreateOption(
+                    _mediaContext, 
+                    String.Empty, 
+                    ContentKeyDeliveryType.Widevine, 
+                    null, 
+                    configuration, 
+                    ContentKeyRestrictionType.Open);
+
+                List<IContentKeyAuthorizationPolicyOption> options = new List<IContentKeyAuthorizationPolicyOption>
+                {
+                    policyOption
+                };
+
+                contentKeyAuthorizationPolicy = CreateTestPolicy(_mediaContext, String.Empty, options, ref contentKey);
+
+                Uri keyDeliveryServiceUri = contentKey.GetKeyDeliveryUrl(ContentKeyDeliveryType.Widevine);
+
+                Assert.IsNotNull(keyDeliveryServiceUri);
+
+                KeyDeliveryServiceClient keyClient = new KeyDeliveryServiceClient(RetryPolicy.DefaultFixed);
+                string rawkey = EncryptionUtils.GetKeyIdAsGuid(contentKey.Id).ToString();
+
+                string payload = "CAEShAEKTAgAEkgAAAACAAAQWPXbhtb/q43f3SfuC2VP3q0jeAECW3emQkWn2wXCYVOnvlWPDNqh8VVIB4GmsNA8eVVFigXkQWIGN0GlgMKjpUESLAoqChQIARIQJMPCzl2bViyMQEtyK/gtmRABGhAyNWY3ODMzMTcyMmJjM2EyGAEgv5iQkAUaIC3ON1zVgeV0rP7w2VmVLGorqClcMQO4BdbHPyk3GsnY";
+
+                byte[] license = keyClient.AcquireWidevineLicenseWithBearerHeader(
+                    keyDeliveryServiceUri,
+                    TokenServiceClient.GetAuthTokenForKey(rawkey),
+                    Convert.FromBase64String(payload));
+
+                string expectedString = Convert.ToBase64String(license);
+                Assert.AreEqual("CAIS", expectedString.Substring(0, 4));
             }
             finally
             {

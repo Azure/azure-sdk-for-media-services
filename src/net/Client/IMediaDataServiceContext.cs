@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Services.Client;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
@@ -296,5 +297,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="state">The state.</param>
         /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
         Task<IMediaDataServiceResponse> SaveChangesAsync(SaveChangesOptions options, object state);
+
+        /// <summary>
+        /// Saves the changes asynchronously.
+        /// </summary>
+        /// <param name="options">The options.</param>
+        /// <param name="state">The state.</param>
+        /// <param name="token"><see cref="CancellationToken"/></param>
+        /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
+        Task<IMediaDataServiceResponse> SaveChangesAsync(SaveChangesOptions options, object state, CancellationToken token);
     }
 }

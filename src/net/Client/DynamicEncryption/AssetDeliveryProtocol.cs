@@ -49,6 +49,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption
         /// </summary>
         Hds = 0x8,
 
+        ProgressiveDownload = 0x10, 
+
         /// <summary>
         /// Include all protocols.
         /// </summary>

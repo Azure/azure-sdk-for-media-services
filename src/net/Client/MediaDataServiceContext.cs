@@ -17,7 +17,9 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Services.Client;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.MediaServices.Client.RequestAdapters;
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
@@ -416,8 +418,24 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
         public Task<IMediaDataServiceResponse> SaveChangesAsync(SaveChangesOptions options, object state)
         {
-            return Task.Factory.FromAsync<SaveChangesOptions, DataServiceResponse>(_dataContext.BeginSaveChanges, _dataContext.EndSaveChanges, options, state)
-                .ContinueWith<IMediaDataServiceResponse>(t => WrapTask(t));
+            Task<DataServiceResponse> task = Task.Factory.FromAsync<SaveChangesOptions, DataServiceResponse>(
+                _dataContext.BeginSaveChanges,
+                _dataContext.EndSaveChanges,
+                options,
+                state);
+            return task.ContinueWith<IMediaDataServiceResponse>(t => WrapTask(t),TaskContinuationOptions.AttachedToParent);
+        }
+
+        public Task<IMediaDataServiceResponse> SaveChangesAsync(SaveChangesOptions options, object state, CancellationToken token)
+        {
+            
+            Task<DataServiceResponse> task = Task.Factory.FromAsync<SaveChangesOptions, DataServiceResponse>(
+               _dataContext.BeginSaveChanges,
+               _dataContext.EndSaveChanges,
+               options,
+               state).HandleCancellation(token);
+
+            return task.ContinueWith<IMediaDataServiceResponse>(t => WrapTask(t));
         }
 
         private IMediaDataServiceResponse WrapTask(Task<DataServiceResponse> task)
