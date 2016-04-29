@@ -242,6 +242,106 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             job.DeleteAsync();
             filter.DeleteAsync();
         }
-        
+
+        [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
+        public void GlobalFilterFirstQualityTest()
+        {
+            string filterName = "Filter_FirstQuality_" + Guid.NewGuid().ToString();
+            const int firstQualityBitrate = 32000;
+            const int updatedFilterQualityBitrate = 128000;
+
+            // Create filter with firstquality
+            var filter = _mediaContext.Filters.Create(
+                filterName,
+                new PresentationTimeRange(10000000, 20000000, 320000000, TimeSpan.FromMinutes(20)),
+                new FilterTrackSelectStatement[]
+                {
+                    new FilterTrackSelectStatement()
+                    {
+                        PropertyConditions = new IFilterTrackPropertyCondition[]
+                        {
+                            new FilterTrackBitrateRangeCondition(new FilterTrackBitrateRange(64000, 256000)),
+                            new FilterTrackTypeCondition(FilterTrackType.Audio),
+                        }
+                    }
+                },
+                new FirstQuality(firstQualityBitrate));
+
+            // Read filter
+            var getFilter = _mediaContext.Filters.Where(f => f.Name == filterName).SingleOrDefault();
+            Assert.IsNotNull(getFilter);
+            Assert.AreEqual(getFilter.FirstQuality.Bitrate, firstQualityBitrate);
+
+            // Update filter firstQuality
+            filter.FirstQuality = new FirstQuality(updatedFilterQualityBitrate);
+            filter.Update();
+
+            // Read filter
+            getFilter = _mediaContext.Filters.Where(f => f.Name == filterName).SingleOrDefault();
+            Assert.IsNotNull(getFilter);
+            Assert.AreEqual(getFilter.FirstQuality.Bitrate, updatedFilterQualityBitrate); 
+
+            // Delete filter
+            getFilter.Delete();
+        }
+
+        [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
+        public void AssetFilterFirstQualityTest()
+        {
+            string assetName = "Asset_Filter_FirstQuality" + Guid.NewGuid().ToString();
+            var asset = _mediaContext.Assets.Create(assetName, AssetCreationOptions.None);
+            Assert.IsNotNull(asset);
+
+            string filterName = "AssetFilter_FirstQuality_" + Guid.NewGuid().ToString();
+            const int firstQualityBitrate = 32000;
+            const int updatedFilterQualityBitrate = 128000;
+
+            // Create filter with firstquality
+            var filter = asset.AssetFilters.Create(
+                filterName,
+                new PresentationTimeRange(10000000, 20000000, 320000000, TimeSpan.FromMinutes(20)),
+                new FilterTrackSelectStatement[]
+                {
+                    new FilterTrackSelectStatement()
+                    {
+                        PropertyConditions = new IFilterTrackPropertyCondition[]
+                        {
+                            new FilterTrackBitrateRangeCondition(new FilterTrackBitrateRange(64000, 256000)),
+                            new FilterTrackTypeCondition(FilterTrackType.Audio),
+                        }
+                    }
+                },
+                new FirstQuality(firstQualityBitrate));
+
+            // Read filter
+            asset = _mediaContext.Assets.Where(c => c.Id == asset.Id).FirstOrDefault();
+            Assert.IsNotNull(asset);
+            var getFilter = asset.AssetFilters.Where(f => f.Name == filterName).SingleOrDefault();
+            Assert.IsNotNull(getFilter);
+            Assert.AreEqual(getFilter.FirstQuality.Bitrate, firstQualityBitrate);
+
+            // Update filter firstQuality
+            filter.FirstQuality = new FirstQuality(updatedFilterQualityBitrate);
+            filter.Update();
+
+            // Read filter
+            asset = _mediaContext.Assets.Where(c => c.Id == asset.Id).FirstOrDefault();
+            Assert.IsNotNull(asset);
+            getFilter = asset.AssetFilters.Where(f => f.Name == filterName).SingleOrDefault();
+            Assert.IsNotNull(getFilter);
+            Assert.AreEqual(getFilter.FirstQuality.Bitrate, updatedFilterQualityBitrate);
+
+            // Delete filter
+            getFilter.Delete();
+
+            // Delete asset
+            asset.Delete();
+        }        
     }
 }
