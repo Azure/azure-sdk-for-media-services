@@ -364,6 +364,13 @@
     <Compile Include="RequestAdapters\AssetDeleteOptionsRequestAdapter.cs" />
     <Compile Include="RequestAdapters\IWebRequestAdapter.cs" />
     <Compile Include="ReservedUnitType.cs" />
+    <Compile Include="Telemetry\ComponentMonitoringSetting.cs" />
+    <Compile Include="Telemetry\IComponentMonitoringSetting.cs" />
+    <Compile Include="Telemetry\IMonitoringConfiguration.cs" />
+    <Compile Include="Telemetry\MonitoringComponent.cs" />
+    <Compile Include="Telemetry\MonitoringConfiguration.cs" />
+    <Compile Include="Telemetry\MonitoringConfigurationCollection.cs" />
+    <Compile Include="Telemetry\MonitoringLevel.cs" />
     <Compile Include="TransientFaultHandling\IRetryPolicyAdapter.cs" />
     <Compile Include="TransientFaultHandling\RetryPolicyExtensions.cs" />
     <Compile Include="TransientFaultHandling\StorageTransientErrorDetectionStrategy.cs" />
