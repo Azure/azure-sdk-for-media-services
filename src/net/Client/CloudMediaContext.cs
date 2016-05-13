@@ -44,6 +44,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private MediaServicesClassFactory _classFactory;
         private Uri apiServer;
         private StreamingFilterBaseCollection _streamingFilters;
+        private MonitoringConfigurationCollection _monitoringConfigurations;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CloudMediaContext"/> class.
@@ -363,6 +364,22 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     Interlocked.CompareExchange(ref _streamingFilters, new StreamingFilterBaseCollection(this), null);
                 }
                 return this._streamingFilters;
+
+            }
+        }
+
+        /// <summary>
+        /// Gets the collection of MonitoringConfiguration
+        /// </summary>
+        public override MonitoringConfigurationCollection MonitoringConfigurations
+        {
+            get
+            {
+                if (_monitoringConfigurations == null)
+                {
+                    Interlocked.CompareExchange(ref _monitoringConfigurations, new MonitoringConfigurationCollection(this), null);
+                }
+                return this._monitoringConfigurations;
 
             }
         }
