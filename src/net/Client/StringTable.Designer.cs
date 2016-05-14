@@ -457,7 +457,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ContentKeyType must be CommonEncryption, CommonEncryptionCbcs,  EnvelopeEncryption, FairPlayPfxPassword or FairPlayASk..
+        ///   Looks up a localized string similar to ContentKeyType must be CommonEncryption, CommonEncryptionCbcs, EnvelopeEncryption, FairPlayPfxPassword or FairPlayASk..
         /// </summary>
         internal static string ErrorUnsupportedContentKeyType {
             get {
@@ -493,6 +493,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Channel Id can&apos;t be parsed as a Guid format..
+        /// </summary>
+        internal static string InvalidChannelInput {
+            get {
+                return ResourceManager.GetString("InvalidChannelInput", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to IngestManifestFile can&apos;t be created without passing parent manifest asset. Pass parent manifest asset or use IManifestAsset.ManifestAssetFiles.Create method..
         /// </summary>
         internal static string InvalidCreateManifestAssetFileOperation {
@@ -516,6 +525,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client {
         internal static string InvalidLocatorType {
             get {
                 return ResourceManager.GetString("InvalidLocatorType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MediaServicesAccountName can&apos;t be parsed as a Guid format..
+        /// </summary>
+        internal static string InvalidMediaServicesAccountNameInput {
+            get {
+                return ResourceManager.GetString("InvalidMediaServicesAccountNameInput", resourceCulture);
             }
         }
         
@@ -619,11 +637,47 @@ namespace Microsoft.WindowsAzure.MediaServices.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to System can&apos;t detect the given Azure storage account. Please contact support..
+        /// </summary>
+        internal static string InvalidStorageAccount {
+            get {
+                return ResourceManager.GetString("InvalidStorageAccount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to StreamingEndPoint Id id can&apos;t be parsed as a Guid format..
+        /// </summary>
+        internal static string InvalidStreamingEndPointInput {
+            get {
+                return ResourceManager.GetString("InvalidStreamingEndPointInput", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start time must be before the end time..
+        /// </summary>
+        internal static string InvalidTimeRange {
+            get {
+                return ResourceManager.GetString("InvalidTimeRange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The interval must be greater than {0}s..
         /// </summary>
         internal static string MetricMonitoringIntervalOutOfRange {
             get {
                 return ResourceManager.GetString("MetricMonitoringIntervalOutOfRange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the datatime must be a UTC format..
+        /// </summary>
+        internal static string NonUtcDateTime {
+            get {
+                return ResourceManager.GetString("NonUtcDateTime", resourceCulture);
             }
         }
         

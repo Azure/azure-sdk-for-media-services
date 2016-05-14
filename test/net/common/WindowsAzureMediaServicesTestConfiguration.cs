@@ -60,6 +60,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
         public static string MpEncryptorName = ConfigurationManager.AppSettings["MPEncryptorName"];
         public static string MpPackagerName = ConfigurationManager.AppSettings["MPPackagerName"];
         public static string MpStorageDecryptorName = ConfigurationManager.AppSettings["MPStorageDecryptorName"];
+
+        public static string TelemetryStorageAccountName = ConfigurationManager.AppSettings["TelemetryStorageAccountName"];
+        public static string TelemetryStorageAccountKey = ConfigurationManager.AppSettings["TelemetryStorageAccountKey"];
         
 
         public static CloudMediaContext CreateCloudMediaContext()
