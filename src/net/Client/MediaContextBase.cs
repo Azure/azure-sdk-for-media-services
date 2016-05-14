@@ -112,6 +112,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public abstract StreamingFilterBaseCollection Filters { get; }
 
         /// <summary>
+        /// Gets the collection of monitoring configuration available in the system.
+        /// </summary>
+        public abstract MonitoringConfigurationCollection MonitoringConfigurations { get; }
+
+        /// <summary>
         /// Gets or sets the number of threads to use to for each blob transfer.
         /// </summary>
         /// <remarks>The default value is 10.</remarks>

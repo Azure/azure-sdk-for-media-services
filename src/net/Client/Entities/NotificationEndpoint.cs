@@ -110,7 +110,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             set
             {
                 int endPointTypeValue = value;
-                if (endPointTypeValue != (int) (NotificationEndPointType.AzureQueue))
+                if (!Enum.IsDefined(typeof(NotificationEndPointType), endPointTypeValue))
                 {
                     throw new InvalidEnumArgumentException("EndPointType", endPointTypeValue, typeof(NotificationEndPointType));
                 }
