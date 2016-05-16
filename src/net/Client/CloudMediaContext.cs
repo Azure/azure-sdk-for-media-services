@@ -44,6 +44,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private MediaServicesClassFactory _classFactory;
         private Uri apiServer;
         private StreamingFilterBaseCollection _streamingFilters;
+        private ChannelMetricsCollection _channelMetrics;
+        private StreamingEndPointRequestLogCollection _streamingEndPointRequestLogs;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CloudMediaContext"/> class.
@@ -117,7 +119,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 _classFactory = value;
             }
         }
-
+        
         /// <summary>
         /// Gets the collection of assets in the system.
         /// </summary>
@@ -364,6 +366,36 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 }
                 return this._streamingFilters;
 
+            }
+        }
+
+        /// <summary>
+        /// Gets the collection of ChannelMetrics
+        /// </summary>
+        public override ChannelMetricsCollection ChannelMetrics
+        {
+            get
+            {
+                if (_channelMetrics == null)
+                {
+                    Interlocked.CompareExchange(ref _channelMetrics, new ChannelMetricsCollection(this), null);
+                }
+                return this._channelMetrics;
+            }
+        }
+
+        /// <summary>
+        /// Gets the collection of Streaming EndPoint Metrics
+        /// </summary>
+        public override StreamingEndPointRequestLogCollection StreamingEndPointRequestLogs
+        {
+            get
+            {
+                if (_streamingEndPointRequestLogs == null)
+                {
+                    Interlocked.CompareExchange(ref _streamingEndPointRequestLogs, new StreamingEndPointRequestLogCollection(this), null);
+                }
+                return this._streamingEndPointRequestLogs;
             }
         }
     }

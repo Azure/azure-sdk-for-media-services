@@ -176,6 +176,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AssetTests.cs" />
     <Compile Include="StorageAccountTests.cs" />
+    <Compile Include="Telemetry\ChannelMetricsCollectionE2ETests.cs" />
+    <Compile Include="Telemetry\StreamingEndPointRequsestLogCollectionE2ETest.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Configuration\AudioEncodingPreset.xml">
