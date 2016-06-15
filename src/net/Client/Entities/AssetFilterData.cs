@@ -37,8 +37,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             string parentAssetId,
             string name, 
             PresentationTimeRange timeRange,
-            IList<FilterTrackSelectStatement> trackConditions)
-            : base(name, timeRange, trackConditions)
+            IList<FilterTrackSelectStatement> trackConditions,
+            FirstQuality firstQuality = null)
+            : base(name, timeRange, trackConditions, firstQuality)
         {
             ParentAssetId = parentAssetId;
             Id = String.Empty;

@@ -284,6 +284,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Entities\FilterTrackCompareOperator.cs" />
+    <Compile Include="Entities\FirstQuality.cs" />
+    <Compile Include="Entities\FirstQualityData.cs" />
     <Compile Include="Entities\IEncodingReservedUnit.cs" />
     <Compile Include="Live\AdMarkerSource.cs" />
     <Compile Include="Entities\IFilterTrackPropertyCondition.cs" />

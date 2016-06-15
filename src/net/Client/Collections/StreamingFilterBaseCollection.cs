@@ -49,10 +49,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="name">filter name</param>
         /// <param name="timeRange">streaming time range</param>
         /// <param name="trackConditions">filter track conditions</param>
+        /// <param name="firstQuality">filter first quality bitrate</param>
         /// <returns>The created filter.</returns>
-        public IStreamingFilter Create(string name, PresentationTimeRange timeRange, IList<FilterTrackSelectStatement> trackConditions)
+        public IStreamingFilter Create(
+            string name, 
+            PresentationTimeRange timeRange, 
+            IList<FilterTrackSelectStatement> trackConditions,
+            FirstQuality firstQuality = null)
         {
-            return AsyncHelper.Wait(CreateAsync(name, timeRange, trackConditions));
+            return AsyncHelper.Wait(CreateAsync(name, timeRange, trackConditions, firstQuality));
         }
 
         /// <summary>
@@ -61,15 +66,20 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="name">filter name</param>
         /// <param name="timeRange">streaming time range</param>
         /// <param name="trackConditions">filter track conditions</param>
+        /// <param name="firstQuality">filter first quality bitrate</param>
         /// <returns>The task to create the filter.</returns>
-        public Task<IStreamingFilter> CreateAsync(string name, PresentationTimeRange timeRange, IList<FilterTrackSelectStatement> trackConditions)
+        public Task<IStreamingFilter> CreateAsync(
+            string name, 
+            PresentationTimeRange timeRange, 
+            IList<FilterTrackSelectStatement> trackConditions,
+            FirstQuality firstQuality = null)
         {
             if (String.IsNullOrEmpty(name))
             {
                 throw new ArgumentNullException("name");
             }
 
-            StreamingFilterData filter = new StreamingFilterData(name, timeRange, trackConditions);
+            StreamingFilterData filter = new StreamingFilterData(name, timeRange, trackConditions, firstQuality);
 
             filter.SetMediaContext(MediaContext);
             

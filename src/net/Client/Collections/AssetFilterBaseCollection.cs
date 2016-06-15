@@ -50,10 +50,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="name">filter name</param>
         /// <param name="timeRange">streaming time range</param>
         /// <param name="trackConditions">filter track conditions</param>
+        /// <param name="firstQuality">first quality</param>
         /// <returns>The created filter.</returns>
-        public IStreamingAssetFilter Create(string name, PresentationTimeRange timeRange, IList<FilterTrackSelectStatement> trackConditions)
+        public IStreamingAssetFilter Create(
+            string name, 
+            PresentationTimeRange timeRange, 
+            IList<FilterTrackSelectStatement> trackConditions,
+            FirstQuality firstQuality = null)
         {
-            return AsyncHelper.Wait(CreateAsync(name, timeRange, trackConditions));
+            return AsyncHelper.Wait(CreateAsync(name, timeRange, trackConditions, firstQuality));
         }
 
         /// <summary>
@@ -62,15 +67,20 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="name">filter name</param>
         /// <param name="timeRange">filter boundaries</param>
         /// <param name="trackConditions">filter track conditions</param>
+        /// <param name="firstQuality">first quality</param>
         /// <returns>The task to create the filter.</returns>
-        public Task<IStreamingAssetFilter> CreateAsync(string name, PresentationTimeRange timeRange, IList<FilterTrackSelectStatement> trackConditions)
+        public Task<IStreamingAssetFilter> CreateAsync(
+            string name, 
+            PresentationTimeRange timeRange, 
+            IList<FilterTrackSelectStatement> trackConditions,
+            FirstQuality firstQuality = null)
         {
             if (String.IsNullOrEmpty(name))
             {
                 throw new ArgumentNullException("name");
             }
 
-            AssetFilterData filter = new AssetFilterData(_parentAsset.Id, name, timeRange, trackConditions);
+            AssetFilterData filter = new AssetFilterData(_parentAsset.Id, name, timeRange, trackConditions, firstQuality);
 
             filter.SetMediaContext(MediaContext);
 
