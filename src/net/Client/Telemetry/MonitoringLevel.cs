@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="NotificationEndPointType.cs" company="Microsoft">Copyright 2012 Microsoft Corporation</copyright>
+// <copyright file="MonitoringLevel.cs" company="Microsoft">Copyright 2012 Microsoft Corporation</copyright>
 // <license>
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,13 +17,23 @@
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
-    /// Type of notification endpoint.
-    /// Only Azure Queue and Azure Table notification types are supported in this version.
+    /// The monitoring setting type
     /// </summary>
-    public enum NotificationEndPointType
+    public enum MonitoringLevel
     {
-        None = 0,
-        AzureQueue = 1,
-        AzureTable = 2
+        /// <summary>
+        /// Output no Monitoring messages.
+        /// </summary>
+        Disabled,
+
+        /// <summary>
+        /// Output informational Monitoring messages.
+        /// </summary>
+        Normal,
+
+        /// <summary>
+        /// Output detailed Monitoring messages.
+        /// </summary>
+        Verbose
     }
 }

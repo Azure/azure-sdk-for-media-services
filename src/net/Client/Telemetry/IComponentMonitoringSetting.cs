@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="NotificationEndPointType.cs" company="Microsoft">Copyright 2012 Microsoft Corporation</copyright>
+// <copyright file="IComponentMonitoringSetting.cs" company="Microsoft">Copyright 2012 Microsoft Corporation</copyright>
 // <license>
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,13 +17,18 @@
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
-    /// Type of notification endpoint.
-    /// Only Azure Queue and Azure Table notification types are supported in this version.
+    /// The interface of monitoring settings for a component.
     /// </summary>
-    public enum NotificationEndPointType
+    public interface IComponentMonitoringSetting
     {
-        None = 0,
-        AzureQueue = 1,
-        AzureTable = 2
+        /// <summary>
+        /// Gets or sets the monitoring component.
+        /// </summary>
+        MonitoringComponent Component { get; set; }
+
+        /// <summary>
+        /// Gets or sets the monitoring level.
+        /// </summary>
+        MonitoringLevel Level { get; set; }
     }
 }

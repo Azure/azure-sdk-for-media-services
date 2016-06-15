@@ -144,6 +144,7 @@
     <Compile Include="CollectionQueryTest.cs" />
     <Compile Include="SaveChangesErrorDetectionStrategyTest.cs" />
     <Compile Include="StorageTransientErrorDetectionStrategyTests.cs" />
+    <Compile Include="Telemetry\MonitoringConfigurationTests.cs" />
     <Compile Include="TestAzureMediaServicesClassFactoryForCustomRetryPolicy.cs" />
     <Compile Include="TestCloudMediaDataContext.cs" />
     <Compile Include="TestRetryAdapter.cs" />
