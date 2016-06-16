@@ -117,6 +117,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public abstract MonitoringConfigurationCollection MonitoringConfigurations { get; }
 
         /// <summary>
+        /// Gets the collection of channel metrics available in the system.
+        /// </summary>
+        public abstract ChannelMetricsCollection ChannelMetrics { get; }
+
+        /// <summary>
+        /// Gets the collection of streaming endpoint metrics available in the system.
+        /// </summary>
+        public abstract StreamingEndPointRequestLogCollection StreamingEndPointRequestLogs { get; }
+
+        /// <summary>
         /// Gets or sets the number of threads to use to for each blob transfer.
         /// </summary>
         /// <remarks>The default value is 10.</remarks>
