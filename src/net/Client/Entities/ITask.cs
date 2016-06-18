@@ -43,6 +43,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Gets a collection of <see cref="ErrorDetail"/> objects describing the errors encountered during task execution.
         /// </summary>
         ReadOnlyCollection<ErrorDetail> ErrorDetails { get; }
+        
+        /// <summary>
+        /// Gets a collection of task notification subscription.
+        /// </summary>
+        TaskNotificationSubscriptionCollection TaskNotificationSubscriptions { get; }
 
         /// <summary>
         /// Gets a collection of <see cref="TaskHistoricalEvent"/> objects decribing events associated with task execution.

@@ -390,7 +390,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
         {
             var context = Helper.GetMockContextWithNullDefaultStorage();
 
-            OutputAssetCollection collection = new OutputAssetCollection(Mock.Of<ITask>(),new List<IAsset>(), context);
+            OutputAssetCollection collection = new OutputAssetCollection(Mock.Of<TaskData>(),new List<IAsset>(), context);
             try
             {
                 collection.AddNew("NullStorage", AssetCreationOptions.StorageEncrypted);

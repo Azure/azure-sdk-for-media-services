@@ -13,10 +13,6 @@
 // limitations under the License.
 
 
-//
-// DO NOT EDIT
-// This class is auto generated. Edit ODataClasses.tt
-//
 
 using System;
 using System.Diagnostics.CodeAnalysis;
@@ -40,6 +36,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public int Options {get;set;}
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        public int FormatOption { get; set; }
+        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public string Uri { get; set; }
         
 
@@ -59,6 +57,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             get
             {
                 return GetExposedOptions(Options);
+            }
+        }
+
+        AssetFormatOption IAsset.FormatOption
+        {
+            get
+            {
+                return GetExposedFormatOption(FormatOption);
             }
         }
     }
