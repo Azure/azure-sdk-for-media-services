@@ -18,12 +18,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
     /// Type of notification endpoint.
-    /// Only Azure Queue and Azure Table notification types are supported in this version.
     /// </summary>
     public enum NotificationEndPointType
     {
         None = 0,
         AzureQueue = 1,
-        AzureTable = 2
+        AzureTable = 2,
+        WebHook = 3
     }
 }

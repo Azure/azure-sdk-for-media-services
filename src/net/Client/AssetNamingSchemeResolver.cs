@@ -97,6 +97,19 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             throw new InvalidCastException(StringTable.ErrorInvalidTaskInput);
         }
 
+        public bool IsExistingOutputAsset(object obj)
+        {
+            OutputAsset outputAsset = obj as OutputAsset;
+            if (outputAsset != null)
+            {
+                TOutputAsset toutputAsset = outputAsset as TOutputAsset;
+                return Outputs.Contains(toutputAsset);
+            }
+
+            return false;
+        }
+
+
         private static int CalcIndex<T>(T obj, List<T> list)
         {
             int index = list.IndexOf(obj);

@@ -187,11 +187,29 @@ namespace Microsoft.WindowsAzure.MediaServices.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Only assets associated with the current job may be shared across multiple tasks..
+        /// </summary>
+        internal static string ErrorAddAssetToOutputAssetsOfTask {
+            get {
+                return ResourceManager.GetString("ErrorAddAssetToOutputAssetsOfTask", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to New output can&apos;t be added to submitted job task..
         /// </summary>
         internal static string ErrorAddingNewTaskToSubmittedJob {
             get {
                 return ResourceManager.GetString("ErrorAddingNewTaskToSubmittedJob", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only outputasset can be added to the task output assets..
+        /// </summary>
+        internal static string ErrorAddingNonOutputAssetToTask {
+            get {
+                return ResourceManager.GetString("ErrorAddingNonOutputAssetToTask", resourceCulture);
             }
         }
         
@@ -673,6 +691,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Either Task or Asset was not in valid state..
+        /// </summary>
+        internal static string NonValidateStateToAddOutputAssetToTask {
+            get {
+                return ResourceManager.GetString("NonValidateStateToAddOutputAssetToTask", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to the datatime must be a UTC format..
         /// </summary>
         internal static string NonUtcDateTime {
@@ -786,6 +813,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client {
         internal static string StringIsNotAbsoluteUri {
             get {
                 return ResourceManager.GetString("StringIsNotAbsoluteUri", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only support set credential for webhook endpoints..
+        /// </summary>
+        internal static string SupportWebHookWithCredentialOnly {
+            get {
+                return ResourceManager.GetString("SupportWebHookWithCredentialOnly", resourceCulture);
             }
         }
         

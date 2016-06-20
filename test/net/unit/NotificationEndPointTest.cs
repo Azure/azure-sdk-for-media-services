@@ -63,8 +63,45 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
            endPoint = _mediaContext.NotificationEndPoints.CreateAsync(Guid.NewGuid().ToString(), NotificationEndPointType.AzureQueue, "http://Contoso.com").Result;
            endPoint.DeleteAsync().Wait();
            Assert.IsNull(_mediaContext.NotificationEndPoints.Where(c => c.Id == endPoint.Id).FirstOrDefault());
-
         }
+
+        [TestMethod]
+        public void WebHookNotificationEndPointCRUD()
+        {
+            const string str = "12345678";
+            byte[] bytes = new byte[str.Length * sizeof(char)];
+            System.Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
+
+            var endPoint = _mediaContext.NotificationEndPoints.Create(Guid.NewGuid().ToString(), NotificationEndPointType.WebHook, "http://Contoso.com", bytes);
+            Assert.IsNotNull(endPoint);
+            Assert.IsNotNull(endPoint.Id);
+            Assert.IsFalse(String.IsNullOrEmpty(endPoint.Name));
+            endPoint.Name = Guid.NewGuid().ToString();
+            endPoint.Update();
+            endPoint.Name = Guid.NewGuid().ToString();
+            endPoint.UpdateAsync();
+            endPoint.Delete();
+            Assert.IsNull(_mediaContext.NotificationEndPoints.Where(c => c.Id == endPoint.Id).FirstOrDefault());
+        }
+
+        [TestMethod]
+        public void NotificationEndPointCreationFailureForAzureQueueWithCredential()
+        {
+            const string str = "12345678";
+            byte[] bytes = new byte[str.Length * sizeof(char)];
+            System.Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
+
+            try
+            {
+                var endPoint = _mediaContext.NotificationEndPoints.Create(Guid.NewGuid().ToString(), NotificationEndPointType.AzureQueue, "http://Contoso.com", bytes);
+                Assert.Fail();
+            }
+            catch (NotSupportedException ex)
+            {
+                Assert.IsTrue(ex.Message.Contains(StringTable.SupportWebHookWithCredentialOnly));
+            }
+        }
+
         [TestMethod]
         public void NotificationEndPointCreateValidateParameters()
         {

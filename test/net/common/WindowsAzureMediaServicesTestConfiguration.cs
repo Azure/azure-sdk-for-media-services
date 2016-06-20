@@ -28,6 +28,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
 
         public const string SmallWmv = @"Media\SmallWmv.wmv";
         public const string SmallWmv2 = @"Media\SmallWmv2.wmv";
+        public const string BBCmp4 = @"Media\BBCW_1920x1080_30sec.mp4";
         public const string BadSmallWmv = @"Media\BadSmallWmv.wmv";
         public const string ThumbnailXml = @"Media\Thumbnail.xml";
         public const string ThumbnailWithZeroStepXml = @"Media\ThumbnailWithZeroStep.xml";
@@ -45,6 +46,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
         public const string PlayReadyConfigWithContentKey = @"Configuration\PlayReady Protection_ContentKey.xml";
         public const string SmoothToHlsConfig = @"Configuration\Smooth Streams to Apple HTTP Live Streams.xml";
         public const string SmoothToEncryptHlsConfig = @"Configuration\Smooth Streams to Encrypted Apple HTTP Live Streams.xml";
+        public const string ThumbnailConfig = @"Configuration\Thumbnail.txt";
+        public const string ProxyConfig = @"Configuration\Proxy.txt";
+        public const string MbrConfig = @"Configuration\MBR.txt";
         
         public const string AudioOnlyConfig = @"Configuration\AudioEncodingPreset.xml";
 
@@ -57,6 +61,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
         public static string MediaServicesAccessScope = ConfigurationManager.AppSettings["MediaServicesAccessScope"];
 
         public static string MpEncoderName = ConfigurationManager.AppSettings["MPEncoderName"];
+        public static string MesName = ConfigurationManager.AppSettings["MESName"];
         public static string MpEncryptorName = ConfigurationManager.AppSettings["MPEncryptorName"];
         public static string MpPackagerName = ConfigurationManager.AppSettings["MPPackagerName"];
         public static string MpStorageDecryptorName = ConfigurationManager.AppSettings["MPStorageDecryptorName"];
