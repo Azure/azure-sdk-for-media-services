@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -28,6 +29,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// <remarks>This is used when creating task to specify properties for a Task's output.</remarks>
     internal partial class OutputAsset : BaseEntity<IAsset>, IAsset
     {
+        private IJob _associatedJob;
 
         /// <summary>
         /// Gets or sets the Id.
@@ -60,6 +62,22 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         public string AlternateId { get; set; }
 
+        /// <summary>
+        /// Sets the job which the output asset belongs to
+        /// </summary>
+        public IJob AssociatedJob
+        {
+            set { _associatedJob = value; }
+        }
+
+        /// <summary>
+        /// Gets the job which the output asset belongs to
+        /// </summary>
+        /// <returns></returns>
+        public IJob GetAssociatedJob()
+        {
+            return _associatedJob;
+        }
 
         /// <summary>
         /// Gets the asset storage container Uri.
@@ -90,6 +108,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Gets or sets the options for creating the asset.
         /// </summary>
         public AssetCreationOptions Options { get; set; }
+
+        /// <summary>
+        /// Gets or sets the asset format option
+        /// </summary>
+        public AssetFormatOption FormatOption { get; set; }
 
         /// <summary>
         /// Gets a collection of files contained by the asset.

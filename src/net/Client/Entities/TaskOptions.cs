@@ -28,12 +28,22 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Specifies no creation options.
         /// </summary>
         /// <remarks>This is the default value.</remarks>
-        None = 0,
+        None = 0x0,
 
         /// <summary>
         /// Specifies that the Task's configuration should be encrypted.
         /// </summary>
         /// <seealso cref="ITask.EncryptionKeyId"/>
-        ProtectedConfiguration = 1
+        ProtectedConfiguration = 0x1,
+                
+        /// <summary>
+        /// Specifies that the output asset will not be deleted even if the task failed
+        /// </summary>
+        DoNotDeleteOutputAssetOnFailure = 0x2,
+
+        /// <summary>
+        /// Specifies that the task will not be cancelled even if the corresponding job failed
+        /// </summary>
+        DoNotCancelOnJobFailure = 0x4
     }
 }

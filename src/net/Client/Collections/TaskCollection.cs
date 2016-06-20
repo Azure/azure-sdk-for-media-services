@@ -142,7 +142,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                                Name = taskName,
                                Configuration = configuration,
                                MediaProcessorId = mediaProcessor.Id,
-                               Options = (int)options
+                               Options = (int)options,
+                               ParentJob = _job
                            };
 
             task.SetMediaContext(MediaContext);

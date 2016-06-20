@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data.Services.Common;
+using System.Xml.Serialization;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -38,7 +39,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
        
         private InputAssetCollection<IAsset> _inputMediaAssets;
         private OutputAssetCollection _outputMediaAssets;
-       
+
+        private IJob _parentJob;
+        private readonly TaskNotificationSubscriptionCollection _taskNotificationSubscriptions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TaskData"/> class.
@@ -50,6 +53,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             this.OutputMediaAssets = new List<AssetData>();
             this.ErrorDetails = new List<ErrorDetail>();
             this.HistoricalEvents = new List<TaskHistoricalEvent>();
+            this._taskNotificationSubscriptions = new TaskNotificationSubscriptionCollection();
         }
 
         /// <summary>
@@ -192,9 +196,40 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             return this.Configuration;
         }
 
+        /// <summary>
+        /// Gets a collection of Task notification subscription.
+        /// </summary>
+        TaskNotificationSubscriptionCollection ITask.TaskNotificationSubscriptions
+        {
+            get
+            {
+                if (GetMediaContext() != null)
+                {
+                    _taskNotificationSubscriptions.MediaContext = GetMediaContext();
+                }
+
+                return _taskNotificationSubscriptions;
+            }
+        }
+
         #endregion
 
-       
+        /// <summary>
+        /// sets the job which the task belongs to
+        /// </summary>
+        public IJob ParentJob
+        {
+            set { _parentJob = value; }
+        }
+
+        /// <summary>
+        /// Get the parent Job
+        /// </summary>
+        /// <returns>The parent job associated with the task</returns>
+        public IJob GetParentJob()
+        {
+            return _parentJob;
+        }
 
         private static JobState GetExposedState(int state)
         {
@@ -209,6 +244,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private static TaskOptions GetExposedOptions(int options)
         {
             return (TaskOptions)options;
+        }
+
+        public List<TaskNotificationSubscription> TaskNotificationSubscriptions
+        {
+            get { return _taskNotificationSubscriptions.TaskNotificationSubscriptionList; }
+            set { _taskNotificationSubscriptions.TaskNotificationSubscriptionList = value; }
         }
     }
 }

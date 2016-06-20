@@ -28,7 +28,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     {
         private readonly List<IAsset> _assets;
 
-        private ITask _task;
+        private TaskData _task;
         private readonly MediaContextBase _cloudMediaContext;
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="task">The task.</param>
         /// <param name="assets">The assets.</param>
         /// <param name="cloudMediaContext">The <seealso cref="CloudMediaContext"/> instance.</param>
-        internal OutputAssetCollection(ITask task, IEnumerable<IAsset> assets, MediaContextBase cloudMediaContext)
+        internal OutputAssetCollection(TaskData task, IEnumerable<IAsset> assets, MediaContextBase cloudMediaContext)
         {
             this._assets = new List<IAsset>(assets);
             this._task = task;
@@ -129,13 +129,44 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>The new asset.</returns>
         public IAsset AddNew(string assetName, string storageAccountName, AssetCreationOptions options)
         {
+            return this.AddNew(assetName, storageAccountName, options, AssetFormatOption.None);
+        }
+
+        /// <summary>
+        /// Adds the new output asset.
+        /// </summary>
+        /// <param name="assetName">The asset name.</param>
+        /// <param name="options">The asset creation options</param>
+        /// <param name="formatOption">The asset format option.</param>
+        /// <returns>The new asset.</returns>
+        public IAsset AddNew(string assetName, AssetCreationOptions options, AssetFormatOption formatOption)
+        {
+            if (this._cloudMediaContext.DefaultStorageAccount == null)
+            {
+                throw new InvalidOperationException(StringTable.DefaultStorageAccountIsNull);
+            }
+            return this.AddNew(assetName, _cloudMediaContext.DefaultStorageAccount.Name, options, formatOption);
+        }
+
+        /// <summary>
+        /// Adds the new output asset.
+        /// </summary>
+        /// <param name="assetName">The asset name.</param>
+        /// <param name="storageAccountName">The name of storage account where asset will be hosted</param>
+        /// <param name="options">The asset creation options.</param>
+        /// <param name="formatOption">The asset format option.</param>
+        /// <returns>The new asset.</returns>
+        public IAsset AddNew(string assetName, string storageAccountName, AssetCreationOptions options, AssetFormatOption formatOption)
+        {
             this.CheckIfTaskIsPersistedAndThrowNotSupported();
 
             var asset = new OutputAsset
             {
                 Name = assetName,
                 Options = options,
-                StorageAccountName = storageAccountName
+                StorageAccountName = storageAccountName,
+                AssociatedJob = _task.GetParentJob(),
+                FormatOption = formatOption
             };
 
             this._assets.Add(asset);
@@ -150,7 +181,43 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>The new asset.</returns>
         public IAsset AddNew(string assetName)
         {
-            return this.AddNew(assetName, AssetCreationOptions.StorageEncrypted);
+            return this.AddNew(assetName, AssetCreationOptions.StorageEncrypted, AssetFormatOption.None);
+        }
+
+        /// <summary>
+        /// Adds an existing output asset to enable multiple tasks to share the same output asset
+        /// </summary>
+        /// <param name="asset">An existing ouput asset</param>
+        public void Add(IAsset asset)
+        {
+            if (asset == null)
+            {
+                throw new ArgumentNullException(string.Format(CultureInfo.InvariantCulture,
+                    StringTable.ErrorArgCannotBeNull, "asset"));
+            }
+
+            CheckIfTaskIsPersistedAndThrowNotSupported();
+
+            OutputAsset outputAsset = asset as OutputAsset;
+
+            if (outputAsset == null)
+            {
+                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, StringTable.ErrorAddingNonOutputAssetToTask), "asset");
+            }
+
+            if (outputAsset.GetAssociatedJob() == null || _task.GetParentJob() == null)
+            {
+                throw new NotSupportedException(string.Format(CultureInfo.InvariantCulture, StringTable.NonValidateStateToAddOutputAssetToTask));
+            }
+
+            if (!System.Object.ReferenceEquals(outputAsset.GetAssociatedJob(), _task.GetParentJob()))
+            {
+                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, StringTable.ErrorAddAssetToOutputAssetsOfTask));
+
+            }
+
+            _assets.Add(outputAsset);
+            return;
         }
 
         private void CheckIfTaskIsPersistedAndThrowNotSupported()

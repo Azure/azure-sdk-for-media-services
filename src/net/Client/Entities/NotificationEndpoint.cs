@@ -27,8 +27,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     {
         private string _id;
         private string _name;
-        private NotificationEndPointType _endPointType;
         private string _endPointAddress;
+        private NotificationEndPointType _endPointType;
+        private NotificationEndPointCredentialType _endPointCredentialType;
+        private ProtectionKeyType _protectionKeyType;
 
         /// <summary>
         /// Don't allow the customer to create a default NotificationEndPoint object.
@@ -52,8 +54,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             EndPointType = (int)endPointType;
             EndPointAddress = endPointAddress;
         }
-
-       
 
         /// <summary>
         /// Unique identifier of notification endpoint
@@ -136,6 +136,62 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 _endPointAddress = value;
             }
         }
+
+        /// <summary>
+        /// Type of notification endpoint Credential.
+        /// Media service uses this type to determine how to write the notification to the endpoint. 
+        /// </summary>
+        NotificationEndPointCredentialType INotificationEndPoint.CredentialType
+        {
+            get { return _endPointCredentialType; }
+        }
+
+        /// <summary>
+        /// Set the Credential type for notification endpoint 
+        /// </summary>
+        public int CredentialType
+        {
+            get { return (int)_endPointCredentialType; }
+
+            set
+            {
+                int endPointCredentialTypeValue = value;
+                if (endPointCredentialTypeValue != (int)(NotificationEndPointCredentialType.None) && endPointCredentialTypeValue != (int)(NotificationEndPointCredentialType.SigningKey))
+                {
+                    throw new InvalidEnumArgumentException("CredentialType", endPointCredentialTypeValue, typeof(NotificationEndPointCredentialType));
+                }
+
+                _endPointCredentialType = (NotificationEndPointCredentialType)endPointCredentialTypeValue;
+            }
+        }
+
+        /// <summary>
+        /// The encrypted endPoint credential.
+        /// </summary>
+        public string EncryptedEndPointCredential { get; set; }
+
+        /// <summary>
+        /// The protection key type.
+        /// </summary>
+        public int ProtectionKeyType 
+        {
+            get { return (int)_protectionKeyType; }
+            set
+            {
+                int protectionKeyTypeValue = value;
+                if (protectionKeyTypeValue != (int)(Client.ProtectionKeyType.X509CertificateThumbprint) )
+                {
+                    throw new InvalidEnumArgumentException("ProtectionKeyType", protectionKeyTypeValue, typeof(ProtectionKeyType));
+                }
+
+                _protectionKeyType = (ProtectionKeyType)protectionKeyTypeValue;
+        }
+        }
+
+        /// <summary>
+        /// The Protection Key Id.
+        /// </summary>
+        public string ProtectionKeyId { get; set; }
 
         /// <summary>
         /// Update the notification endpoint object.

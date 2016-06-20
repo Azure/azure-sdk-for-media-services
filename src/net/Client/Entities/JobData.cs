@@ -47,6 +47,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private const string InputAssetNodeName = "inputAsset";
         private const string OutputAssetNodeName = "outputAsset";
         private const string AssetCreationOptionsAttributeName = "assetCreationOptions";
+        private const string AssetFormatOptionAttributeName = "assetFormatOption";
         private const string OutputAssetNameAttributeName = "assetName";
         private const string TaskTemplateIdAttributeName = "taskTemplateId";
         private const string StorageAttributeName = "storageAccountName";
@@ -484,22 +485,29 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 foreach (IAsset output in outputs)
                 {
                     taskBody.WriteStartElement(OutputAssetNodeName);
-
                     var outputAsset = (OutputAsset)output;
-                    int options = (int)outputAsset.Options;
-                    taskBody.WriteAttributeString(AssetCreationOptionsAttributeName, options.ToString(CultureInfo.InvariantCulture));
-                    if (!string.IsNullOrEmpty(outputAsset.Name))// Ignore empty string for the name
-                    {
-                        taskBody.WriteAttributeString(OutputAssetNameAttributeName, outputAsset.Name);
 
-                    }
-                    if (!string.IsNullOrEmpty(outputAsset.StorageAccountName))// Ignore empty string for the storage account
+                    if (!assetNamingSchemeResolver.IsExistingOutputAsset(outputAsset))
                     {
-                        taskBody.WriteAttributeString(StorageAttributeName, outputAsset.StorageAccountName);
-
+                        int options = (int) outputAsset.Options;
+                        int formatOption = (int) outputAsset.FormatOption;
+                        taskBody.WriteAttributeString(AssetCreationOptionsAttributeName,
+                            options.ToString(CultureInfo.InvariantCulture));
+                        taskBody.WriteAttributeString(AssetFormatOptionAttributeName,
+                            formatOption.ToString(CultureInfo.InvariantCulture));
+                        if (!string.IsNullOrEmpty(outputAsset.Name)) // Ignore empty string for the name
+                        {
+                            taskBody.WriteAttributeString(OutputAssetNameAttributeName, outputAsset.Name);
+                        }
+                        if (!string.IsNullOrEmpty(outputAsset.StorageAccountName))
+                            // Ignore empty string for the storage account
+                        {
+                            taskBody.WriteAttributeString(StorageAttributeName, outputAsset.StorageAccountName);
+                        }
                     }
                     taskBody.WriteString(assetNamingSchemeResolver.GetAssetId(output));
-                    taskBody.WriteEndElement();
+                    taskBody.WriteEndElement();                        
+
                 }
 
                 taskBody.WriteEndDocument();
