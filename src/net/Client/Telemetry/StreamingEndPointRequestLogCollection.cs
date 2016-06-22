@@ -38,7 +38,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <param name="endpointAddress">The Telemetry endpoint address</param>
         /// <param name="storageAccountKey">The Storage account key.</param>
-        /// <param name="mediaServicesAccountName">The Media Services account ID.</param>
+        /// <param name="mediaServicesAccountId">The Media Services account Id.</param>
         /// <param name="streamingEndPointId">The Streaming EndPoint ID</param>
         /// <param name="start">The start time.</param>
         /// <param name="end">The end time.</param>
@@ -46,7 +46,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public ICollection<IStreamingEndPointRequestLog> GetStreamingEndPointMetrics(
             string endpointAddress,
             string storageAccountKey,
-            string mediaServicesAccountName,
+            string mediaServicesAccountId,
             string streamingEndPointId,
             DateTime start,
             DateTime end)
@@ -54,7 +54,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             return AsyncHelper.Wait(GetStreamingEndPointMetricsAsync(
                 endpointAddress,
                 storageAccountKey,
-                mediaServicesAccountName,
+                mediaServicesAccountId,
                 streamingEndPointId,
                 start,
                 end));
@@ -65,7 +65,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <param name="endpointAddress">The Telemetry endpoint address</param>
         /// <param name="storageAccountKey">The Storage account key.</param>
-        /// <param name="mediaServicesAccountName">The Media Services account ID.</param>
+        /// <param name="mediaServicesAccountId">The Media Services account Id.</param>
         /// <param name="streamingEndPointId">The Streaming EndPoint ID</param>
         /// <param name="start">The start time.</param>
         /// <param name="end">The end time.</param>
@@ -73,7 +73,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public Task<ICollection<IStreamingEndPointRequestLog>> GetStreamingEndPointMetricsAsync(
             string endpointAddress,
             string storageAccountKey,
-            string mediaServicesAccountName,
+            string mediaServicesAccountId,
             string streamingEndPointId,
             DateTime start,
             DateTime end)
@@ -88,15 +88,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new ArgumentNullException("storageAccountKey");
             }
 
-            if (mediaServicesAccountName == null)
+            if (mediaServicesAccountId == null)
             {
-                throw new ArgumentNullException("mediaServicesAccountName");
+                throw new ArgumentNullException("mediaServicesAccountId");
             }
 
-            Guid mediaServicesAccountId;
-            if (!Guid.TryParse(mediaServicesAccountName, out mediaServicesAccountId))
+            Guid accountId;
+            if (!Guid.TryParse(mediaServicesAccountId, out accountId))
             {
-                throw new ArgumentException(StringTable.InvalidMediaServicesAccountNameInput);
+                throw new ArgumentException(StringTable.InvalidMediaServicesAccountIdInput);
             }
 
             Guid streamingEndPointGuid;
@@ -133,7 +133,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     new Uri(endpointAddress));
 
                 return telemetryStorage.GetStreamingEndPointMetrics(
-                    mediaServicesAccountId,
+                    accountId,
                     streamingEndPointGuid,
                     start,
                     end);

@@ -361,8 +361,8 @@
   <data name="InvalidChannelInput" xml:space="preserve">
     <value>Channel Id can't be parsed as a Guid format.</value>
   </data>
-  <data name="InvalidMediaServicesAccountNameInput" xml:space="preserve">
-    <value>MediaServicesAccountName can't be parsed as a Guid format.</value>
+  <data name="InvalidMediaServicesAccountIdInput" xml:space="preserve">
+    <value>MediaServicesAccountId can't be parsed as a Guid format.</value>
   </data>
   <data name="InvalidStreamingEndPointInput" xml:space="preserve">
     <value>StreamingEndPoint Id id can't be parsed as a Guid format.</value>

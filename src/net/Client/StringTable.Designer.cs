@@ -529,11 +529,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MediaServicesAccountName can&apos;t be parsed as a Guid format..
+        ///   Looks up a localized string similar to MediaServicesAccountId can&apos;t be parsed as a Guid format..
         /// </summary>
-        internal static string InvalidMediaServicesAccountNameInput {
+        internal static string InvalidMediaServicesAccountIdInput {
             get {
-                return ResourceManager.GetString("InvalidMediaServicesAccountNameInput", resourceCulture);
+                return ResourceManager.GetString("InvalidMediaServicesAccountIdInput", resourceCulture);
             }
         }
         

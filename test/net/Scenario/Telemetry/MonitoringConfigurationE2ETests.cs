@@ -33,6 +33,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void TestMonitoringConfiguration()
         {
             // Get the current monitoring configuration settings

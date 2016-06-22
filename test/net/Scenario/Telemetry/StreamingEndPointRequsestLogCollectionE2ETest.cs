@@ -107,6 +107,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void TestStreamingEndPointMetrics()
         {
             // prepare the test data
@@ -115,25 +117,39 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 true);
             var cloudTableClient = cloudStorageAccount.CreateCloudTableClient();
             var table1 = cloudTableClient.GetTableReference(TestTableNames[0]);
-            table1.CreateIfNotExists();
-            var op1 = new TableBatchOperation();
-            op1.Insert(TestData[0]);
-            op1.Insert(TestData[1]);
-            table1.ExecuteBatch(op1);
-
             var table2 = cloudTableClient.GetTableReference(TestTableNames[1]);
-            table2.CreateIfNotExists();
-            var op2 = new TableBatchOperation();
-            op2.Insert(TestData[2]);
-            op2.Insert(TestData[3]);
-            table2.ExecuteBatch(op2);
-            // case 1: both start and end time are on the same day
-            TestQuery1();
-            // case 2: the start and end time are on different day
-            TestQuery2();
 
-            table1.DeleteIfExists();
-            table2.DeleteIfExists();
+            try
+            {
+                table1.Create();
+                var op1 = new TableBatchOperation();
+                op1.Insert(TestData[0]);
+                op1.Insert(TestData[1]);
+                table1.ExecuteBatch(op1);
+
+
+                table2.Create();
+                var op2 = new TableBatchOperation();
+                op2.Insert(TestData[2]);
+                op2.Insert(TestData[3]);
+                table2.ExecuteBatch(op2);
+                // case 1: both start and end time are on the same day
+                TestQuery1();
+                // case 2: the start and end time are on different day
+                TestQuery2();
+            }
+            finally
+            {
+                if (table1 != null)
+                {
+                    table1.DeleteIfExists();
+                }
+
+                if (table2 != null)
+                {
+                    table2.DeleteIfExists();
+                }
+            }
         }
 
         private void TestQuery1()
