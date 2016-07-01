@@ -506,16 +506,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             IJob job = _mediaContext.Jobs.Create("Test");
             IMediaProcessor mediaProcessor = GetMediaProcessor(_mediaContext, WindowsAzureMediaServicesTestConfiguration.MesName);
 
-            ITask task1 = job.Tasks.AddNew("Task1", mediaProcessor, configuration1, TaskOptions.None);
+            ITask task1 = job.Tasks.AddNew("Task1", mediaProcessor, configuration1, TaskOptions.DoNotCancelOnJobFailure | TaskOptions.DoNotDeleteOutputAssetOnFailure);
             task1.InputAssets.Add(asset1);
             task1.OutputAssets.AddNew("JobOutput", options: AssetCreationOptions.None, formatOption: AssetFormatOption.None);
 
-            ITask task2 = job.Tasks.AddNew("Task2", mediaProcessor, configuration2, TaskOptions.None);
+            ITask task2 = job.Tasks.AddNew("Task2", mediaProcessor, configuration2, TaskOptions.DoNotCancelOnJobFailure | TaskOptions.DoNotDeleteOutputAssetOnFailure);
             task2.InputAssets.Add(asset1);
             IAsset outputAsset = task2.OutputAssets.AddNew("JobOutput", options: AssetCreationOptions.None, formatOption: AssetFormatOption.AdaptiveStreaming);
 
 
-            ITask task3 = job.Tasks.AddNew("Task3", mediaProcessor, configuration3, TaskOptions.None);
+            ITask task3 = job.Tasks.AddNew("Task3", mediaProcessor, configuration3, TaskOptions.DoNotCancelOnJobFailure | TaskOptions.DoNotDeleteOutputAssetOnFailure);
             task3.InputAssets.Add(asset1);
             task3.OutputAssets.Add(outputAsset);
 
@@ -525,6 +525,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             Assert.IsTrue(job.OutputMediaAssets.Count == 2);
             Assert.AreEqual(job.Tasks[1].OutputAssets[0].Id, job.Tasks[2].OutputAssets[0].Id, "Output assets are not the same");
+            //Assert.AreEqual(AssetType.SmoothStreaming, job.Tasks[1].OutputAssets[0].AssetType);
 
             string workingDir = Path.GetTempPath();
             IAssetFile ismAsset =

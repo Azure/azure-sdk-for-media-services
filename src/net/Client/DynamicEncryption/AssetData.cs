@@ -270,7 +270,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     {
                         assetType = AssetType.MediaServicesHLS;
                     }
-                    else if (assetFiles.Where(af => IsExtension(af.Name, ".ismc")).Any())
+                    else if (assetFiles.Any(af => af.AssetFileOptions.HasFlag(AssetFileOptions.Fragmented))
+                             || assetFiles.Any(af => IsExtension(af.Name, ".ismv"))
+                             || assetFiles.Any(af => IsExtension(af.Name, ".isma")))
                     {
                         if (asset.Options.HasFlag(AssetCreationOptions.EnvelopeEncryptionProtected))
                         {

@@ -899,12 +899,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                         Assert.AreEqual(hashValueForWAMSSDKDownload, hashValueForInputFile,
                             "MD5 CheckSums for WAMS uploaded and downloaded file are different");
                     }
+
                     //Comparing checksum if it is present
-                    if (blob.Properties.ContentMD5 != null)
+                    if ((asset.Options & AssetCreationOptions.StorageEncrypted) == 0 && blob.Properties.ContentMD5 != null)
                     {
                         //Assert.AreEqual(hashValueForlocalSourceFile, blob.Properties.ContentMD5, "MD5 CheckSums between blob file and source file  are different");
                         Assert.AreEqual(hashValueForWAMSSDKDownload, blob.Properties.ContentMD5, "MD5 CheckSums between blob file and wams sdk download are different");
-
                     }
 
 
