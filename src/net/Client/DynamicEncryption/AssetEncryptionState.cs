@@ -68,6 +68,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption
         /// <summary>
         /// The Asset has an AssetDeliveryPolicy with an AssetDeliveryPolicyType of DynamicCommonEncryption configured for the requested AssetDeliveryProtocol value.
         /// </summary>
-        DynamicCommonEncryption
+        DynamicCommonEncryption,
+
+        /// <summary>
+        /// The Asset has an AssetDeliveryPolicy with an AssetDeliveryPolicyType of DynamicCommonEncryptionCbcs configured for the requested AssetDeliveryProtocol value.
+        /// </summary>
+        DynamicCommonEncryptionCbcs
     }
 }
