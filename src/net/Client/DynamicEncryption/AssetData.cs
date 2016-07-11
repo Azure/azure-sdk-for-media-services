@@ -110,29 +110,38 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     }
                     else
                     {
-                        if (policy.AssetDeliveryPolicyType == AssetDeliveryPolicyType.Blocked)
+                        switch (policy.AssetDeliveryPolicyType)
                         {
-                            returnValue = AssetEncryptionState.BlockedByPolicy;
-                        }
-                        else if (policy.AssetDeliveryPolicyType == AssetDeliveryPolicyType.NoDynamicEncryption)
-                        {
-                            returnValue = AssetEncryptionState.NoDynamicEncryption;
-                        }
-                        else if (policy.AssetDeliveryPolicyType == AssetDeliveryPolicyType.DynamicCommonEncryption)
-                        {
-                            if (((asset.AssetType == AssetType.SmoothStreaming) || (asset.AssetType == AssetType.MultiBitrateMP4)) &&
-                                ((asset.Options == AssetCreationOptions.StorageEncrypted) || (asset.Options == AssetCreationOptions.None)))
-                            {
-                                returnValue = AssetEncryptionState.DynamicCommonEncryption;
-                            }
-                        }
-                        else if (policy.AssetDeliveryPolicyType == AssetDeliveryPolicyType.DynamicEnvelopeEncryption)
-                        {
-                            if (((asset.AssetType == AssetType.SmoothStreaming) || (asset.AssetType == AssetType.MultiBitrateMP4)) &&
-                                ((asset.Options == AssetCreationOptions.StorageEncrypted) || (asset.Options == AssetCreationOptions.None)))
-                            {
-                                returnValue = AssetEncryptionState.DynamicEnvelopeEncryption;
-                            }
+                            case AssetDeliveryPolicyType.Blocked:
+                                returnValue = AssetEncryptionState.BlockedByPolicy;
+                                break;
+                            case AssetDeliveryPolicyType.NoDynamicEncryption:
+                                returnValue = AssetEncryptionState.NoDynamicEncryption;
+                                break;
+                            case AssetDeliveryPolicyType.DynamicCommonEncryption:
+                                if (((asset.AssetType == AssetType.SmoothStreaming) || (asset.AssetType == AssetType.MultiBitrateMP4)) &&
+                                    ((asset.Options == AssetCreationOptions.StorageEncrypted) || (asset.Options == AssetCreationOptions.None)))
+                                {
+                                    returnValue = AssetEncryptionState.DynamicCommonEncryption;
+                                }
+                                break;
+                            case AssetDeliveryPolicyType.DynamicCommonEncryptionCbcs:
+                                if (((asset.AssetType == AssetType.SmoothStreaming) || (asset.AssetType == AssetType.MultiBitrateMP4)) &&
+                                    ((asset.Options == AssetCreationOptions.StorageEncrypted) || (asset.Options == AssetCreationOptions.None)))
+                                {
+                                    returnValue = AssetEncryptionState.DynamicCommonEncryptionCbcs;
+                                }
+                                break;
+                            case AssetDeliveryPolicyType.DynamicEnvelopeEncryption:
+                                if (((asset.AssetType == AssetType.SmoothStreaming) || (asset.AssetType == AssetType.MultiBitrateMP4)) &&
+                                    ((asset.Options == AssetCreationOptions.StorageEncrypted) || (asset.Options == AssetCreationOptions.None)))
+                                {
+                                    returnValue = AssetEncryptionState.DynamicEnvelopeEncryption;
+                                }
+                                break;
+                            case AssetDeliveryPolicyType.None:
+                            default:
+                                break;
                         }
                     }
                 }
