@@ -99,11 +99,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new ArgumentException(StringTable.InvalidMediaServicesAccountIdInput);
             }
 
-            Guid streamingEndPointGuid;
-            if (!Guid.TryParse(streamingEndPointId, out streamingEndPointGuid))
-            {
-                throw new ArgumentException(StringTable.InvalidStreamingEndPointInput);
-            }
+            var streamingEndPointGuid = TelemetryUtilities.ParseStreamingEndPointId(streamingEndPointId);
 
             if (start.Kind != DateTimeKind.Utc)
             {

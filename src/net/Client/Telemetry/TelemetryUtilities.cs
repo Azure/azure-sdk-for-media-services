@@ -21,6 +21,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     internal static class TelemetryUtilities
     {
         /// <summary>
+        /// The prefix for the streaming endpoint Id.
+        /// </summary>
+        private const string StreamingEndPointIdentifierPrefix = "nb:oid:UUID:";
+
+        /// <summary>
+        /// The prefix for the channel Id.
+        /// </summary>
+        private const string ChannelIdentifierPrefix = "nb:chid:UUID:";
+
+        /// <summary>
         /// Get storage account name from the given endpoint address
         /// </summary>
         /// <param name="endpointAddress"></param>
@@ -34,6 +44,56 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new UriFormatException("endpointAddress");
             }
             return entries[0];
+        }
+
+        /// <summary>
+        /// Validate and parse the streaming endpoint Id to Guid format.
+        /// </summary>
+        /// <param name="streamingEndpointId">The streaming endpoint Id.</param>
+        /// <returns>The Guid format of the streaming endpoint Id.</returns>
+        public static Guid ParseStreamingEndPointId(string streamingEndpointId)
+        {
+            if (String.IsNullOrWhiteSpace(streamingEndpointId))
+            {
+                throw new ArgumentException("streamingEndpointId");
+            }
+
+            if (streamingEndpointId.StartsWith(StreamingEndPointIdentifierPrefix, StringComparison.OrdinalIgnoreCase))
+            {
+                streamingEndpointId = streamingEndpointId.Remove(0, StreamingEndPointIdentifierPrefix.Length);
+            }
+
+            Guid streamingEndpointIdGuid;
+            if (!Guid.TryParse(streamingEndpointId, out streamingEndpointIdGuid))
+            {
+                throw new ArgumentException(StringTable.InvalidStreamingEndPointInput);
+            }
+            return streamingEndpointIdGuid;
+        }
+
+        /// <summary>
+        /// Validate and parse the channel Id to Guid format.
+        /// </summary>
+        /// <param name="channelId">The Channel Id.</param>
+        /// <returns>The Guid format of the streaming endpoint Id.</returns>
+        public static Guid ParseChannelId(string channelId)
+        {
+            if (String.IsNullOrWhiteSpace(channelId))
+            {
+                throw new ArgumentException("channelId.");
+            }
+
+            if (channelId.StartsWith(ChannelIdentifierPrefix, StringComparison.OrdinalIgnoreCase))
+            {
+                channelId = channelId.Remove(0, ChannelIdentifierPrefix.Length);
+            }
+
+            Guid channelIdGuid;
+            if (!Guid.TryParse(channelId, out channelIdGuid))
+            {
+                throw new ArgumentException(StringTable.InvalidChannelInput);
+            }
+            return channelIdGuid;
         }
     }
 }
