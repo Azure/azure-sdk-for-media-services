@@ -97,6 +97,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         private readonly TraceListener _consoleTraceListener = new ConsoleTraceListener();
 
+        private const string ChannelIdentifierPrefix = "nb:chid:UUID:";
+
         [TestInitialize]
         public void SetupTest()
         {
@@ -159,36 +161,42 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         private void TestQuery1()
         {
-            var res = _mediaConext.ChannelMetrics.GetChannelMetrics(
-                GetTableEndPoint(),
-                WindowsAzureMediaServicesTestConfiguration.TelemetryStorageAccountKey,
-                AccountId.ToString(),
-                ChannelId.ToString(),
-                new DateTime(2011, 3, 2, 21, 53, 38, DateTimeKind.Utc),
-                new DateTime(2011, 3, 2, 21, 53, 40, DateTimeKind.Utc));
-            Assert.IsNotNull(res);
-            var resArray = res.ToArray();
-            Assert.AreEqual(resArray.Length, 2);
-            VerifyResult(resArray[0], TestData[0]);
-            VerifyResult(resArray[1], TestData[1]);
+            GetChannelIds().ForEach(channelId =>
+            {
+                var res = _mediaConext.ChannelMetrics.GetChannelMetrics(
+                    GetTableEndPoint(),
+                    WindowsAzureMediaServicesTestConfiguration.TelemetryStorageAccountKey,
+                    AccountId.ToString(),
+                    channelId,
+                    new DateTime(2011, 3, 2, 21, 53, 38, DateTimeKind.Utc),
+                    new DateTime(2011, 3, 2, 21, 53, 40, DateTimeKind.Utc));
+                Assert.IsNotNull(res);
+                var resArray = res.ToArray();
+                Assert.AreEqual(resArray.Length, 2);
+                VerifyResult(resArray[0], TestData[0]);
+                VerifyResult(resArray[1], TestData[1]);                  
+            });
         }
 
         private void TestQuery2()
         {
-            ICollection<IChannelHeartbeat> res = _mediaConext.ChannelMetrics.GetChannelMetrics(
-                GetTableEndPoint(),
-                WindowsAzureMediaServicesTestConfiguration.TelemetryStorageAccountKey,
-                AccountId.ToString(),
-                ChannelId.ToString(),
-                new DateTime(2011, 3, 2, 21, 53, 38, DateTimeKind.Utc),
-                new DateTime(2011, 3, 3, 21, 53, 40, DateTimeKind.Utc));
-            Assert.IsNotNull(res);
-            IChannelHeartbeat[] resArray = res.ToArray();
-            Assert.AreEqual(resArray.Length, 4);
-            VerifyResult(resArray[0], TestData[0]);
-            VerifyResult(resArray[1], TestData[1]);
-            VerifyResult(resArray[2], TestData[2]);
-            VerifyResult(resArray[3], TestData[3]);
+            GetChannelIds().ForEach(channelId =>
+            {
+                var res = _mediaConext.ChannelMetrics.GetChannelMetrics(
+                    GetTableEndPoint(),
+                    WindowsAzureMediaServicesTestConfiguration.TelemetryStorageAccountKey,
+                    AccountId.ToString(),
+                    channelId,
+                    new DateTime(2011, 3, 2, 21, 53, 38, DateTimeKind.Utc),
+                    new DateTime(2011, 3, 3, 21, 53, 40, DateTimeKind.Utc));
+                Assert.IsNotNull(res);
+                var resArray = res.ToArray();
+                Assert.AreEqual(resArray.Length, 4);
+                VerifyResult(resArray[0], TestData[0]);
+                VerifyResult(resArray[1], TestData[1]);
+                VerifyResult(resArray[2], TestData[2]);
+                VerifyResult(resArray[3], TestData[3]);                
+            });
         }
 
         private void VerifyResult(IChannelHeartbeat value, ChannelHeartbeatEntity expected)
@@ -210,6 +218,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         private static string GetTableEndPoint()
         {
             return "https://" + WindowsAzureMediaServicesTestConfiguration.TelemetryStorageAccountName + ".table.core.windows.net/";
+        }
+
+        private static List<string> GetChannelIds()
+        {
+            return new List<string>
+            {
+                ChannelId.ToString(), 
+                ChannelIdentifierPrefix + ChannelId,
+            };
         }
     }
 }
