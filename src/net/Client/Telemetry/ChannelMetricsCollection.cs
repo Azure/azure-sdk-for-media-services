@@ -99,11 +99,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new ArgumentException(StringTable.InvalidMediaServicesAccountIdInput);
             }
 
-            Guid channelGuid;
-            if (!Guid.TryParse(channelId, out channelGuid))
-            {
-                throw new ArgumentException(StringTable.InvalidChannelInput);
-            }
+            var channelGuid = TelemetryUtilities.ParseChannelId(channelId);
 
             if (start.Kind != DateTimeKind.Utc)
             {

@@ -15,6 +15,7 @@
 // </license>
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
@@ -92,6 +93,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         private readonly TraceListener _consoleTraceListener = new ConsoleTraceListener();
 
+        private const string StreamingEndPointIdentifierPrefix = "nb:oid:UUID:";
+
+
         [TestInitialize]
         public void SetupTest()
         {
@@ -154,36 +158,42 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         private void TestQuery1()
         {
-            var res = _mediaConext.StreamingEndPointRequestLogs.GetStreamingEndPointMetrics(
-                GetTableEndPoint(),
-                WindowsAzureMediaServicesTestConfiguration.TelemetryStorageAccountKey,
-                AccountId.ToString(),
-                StreamingEndPointId.ToString(),
-                new DateTime(2012, 3, 2, 21, 53, 38, DateTimeKind.Utc),
-                new DateTime(2012, 3, 2, 21, 53, 40, DateTimeKind.Utc));
-            Assert.IsNotNull(res);
-            var resArray = res.ToArray();
-            Assert.AreEqual(resArray.Length, 2);
-            VerifyResult(resArray[0], TestData[0]);
-            VerifyResult(resArray[1], TestData[1]);
+            GetStreamingEndpointIds().ForEach(streamingEndpointId =>
+            {
+                var res = _mediaConext.StreamingEndPointRequestLogs.GetStreamingEndPointMetrics(
+                    GetTableEndPoint(),
+                    WindowsAzureMediaServicesTestConfiguration.TelemetryStorageAccountKey,
+                    AccountId.ToString(),
+                    streamingEndpointId,
+                    new DateTime(2012, 3, 2, 21, 53, 38, DateTimeKind.Utc),
+                    new DateTime(2012, 3, 2, 21, 53, 40, DateTimeKind.Utc));
+                Assert.IsNotNull(res);
+                var resArray = res.ToArray();
+                Assert.AreEqual(resArray.Length, 2);
+                VerifyResult(resArray[0], TestData[0]);
+                VerifyResult(resArray[1], TestData[1]);                
+            });
         }
 
         private void TestQuery2()
         {
-            var res = _mediaConext.StreamingEndPointRequestLogs.GetStreamingEndPointMetrics(
-                GetTableEndPoint(),
-                WindowsAzureMediaServicesTestConfiguration.TelemetryStorageAccountKey,
-                AccountId.ToString(),
-                StreamingEndPointId.ToString(),
-                new DateTime(2012, 3, 2, 21, 53, 38, DateTimeKind.Utc),
-                new DateTime(2012, 3, 3, 21, 53, 40, DateTimeKind.Utc));
-            Assert.IsNotNull(res);
-            var resArray = res.ToArray();
-            Assert.AreEqual(resArray.Length, 4);
-            VerifyResult(resArray[0], TestData[0]);
-            VerifyResult(resArray[1], TestData[1]);
-            VerifyResult(resArray[2], TestData[2]);
-            VerifyResult(resArray[3], TestData[3]);
+            GetStreamingEndpointIds().ForEach(streamingEndpointId =>
+            {
+                var res = _mediaConext.StreamingEndPointRequestLogs.GetStreamingEndPointMetrics(
+                    GetTableEndPoint(),
+                    WindowsAzureMediaServicesTestConfiguration.TelemetryStorageAccountKey,
+                    AccountId.ToString(),
+                    streamingEndpointId,
+                    new DateTime(2012, 3, 2, 21, 53, 38, DateTimeKind.Utc),
+                    new DateTime(2012, 3, 3, 21, 53, 40, DateTimeKind.Utc));
+                Assert.IsNotNull(res);
+                var resArray = res.ToArray();
+                Assert.AreEqual(resArray.Length, 4);
+                VerifyResult(resArray[0], TestData[0]);
+                VerifyResult(resArray[1], TestData[1]);
+                VerifyResult(resArray[2], TestData[2]);
+                VerifyResult(resArray[3], TestData[3]);                
+            });
         }
 
         private void VerifyResult(IStreamingEndPointRequestLog value, StreamingEndPointRequestLogEntity expected)
@@ -207,5 +217,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         {
             return "https://" + WindowsAzureMediaServicesTestConfiguration.TelemetryStorageAccountName + ".table.core.windows.net/";
         }
+
+        private static List<string> GetStreamingEndpointIds()
+        {
+            return new List<string>
+            {
+                StreamingEndPointId.ToString(),
+                StreamingEndPointIdentifierPrefix + StreamingEndPointId
+            };
+        } 
     }
 }
