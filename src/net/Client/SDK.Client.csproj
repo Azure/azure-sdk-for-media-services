@@ -172,6 +172,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AcsTokenProvider.cs" />
     <Compile Include="Collections\AssetFilterBaseCollection.cs" />
     <Compile Include="Collections\EncodingReservedUnitCollection.cs" />
     <Compile Include="Collections\TaskNotificationSubscriptionCollection.cs" />
@@ -292,6 +293,7 @@
     <Compile Include="Entities\ITaskNotificationSubscription.cs" />
     <Compile Include="Entities\NotificationEndpointCredentialType.cs" />
     <Compile Include="Entities\TaskNotificationSubscription.cs" />
+    <Compile Include="ITokenProvider.cs" />
     <Compile Include="Live\AdMarkerSource.cs" />
     <Compile Include="Entities\IFilterTrackPropertyCondition.cs" />
     <Compile Include="Entities\IStreamingAssetFilter.cs" />

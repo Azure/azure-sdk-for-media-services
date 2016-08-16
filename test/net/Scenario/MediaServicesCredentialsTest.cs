@@ -4,9 +4,9 @@
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 // http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,7 +25,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
-{    
+{
     /// <summary>
     ///This is a test class for MediaServicesCredentialsTest and is intended
     ///to contain all MediaServicesCredentialsTest Unit Tests
@@ -83,7 +83,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         private static void MakeRestCallAndVerifyToken(CloudMediaContext context)
         {
-           context.Assets.FirstOrDefault();
+            context.Assets.FirstOrDefault();
             Assert.IsNotNull(context.Credentials.AccessToken);
         }
 
@@ -101,7 +101,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             {
                 AccessToken = context1.Credentials.AccessToken,
                 TokenExpiration = DateTime.UtcNow.AddYears(-1),
-                Scope = context1.Credentials.Scope, 
+                Scope = context1.Credentials.Scope,
                 AcsBaseAddress = context1.Credentials.AcsBaseAddress
             };
 
@@ -127,6 +127,22 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             Assert.IsNotNull(target.AccessToken);
             Assert.IsTrue(target.AccessToken.Length > 0);
             Assert.IsTrue(target.TokenExpiration > DateTime.UtcNow.AddHours(1));
+
+            var token = target.GetAccessToken();
+            Assert.AreEqual( target.AccessToken, token.Item1);
+            Assert.AreEqual(target.TokenExpiration, token.Item2);
+        }
+
+        [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
+        public void MediaServicesCredentialsTestAuthorizationHeader()
+        {
+            var credentials = WindowsAzureMediaServicesTestConfiguration.CreateMediaServicesCredentials();
+            var header = credentials.GetAuthorizationHeader();
+            Assert.IsNotNull(header);
+            Assert.AreEqual("Bearer " + credentials.AccessToken, header);
         }
 
         [TestMethod()]
@@ -259,7 +275,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 throw;
             }
         }
-        
+
         [TestMethod()]
         [ExpectedException(typeof(DataServiceQueryException))]
         [TestCategory("ClientSDK")]
