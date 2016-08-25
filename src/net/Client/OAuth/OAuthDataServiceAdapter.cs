@@ -4,9 +4,9 @@
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 // http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,15 +32,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.OAuth
     public class OAuthDataServiceAdapter : IDataServiceContextAdapter
     {
         private const string AuthorizationHeader = "Authorization";
-        private const string BearerTokenFormat = "Bearer {0}";
-        private const int ExpirationTimeBufferInSeconds = 600;  // The token has an expiration time in hours, 
-                                                                // so setting the buffer as 10 minutes is safe for 
-                                                                // the network latency and clock skew.
-
-        private readonly MediaServicesCredentials _credentials;
-        private readonly static object _acsRefreshLock = new object();
-        private readonly string _trustedRestCertificateHash;
-        private readonly string _trustedRestSubject;
+        private readonly ITokenProvider _tokenProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OAuthDataServiceAdapter"/> class.
@@ -48,11 +40,19 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.OAuth
         /// <param name="credentials">Microsoft WindowsAzure Media Services credentials.</param>
         /// <param name="trustedRestCertificateHash">The trusted rest certificate hash.</param>
         /// <param name="trustedRestSubject">The trusted rest subject.</param>
-        public OAuthDataServiceAdapter(MediaServicesCredentials credentials, string trustedRestCertificateHash, string trustedRestSubject)
+        [Obsolete("Use the constructor which accepts an ITokenProvider interface")]
+        public OAuthDataServiceAdapter(MediaServicesCredentials credentials, string trustedRestCertificateHash, string trustedRestSubject):
+            this(credentials)
         {
-            this._credentials = credentials;
-            this._trustedRestCertificateHash = trustedRestCertificateHash;
-            this._trustedRestSubject = trustedRestSubject;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OAuthDataServiceAdapter"/> class.
+        /// </summary>
+        /// <param name="tokenProvider">Azure Media Services token provider.</param>
+        public OAuthDataServiceAdapter(ITokenProvider tokenProvider)
+        {
+            _tokenProvider = tokenProvider;
         }
 
         /// <summary>
@@ -78,33 +78,20 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.OAuth
 
             if (request.Headers[AuthorizationHeader] == null)
             {
-                RefreshToken();
-                request.Headers.Add(AuthorizationHeader, string.Format(CultureInfo.InvariantCulture, BearerTokenFormat, this._credentials.AccessToken));
+                request.Headers.Add(AuthorizationHeader, _tokenProvider.GetAuthorizationHeader());
             }
         }
 
-        private void RefreshToken()
-        {
-            lock (_acsRefreshLock)
-            {
-                if (DateTime.UtcNow.AddSeconds(ExpirationTimeBufferInSeconds) > this._credentials.TokenExpiration)
-                {
-                    this._credentials.RefreshToken();
-                }
-            }
-        }
-
-        /// <summary> 
+        /// <summary>
         /// When sending Http Data requests to the Azure Marketplace, inject authorization header based on the current Access token.
-        /// </summary> 
-        /// <param name="sender">Event sender.</param> 
-        /// <param name="e">Event arguments.</param> 
+        /// </summary>
+        /// <param name="sender">Event sender.</param>
+        /// <param name="e">Event arguments.</param>
         private void OnSendingRequest(object sender, SendingRequest2EventArgs e)
         {
             if (e.RequestMessage.GetHeader(AuthorizationHeader) == null)
             {
-                RefreshToken();
-                e.RequestMessage.SetHeader(AuthorizationHeader, string.Format(CultureInfo.InvariantCulture, BearerTokenFormat, this._credentials.AccessToken));
+                e.RequestMessage.SetHeader(AuthorizationHeader, _tokenProvider.GetAuthorizationHeader());
             }
         }
     }

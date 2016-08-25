@@ -24,7 +24,19 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets Microsoft WindowsAzure Media Services credentials used for authenticating requests.
         /// </summary>
-        public MediaServicesCredentials Credentials { get; protected set; }
+        public MediaServicesCredentials Credentials
+        {
+            get
+            {
+                return TokenProvider as MediaServicesCredentials;
+            }
+        }
+
+
+        /// <summary>
+        /// A token provider to get authorization tokens for Azure Media Services.
+        /// </summary>
+        public ITokenProvider TokenProvider { get; set; }
 
         /// <summary>
         /// Gets a collection to operate on AccessPolicies.

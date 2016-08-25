@@ -42,7 +42,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private StorageAccountBaseCollection _storageAccounts;
         private EncodingReservedUnitCollection _encodingReservedUnits;
         private MediaServicesClassFactory _classFactory;
-        private Uri apiServer;
+        private Uri _apiServer;
         private StreamingFilterBaseCollection _streamingFilters;
         private MonitoringConfigurationCollection _monitoringConfigurations;
         private ChannelMetricsCollection _channelMetrics;
@@ -53,6 +53,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <param name="accountName">The Microsoft WindowsAzure Media Services account name to authenticate with.</param>
         /// <param name="accountKey">The Microsoft WindowsAzure Media Services account key to authenticate with.</param>
+        [Obsolete("Use the constructor that takes an ITokenProvider")]
         public CloudMediaContext(string accountName, string accountKey)
             : this(_mediaServicesUri, new MediaServicesCredentials(accountName, accountKey))
         {
@@ -64,6 +65,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="apiServer">A <see cref="Uri"/> representing a the API endpoint.</param>
         /// <param name="accountName">The Microsoft WindowsAzure Media Services account name to authenticate with.</param>
         /// <param name="accountKey">The Microsoft WindowsAzure Media Services account key to authenticate with.</param>
+        [Obsolete("Use the constructor that takes an ITokenProvider")]
         public CloudMediaContext(Uri apiServer, string accountName, string accountKey)
             : this(apiServer, new MediaServicesCredentials(accountName, accountKey))
         {
@@ -77,6 +79,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="accountKey">The Microsoft WindowsAzure Media Services account key to authenticate with.</param>
         /// <param name="scope">The scope of authorization.</param>
         /// <param name="acsBaseAddress">The access control endpoint to authenticate against.</param>
+        [Obsolete("Use the constructor that takes an ITokenProvider")]
         public CloudMediaContext(Uri apiServer, string accountName, string accountKey, string scope, string acsBaseAddress)
             : this(apiServer, new MediaServicesCredentials(accountName, accountKey, scope, acsBaseAddress))
         {
@@ -85,9 +88,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Initializes a new instance of the <see cref="CloudMediaContext"/> class.
         /// </summary>
-        /// <param name="credentials">Microsoft WindowsAzure Media Services credentials.</param>
-        public CloudMediaContext(MediaServicesCredentials credentials)
-            : this(_mediaServicesUri, credentials)
+        /// <param name="tokenProvider">A token provider for authorization tokens</param>
+        public CloudMediaContext(ITokenProvider tokenProvider):
+            this(_mediaServicesUri, tokenProvider)
         {
         }
 
@@ -95,13 +98,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Initializes a new instance of the <see cref="CloudMediaContext"/> class.
         /// </summary>
         /// <param name="apiServer">A <see cref="Uri"/> representing the API endpoint.</param>
-        /// <param name="credentials">Microsoft WindowsAzure Media Services credentials.</param>
-        public CloudMediaContext(Uri apiServer, MediaServicesCredentials credentials)
+        /// <param name="tokenProvider">A token provider for authorization tokens.</param>
+        public CloudMediaContext(Uri apiServer, ITokenProvider tokenProvider)
         {
-            this.apiServer = apiServer;
-            this.ParallelTransferThreadCount = 10;
-            this.NumberOfConcurrentTransfers = 2;
-            this.Credentials = credentials;
+            _apiServer = apiServer;
+            TokenProvider = tokenProvider;
+            ParallelTransferThreadCount = 10;
+            NumberOfConcurrentTransfers = 2;
         }
 
         public override MediaServicesClassFactory MediaServicesClassFactory
@@ -110,8 +113,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             {
                 if (_classFactory == null)
                 {
-                    Interlocked.CompareExchange(ref _classFactory, new AzureMediaServicesClassFactory(apiServer, this), null);
-
+                    Interlocked.CompareExchange(ref _classFactory, new AzureMediaServicesClassFactory(_apiServer, this), null);
                 }
                 return _classFactory;
             }
