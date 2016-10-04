@@ -33,7 +33,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         public const string FileSet = "Files";
 
-        private readonly Lazy<IQueryable<IAssetFile>> _assetFileQuery; 
+        private readonly Lazy<IQueryable<IAssetFile>> _assetFileQuery;
         private readonly IAsset _parentAsset;
 
         /// <summary>

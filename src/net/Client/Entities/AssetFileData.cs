@@ -292,7 +292,17 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 });
         }
 
-       public Task UploadAsync(string name, Stream stream, BlobTransferClient blobTransferClient, ILocator locator, CancellationToken token)
+
+        /// <summary>
+        /// Uploads the stream asynchronously
+        /// </summary>
+        /// <param name="name">Name for the stream</param>
+        /// <param name="stream">The stream to upload</param>
+        /// <param name="blobTransferClient">The <see cref="BlobTransferClient"/> which is used to upload files.</param>
+        /// <param name="locator">An asset <see cref="ILocator"/> which defines permissions associated with the Asset.</param>
+        /// <param name="token">A <see cref="CancellationToken"/> to use for canceling upload operation.</param>
+        /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
+        public Task UploadAsync(string name, Stream stream, BlobTransferClient blobTransferClient, ILocator locator, CancellationToken token)
         {
             if (this.IsFragmented())
             {
@@ -604,7 +614,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             UploadAsync(path, CancellationToken.None).Wait();
         }
 
-
+        /// <summary>
+        /// Uploads the stream with the given name 
+        /// </summary>
+        /// <param name="name">Name of the stream</param>
+        /// <param name="stream">Stream to upload</param>
         public void Upload(string name, Stream stream)
         {
             if (this.IsFragmented())
@@ -615,6 +629,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             UploadAsync(name, stream, CancellationToken.None).Wait();
         }
 
+        /// <summary>
+        /// Uploads a stream asynchronously 
+        /// </summary>
+        /// <param name="name">Name for the stream</param>
+        /// <param name="stream">Stream to be uploaded</param>
+        /// <param name="cancellationToken">A <see cref="CancellationToken"/> to use for canceling upload operation.</param>
+        /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
         public Task UploadAsync(string name, Stream stream, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(name)) 

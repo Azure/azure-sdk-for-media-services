@@ -67,7 +67,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>
         /// An <see cref="Task"/> of type <see cref="IAsset"/>created according to the specified creation <paramref name="options"/>.
         /// </returns>
-        public override Task<IAsset> CreateAsync(string assetName, AssetCreationOptions options,CancellationToken cancellationToken)
+        public override Task<IAsset> CreateAsync(string assetName, AssetCreationOptions options, CancellationToken cancellationToken)
         {
             IStorageAccount defaultStorageAccount = this.MediaContext.DefaultStorageAccount;
             if (defaultStorageAccount == null)
@@ -113,18 +113,18 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             };
 
             emptyAsset.SetMediaContext(this.MediaContext);
-           
+
             cancellationToken.ThrowIfCancellationRequested();
             IMediaDataServiceContext dataContext = this.MediaContext.MediaServicesClassFactory.CreateDataServiceContext();
             dataContext.AddObject(AssetSet, (IAsset)emptyAsset);
 
             MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy(dataContext as IRetryPolicyAdapter);
-            
+
             return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(emptyAsset))
                 .ContinueWith<IAsset>(
                     t =>
                     {
-                        t.ThrowIfFaulted(); 
+                        t.ThrowIfFaulted();
                         cancellationToken.ThrowIfCancellationRequested();
 
                         AssetData data = (AssetData)t.Result.AsyncState;
@@ -153,7 +153,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             try
             {
-                Task<IAsset> task = this.CreateAsync(assetName,storageAccountName, options, CancellationToken.None);
+                Task<IAsset> task = this.CreateAsync(assetName, storageAccountName, options, CancellationToken.None);
                 task.Wait();
                 return task.Result;
             }
@@ -179,12 +179,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             retryPolicy.ExecuteAction<IMediaDataServiceResponse>(() => dataContext.SaveChanges());
 
             // Associate it with the asset.
-            ((IAsset) tempAsset).ContentKeys.Add(contentKeyData);
+            ((IAsset)tempAsset).ContentKeys.Add(contentKeyData);
 
             return contentKeyData;
         }
 
-     
+
     }
 
 }

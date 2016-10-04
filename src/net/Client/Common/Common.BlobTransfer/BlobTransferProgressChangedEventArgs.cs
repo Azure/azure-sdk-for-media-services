@@ -34,7 +34,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="progressPercentage">Percentage of bytes that finished transfering.</param>
         /// <param name="speed">Average speed of transfer in bytes per second.</param>
         /// <param name="uri">Uri of the blob location to transfer the data.</param>
-        /// <param name="sourceName">Name of the file being transferred.</param>
+        /// <param name="sourceName">Name of the object being transferred.</param>
         /// <param name="userState">User state information to be passed through.</param>
         public BlobTransferProgressChangedEventArgs(long bytesTransferred, long lastBlockBytesTransferred, long totalBytesToTransfer, int progressPercentage, double speed, Uri uri, string sourceName, object userState)
             : base(progressPercentage, userState)
