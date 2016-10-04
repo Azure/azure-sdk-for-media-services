@@ -15,6 +15,8 @@
 // </license>
 
 using System;
+using System.IO;
+using System.Runtime.InteropServices.ComTypes;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -93,11 +95,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
         Task UploadAsync(string path, BlobTransferClient blobTransferClient, ILocator locator, CancellationToken token);
 
+        Task UploadAsync(string name, Stream stream, BlobTransferClient blobTransferClient, ILocator locator,
+            CancellationToken token);
+
         /// <summary>
         /// Uploads the file with given path 
         /// </summary>
         /// <param name="path">The path of a file to upload</param>
         void Upload(string path);
+
+        void Upload(string name, Stream stream);
 
     }
 }

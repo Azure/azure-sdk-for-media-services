@@ -20,6 +20,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Win32;
@@ -291,9 +292,76 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 });
         }
 
+       public Task UploadAsync(string name, Stream stream, BlobTransferClient blobTransferClient, ILocator locator, CancellationToken token)
+        {
+            if (this.IsFragmented())
+            {
+                throw new NotSupportedException(StringTable.NotSupportedFragblobUpload);
+            }
+
+            if (blobTransferClient == null)
+            {
+                throw new ArgumentNullException("blobTransferClient");
+            }
+
+            if (locator == null)
+            {
+                throw new ArgumentNullException("locator");
+            }
+
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ArgumentException("name");
+            }
+
+            if (stream == null)
+            {
+                throw new ArgumentNullException("stream");
+            }
+
+            IContentKey contentKeyData = null;
+            FileEncryption fileEncryption = null;
+            AssetCreationOptions assetCreationOptions = this.Asset.Options;
+            if (assetCreationOptions.HasFlag(AssetCreationOptions.StorageEncrypted))
+            {
+                contentKeyData = this.Asset.ContentKeys.Where(c => c.ContentKeyType == ContentKeyType.StorageEncryption).FirstOrDefault();
+                if (contentKeyData == null)
+                {
+                    throw new InvalidOperationException(String.Format(CultureInfo.InvariantCulture, StringTable.StorageEncryptionContentKeyIsMissing, this.Asset.Id));
+                }
+
+                fileEncryption = new FileEncryption(contentKeyData.GetClearKeyValue(), EncryptionUtils.GetKeyIdAsGuid(contentKeyData.Id));
+                ulong iv = Convert.ToUInt64(this.InitializationVector, CultureInfo.InvariantCulture);
+                fileEncryption.SetInitializationVectorForFile(this.Name, iv);
+            }
+
+            EventHandler<BlobTransferProgressChangedEventArgs> handler = (s, e) => OnUploadProgressChanged(name, e);
+
+            blobTransferClient.TransferProgressChanged += handler;
+
+            MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetBlobStorageClientRetryPolicy();
+
+            return blobTransferClient.UploadBlob(
+                    new Uri(locator.BaseUri),
+                    name,
+                    stream,
+                    null,
+                    fileEncryption,
+                    token,
+                    retryPolicy.AsAzureStorageClientRetryPolicy(),
+                    () => locator.ContentAccessComponent)
+                .ContinueWith(
+                ts =>
+                {
+                    blobTransferClient.TransferProgressChanged -= handler;
+                    this.PostUploadAction(ts, name, stream.Length, token);
+                });
+        }
+
+
         private void OnUploadProgressChanged(string file, BlobTransferProgressChangedEventArgs blobTransferProgressChangedEventArgs)
         {
-            if (blobTransferProgressChangedEventArgs.LocalFile == file)
+            if (blobTransferProgressChangedEventArgs.SourceName == file)
             {
                 var uploadChangeHandler = UploadProgressChanged;
                 if (uploadChangeHandler != null)
@@ -317,26 +385,39 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         }
 
 
-        private void PostUploadAction(Task task,string path, CancellationToken token)
+        private void PostUploadAction(Task task, string path, CancellationToken token)
         {
-                task.ThrowIfFaulted();
-                token.ThrowIfCancellationRequested();
+            task.ThrowIfFaulted();
+            token.ThrowIfCancellationRequested();
 
-                FileInfo fileInfo = new FileInfo(path);
+            FileInfo fileInfo = new FileInfo(path);
 
-                //Updating Name based on file name to avoid exceptions trying to download file.Mapping to storage account is through file name
-                this.Name = fileInfo.Name;
+            //Updating Name based on file name to avoid exceptions trying to download file.Mapping to storage account is through file name
+            this.Name = fileInfo.Name;
 
-                // Set the ContentFileSize base on the local file size
-                this.ContentFileSize = fileInfo.Length;
+            // Set the ContentFileSize base on the local file size
+            this.ContentFileSize = fileInfo.Length;
 
-                this.Update();
+            this.Update();
+        }
+        private void PostUploadAction(Task task, string name, long streamSize, CancellationToken token)
+        {
+            task.ThrowIfFaulted();
+            token.ThrowIfCancellationRequested();
+
+            //Updating Name based on file name to avoid exceptions trying to download file.Mapping to storage account is through file name
+            this.Name = name;
+
+            // Set the ContentFileSize base on the local file size
+            this.ContentFileSize = streamSize;
+
+            this.Update();
         }
         #endregion
 
         #region IMediaContextContainer Members
 
-       
+
 
         #endregion
 
@@ -521,6 +602,64 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
 
             UploadAsync(path, CancellationToken.None).Wait();
+        }
+
+
+        public void Upload(string name, Stream stream)
+        {
+            if (this.IsFragmented())
+            {
+                throw new NotSupportedException(StringTable.NotSupportedFragblobUpload);
+            }
+
+            UploadAsync(name, stream, CancellationToken.None).Wait();
+        }
+
+        public Task UploadAsync(string name, Stream stream, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrEmpty(name)) 
+                throw new ArgumentException("name");
+            if (stream == null)
+                throw new ArgumentNullException("stream");
+
+            IAccessPolicy accessPolicy = null;
+            ILocator locator = null;
+
+            var policyName = "SdkUpload" + Guid.NewGuid().ToString();
+            return GetMediaContext().AccessPolicies
+                .CreateAsync(policyName, TimeSpan.FromHours(12), AccessPermissions.Write)
+                .ContinueWith<ILocator>(
+                    t =>
+                    {
+                        accessPolicy = t.Result;
+
+                        t.ThrowIfFaulted(() => this.Cleanup(null, null, locator, accessPolicy));
+                        cancellationToken.ThrowIfCancellationRequested(() => this.Cleanup(null, null, locator, accessPolicy));
+
+                        locator = this.GetMediaContext().Locators.CreateSasLocator(this.Asset, accessPolicy);
+                        cancellationToken.ThrowIfCancellationRequested(() => this.Cleanup(null, null, locator, accessPolicy));
+
+                        return locator;
+                    },
+                    cancellationToken).
+                ContinueWith(
+                    t =>
+                    {
+                        locator = t.Result;
+                        t.ThrowIfFaulted(() => this.Cleanup(null, null, locator, accessPolicy));
+                        cancellationToken.ThrowIfCancellationRequested(() => this.Cleanup(null, null, locator, accessPolicy));
+
+                        var blobTransfer = GetMediaContext().MediaServicesClassFactory.GetBlobTransferClient();
+
+                        blobTransfer.NumberOfConcurrentTransfers = this.GetMediaContext().NumberOfConcurrentTransfers;
+                        blobTransfer.ParallelTransferThreadCount = this.GetMediaContext().ParallelTransferThreadCount;
+
+                        UploadAsync(name, stream, blobTransfer, locator, cancellationToken).Wait();
+                        locator.Delete();
+                        cancellationToken.ThrowIfCancellationRequested(() => this.Cleanup(null, null, null, accessPolicy));
+                        accessPolicy.Delete();
+                    },
+                    cancellationToken);
         }
 
         /// <summary>

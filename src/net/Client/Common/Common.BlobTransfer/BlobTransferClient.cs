@@ -16,6 +16,8 @@
 
 using System;
 using System.Globalization;
+using System.IO;
+using System.Runtime.InteropServices.ComTypes;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.Storage.Blob;
@@ -69,120 +71,215 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             NumberOfConcurrentTransfers = ServicePointModifier.DefaultConnectionLimit();
 		}
 
-		/// <summary>
-		/// Uploads file to a blob storage.
-		/// </summary>
-		/// <param name="url">The URL where file needs to be uploaded. If blob has private write permissions then 
-		/// appropriate sas url need to be passed</param>
-		/// <param name="localFile">The full path of local file.</param>
-		/// <param name="contentType">Content type of the blob</param>
-		/// <param name="fileEncryption">The file encryption if file needs to be stored encrypted. Pass null if no encryption required</param>
-		/// <param name="cancellationToken">The cancellation token.</param>
-		/// <param name="retryPolicy">The RetryPolicy delegate returns a ShouldRetry delegate, which can be used to implement a custom retry policy.RetryPolicies class can bee used to get default policies</param>
-        /// <param name="getSharedAccessSignature">A callback function which returns Sas signature for the file to be downloaded</param>
-		/// <returns></returns>
-		public virtual Task UploadBlob(
-			Uri url,
-			string localFile,
-			string contentType,
-			FileEncryption fileEncryption,
-			CancellationToken cancellationToken,
-			IRetryPolicy retryPolicy,
-			Func<string> getSharedAccessSignature = null)
-		{
-			return UploadBlob(
-				url, 
-				localFile, 
-				fileEncryption, 
-				cancellationToken, 
-				null, 
-				retryPolicy, 
-				contentType, 
-				getSharedAccessSignature: getSharedAccessSignature)
-		    ;
-		}
-
-		/// <summary>
-		/// Uploads file to a blob storage.
-		/// </summary>
-		/// <param name="url">The URL where file needs to be uploaded.If blob has private write permissions then appropriate sas url need to be passed</param>
-		/// <param name="localFile">The full path of local file.</param>
-		/// <param name="fileEncryption">The file encryption if file needs to be stored encrypted. Pass null if no encryption required</param>
-		/// <param name="cancellationToken">The cancellation token.</param>
-		/// <param name="client">The client which will be used to upload file. Use client if request need to be signed with client credentials. When upload performed using Sas url,
-		/// then client can be null</param>
-		/// <param name="retryPolicy">The RetryPolicy delegate returns a ShouldRetry delegate, which can be used to implement a custom retry policy.RetryPolicies class can bee used to get default policies</param>
-		/// <param name="contentType">Content type of the blob</param>
-		/// <param name="subDirectory">Virtual subdirectory for this file in the blog container.</param>
-        /// <param name="getSharedAccessSignature">A callback function which returns Sas signature for the file to be downloaded</param>
-		/// <returns></returns>
-		public virtual Task UploadBlob(
-			Uri url, 
-			string localFile, 
-			FileEncryption fileEncryption, 
-			CancellationToken cancellationToken, 
-			CloudBlobClient client, 
-			IRetryPolicy retryPolicy,
-			string contentType = null,
-			string subDirectory = "",
-			Func<string> getSharedAccessSignature = null
-            )
-		{
-
-			if (_forceSharedAccessSignatureRetry != TimeSpan.Zero)
-			{
-				// The following sleep is for unit test purpose and we will force the shared access signature to expire and hit retry code path
-				Thread.Sleep(_forceSharedAccessSignatureRetry);
-			}
-
-			BlobUploader blobuploader = new BlobUploader(new MemoryManagerFactory());
-
-			blobuploader.TransferCompleted += (sender, args) =>
-			{
-				if (TransferCompleted != null)
-				{
-					TransferCompleted(sender, args);
-				}
-				else if (args.Error != null)
-				{
-					throw args.Error;
-				}
-			};
-
-			blobuploader.TransferProgressChanged += (sender, args) =>
-			{
-				if (TransferProgressChanged != null)
-				{
-					TransferProgressChanged(sender, args);
-				}
-			};
-
-		    return blobuploader.UploadBlob(
-		        url,
-		        localFile,
-		        fileEncryption,
-		        cancellationToken,
-		        client,
-		        retryPolicy,
-		        contentType,
-		        subDirectory,
-		        getSharedAccessSignature: getSharedAccessSignature,
-		        parallelTransferThreadCount: ParallelTransferThreadCount,
-		        numberOfConcurrentTransfers: NumberOfConcurrentTransfers);
-		}
-
-		/// <summary>
-		/// Downloads the specified blob to the specified location.
-		/// </summary>
-		/// <param name="uri">The blob url  from which file  needs to be downloaded.If blob has private read permissions then appropriate sas url need to be passed</param>
-		/// <param name="localFile">The full path where file will be saved </param>
-		/// <param name="fileEncryption">The file encryption if file has been encrypted. Pass null if no encryption has been used</param>
-		/// <param name="initializationVector">The initialization vector if encryption has been used.</param>
-		/// <param name="cancellationToken">The cancellation token.</param>
-		/// <param name="retryPolicy">The RetryPolicy delegate returns a ShouldRetry delegate, which can be used to implement a custom retry policy.RetryPolicies class can bee used to get default policies</param>
+        /// <summary>
+        /// Uploads file to a blob storage.
+        /// </summary>
+        /// <param name="url">The URL where file needs to be uploaded. If blob has private write permissions then 
+        /// appropriate sas url need to be passed</param>
+        /// <param name="localFile">The full path of local file.</param>
+        /// <param name="contentType">Content type of the blob</param>
+        /// <param name="fileEncryption">The file encryption if file needs to be stored encrypted. Pass null if no encryption required</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="retryPolicy">The RetryPolicy delegate returns a ShouldRetry delegate, which can be used to implement a custom retry policy.RetryPolicies class can bee used to get default policies</param>
         /// <param name="getSharedAccessSignature">A callback function which returns Sas signature for the file to be downloaded</param>
         /// <returns></returns>
-		public virtual Task DownloadBlob(
+        public virtual Task UploadBlob(
+            Uri url,
+            string localFile,
+            string contentType,
+            FileEncryption fileEncryption,
+            CancellationToken cancellationToken,
+            IRetryPolicy retryPolicy,
+            Func<string> getSharedAccessSignature = null)
+        {
+            return UploadBlob(
+                url,
+                localFile,
+                fileEncryption,
+                cancellationToken,
+                null,
+                retryPolicy,
+                contentType,
+                getSharedAccessSignature: getSharedAccessSignature)
+            ;
+        }
+
+	    /// <summary>
+	    /// Uploads file to a blob storage.
+	    /// </summary>
+	    /// <param name="url">The URL where file needs to be uploaded. If blob has private write permissions then 
+	    /// appropriate sas url need to be passed</param>
+	    /// <param name="localFile">The full path of local file.</param>
+	    /// <param name="stream"></param>
+	    /// <param name="contentType">Content type of the blob</param>
+	    /// <param name="fileEncryption">The file encryption if file needs to be stored encrypted. Pass null if no encryption required</param>
+	    /// <param name="cancellationToken">The cancellation token.</param>
+	    /// <param name="retryPolicy">The RetryPolicy delegate returns a ShouldRetry delegate, which can be used to implement a custom retry policy.RetryPolicies class can bee used to get default policies</param>
+	    /// <param name="getSharedAccessSignature">A callback function which returns Sas signature for the file to be downloaded</param>
+	    /// <param name="name"></param>
+	    /// <returns></returns>
+	    public virtual Task UploadBlob(
+            Uri url,
+            string name,
+            Stream stream,
+            string contentType,
+            FileEncryption fileEncryption,
+            CancellationToken cancellationToken,
+            IRetryPolicy retryPolicy,
+            Func<string> getSharedAccessSignature = null)
+        {
+            return UploadBlob(
+                url,
+                name,
+                stream,
+                fileEncryption,
+                cancellationToken,
+                null,
+                retryPolicy,
+                contentType,
+                getSharedAccessSignature: getSharedAccessSignature)
+            ;
+        }
+
+        /// <summary>
+        /// Uploads file to a blob storage.
+        /// </summary>
+        /// <param name="url">The URL where file needs to be uploaded.If blob has private write permissions then appropriate sas url need to be passed</param>
+        /// <param name="localFile">The full path of local file.</param>
+        /// <param name="fileEncryption">The file encryption if file needs to be stored encrypted. Pass null if no encryption required</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="client">The client which will be used to upload file. Use client if request need to be signed with client credentials. When upload performed using Sas url,
+        /// then client can be null</param>
+        /// <param name="retryPolicy">The RetryPolicy delegate returns a ShouldRetry delegate, which can be used to implement a custom retry policy.RetryPolicies class can bee used to get default policies</param>
+        /// <param name="contentType">Content type of the blob</param>
+        /// <param name="subDirectory">Virtual subdirectory for this file in the blog container.</param>
+        /// <param name="getSharedAccessSignature">A callback function which returns Sas signature for the file to be downloaded</param>
+        /// <returns></returns>
+        public virtual Task UploadBlob(
+            Uri url,
+            string localFile,
+            FileEncryption fileEncryption,
+            CancellationToken cancellationToken,
+            CloudBlobClient client,
+            IRetryPolicy retryPolicy,
+            string contentType = null,
+            string subDirectory = "",
+            Func<string> getSharedAccessSignature = null
+            )
+        {
+
+            if (_forceSharedAccessSignatureRetry != TimeSpan.Zero)
+            {
+                // The following sleep is for unit test purpose and we will force the shared access signature to expire and hit retry code path
+                Thread.Sleep(_forceSharedAccessSignatureRetry);
+            }
+
+            BlobUploader blobuploader = new BlobUploader(new MemoryManagerFactory());
+
+            blobuploader.TransferCompleted += (sender, args) =>
+            {
+                if (TransferCompleted != null)
+                {
+                    TransferCompleted(sender, args);
+                }
+                else if (args.Error != null)
+                {
+                    throw args.Error;
+                }
+            };
+
+            blobuploader.TransferProgressChanged += (sender, args) =>
+            {
+                if (TransferProgressChanged != null)
+                {
+                    TransferProgressChanged(sender, args);
+                }
+            };
+
+            return blobuploader.UploadBlob(
+                url,
+                localFile,
+                fileEncryption,
+                cancellationToken,
+                client,
+                retryPolicy,
+                contentType,
+                subDirectory,
+                getSharedAccessSignature: getSharedAccessSignature,
+                parallelTransferThreadCount: ParallelTransferThreadCount,
+                numberOfConcurrentTransfers: NumberOfConcurrentTransfers);
+        }
+
+
+        public virtual Task UploadBlob(
+            Uri url,
+            string name,
+            Stream stream,
+            FileEncryption fileEncryption,
+            CancellationToken cancellationToken,
+            CloudBlobClient client,
+            IRetryPolicy retryPolicy,
+            string contentType = null,
+            string subDirectory = "",
+            Func<string> getSharedAccessSignature = null
+            )
+        {
+
+            if (_forceSharedAccessSignatureRetry != TimeSpan.Zero)
+            {
+                // The following sleep is for unit test purpose and we will force the shared access signature to expire and hit retry code path
+                Thread.Sleep(_forceSharedAccessSignatureRetry);
+            }
+
+            BlobUploader blobuploader = new BlobUploader(new MemoryManagerFactory());
+
+            blobuploader.TransferCompleted += (sender, args) =>
+            {
+                if (TransferCompleted != null)
+                {
+                    TransferCompleted(sender, args);
+                }
+                else if (args.Error != null)
+                {
+                    throw args.Error;
+                }
+            };
+
+            blobuploader.TransferProgressChanged += (sender, args) =>
+            {
+                if (TransferProgressChanged != null)
+                {
+                    TransferProgressChanged(sender, args);
+                }
+            };
+
+            return blobuploader.UploadBlob(
+                url,
+                name,
+                stream,
+                fileEncryption,
+                cancellationToken,
+                client,
+                retryPolicy,
+                contentType,
+                subDirectory,
+                getSharedAccessSignature: getSharedAccessSignature,
+                parallelTransferThreadCount: ParallelTransferThreadCount,
+                numberOfConcurrentTransfers: NumberOfConcurrentTransfers);
+        }
+
+        /// <summary>
+        /// Downloads the specified blob to the specified location.
+        /// </summary>
+        /// <param name="uri">The blob url  from which file  needs to be downloaded.If blob has private read permissions then appropriate sas url need to be passed</param>
+        /// <param name="localFile">The full path where file will be saved </param>
+        /// <param name="fileEncryption">The file encryption if file has been encrypted. Pass null if no encryption has been used</param>
+        /// <param name="initializationVector">The initialization vector if encryption has been used.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="retryPolicy">The RetryPolicy delegate returns a ShouldRetry delegate, which can be used to implement a custom retry policy.RetryPolicies class can bee used to get default policies</param>
+        /// <param name="getSharedAccessSignature">A callback function which returns Sas signature for the file to be downloaded</param>
+        /// <returns></returns>
+        public virtual Task DownloadBlob(
 			Uri uri, 
 			string localFile, 
 			FileEncryption fileEncryption, 

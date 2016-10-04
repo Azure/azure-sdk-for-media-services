@@ -21,6 +21,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
@@ -67,6 +68,36 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                     parallelTransferThreadCount),
                     cancellationToken);
         }
+        public Task UploadBlob(
+            Uri url,
+            string name,
+            Stream stream,
+            FileEncryption fileEncryption,
+            CancellationToken cancellationToken,
+            CloudBlobClient client,
+            IRetryPolicy retryPolicy,
+            string contentType = null,
+            string subDirectory = "",
+            Func<string> getSharedAccessSignature = null,
+            int parallelTransferThreadCount = 10,
+            int numberOfConcurrentTransfers = default(int))
+        {
+            SetConnectionLimits(url, numberOfConcurrentTransfers);
+            return Task.Factory.StartNew(
+                () => UploadFileToBlob(
+                    cancellationToken,
+                    url,
+                    name,
+                    stream,
+                    contentType,
+                    subDirectory,
+                    fileEncryption,
+                    client,
+                    retryPolicy,
+                    getSharedAccessSignature,
+                    parallelTransferThreadCount),
+                    cancellationToken);
+        }
 
         private void UploadFileToBlob(
             CancellationToken cancellationToken,
@@ -85,90 +116,90 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             transferContext.Exceptions = new ConcurrentBag<Exception>();
             try
             {
-                    ManualResetEvent uploadCompletedSignal = new ManualResetEvent(false);
-                    BlobRequestOptions blobRequestOptions = new BlobRequestOptions
-                    {
-                        RetryPolicy = retryPolicy,
-                        ServerTimeout = TimeSpan.FromSeconds(90)
-                    };
-                    //attempt to open the file first so that we throw an exception before getting into the async work
+                ManualResetEvent uploadCompletedSignal = new ManualResetEvent(false);
+                BlobRequestOptions blobRequestOptions = new BlobRequestOptions
+                {
+                    RetryPolicy = retryPolicy,
+                    ServerTimeout = TimeSpan.FromSeconds(90)
+                };
+                //attempt to open the file first so that we throw an exception before getting into the async work
+                using (FileStream fileStream = new FileStream(localFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                {
+                }
+                CloudBlockBlob blob = GetCloudBlockBlob(uri, client, subDirectory, localFile, contentType,
+                    getSharedAccessSignature);
+                BlobPolicyActivationWait(() => blob.DeleteIfExists(options: blobRequestOptions));
+
+                FileInfo file = new FileInfo(localFile);
+                long fileSize = file.Length;
+                transferContext.Length = fileSize;
+                transferContext.LocalFilePath = localFile;
+                transferContext.OnComplete = () => uploadCompletedSignal.Set();
+                transferContext.Blob = blob;
+                transferContext.FileEncryption = fileEncryption;
+                if (fileSize == 0)
+                {
+                    blob.UploadFromByteArray(new byte[1], 0, 0, options: blobRequestOptions);
+                }
+                else if (fileSize < cloudBlockBlobUploadDownloadSizeLimit)
+                {
+                    AccessCondition accessCondition = AccessCondition.GenerateEmptyCondition();
+                    OperationContext operationContext = new OperationContext();
+                    operationContext.ClientRequestID = DateTime.UtcNow.ToString("s", CultureInfo.InvariantCulture);
                     using (FileStream fileStream = new FileStream(localFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                     {
-                    }
-                    CloudBlockBlob blob = GetCloudBlockBlob(uri, client, subDirectory, localFile, contentType,
-                        getSharedAccessSignature);
-                    BlobPolicyActivationWait(() => blob.DeleteIfExists(options: blobRequestOptions));
-
-                    FileInfo file = new FileInfo(localFile);
-                    long fileSize = file.Length;
-                    transferContext.Length = fileSize;
-                    transferContext.LocalFilePath = localFile;
-                    transferContext.OnComplete = () => uploadCompletedSignal.Set();
-                    transferContext.Blob = blob;
-                    transferContext.FileEncryption = fileEncryption;
-                    if (fileSize == 0)
-                    {
-                        blob.UploadFromByteArray(new byte[1], 0, 0, options: blobRequestOptions);
-                    }
-                    else if (fileSize < cloudBlockBlobUploadDownloadSizeLimit)
-                    {
-                        AccessCondition accessCondition = AccessCondition.GenerateEmptyCondition();
-                        OperationContext operationContext = new OperationContext();
-                        operationContext.ClientRequestID = DateTime.UtcNow.ToString("s", CultureInfo.InvariantCulture);
-                        using (FileStream fileStream = new FileStream(localFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                        using (var memoryStream = new MemoryStream())
                         {
-                               using (var memoryStream = new MemoryStream())
-                                     {
-                                         fileStream.CopyTo(memoryStream);
-                                         byte[] fileContent = memoryStream.ToArray();
-                                         ApplyEncryptionTransform(
-                                                     transferContext.FileEncryption,
-                                                     Path.GetFileName(transferContext.LocalFilePath),
-                                                     0,
-                                                     fileContent,
-                                                     Convert.ToInt32(fileStream.Length));
-                                         using (var uploadMemoryStream = new MemoryStream(fileContent))
-                                         {
-                                             blob.UploadFromStream(uploadMemoryStream, accessCondition: accessCondition, options: blobRequestOptions, operationContext: operationContext);
-                                         }
-                                     }                            
+                            fileStream.CopyTo(memoryStream);
+                            byte[] fileContent = memoryStream.ToArray();
+                            ApplyEncryptionTransform(
+                                        transferContext.FileEncryption,
+                                        Path.GetFileName(transferContext.LocalFilePath),
+                                        0,
+                                        fileContent,
+                                        Convert.ToInt32(fileStream.Length));
+                            using (var uploadMemoryStream = new MemoryStream(fileContent))
+                            {
+                                blob.UploadFromStream(uploadMemoryStream, accessCondition: accessCondition, options: blobRequestOptions, operationContext: operationContext);
+                            }
                         }
-                        InvokeProgressCallback(transferContext, fileSize, fileSize);
-                        transferContext.OnComplete();
                     }
-                    else
+                    InvokeProgressCallback(transferContext, fileSize, fileSize);
+                    transferContext.OnComplete();
+                }
+                else
+                {
+                    int numThreads = parallelTransferThreadCount;
+                    int blockSize = GetBlockSize(fileSize);
+
+                    transferContext.BlocksToTransfer = PrepareUploadDownloadQueue(fileSize, blockSize, ref numThreads);
+
+                    transferContext.BlocksForFileIO = new ConcurrentDictionary<int, byte[]>();
+                    for (int i = 0; i < transferContext.BlocksToTransfer.Count(); i++)
                     {
-                        int numThreads = parallelTransferThreadCount;
-                        int blockSize = GetBlockSize(fileSize);
+                        transferContext.BlocksForFileIO[i] = null;
+                    }
+                    transferContext.BlockSize = blockSize;
+                    transferContext.CancellationToken = cancellationToken;
+                    transferContext.BlobRequestOptions = blobRequestOptions;
+                    transferContext.MemoryManager = MemoryManagerFactory.GetMemoryManager(blockSize);
+                    transferContext.Client = client;
+                    transferContext.RetryPolicy = retryPolicy;
+                    transferContext.GetSharedAccessSignature = getSharedAccessSignature;
+                    transferContext.ShouldDoFileIO = shouldDoFileIO;
+                    transferContext.BufferStreams = new ConcurrentDictionary<byte[], MemoryStream>();
+                    transferContext.ClientRequestId = DateTime.UtcNow.ToString("s", CultureInfo.InvariantCulture);
+                    transferContext.ContentType = contentType;
+                    transferContext.BlobSubFolder = subDirectory;
+                    transferContext.NextFileIOBlock = 0;
+                    transferContext.PartialFileIOState = new ConcurrentDictionary<long, int>();
 
-                        transferContext.BlocksToTransfer = PrepareUploadDownloadQueue(fileSize, blockSize, ref numThreads);
-
-                        transferContext.BlocksForFileIO = new ConcurrentDictionary<int, byte[]>();
-                        for (int i = 0; i < transferContext.BlocksToTransfer.Count(); i++)
-                        {
-                            transferContext.BlocksForFileIO[i] = null;
-                        }
-                        transferContext.BlockSize = blockSize;
-                        transferContext.CancellationToken = cancellationToken;
-                        transferContext.BlobRequestOptions = blobRequestOptions;
-                        transferContext.MemoryManager = MemoryManagerFactory.GetMemoryManager(blockSize);
-                        transferContext.Client = client;
-                        transferContext.RetryPolicy = retryPolicy;
-                        transferContext.GetSharedAccessSignature = getSharedAccessSignature;
-                        transferContext.ShouldDoFileIO = shouldDoFileIO;
-                        transferContext.BufferStreams = new ConcurrentDictionary<byte[], MemoryStream>();
-                        transferContext.ClientRequestId = DateTime.UtcNow.ToString("s", CultureInfo.InvariantCulture);
-                        transferContext.ContentType = contentType;
-                        transferContext.BlobSubFolder = subDirectory;
-                        transferContext.NextFileIOBlock = 0;
-                        transferContext.PartialFileIOState = new ConcurrentDictionary<long, int>();
-
-                        using (
-                            FileStream stream = new FileStream(localFile, FileMode.Open, FileAccess.Read,
-                                FileShare.ReadWrite))
-                        {
-                            RunUploadLoop(transferContext, stream, numThreads);
-                        }
+                    using (
+                        FileStream stream = new FileStream(localFile, FileMode.Open, FileAccess.Read,
+                            FileShare.ReadWrite))
+                    {
+                        RunUploadLoop(transferContext, stream, numThreads);
+                    }
                 }
             }
             catch (Exception e)
@@ -192,6 +223,130 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                         : null,
                     BlobTransferType.Upload,
                     localFile,
+                    uri);
+            }
+        }
+
+        private void UploadFileToBlob(
+            CancellationToken cancellationToken,
+            Uri uri,
+            string name,
+            Stream stream,
+            string contentType,
+            string subDirectory,
+            FileEncryption fileEncryption,
+            CloudBlobClient client,
+            IRetryPolicy retryPolicy,
+            Func<string> getSharedAccessSignature,
+            int parallelTransferThreadCount,
+            bool shouldDoFileIO = true)
+        {
+            BlobTransferContext transferContext = new BlobTransferContext();
+            transferContext.Exceptions = new ConcurrentBag<Exception>();
+            try
+            {
+                ManualResetEvent uploadCompletedSignal = new ManualResetEvent(false);
+                BlobRequestOptions blobRequestOptions = new BlobRequestOptions
+                {
+                    RetryPolicy = retryPolicy,
+                    ServerTimeout = TimeSpan.FromSeconds(90)
+                };
+                //attempt to open the file first so that we throw an exception before getting into the async work
+                CloudBlockBlob blob = GetCloudBlockBlob(uri, client, subDirectory, name, contentType,
+                    getSharedAccessSignature);
+                BlobPolicyActivationWait(() => blob.DeleteIfExists(options: blobRequestOptions));
+
+                transferContext.Length = stream.Length;
+                transferContext.LocalFilePath = name;
+                transferContext.OnComplete = () => uploadCompletedSignal.Set();
+                transferContext.Blob = blob;
+                transferContext.FileEncryption = fileEncryption;
+                if (stream.Length == 0)
+                {
+                    blob.UploadFromByteArray(new byte[1], 0, 0, options: blobRequestOptions);
+                }
+                else if (stream.Length < cloudBlockBlobUploadDownloadSizeLimit)
+                {
+                    AccessCondition accessCondition = AccessCondition.GenerateEmptyCondition();
+                    OperationContext operationContext = new OperationContext();
+                    operationContext.ClientRequestID = DateTime.UtcNow.ToString("s", CultureInfo.InvariantCulture);
+                    //using (FileStream fileStream = new FileStream(localFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                    {
+                        using (var memoryStream = new MemoryStream())
+                        {
+                            stream.CopyTo(memoryStream);
+                            byte[] fileContent = memoryStream.ToArray();
+                            ApplyEncryptionTransform(
+                                        transferContext.FileEncryption,
+                                        Path.GetFileName(transferContext.LocalFilePath),
+                                        0,
+                                        fileContent,
+                                        Convert.ToInt32(stream.Length));
+                            using (var uploadMemoryStream = new MemoryStream(fileContent))
+                            {
+                                blob.UploadFromStream(uploadMemoryStream, accessCondition: accessCondition, options: blobRequestOptions, operationContext: operationContext);
+                            }
+                        }
+                    }
+                    InvokeProgressCallback(transferContext, stream.Length, stream.Length);
+                    transferContext.OnComplete();
+                }
+                else
+                {
+                    int numThreads = parallelTransferThreadCount;
+                    int blockSize = GetBlockSize(stream.Length);
+
+                    transferContext.BlocksToTransfer = PrepareUploadDownloadQueue(stream.Length, blockSize, ref numThreads);
+
+                    transferContext.BlocksForFileIO = new ConcurrentDictionary<int, byte[]>();
+                    for (int i = 0; i < transferContext.BlocksToTransfer.Count(); i++)
+                    {
+                        transferContext.BlocksForFileIO[i] = null;
+                    }
+                    transferContext.BlockSize = blockSize;
+                    transferContext.CancellationToken = cancellationToken;
+                    transferContext.BlobRequestOptions = blobRequestOptions;
+                    transferContext.MemoryManager = MemoryManagerFactory.GetMemoryManager(blockSize);
+                    transferContext.Client = client;
+                    transferContext.RetryPolicy = retryPolicy;
+                    transferContext.GetSharedAccessSignature = getSharedAccessSignature;
+                    transferContext.ShouldDoFileIO = shouldDoFileIO;
+                    transferContext.BufferStreams = new ConcurrentDictionary<byte[], MemoryStream>();
+                    transferContext.ClientRequestId = DateTime.UtcNow.ToString("s", CultureInfo.InvariantCulture);
+                    transferContext.ContentType = contentType;
+                    transferContext.BlobSubFolder = subDirectory;
+                    transferContext.NextFileIOBlock = 0;
+                    transferContext.PartialFileIOState = new ConcurrentDictionary<long, int>();
+
+                    //using (
+                    //    FileStream stream = new FileStream(localFile, FileMode.Open, FileAccess.Read,
+                    //        FileShare.ReadWrite))
+                    {
+                        RunUploadLoop(transferContext, stream, numThreads);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                //Add the exception to the exception list.
+                transferContext.Exceptions.Add(e);
+            }
+            finally
+            {
+                // We should to be able to releaseunusedbuffers if memorymanager was initialized by then 
+                if (transferContext.MemoryManager != null)
+                {
+                    transferContext.MemoryManager.ReleaseUnusedBuffers();
+
+                }
+                //TaskCompletedCallback should be called to populate exceptions if relevant and other eventargs for the user.
+                TaskCompletedCallback(
+                    cancellationToken.IsCancellationRequested,
+                    transferContext.Exceptions != null && transferContext.Exceptions.Count > 0
+                        ? new AggregateException(transferContext.Exceptions)
+                        : null,
+                    BlobTransferType.Upload,
+                    name,
                     uri);
             }
         }
@@ -231,7 +386,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
         private void RunUploadLoop(
             BlobTransferContext transferContext,
-            FileStream fileStream,
+            Stream fileStream,
             int numThreads)
         {
             SpinWait spinWait = new SpinWait();
@@ -438,7 +593,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
         private void DoSequentialRead(
             BlobTransferContext transferContext,
-            FileStream stream,
+            Stream stream,
             byte[] streamBuffer = null,
             KeyValuePair<long, int>? inputStartAndLength = null)
         {
