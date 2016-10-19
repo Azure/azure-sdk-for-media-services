@@ -129,47 +129,20 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             Func<string> getSharedAccessSignature = null
             )
         {
-
-            if (_forceSharedAccessSignatureRetry != TimeSpan.Zero)
-            {
-                // The following sleep is for unit test purpose and we will force the shared access signature to expire and hit retry code path
-                Thread.Sleep(_forceSharedAccessSignatureRetry);
-            }
-
-            BlobUploader blobuploader = new BlobUploader(new MemoryManagerFactory());
-
-            blobuploader.TransferCompleted += (sender, args) =>
-            {
-                if (TransferCompleted != null)
-                {
-                    TransferCompleted(sender, args);
-                }
-                else if (args.Error != null)
-                {
-                    throw args.Error;
-                }
-            };
-
-            blobuploader.TransferProgressChanged += (sender, args) =>
-            {
-                if (TransferProgressChanged != null)
-                {
-                    TransferProgressChanged(sender, args);
-                }
-            };
-
-            return blobuploader.UploadBlob(
-                url,
-                localFile,
-                fileEncryption,
-                cancellationToken,
-                client,
-                retryPolicy,
-                contentType,
-                subDirectory,
-                getSharedAccessSignature: getSharedAccessSignature,
-                parallelTransferThreadCount: ParallelTransferThreadCount,
-                numberOfConcurrentTransfers: NumberOfConcurrentTransfers);
+            var fs = new FileStream(localFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            return UploadBlob(
+                    url,
+                    localFile,
+                    fs,
+                    fileEncryption,
+                    cancellationToken,
+                    client,
+                    retryPolicy,
+                    contentType,
+                    subDirectory,
+                    getSharedAccessSignature)
+                .ContinueWith(t => fs.Dispose());
+            
         }
 
         /// <summary>

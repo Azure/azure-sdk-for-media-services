@@ -88,9 +88,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Uploads the file with given path asynchronously
         /// </summary>
-        /// <param name="path">The path of a file to upload</param>
+        /// <param name="path">The path of a file to upload. The file name will be used as the asset file's name in Azure. </param>
         /// <param name="blobTransferClient">The <see cref="BlobTransferClient"/> which is used to upload files.</param>
-        /// <param name="locator">An asset <see cref="ILocator"/> which defines permissions associated with the Asset.</param>
+        /// <param name="locator">A locator <see cref="ILocator"/> which defines permissions associated with the Asset.</param>
         /// <param name="token">A <see cref="CancellationToken"/> to use for canceling upload operation.</param>
         /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
         Task UploadAsync(string path, BlobTransferClient blobTransferClient, ILocator locator, CancellationToken token);
@@ -101,7 +101,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="name">Name used to denote the stream</param>
         /// <param name="stream"></param>
         /// <param name="blobTransferClient">The <see cref="BlobTransferClient"/> which is used to upload files.</param>
-        /// <param name="locator">An asset <see cref="ILocator"/> which defines permissions associated with the Asset.</param>
+        /// <param name="locator">A locator <see cref="ILocator"/> which defines permissions associated with the Asset.</param>
         /// <param name="token">A <see cref="CancellationToken"/> to use for canceling upload operation.</param>
         /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
         Task UploadAsync(string name, Stream stream, BlobTransferClient blobTransferClient, ILocator locator,
@@ -110,7 +110,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Uploads the file with given path 
         /// </summary>
-        /// <param name="path">The path of a file to upload</param>
+        /// <param name="path">The path of a file to upload. The file name will be used as the asset file's name in Azure.</param>
         void Upload(string path);
 
         /// <summary>

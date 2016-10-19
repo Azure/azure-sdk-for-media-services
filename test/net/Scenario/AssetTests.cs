@@ -36,6 +36,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         private CloudMediaContext _mediaContext;
         private double _downloadProgress;
         private string _smallWmv;
+        private string _bbcMp4;
 
         public TestContext TestContext { get; set; }
 
@@ -44,6 +45,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         {
             _mediaContext = WindowsAzureMediaServicesTestConfiguration.CreateCloudMediaContext();
             _smallWmv = WindowsAzureMediaServicesTestConfiguration.GetVideoSampleFilePath(TestContext, WindowsAzureMediaServicesTestConfiguration.SmallWmv);
+            _bbcMp4 = WindowsAzureMediaServicesTestConfiguration.GetVideoSampleFilePath(TestContext,
+                WindowsAzureMediaServicesTestConfiguration.BBCmp4);
             _downloadProgress = 0;
         }
 
@@ -115,6 +118,46 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             }
         }
 
+        /// <summary>
+        /// Known issue with mime-type detection
+        /// </summary>
+        [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [Priority(1)]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        public void ShouldCreateAssetFileFromEmptyStream()
+        {
+            var stream = new MemoryStream(new byte[0]);
+            IAsset asset = _mediaContext.Assets.Create("Empty_MS", AssetCreationOptions.StorageEncrypted);
+
+            var name = "my_custom_name.wmv";
+            IAssetFile file = asset.AssetFiles.CreateAsync(name, CancellationToken.None).Result;
+            IAccessPolicy policy = _mediaContext.AccessPolicies.Create("temp", TimeSpan.FromMinutes(10), AccessPermissions.Write);
+            ILocator locator = _mediaContext.Locators.CreateSasLocator(asset, policy);
+            BlobTransferClient blobTransferClient = _mediaContext.MediaServicesClassFactory.GetBlobTransferClient();
+            bool transferCompletedFired = false;
+            blobTransferClient.TransferCompleted += (sender, args) =>
+            {
+                transferCompletedFired = true;
+                Assert.AreEqual(BlobTransferType.Upload, args.TransferType, "file.UploadAsync Transfer completed expected BlobTransferType is Upload");
+            };
+            file.UploadAsync(name, stream, blobTransferClient, locator, CancellationToken.None).Wait();
+            Assert.IsNotNull(asset, "Asset should be non null");
+            Assert.IsTrue(transferCompletedFired, "TransferCompleted event has not been fired");
+            Assert.AreNotEqual(Guid.Empty, asset.Id, "Asset ID shuold not be null");
+            Assert.AreEqual(AssetState.Initialized, asset.State, "Asset state wrong");
+
+            foreach (IAssetFile ifile in asset.AssetFiles)
+            {
+                if (ifile.IsPrimary)
+                {
+                    Assert.IsTrue(string.Compare(name, ifile.Name, StringComparison.InvariantCultureIgnoreCase) == 0, "Main file is wrong");
+                    break;
+                }
+            }
+
+        }
 
 
         /// <summary>
@@ -125,7 +168,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [Owner("ClientSDK")]
         [Priority(1)]
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
-        public void ShouldCreateAssetFileFromStream()
+        public void ShouldCreateAssetFileFromSmallStream()
         {
             // get the path to the media file 
             // read the content into a stream 
@@ -162,6 +205,114 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             }
 
         }
+        /// <summary>
+        /// Known issue with mime-type detection
+        /// </summary>
+        [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [Priority(1)]
+        [DeploymentItem(@"Media\BBCW_1920x1080_30sec.mp4", "Media")]
+        public void ShouldCreateAssetFileFromBigStream()
+        {
+            // get the path to the media file 
+            // read the content into a stream 
+            // upload it from the stream 
+            using (var fileStream = new FileStream(_bbcMp4, FileMode.Open, FileAccess.Read))
+            {
+                IAsset asset = _mediaContext.Assets.Create("Empty_FS_Big", AssetCreationOptions.StorageEncrypted);
+                // try giving it a different name here, like a blob URI 
+                var name = "my_custom_name.mp4";
+                IAssetFile file = asset.AssetFiles.CreateAsync(name, CancellationToken.None).Result;
+                IAccessPolicy policy = _mediaContext.AccessPolicies.Create("temp", TimeSpan.FromMinutes(10), AccessPermissions.Write);
+                ILocator locator = _mediaContext.Locators.CreateSasLocator(asset, policy);
+                BlobTransferClient blobTransferClient = _mediaContext.MediaServicesClassFactory.GetBlobTransferClient();
+                bool transferCompletedFired = false;
+                blobTransferClient.TransferCompleted += (sender, args) =>
+                {
+                    transferCompletedFired = true;
+                    Assert.AreEqual(BlobTransferType.Upload, args.TransferType, "file.UploadAsync Transfer completed expected BlobTransferType is Upload");
+                };
+                file.UploadAsync(name, fileStream, blobTransferClient, locator, CancellationToken.None).Wait();
+                Assert.IsNotNull(asset, "Asset should be non null");
+                Assert.IsTrue(transferCompletedFired, "TransferCompleted event has not been fired");
+                Assert.AreNotEqual(Guid.Empty, asset.Id, "Asset ID shuold not be null");
+                Assert.AreEqual(AssetState.Initialized, asset.State, "Asset state wrong");
+
+                foreach (IAssetFile ifile in asset.AssetFiles)
+                {
+                    if (ifile.IsPrimary)
+                    {
+                        Assert.IsTrue(string.Compare(name, ifile.Name, StringComparison.InvariantCultureIgnoreCase) == 0, "Main file is wrong");
+                        break;
+                    }
+                }
+            }
+
+        }
+
+        /// <summary>
+        /// Known issue with mime-type detection
+        /// </summary>
+        [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [Priority(1)]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        public void ShouldCreateAssetFileFromNetworkStream()
+        {
+            // upload file to blob
+            // download file from blob into stream to pass to asset creator  
+            var storageAccount = CloudStorageAccount.Parse(WindowsAzureMediaServicesTestConfiguration.ClientStorageConnectionString);
+            var containername = "test-scenarios";
+            var client = storageAccount.CreateCloudBlobClient();
+            var container = client.GetContainerReference(containername);
+            container.CreateIfNotExists();
+
+            var blobReference = "ShouldCreateAssetFileFromNetworkStream_" + Path.GetFileName(_smallWmv);
+            var blob = container.GetBlockBlobReference(blobReference);
+            blob.UploadFromFile(_smallWmv, FileMode.Open);
+
+            var downloadBlob = container.GetBlockBlobReference(blobReference);
+
+            IAsset asset = _mediaContext.Assets.Create("Empty_NS", AssetCreationOptions.StorageEncrypted);
+            // try giving it a different name here, like a blob URI 
+            var name = "my_custom_name.wmv";
+            IAssetFile file = asset.AssetFiles.CreateAsync(name, CancellationToken.None).Result;
+            IAccessPolicy policy = _mediaContext.AccessPolicies.Create("temp", TimeSpan.FromMinutes(10),
+                AccessPermissions.Write);
+            ILocator locator = _mediaContext.Locators.CreateSasLocator(asset, policy);
+            BlobTransferClient blobTransferClient = _mediaContext.MediaServicesClassFactory.GetBlobTransferClient();
+            bool transferCompletedFired = false;
+            blobTransferClient.TransferCompleted += (sender, args) =>
+            {
+                transferCompletedFired = true;
+                Assert.AreEqual(BlobTransferType.Upload, args.TransferType,
+                    "file.UploadAsync Transfer completed expected BlobTransferType is Upload");
+            };
+            using (var stream = downloadBlob.OpenRead())
+            {
+                file.UploadAsync(name, stream, blobTransferClient, locator, CancellationToken.None).Wait();
+            }
+
+            Assert.IsNotNull(asset, "Asset should be non null");
+            Assert.IsTrue(transferCompletedFired, "TransferCompleted event has not been fired");
+            Assert.AreNotEqual(Guid.Empty, asset.Id, "Asset ID shuold not be null");
+            Assert.AreEqual(AssetState.Initialized, asset.State, "Asset state wrong");
+
+            foreach (IAssetFile ifile in asset.AssetFiles)
+            {
+                if (ifile.IsPrimary)
+                {
+                    Assert.IsTrue(string.Compare(name, ifile.Name, StringComparison.InvariantCultureIgnoreCase) == 0, "Main file is wrong");
+                    break;
+                }
+            }
+            
+            // cleanup; what if the assert fails
+            downloadBlob.Delete();
+        }
+
         [TestMethod]
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
@@ -289,8 +440,52 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             Assert.AreEqual(asset.Name, refreshedAsset.Name);
             Assert.AreEqual(AssetState.Initialized, refreshedAsset.State);
             Assert.AreEqual(1, refreshedAsset.AssetFiles.Count(), "file count wrong");
-            VerifyAndDownloadAsset(refreshedAsset,1,_smallWmv,true,false);
+            VerifyAndDownloadAsset(refreshedAsset, 1, _smallWmv, true, false);
             ContentKeyTests.VerifyFileAndContentKeyMetadataForStorageEncryption(refreshedAsset, _mediaContext);
+        }
+
+        [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [Priority(1)]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
+        [TestCategory("Bvt")]
+        public void ShouldCreateEncryptedInitilizedAssetFromStream()
+        {
+            IAsset asset = _mediaContext.Assets.Create("Test_FS_1", AssetCreationOptions.StorageEncrypted);
+            Assert.IsNotNull(asset, "Asset should be non null");
+            Assert.AreNotEqual(Guid.Empty, asset.Id, "Asset ID shuold not be null");
+            Assert.AreEqual(0, asset.AssetFiles.Count(), "Asset has files");
+            Assert.AreEqual(AssetState.Initialized, asset.State, "Expecting initilized state");
+
+            IAccessPolicy policy = _mediaContext.AccessPolicies.Create("temp", TimeSpan.FromMinutes(10), AccessPermissions.Write);
+            ILocator locator = _mediaContext.Locators.CreateSasLocator(asset, policy);
+
+            var name = Path.GetFileName(_smallWmv);
+
+            IAssetFile file = asset.AssetFiles.Create(name);
+
+            using (var fs = new FileStream(_smallWmv, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            {
+                var task = file.UploadAsync(name,
+                    fs,
+                    _mediaContext.MediaServicesClassFactory.GetBlobTransferClient(),
+                    locator,
+                    CancellationToken.None);
+
+
+                task.Wait();
+                Assert.IsTrue(task.IsCompleted);
+                Assert.IsTrue(!task.IsFaulted);
+                locator.Delete();
+                policy.Delete();
+                IAsset refreshedAsset = _mediaContext.Assets.Where(c => c.Id == asset.Id).FirstOrDefault();
+                Assert.AreEqual(asset.Name, refreshedAsset.Name);
+                Assert.AreEqual(AssetState.Initialized, refreshedAsset.State);
+                Assert.AreEqual(1, refreshedAsset.AssetFiles.Count(), "file count wrong");
+                VerifyAndDownloadAsset(refreshedAsset, 1, fs, true, false);
+                ContentKeyTests.VerifyFileAndContentKeyMetadataForStorageEncryption(refreshedAsset, _mediaContext);
+            }
         }
 
         [TestMethod]
@@ -767,7 +962,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void ShouldReportProgressForFile()
         {
-            string fileName = _smallWmv;
+            var fileName = _smallWmv;
             bool reportedProgress = false;
             IAsset asset = _mediaContext.Assets.Create(Guid.NewGuid().ToString(), AssetCreationOptions.StorageEncrypted);
             IAccessPolicy policy = _mediaContext.AccessPolicies.Create("Write", TimeSpan.FromMinutes(5), AccessPermissions.Write);
@@ -777,7 +972,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             BlobTransferClient blobTransferClient = _mediaContext.MediaServicesClassFactory.GetBlobTransferClient();
             blobTransferClient.TransferProgressChanged += (s, e) =>
                 {
-                    Assert.AreEqual(fileName, e.SourceName);
+                    Assert.AreEqual(info.Name, e.SourceName);
                     Assert.IsTrue(e.BytesTransferred <= e.TotalBytesToTransfer);
                     reportedProgress = true;
                 };
@@ -954,80 +1149,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         /// <param name="performStorageSdkDownloadVerification">if set to <c>true</c> also perform storage SDK download verification.</param>
         private void VerifyAndDownloadAsset(IAsset asset, int expectedFileCount, string inputFile, bool inputFileValidation, bool performStorageSdkDownloadVerification = true)
         {
-            Assert.AreEqual(expectedFileCount, asset.AssetFiles.Count(), "file count wrong");
-
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(WindowsAzureMediaServicesTestConfiguration.ClientStorageConnectionString);
-            string containername = asset.Id.Replace("nb:cid:UUID:", "asset-");
-            var client = storageAccount.CreateCloudBlobClient();
-            var container = client.GetContainerReference(containername);
-            Assert.IsTrue(container.Exists(), "Asset container {0} can't be found", container);
-
-            foreach (var assetFile in asset.AssetFiles)
+            using (var fs = new FileStream(inputFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
-                string downloadPathForWamsSdk = Guid.NewGuid().ToString();
-                string downloadPathForStorageSdk = Guid.NewGuid().ToString();
-
-                try
-                {
-                    var blob = container.GetBlobReferenceFromServer(assetFile.Name);
-                    Assert.IsTrue(blob.Exists(), "Blob for asset file is not found in corresponding container");
-                    blob.FetchAttributes();
-
-                    //Downloading using WAMS SDK
-                    assetFile.DownloadProgressChanged += AssetTests_OnDownloadProgress;
-                    assetFile.Download(downloadPathForWamsSdk);
-                    assetFile.DownloadProgressChanged -= AssetTests_OnDownloadProgress;
-                    Assert.AreEqual(100, _downloadProgress);
-
-                    string hashValueForWAMSSDKDownload = GetHashValueForFileMd5CheckSum(downloadPathForWamsSdk);
-                    string hashValueForInputFile = GetHashValueForFileMd5CheckSum(inputFile);
-                    if (inputFileValidation)
-                    {
-                        Assert.AreEqual(hashValueForWAMSSDKDownload, hashValueForInputFile,
-                            "MD5 CheckSums for WAMS uploaded and downloaded file are different");
-                    }
-
-                    //Comparing checksum if it is present
-                    if ((asset.Options & AssetCreationOptions.StorageEncrypted) == 0 && blob.Properties.ContentMD5 != null)
-                    {
-                        //Assert.AreEqual(hashValueForlocalSourceFile, blob.Properties.ContentMD5, "MD5 CheckSums between blob file and source file  are different");
-                        Assert.AreEqual(hashValueForWAMSSDKDownload, blob.Properties.ContentMD5, "MD5 CheckSums between blob file and wams sdk download are different");
-                    }
-
-
-                    if (performStorageSdkDownloadVerification)
-                    {
-                        //Downloading Using Storage SDK
-                        var stream = File.OpenWrite(downloadPathForStorageSdk);
-                        blob.DownloadToStream(stream);
-                        stream.Close();
-                        stream.Dispose();
-
-                        string hashValueForStorageSdkDownload = GetHashValueForFileMd5CheckSum(downloadPathForStorageSdk);
-                        Assert.AreEqual(hashValueForWAMSSDKDownload, hashValueForStorageSdkDownload, "MD5 CheckSums for wams and storage downloads are different");
-                        if (blob.Properties.ContentMD5 != null)
-                        {
-                            Assert.AreEqual(hashValueForStorageSdkDownload, blob.Properties.ContentMD5, "MD5 CheckSums between blob file and storage sdk download are different");
-                        }
-                        var azuresdkDownloadInfo = new FileInfo(downloadPathForStorageSdk);
-                        Assert.AreEqual(azuresdkDownloadInfo.Length, blob.Properties.Length, "Azure SDK download file length in bytes is not matching length of asset file in blob");
-                    }
-
-                    var wamssdkDownloadInfo = new FileInfo(downloadPathForWamsSdk);
-
-                    Assert.AreEqual(wamssdkDownloadInfo.Length, blob.Properties.Length, "WAMS SDK download file length in bytes is not matching length of asset file in blob");
-                }
-                finally
-                {
-                    if (File.Exists(downloadPathForStorageSdk))
-                    {
-                        File.Delete(downloadPathForStorageSdk);
-                    }
-                    if (File.Exists(downloadPathForWamsSdk))
-                    {
-                        File.Delete(downloadPathForWamsSdk);
-                    }
-                }
+                VerifyAndDownloadAsset(asset, expectedFileCount, fs, inputFileValidation, performStorageSdkDownloadVerification);
             }
         }
 
@@ -1112,7 +1236,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
         private static string GetHashValueForFileMd5CheckSum(string filepath)
         {
-            byte[] retrievedBuffer = File.ReadAllBytes(filepath);
+            var retrievedBuffer = File.ReadAllBytes(filepath);
 
             return GetHashValueMd5Checksum(retrievedBuffer);
         }
