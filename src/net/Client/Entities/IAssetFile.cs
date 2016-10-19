@@ -15,6 +15,8 @@
 // </license>
 
 using System;
+using System.IO;
+using System.Runtime.InteropServices.ComTypes;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -86,18 +88,37 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Uploads the file with given path asynchronously
         /// </summary>
-        /// <param name="path">The path of a file to upload</param>
+        /// <param name="path">The path of a file to upload. The file name will be used as the asset file's name in Azure. </param>
         /// <param name="blobTransferClient">The <see cref="BlobTransferClient"/> which is used to upload files.</param>
-        /// <param name="locator">An asset <see cref="ILocator"/> which defines permissions associated with the Asset.</param>
+        /// <param name="locator">A locator <see cref="ILocator"/> which defines permissions associated with the Asset.</param>
         /// <param name="token">A <see cref="CancellationToken"/> to use for canceling upload operation.</param>
         /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
         Task UploadAsync(string path, BlobTransferClient blobTransferClient, ILocator locator, CancellationToken token);
 
         /// <summary>
+        /// Uploads a stream with the given name asynchronously
+        /// </summary>
+        /// <param name="name">Name used to denote the stream</param>
+        /// <param name="stream"></param>
+        /// <param name="blobTransferClient">The <see cref="BlobTransferClient"/> which is used to upload files.</param>
+        /// <param name="locator">A locator <see cref="ILocator"/> which defines permissions associated with the Asset.</param>
+        /// <param name="token">A <see cref="CancellationToken"/> to use for canceling upload operation.</param>
+        /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
+        Task UploadAsync(string name, Stream stream, BlobTransferClient blobTransferClient, ILocator locator,
+            CancellationToken token);
+
+        /// <summary>
         /// Uploads the file with given path 
         /// </summary>
-        /// <param name="path">The path of a file to upload</param>
+        /// <param name="path">The path of a file to upload. The file name will be used as the asset file's name in Azure.</param>
         void Upload(string path);
+
+        /// <summary>
+        /// Uploads a stream with a given name
+        /// </summary>
+        /// <param name="name">Use a name to refer to this stream. This is the name that will identify this item in the Azure Portal. </param>
+        /// <param name="stream">Stream to be uploaded. Must have Position == 0.</param>
+        void Upload(string name, Stream stream);
 
     }
 }
