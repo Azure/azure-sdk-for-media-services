@@ -33,7 +33,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         public const string FileSet = "Files";
 
-        private readonly Lazy<IQueryable<IAssetFile>> _assetFileQuery; 
+        private readonly Lazy<IQueryable<IAssetFile>> _assetFileQuery;
         private readonly IAsset _parentAsset;
 
         /// <summary>
@@ -91,6 +91,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             {
                 throw new ArgumentException(String.Format(CultureInfo.InvariantCulture, StringTable.ErrorCreatingAssetFileEmptyFileName));
             }
+
             cancelation.ThrowIfCancellationRequested();
             IMediaDataServiceContext dataContext = null;
             AssetFileData assetFile = null;

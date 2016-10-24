@@ -226,6 +226,39 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
         public Task UploadAsync(string path, BlobTransferClient blobTransferClient, ILocator locator, CancellationToken token)
         {
+            if (path == null)
+            {
+                throw new ArgumentNullException("path");
+            }
+
+            if (!File.Exists(path))
+            {
+                throw new FileNotFoundException(path);
+            }
+
+            if (this.IsFragmented())
+            {
+                throw new NotSupportedException(StringTable.NotSupportedFragblobUpload);
+            }
+
+            ValidateFileName(path);
+
+            var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            return UploadAsync(fs, blobTransferClient, locator, token)
+                .ContinueWith(t => fs.Dispose()); // we can't put a using block as the file stream would get disposed before completing the UploadAsync task
+        }
+
+
+        /// <summary>
+        /// Uploads the stream asynchronously
+        /// </summary>
+        /// <param name="stream">The stream to upload</param>
+        /// <param name="blobTransferClient">The <see cref="BlobTransferClient"/> which is used to upload files.</param>
+        /// <param name="locator">An locator <see cref="ILocator"/> which defines permissions associated with the Asset.</param>
+        /// <param name="token">A <see cref="CancellationToken"/> to use for canceling upload operation.</param>
+        /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
+        public Task UploadAsync(Stream stream, BlobTransferClient blobTransferClient, ILocator locator, CancellationToken token)
+        {
             if (this.IsFragmented())
             {
                 throw new NotSupportedException(StringTable.NotSupportedFragblobUpload);
@@ -241,24 +274,17 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new ArgumentNullException("locator");
             }
 
-            if (path == null)
+            if (stream == null)
             {
-                throw new ArgumentNullException("path");
+                throw new ArgumentNullException("stream");
             }
-
-            if (!File.Exists(path))
-            {
-                throw new FileNotFoundException(path);
-            }
-
-            ValidateFileName(path);
 
             IContentKey contentKeyData = null;
             FileEncryption fileEncryption = null;
             AssetCreationOptions assetCreationOptions = this.Asset.Options;
             if (assetCreationOptions.HasFlag(AssetCreationOptions.StorageEncrypted))
             {
-                contentKeyData = this.Asset.ContentKeys.Where(c => c.ContentKeyType == ContentKeyType.StorageEncryption).FirstOrDefault();
+                contentKeyData = this.Asset.ContentKeys.FirstOrDefault(c => c.ContentKeyType == ContentKeyType.StorageEncryption);
                 if (contentKeyData == null)
                 {
                     throw new InvalidOperationException(String.Format(CultureInfo.InvariantCulture, StringTable.StorageEncryptionContentKeyIsMissing, this.Asset.Id));
@@ -266,34 +292,38 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
                 fileEncryption = new FileEncryption(contentKeyData.GetClearKeyValue(), EncryptionUtils.GetKeyIdAsGuid(contentKeyData.Id));
                 ulong iv = Convert.ToUInt64(this.InitializationVector, CultureInfo.InvariantCulture);
-                fileEncryption.SetInitializationVectorForFile(this.Name,iv);
+                fileEncryption.SetInitializationVectorForFile(this.Name, iv);
             }
 
-            EventHandler<BlobTransferProgressChangedEventArgs> handler = (s, e) => OnUploadProgressChanged(path, e);
+            EventHandler<BlobTransferProgressChangedEventArgs> handler = (s, e) => OnUploadProgressChanged(this.Name, e);
 
             blobTransferClient.TransferProgressChanged += handler;
 
             MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetBlobStorageClientRetryPolicy();
 
+            var streamLength = stream.Length;
+
             return blobTransferClient.UploadBlob(
-                    new Uri(locator.BaseUri), 
-                    path, 
-                    null, 
-                    fileEncryption, 
-                    token, 
-                    retryPolicy.AsAzureStorageClientRetryPolicy(), 
+                    new Uri(locator.BaseUri),
+                    this.Name,
+                    stream,
+                    null,
+                    fileEncryption,
+                    token,
+                    retryPolicy.AsAzureStorageClientRetryPolicy(),
                     () => locator.ContentAccessComponent)
                 .ContinueWith(
-                ts=>
-                {
-                    blobTransferClient.TransferProgressChanged -= handler;
-                    this.PostUploadAction(ts, path, token);
-                });
+                    ts =>
+                    {
+                        blobTransferClient.TransferProgressChanged -= handler;
+                        this.PostUploadAction(ts, streamLength, token);
+                    });
         }
 
-        private void OnUploadProgressChanged(string file, BlobTransferProgressChangedEventArgs blobTransferProgressChangedEventArgs)
+
+        private void OnUploadProgressChanged(string name, BlobTransferProgressChangedEventArgs blobTransferProgressChangedEventArgs)
         {
-            if (blobTransferProgressChangedEventArgs.LocalFile == file)
+            if (blobTransferProgressChangedEventArgs.SourceName == name)
             {
                 var uploadChangeHandler = UploadProgressChanged;
                 if (uploadChangeHandler != null)
@@ -316,27 +346,21 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
         }
 
-
-        private void PostUploadAction(Task task,string path, CancellationToken token)
+        private void PostUploadAction(Task task, long streamSize, CancellationToken token)
         {
-                task.ThrowIfFaulted();
-                token.ThrowIfCancellationRequested();
+            task.ThrowIfFaulted();
+            token.ThrowIfCancellationRequested();
 
-                FileInfo fileInfo = new FileInfo(path);
+            // Set the ContentFileSize base on the local file size
+            this.ContentFileSize = streamSize;
 
-                //Updating Name based on file name to avoid exceptions trying to download file.Mapping to storage account is through file name
-                this.Name = fileInfo.Name;
-
-                // Set the ContentFileSize base on the local file size
-                this.ContentFileSize = fileInfo.Length;
-
-                this.Update();
+            this.Update();
         }
         #endregion
 
         #region IMediaContextContainer Members
 
-       
+
 
         #endregion
 
@@ -520,18 +544,53 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new NotSupportedException(StringTable.NotSupportedFragblobUpload);
             }
 
-            UploadAsync(path, CancellationToken.None).Wait();
+            if (string.IsNullOrEmpty(path))
+            {
+                throw new ArgumentNullException("path");
+            }
+            
+            if (!File.Exists(path))
+            {
+                throw new FileNotFoundException(path);
+            }
+
+            ValidateFileName(path);
+
+            // we are using the file name as the name to pass forward 
+            using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            {
+                UploadAsync(fs, CancellationToken.None).Wait();
+            }
         }
 
         /// <summary>
-        /// Uploads the file with given path asynchronously
+        /// Uploads the stream with the given name 
         /// </summary>
-        /// <param name="path">The path of a file to upload</param>
+        /// <param name="name">Name of the stream</param>
+        /// <param name="stream">Stream to upload</param>
+        public void Upload(Stream stream)
+        {
+            UploadAsync(stream, CancellationToken.None).Wait();
+        }
+
+        /// <summary>
+        /// Uploads a stream asynchronously 
+        /// </summary>
+        /// <param name="name">Name for the stream</param>
+        /// <param name="stream">Stream to be uploaded</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> to use for canceling upload operation.</param>
         /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
-        internal Task UploadAsync(string path, CancellationToken cancellationToken)
+        public Task UploadAsync(Stream stream, CancellationToken cancellationToken)
         {
-            ValidateFileName(path);
+            if (stream == null)
+            {
+                throw new ArgumentNullException("stream");
+            }
+
+            if (this.IsFragmented())
+            {
+                throw new NotSupportedException(StringTable.NotSupportedFragblobUpload);
+            }
 
             IAccessPolicy accessPolicy = null;
             ILocator locator = null;
@@ -541,35 +600,35 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 .CreateAsync(policyName, TimeSpan.FromHours(12), AccessPermissions.Write)
                 .ContinueWith<ILocator>(
                     t =>
-                        {
-                            accessPolicy = t.Result;
+                    {
+                        accessPolicy = t.Result;
 
-                            t.ThrowIfFaulted(() => this.Cleanup(null, null, locator, accessPolicy));
-                            cancellationToken.ThrowIfCancellationRequested(() => this.Cleanup(null, null, locator, accessPolicy));
+                        t.ThrowIfFaulted(() => this.Cleanup(null, null, locator, accessPolicy));
+                        cancellationToken.ThrowIfCancellationRequested(() => this.Cleanup(null, null, locator, accessPolicy));
 
-                            locator = this.GetMediaContext().Locators.CreateSasLocator(this.Asset, accessPolicy);
-                            cancellationToken.ThrowIfCancellationRequested(() => this.Cleanup(null, null, locator, accessPolicy));
+                        locator = this.GetMediaContext().Locators.CreateSasLocator(this.Asset, accessPolicy);
+                        cancellationToken.ThrowIfCancellationRequested(() => this.Cleanup(null, null, locator, accessPolicy));
 
-                            return locator;
-                        },
+                        return locator;
+                    },
                     cancellationToken).
                 ContinueWith(
                     t =>
-                        {
-                            locator = t.Result;
-                            t.ThrowIfFaulted(() => this.Cleanup(null, null, locator, accessPolicy));
-                            cancellationToken.ThrowIfCancellationRequested(() => this.Cleanup(null, null, locator, accessPolicy));
+                    {
+                        locator = t.Result;
+                        t.ThrowIfFaulted(() => this.Cleanup(null, null, locator, accessPolicy));
+                        cancellationToken.ThrowIfCancellationRequested(() => this.Cleanup(null, null, locator, accessPolicy));
 
-                            var blobTransfer = GetMediaContext().MediaServicesClassFactory.GetBlobTransferClient();
+                        var blobTransfer = GetMediaContext().MediaServicesClassFactory.GetBlobTransferClient();
 
-                            blobTransfer.NumberOfConcurrentTransfers = this.GetMediaContext().NumberOfConcurrentTransfers;
-                            blobTransfer.ParallelTransferThreadCount = this.GetMediaContext().ParallelTransferThreadCount;
+                        blobTransfer.NumberOfConcurrentTransfers = this.GetMediaContext().NumberOfConcurrentTransfers;
+                        blobTransfer.ParallelTransferThreadCount = this.GetMediaContext().ParallelTransferThreadCount;
 
-                            UploadAsync(path, blobTransfer, locator, cancellationToken).Wait();
-                            locator.Delete(); 
-                            cancellationToken.ThrowIfCancellationRequested(() => this.Cleanup(null, null, null, accessPolicy));
-                            accessPolicy.Delete();
-                        },
+                        UploadAsync(stream, blobTransfer, locator, cancellationToken).Wait();
+                        locator.Delete();
+                        cancellationToken.ThrowIfCancellationRequested(() => this.Cleanup(null, null, null, accessPolicy));
+                        accessPolicy.Delete();
+                    },
                     cancellationToken);
         }
 

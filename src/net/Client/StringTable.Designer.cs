@@ -691,20 +691,20 @@ namespace Microsoft.WindowsAzure.MediaServices.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Either Task or Asset was not in valid state..
-        /// </summary>
-        internal static string NonValidateStateToAddOutputAssetToTask {
-            get {
-                return ResourceManager.GetString("NonValidateStateToAddOutputAssetToTask", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to the datatime must be a UTC format..
         /// </summary>
         internal static string NonUtcDateTime {
             get {
                 return ResourceManager.GetString("NonUtcDateTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Either Task or Asset was not in valid state..
+        /// </summary>
+        internal static string NonValidateStateToAddOutputAssetToTask {
+            get {
+                return ResourceManager.GetString("NonValidateStateToAddOutputAssetToTask", resourceCulture);
             }
         }
         

@@ -34,9 +34,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="progressPercentage">Percentage of bytes that finished transfering.</param>
         /// <param name="speed">Average speed of transfer in bytes per second.</param>
         /// <param name="uri">Uri of the blob location to transfer the data.</param>
-        /// <param name="localfile">Name of the file being transferred.</param>
+        /// <param name="sourceName">Name of the object being transferred.</param>
         /// <param name="userState">User state information to be passed through.</param>
-        public BlobTransferProgressChangedEventArgs(long bytesTransferred, long lastBlockBytesTransferred, long totalBytesToTransfer, int progressPercentage, double speed, Uri uri, string localfile, object userState)
+        public BlobTransferProgressChangedEventArgs(long bytesTransferred, long lastBlockBytesTransferred, long totalBytesToTransfer, int progressPercentage, double speed, Uri uri, string sourceName, object userState)
             : base(progressPercentage, userState)
         {
             if (uri == null)
@@ -44,7 +44,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new ArgumentNullException("uri");
             }
 
-            if (string.IsNullOrWhiteSpace(localfile))
+            if (string.IsNullOrWhiteSpace(sourceName))
             {
                 throw new ArgumentException(CommonStringTable.ErrorLocalFilenameIsNullOrEmpty);
             }
@@ -54,7 +54,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             this.TotalBytesToTransfer = totalBytesToTransfer;
             this.TransferRateBytesPerSecond = speed;
             this.Uri = uri;
-            this.LocalFile = localfile;
+            this.SourceName = sourceName;
         }
 
         /// <summary>
@@ -95,8 +95,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public Uri Uri { get; private set; }
 
         /// <summary>
-        /// Gets the full path of local file.
+        /// Gets the full path of local file or a unique name for a stream.
         /// </summary>
-        public string LocalFile { get; private set; }
+        public string SourceName { get; private set; }
     }
 }
