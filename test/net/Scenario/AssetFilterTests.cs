@@ -75,7 +75,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             FilterTrackSelectStatement filterTrackSelectStatement = new FilterTrackSelectStatement();
             filterTrackSelectStatement.PropertyConditions = new List<IFilterTrackPropertyCondition>();
             filterTrackSelectStatement.PropertyConditions.Add(new FilterTrackNameCondition("Track Name",FilterTrackCompareOperator.NotEqual));
-            filterTrackSelectStatement.PropertyConditions.Add(new FilterTrackFourCCCondition("AACL", FilterTrackCompareOperator.NotEqual));
+            filterTrackSelectStatement.PropertyConditions.Add(new FilterTrackFourCCCondition("mp4a", FilterTrackCompareOperator.NotEqual));
             filterTrackSelectStatement.PropertyConditions.Add(new FilterTrackBitrateRangeCondition(new FilterTrackBitrateRange(0,1), FilterTrackCompareOperator.NotEqual));
             filterTrackSelectStatement.PropertyConditions.Add(new FilterTrackLanguageCondition("ru", FilterTrackCompareOperator.NotEqual));
             filterTrackSelectStatement.PropertyConditions.Add(new FilterTrackTypeCondition(FilterTrackType.Text, FilterTrackCompareOperator.NotEqual));

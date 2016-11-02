@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.WindowsAzure.MediaServices.Client.Live;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -23,6 +24,22 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// </summary>
     public class StreamingEndpointCreationOptions
     {
+        /// <summary>
+        /// Default CDN Profile.
+        /// </summary>
+        public static readonly string DefaultCdnProfile = "AzureMediaStreamingPlatformCdnProfile";
+
+        /// <summary>
+        /// Default streaming endpoint version.
+        /// </summary>
+        public static readonly Version DefaultVersion = new Version("2.0");
+
+        /// <summary>
+        /// List of supported endpoint versions.
+        /// </summary>
+        public static readonly Version[] SupportedEndpointVersions = {
+            new Version("1.0"), new Version("2.0") };
+
         /// <summary>
         /// Gets or sets the name of the streaming endpoint.
         /// </summary>
@@ -49,6 +66,22 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public bool CdnEnabled { get; set; }
 
         /// <summary>
+        /// Gets or sets Cdn provider
+        /// </summary>
+        public CdnProviderType CdnProvider { get; set; }
+
+        /// <summary>
+        /// Gets or sets Cdn Profile
+        /// </summary>
+        public string CdnProfile { get; set; }
+
+        /// <summary>
+        /// Gets or sets streaming endpoint version.
+        /// Existing endpoints are 1 and new endpoints are 2.
+        /// </summary>
+        public Version StreamingEndpointVersion { get; set; }
+
+        /// <summary>
         /// Gets or sets cross site access policies policies to the streaming endpoint such as client access policy and cross domain access policy.
         /// </summary>
         public CrossSiteAccessPolicies CrossSiteAccessPolicies { get; set; }
@@ -73,12 +106,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <param name="name">Name of the streaming endpoint to be created</param>
         /// <param name="scaleUnits">The streaming endpoint scale units.</param>
-        public StreamingEndpointCreationOptions(string name, int scaleUnits)
+        /// <param name="version">Streaming endpoint version.</param>
+        public StreamingEndpointCreationOptions(string name, int scaleUnits, Version version = null)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
                 throw new ArgumentNullException("name");
             }
+
             if (scaleUnits < 0)
             {
                 throw new ArgumentOutOfRangeException("scaleUnits");
@@ -86,6 +121,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             Name = name;
             ScaleUnits = scaleUnits;
+            StreamingEndpointVersion = version ?? DefaultVersion;
         }
     }
 }
