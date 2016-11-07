@@ -89,6 +89,30 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         public ulong LastTimestamp { get; private set; }
 
+        /// <summary>
+        /// Gets a count of fragments discarded due to nonincreasing timestamp.
+        /// </summary>
+        public int NonincreasingCount { get; private set; }
+
+        /// <summary>
+        /// Gets a value indicating whether key frames are unaligned across different streams.
+        /// </summary>
+        public bool UnalignedKeyFrames { get; private set; }
+
+        /// <summary>
+        /// Gets a value indicating whether presentation time is unaligned across different streams.
+        /// </summary>
+        public bool UnalignedPresentationTime { get; private set; }
+
+        /// <summary>
+        /// Gets a value indicating whether calculated ingest bitrate for this stream is significantly different from the bitrate defined in the stream headers.
+        /// </summary>
+        public bool UnexpectedBitrate { get; private set; }
+
+        /// <summary>
+        /// Gets a value indicating whether channel is healthy.
+        /// </summary>
+        public bool Healthy { get; private set; }
 
         /// <summary>
         /// Creates a ChannelHeartbeat object from a Azure Table Storage row.
@@ -112,7 +136,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 entity.Properties["IncomingBitrate"].Int32Value.GetValueOrDefault(),
                 entity.Properties["OverlapCount"].Int32Value.GetValueOrDefault(),
                 entity.Properties["DiscontinuityCount"].Int32Value.GetValueOrDefault(),
-                (ulong)entity.Properties["LastTimestamp"].Int64Value.GetValueOrDefault());
+                (ulong)entity.Properties["LastTimestamp"].Int64Value.GetValueOrDefault(),
+                entity.Properties["NonincreasingCount"].Int32Value.GetValueOrDefault(),
+                entity.Properties["UnalignedKeyFrames"].BooleanValue.GetValueOrDefault(),
+                entity.Properties["UnalignedPresentationTime"].BooleanValue.GetValueOrDefault(),
+                entity.Properties["UnexpectedBitrate"].BooleanValue.GetValueOrDefault(),
+                entity.Properties["Healthy"].BooleanValue.GetValueOrDefault()
+                );
         }
 
         /// <summary>
@@ -144,7 +174,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             int incomingBitrate, 
             int overlapCount, 
             int discontinuityCount, 
-            ulong lastTimestamp)
+            ulong lastTimestamp,
+            int nonincreasingCount,
+            bool unalignedKeyFrames,
+            bool unalignedPresentationTime,
+            bool unexpectedBitrate,
+            bool healthy)
         {
             PartitionKey = partitionKey;
             RowKey = rowKey;
@@ -159,6 +194,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             OverlapCount = overlapCount;
             DiscontinuityCount = discontinuityCount;
             LastTimestamp = lastTimestamp;
+            NonincreasingCount = nonincreasingCount;
+            UnalignedKeyFrames = unalignedKeyFrames;
+            UnalignedPresentationTime = unalignedPresentationTime;
+            UnexpectedBitrate = unexpectedBitrate;
+            Healthy = healthy;
         }
     }
 }
