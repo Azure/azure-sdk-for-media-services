@@ -87,5 +87,30 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Gets the last time stamp.
         /// </summary>
         ulong LastTimestamp { get; }
+
+        /// <summary>
+        /// Gets a count of fragments discarded due to nonincreasing timestamp.
+        /// </summary>
+        int NonincreasingCount { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether key frames are unaligned across different streams.
+        /// </summary>
+        bool UnalignedKeyFrames { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether presentation time is unaligned across different streams.
+        /// </summary>
+        bool UnalignedPresentationTime { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether calculated ingest bitrate for this stream is significantly different from the bitrate defined in the stream headers.
+        /// </summary>
+        bool UnexpectedBitrate { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether channel is healthy.
+        /// </summary>
+        bool Healthy { get; }
     }
 }

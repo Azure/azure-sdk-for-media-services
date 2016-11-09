@@ -47,6 +47,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             public string Type { get; set; }
             public Guid ServiceId { get; set; }
             public string Name { get; set; }
+            public int NonincreasingCount { get; set; }
+            public bool UnalignedKeyFrames { get; set; }
+            public bool UnalignedPresentationTime { get; set; }
+            public bool UnexpectedBitrate { get; set; }
+            public bool Healthy { get; set; }
 
             public ChannelHeartbeatEntity(
                 string partitionKey,
@@ -59,7 +64,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 int incomingBitrate,
                 int overlapCount,
                 int discontinuityCount,
-                ulong lastTimestamp)
+                ulong lastTimestamp,
+                int nonincreasingCount,
+                bool unalignedKeyFrames,
+                bool unalignedPresentationTime,
+                bool unexpectedBitrate,
+                bool healthy)
             {
                 this.PartitionKey = partitionKey;
                 this.RowKey = rowKey;
@@ -72,8 +82,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 OverlapCount = overlapCount;
                 DiscontinuityCount = discontinuityCount;
                 LastTimestamp = (Int64)lastTimestamp;
-                Type = "Channel";
                 ServiceId = ChannelId;
+                NonincreasingCount = nonincreasingCount;
+                UnalignedKeyFrames = unalignedKeyFrames;
+                UnalignedPresentationTime = unalignedPresentationTime;
+                UnexpectedBitrate = unexpectedBitrate;
+                Healthy = healthy;
+                Type = "Channel";
                 Name = "ChannelHeartbeat";
             }
         }
@@ -86,13 +101,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         private static readonly ChannelHeartbeatEntity[] TestData =
         {
             new ChannelHeartbeatEntity(PartitionKey, "07581_00000", new DateTime(2011, 3, 2, 21, 53, 39, DateTimeKind.Utc), "",
-                "video", "video", 2000000, 123456, 0, 0, 131126004929427),
+                "video", "video", 2000000, 123456, 0, 0, 131126004929427, 10, false, false, false, true),
             new ChannelHeartbeatEntity(PartitionKey, "07581_00001", new DateTime(2011, 3, 2, 21, 53, 39, DateTimeKind.Utc), "",
-                "video", "video", 2000000, 123456, 0, 0, 131126004929427),
+                "video", "video", 2000000, 123456, 0, 0, 131126004929427, 10, false, false, false, true),
             new ChannelHeartbeatEntity(PartitionKey, "07581_00000", new DateTime(2011, 3, 3, 21, 53, 39, DateTimeKind.Utc), "",
-                "video", "video", 2000000, 123456, 0, 0, 131126004929427),
+                "video", "video", 2000000, 123456, 0, 0, 131126004929427, 10, false, false, false, true),
             new ChannelHeartbeatEntity(PartitionKey, "07581_00001", new DateTime(2011, 3, 3, 21, 53, 39, DateTimeKind.Utc), "",
-                "video", "video", 2000000, 123456, 0, 0, 131126004929427)
+                "video", "video", 2000000, 123456, 0, 0, 131126004929427, 10, false, false, false, true)
         };
 
         private readonly TraceListener _consoleTraceListener = new ConsoleTraceListener();
@@ -120,10 +135,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         {
             // prepare the test data
             var cloudStorageAccount = new CloudStorageAccount(
-                new StorageCredentials(WindowsAzureMediaServicesTestConfiguration.TelemetryStorageAccountName, WindowsAzureMediaServicesTestConfiguration.TelemetryStorageAccountKey), 
+                new StorageCredentials(WindowsAzureMediaServicesTestConfiguration.TelemetryStorageAccountName, WindowsAzureMediaServicesTestConfiguration.TelemetryStorageAccountKey),
                 true);
             var cloudTableClient = cloudStorageAccount.CreateCloudTableClient();
-            var table1 =  cloudTableClient.GetTableReference(TestTableNames[0]);
+            var table1 = cloudTableClient.GetTableReference(TestTableNames[0]);
             var table2 = cloudTableClient.GetTableReference(TestTableNames[1]);
 
             try
@@ -174,7 +189,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 var resArray = res.ToArray();
                 Assert.AreEqual(resArray.Length, 2);
                 VerifyResult(resArray[0], TestData[0]);
-                VerifyResult(resArray[1], TestData[1]);                  
+                VerifyResult(resArray[1], TestData[1]);
             });
         }
 
@@ -195,7 +210,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 VerifyResult(resArray[0], TestData[0]);
                 VerifyResult(resArray[1], TestData[1]);
                 VerifyResult(resArray[2], TestData[2]);
-                VerifyResult(resArray[3], TestData[3]);                
+                VerifyResult(resArray[3], TestData[3]);
             });
         }
 
@@ -213,6 +228,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             Assert.AreEqual(value.IncomingBitrate, expected.IncomingBitrate);
             Assert.AreEqual(value.OverlapCount, expected.OverlapCount);
             Assert.AreEqual(value.DiscontinuityCount, expected.DiscontinuityCount);
+            Assert.AreEqual(value.NonincreasingCount, expected.NonincreasingCount);
+            Assert.AreEqual(value.UnalignedKeyFrames, expected.UnalignedKeyFrames);
+            Assert.AreEqual(value.UnalignedPresentationTime, expected.UnalignedPresentationTime);
+            Assert.AreEqual(value.UnexpectedBitrate, expected.UnexpectedBitrate);
+            Assert.AreEqual(value.Healthy, expected.Healthy);
         }
 
         private static string GetTableEndPoint()
