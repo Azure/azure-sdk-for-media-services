@@ -388,7 +388,6 @@
     <Compile Include="Telemetry\StreamingEndPointRequestLog.cs" />
     <Compile Include="Telemetry\StreamingEndPointRequestLogCollection.cs" />
     <Compile Include="Telemetry\TelemetryStorage.cs" />
-    <Compile Include="Telemetry\TelemetryStorageFactory.cs" />
     <Compile Include="Telemetry\TelemetryUtilities.cs" />
     <Compile Include="TransientFaultHandling\IRetryPolicyAdapter.cs" />
     <Compile Include="TransientFaultHandling\RetryPolicyExtensions.cs" />
