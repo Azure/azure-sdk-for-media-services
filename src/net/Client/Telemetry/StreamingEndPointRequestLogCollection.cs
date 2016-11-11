@@ -124,9 +124,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             return Task.Factory.StartNew(() =>
             {
-                var telemetryStorage = TelemetryStorageFactory.CreateTelemetryStorage(
-                    new StorageCredentials(storageAccount, storageAccountKey),
-                    new Uri(endpointAddress));
+                var telemetryStorage = new TelemetryStorage(new StorageCredentials(storageAccount, storageAccountKey), new Uri(endpointAddress));
 
                 return telemetryStorage.GetStreamingEndPointMetrics(
                     accountId,
@@ -136,6 +134,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             });
         }
 
-        public MediaContextBase MediaContext { get; set; }
+        public MediaContextBase MediaContext { get; set; } 
     }
 }
