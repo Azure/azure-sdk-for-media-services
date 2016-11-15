@@ -99,8 +99,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
                 CloudBlockBlob blob = GetCloudBlockBlob(uri, client, subDirectory, name, contentType, getSharedAccessSignature);
 
-                BlobPolicyActivationWait(() => blob.DeleteIfExists(options: blobRequestOptions));
-
                 transferContext.Length = stream.Length;
                 transferContext.LocalFilePath = name;
                 transferContext.OnComplete = () => uploadCompletedSignal.Set();
