@@ -74,6 +74,26 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         bool CdnEnabled { get; set; }
 
         /// <summary>
+        /// Gets or sets Cdn provider.
+        /// </summary>
+        string CdnProvider { get; set; }
+
+        /// <summary>
+        /// Gets or sets Cdn profile.
+        /// </summary>
+        string CdnProfile { get; set; }
+
+        /// <summary>
+        /// Gets or sets streaming endpoint version.
+        /// </summary>
+        string StreamingEndpointVersion { get; set; }
+
+        /// <summary>
+        /// Gets the free trial end time as a string.
+        /// </summary>
+        DateTime FreeTrialEndTime { get; }
+
+        /// <summary>
         /// Gets or sets cross site access policies.
         /// </summary>
         CrossSiteAccessPolicies CrossSiteAccessPolicies { get; set; }
