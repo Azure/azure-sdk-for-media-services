@@ -132,7 +132,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling
                 {
                     return true;
                 }
-                else if (retryOnUnauthorizedErrors && (statusCode == (int)HttpStatusCode.Unauthorized))
+                else if (retryOnUnauthorizedErrors && ((statusCode == (int)HttpStatusCode.Unauthorized) || (statusCode == (int)HttpStatusCode.Forbidden)))
                 {
                     return true;
                 }

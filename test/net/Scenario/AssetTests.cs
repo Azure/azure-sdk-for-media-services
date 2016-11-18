@@ -551,7 +551,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [Priority(1)]
-        [Ignore]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         public void CreateAssetAndUpload4FilesUsingSyncCall()
         {
             const int expected = 4;
@@ -562,6 +562,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [Priority(0)]
+        [DeploymentItem(@"Media\SmallWmv.wmv", "Media")]
         [Ignore]
         public void ShouldCreateAssetAndUpload10FilesUsingSyncCall()
         {
