@@ -16,13 +16,16 @@
 
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data.Services.Client;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web.UI;
 using System.Xml;
 using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -447,6 +450,292 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             Assert.IsTrue(job.InputMediaAssets[0].Name == "SmallWmv2");
             Assert.IsTrue(job.InputMediaAssets[1].Name == "SmallWmv");
             Assert.IsTrue(job.InputMediaAssets[2].Name == "SmallMP41");
+        }
+
+        [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [DeploymentItem(@"Media\SmallWmv2.wmv", "Media")]
+        [DeploymentItem(@"Media\SmallMp41.mp4", "Media")]
+        [DeploymentItem(@"Media\Thumbnail.xml", "Media")]
+        public void ShouldSubmitAndFinishJobWithMultipleTasksAndSharedOutputAsset()
+        {
+            IAsset asset1 = AssetTests.CreateAsset(_mediaContext, WindowsAzureMediaServicesTestConfiguration.SmallWmv2, AssetCreationOptions.StorageEncrypted);
+            asset1.Name = "SmallWmv2";
+            asset1.Update();
+
+
+            string configuration = File.ReadAllText(WindowsAzureMediaServicesTestConfiguration.ThumbnailXml);
+
+            IJob job = _mediaContext.Jobs.Create("Test");
+            IMediaProcessor mediaProcessor = GetMediaProcessor(_mediaContext, WindowsAzureMediaServicesTestConfiguration.MpEncoderName);
+            
+            ITask task1 = job.Tasks.AddNew("Task1", mediaProcessor, configuration, TaskOptions.None);
+            task1.InputAssets.Add(asset1);
+            IAsset output = task1.OutputAssets.AddNew("JobOutput", options: AssetCreationOptions.None, formatOption: AssetFormatOption.None);
+            
+            ITask task2 = job.Tasks.AddNew("Task2", mediaProcessor, configuration, TaskOptions.None);
+            task2.InputAssets.Add(asset1);
+            task2.OutputAssets.Add(output);
+           
+            job.Submit();
+
+            WaitForJob(job.Id, JobState.Finished, VerifyAllTasksFinished);
+            Assert.IsTrue(job.OutputMediaAssets.Count == 1);
+            Assert.AreEqual(job.Tasks[0].OutputAssets[0].Id, job.Tasks[1].OutputAssets[0].Id, "Output assets are not the same");
+        }
+
+        [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [DeploymentItem(@"Media\SmallWmv2.wmv", "Media")]
+        [DeploymentItem(@"Configuration\Thumbnail.txt", "Configuration")]
+        [DeploymentItem(@"Configuration\Proxy.txt", "Configuration")]
+        [DeploymentItem(@"Configuration\MBR.txt", "Configuration")]
+        public void ShouldSubmitAndFinishJobWithMesAndMultipleTasksAndSharedOutputAsset()
+        {
+            IAsset asset1 = AssetTests.CreateAsset(_mediaContext, WindowsAzureMediaServicesTestConfiguration.SmallWmv2, AssetCreationOptions.StorageEncrypted);
+            asset1.Name = "SmallWmv2";
+            asset1.Update();
+
+            string configuration1 = File.ReadAllText(WindowsAzureMediaServicesTestConfiguration.ThumbnailConfig);
+            string configuration2 = File.ReadAllText(WindowsAzureMediaServicesTestConfiguration.ProxyConfig);
+            string configuration3 = File.ReadAllText(WindowsAzureMediaServicesTestConfiguration.MbrConfig);
+
+
+            IJob job = _mediaContext.Jobs.Create("Test");
+            IMediaProcessor mediaProcessor = GetMediaProcessor(_mediaContext, WindowsAzureMediaServicesTestConfiguration.MesName);
+
+            ITask task1 = job.Tasks.AddNew("Task1", mediaProcessor, configuration1, TaskOptions.DoNotCancelOnJobFailure | TaskOptions.DoNotDeleteOutputAssetOnFailure);
+            task1.InputAssets.Add(asset1);
+            task1.OutputAssets.AddNew("JobOutput", options: AssetCreationOptions.None, formatOption: AssetFormatOption.None);
+
+            ITask task2 = job.Tasks.AddNew("Task2", mediaProcessor, configuration2, TaskOptions.DoNotCancelOnJobFailure | TaskOptions.DoNotDeleteOutputAssetOnFailure);
+            task2.InputAssets.Add(asset1);
+            IAsset outputAsset = task2.OutputAssets.AddNew("JobOutput", options: AssetCreationOptions.None, formatOption: AssetFormatOption.AdaptiveStreaming);
+
+
+            ITask task3 = job.Tasks.AddNew("Task3", mediaProcessor, configuration3, TaskOptions.DoNotCancelOnJobFailure | TaskOptions.DoNotDeleteOutputAssetOnFailure);
+            task3.InputAssets.Add(asset1);
+            task3.OutputAssets.Add(outputAsset);
+
+            job.Submit();
+
+            WaitForJob(job.Id, JobState.Finished, VerifyAllTasksFinished);
+
+            Assert.IsTrue(job.OutputMediaAssets.Count == 2);
+            Assert.AreEqual(job.Tasks[1].OutputAssets[0].Id, job.Tasks[2].OutputAssets[0].Id, "Output assets are not the same");
+            //Assert.AreEqual(AssetType.SmoothStreaming, job.Tasks[1].OutputAssets[0].AssetType);
+
+            string workingDir = Path.GetTempPath();
+            IAssetFile ismAsset =
+                job.Tasks[1].OutputAssets[0].AssetFiles.Where(f => f.IsPrimary).SingleOrDefault();
+            Assert.IsNotNull(ismAsset);
+            string fullPath = Path.Combine(Path.GetTempPath(), ismAsset.Name);
+            ismAsset.Download(fullPath);
+
+            var xDocument = XDocument.Load(fullPath);
+            XNamespace ns = xDocument.Root.Name.Namespace;
+            var xElement =
+                xDocument.Descendants(ns + "meta").SingleOrDefault(f => f.Attribute("name").Value == "formats");
+            Assert.IsNotNull(xElement, "Missing format element in primary file");
+            Assert.AreEqual(xElement.Attribute("content").Value, "vod-fmp4", "Not valid adaptive streaming");
+        }
+
+
+        [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [DeploymentItem(@"Media\SmallWmv2.wmv", "Media")]
+        [DeploymentItem(@"Configuration\Proxy.txt", "Configuration")]
+        public void TestJobWithTaskNotificationToBothAzureQueueAndWebHookEndPoint()
+        {
+            IAsset asset1 = AssetTests.CreateAsset(_mediaContext, WindowsAzureMediaServicesTestConfiguration.SmallWmv2, AssetCreationOptions.StorageEncrypted);
+            asset1.Name = "SmallWmv2";
+            asset1.Update();
+
+            string configuration = File.ReadAllText(WindowsAzureMediaServicesTestConfiguration.ProxyConfig);
+            string webhookEndpoint = ConfigurationManager.AppSettings["WebHookEndPointWithoutEncryption"];
+
+            INotificationEndPoint endpoint1 = _mediaContext.NotificationEndPoints.Create("endpoint1", 
+                NotificationEndPointType.AzureQueue,
+                "tasknotificationqueue");
+            INotificationEndPoint endpoint2 = _mediaContext.NotificationEndPoints.Create("endpoint2",
+                 NotificationEndPointType.WebHook, webhookEndpoint);
+
+            IJob job = _mediaContext.Jobs.Create("Test");
+            IMediaProcessor mediaProcessor = GetMediaProcessor(_mediaContext, WindowsAzureMediaServicesTestConfiguration.MesName);
+
+            ITask task = job.Tasks.AddNew("Task1", mediaProcessor, configuration, TaskOptions.None);
+            task.InputAssets.Add(asset1);
+            task.OutputAssets.AddNew("JobOutput", options: AssetCreationOptions.None, formatOption: AssetFormatOption.None);
+            task.TaskNotificationSubscriptions.AddNew(NotificationJobState.All, endpoint1, true);
+            task.TaskNotificationSubscriptions.AddNew(NotificationJobState.All, endpoint2, true);
+
+            job.Submit();
+            WaitForJob(job.Id, JobState.Finished, VerifyAllTasksFinished);
+        }
+
+        [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [DeploymentItem(@"Media\SmallWmv2.wmv", "Media")]
+        [DeploymentItem(@"Configuration\Proxy.txt", "Configuration")]
+        public void TestJobWithTaskNotificationToWebHookEndPointWithEncryption()
+        {
+            byte[] bytes = new byte[64];
+           
+            IAsset asset1 = AssetTests.CreateAsset(_mediaContext, WindowsAzureMediaServicesTestConfiguration.SmallWmv2, AssetCreationOptions.None);
+            asset1.Name = "SmallWmv2";
+            asset1.Update();
+
+            string configuration = File.ReadAllText(WindowsAzureMediaServicesTestConfiguration.ProxyConfig);
+            string webhookEndpoint = ConfigurationManager.AppSettings["WebHookEndPointWithEncryption"];
+
+            INotificationEndPoint endpoint = _mediaContext.NotificationEndPoints.Create("endpoint2",
+                 NotificationEndPointType.WebHook, webhookEndpoint, bytes);
+            IJob job = _mediaContext.Jobs.Create("Test");
+            IMediaProcessor mediaProcessor = GetMediaProcessor(_mediaContext, WindowsAzureMediaServicesTestConfiguration.MesName);
+
+            ITask task = job.Tasks.AddNew("Task1", mediaProcessor, configuration, TaskOptions.None);
+            task.InputAssets.Add(asset1);
+            task.OutputAssets.AddNew("JobOutput", options: AssetCreationOptions.None, formatOption: AssetFormatOption.None);
+            task.TaskNotificationSubscriptions.AddNew(NotificationJobState.All, endpoint, true);
+
+            job.Submit();
+            WaitForJob(job.Id, JobState.Finished, VerifyAllTasksFinished);
+        }
+        
+        [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [DeploymentItem(@"Configuration\Thumbnail.txt", "Configuration")]
+        [DeploymentItem(@"Configuration\Proxy.txt", "Configuration")]
+        [DeploymentItem(@"Media\SmallWmv2.wmv", "Media")]
+        public void ShouldFailJobWhenTryingAddOutputAssetFromDifferentJobToTask()
+        {
+            IAsset asset1 = AssetTests.CreateAsset(_mediaContext, WindowsAzureMediaServicesTestConfiguration.SmallWmv2, AssetCreationOptions.StorageEncrypted);
+            asset1.Name = "SmallWmv2";
+            asset1.Update();
+
+            string configuration1 = File.ReadAllText(WindowsAzureMediaServicesTestConfiguration.ThumbnailConfig);
+            string configuration2 = File.ReadAllText(WindowsAzureMediaServicesTestConfiguration.ProxyConfig);
+
+            IJob job1 = _mediaContext.Jobs.Create("Test1");
+            IMediaProcessor mediaProcessor = GetMediaProcessor(_mediaContext, WindowsAzureMediaServicesTestConfiguration.MesName);
+
+            ITask task1 = job1.Tasks.AddNew("Task1", mediaProcessor, configuration1, TaskOptions.None);
+            task1.InputAssets.Add(asset1);
+            IAsset outputAsset = task1.OutputAssets.AddNew("JobOutput", options: AssetCreationOptions.None, formatOption: AssetFormatOption.None);
+
+            IJob job2 = _mediaContext.Jobs.Create("Test2");
+            ITask task2 = job2.Tasks.AddNew("Task2", mediaProcessor, configuration2, TaskOptions.None);
+            task2.InputAssets.Add(asset1);
+
+            try
+            {
+                task2.OutputAssets.Add(outputAsset);
+                Assert.Fail();
+            }
+            catch(ArgumentException ex)
+            {
+                Assert.IsTrue(ex.Message.Contains(StringTable.ErrorAddAssetToOutputAssetsOfTask));
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [DeploymentItem(@"Configuration\Thumbnail.txt", "Configuration")]
+        [DeploymentItem(@"Configuration\Proxy.txt", "Configuration")]
+        [DeploymentItem(@"Media\SmallWmv2.wmv", "Media")]
+        public void ShouldSubmitJobWhenCreatingTaskWithNoCancelNoDeleteOption()
+        {
+            IAsset asset1 = AssetTests.CreateAsset(_mediaContext, WindowsAzureMediaServicesTestConfiguration.SmallWmv2, AssetCreationOptions.StorageEncrypted);
+            asset1.Name = "SmallWmv2";
+            asset1.Update();
+
+            string configuration1 = File.ReadAllText(WindowsAzureMediaServicesTestConfiguration.ThumbnailConfig);
+            string configuration2 = File.ReadAllText(WindowsAzureMediaServicesTestConfiguration.ProxyConfig);
+
+            IJob job1 = _mediaContext.Jobs.Create("Test1");
+            IMediaProcessor mediaProcessor = GetMediaProcessor(_mediaContext, WindowsAzureMediaServicesTestConfiguration.MesName);
+
+            ITask task1 = job1.Tasks.AddNew("Task1", mediaProcessor, configuration1, TaskOptions.DoNotDeleteOutputAssetOnFailure);
+            task1.InputAssets.Add(asset1);
+            IAsset outputAsset = task1.OutputAssets.AddNew("JobOutput", options: AssetCreationOptions.None, formatOption: AssetFormatOption.None);
+
+            ITask task2 = job1.Tasks.AddNew("Task2", mediaProcessor, configuration2, TaskOptions.DoNotCancelOnJobFailure);
+            task2.InputAssets.Add(asset1);
+            task2.OutputAssets.Add(outputAsset);
+
+            job1.Submit();
+
+            WaitForJob(job1.Id, JobState.Finished, VerifyAllTasksFinished);
+            Assert.IsTrue(job1.OutputMediaAssets.Count == 1);
+        }
+
+        [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [DeploymentItem(@"Configuration\Thumbnail.txt", "Configuration")]
+        [DeploymentItem(@"Configuration\Proxy.txt", "Configuration")]
+        [DeploymentItem(@"Media\SmallWmv2.wmv", "Media")]
+        public void ShouldFailJobWhenTryingAddInputAssetToOutputAssetOfTask()
+        {
+            IAsset asset1 = AssetTests.CreateAsset(_mediaContext, WindowsAzureMediaServicesTestConfiguration.SmallWmv2, AssetCreationOptions.StorageEncrypted);
+            asset1.Name = "SmallWmv2";
+            asset1.Update();
+
+            string configuration1 = File.ReadAllText(WindowsAzureMediaServicesTestConfiguration.ThumbnailConfig);
+            string configuration2 = File.ReadAllText(WindowsAzureMediaServicesTestConfiguration.ProxyConfig);
+
+            IJob job1 = _mediaContext.Jobs.Create("Test1");
+            IMediaProcessor mediaProcessor = GetMediaProcessor(_mediaContext, WindowsAzureMediaServicesTestConfiguration.MesName);
+
+            ITask task1 = job1.Tasks.AddNew("Task1", mediaProcessor, configuration1, TaskOptions.None);
+            task1.InputAssets.Add(asset1);
+            IAsset outputAsset = task1.OutputAssets.AddNew("JobOutput", options: AssetCreationOptions.None, formatOption: AssetFormatOption.None);
+
+            IJob job2 = _mediaContext.Jobs.Create("Test2");
+            ITask task2 = job2.Tasks.AddNew("Task2", mediaProcessor, configuration2, TaskOptions.None);
+            task2.InputAssets.Add(asset1);
+
+            try
+            {
+                task2.OutputAssets.Add(asset1);
+                Assert.Fail();
+            }
+            catch (ArgumentException ex)
+            {
+                Assert.IsTrue(ex.Message.Contains(StringTable.ErrorAddingNonOutputAssetToTask));
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [DeploymentItem(@"Media\SmallWmv2.wmv", "Media")]
+        public void ShouldSubmitAndFinishJobWhenTryingAddOutputAssetFromSameTask()
+        {
+            IAsset asset1 = AssetTests.CreateAsset(_mediaContext, WindowsAzureMediaServicesTestConfiguration.SmallWmv2, AssetCreationOptions.StorageEncrypted);
+            asset1.Name = "SmallWmv2";
+            asset1.Update();
+
+            const string configuration1 = @"SaaS Thumbnail";
+
+            IJob job1 = _mediaContext.Jobs.Create("Test1");
+            IMediaProcessor mediaProcessor = GetMediaProcessor(_mediaContext, WindowsAzureMediaServicesTestConfiguration.MesName);
+
+            ITask task1 = job1.Tasks.AddNew("Task1", mediaProcessor, configuration1, TaskOptions.None);
+            task1.InputAssets.Add(asset1);
+            IAsset outputAsset = task1.OutputAssets.AddNew("JobOutput", options: AssetCreationOptions.None, formatOption: AssetFormatOption.None);
+
+            task1.OutputAssets.Add(outputAsset);
+            job1.Submit();
+
+            WaitForJob(job1.Id, JobState.Finished, VerifyAllTasksFinished);
+            Assert.IsTrue(job1.OutputMediaAssets.Count == 1);
         }
 
         [TestMethod]

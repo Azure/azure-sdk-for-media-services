@@ -44,6 +44,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         NotificationEndPointType EndPointType { get; }
 
         /// <summary>
+        /// Type of notification endpoint credential.
+        /// </summary>
+        NotificationEndPointCredentialType CredentialType { get; }
+
+        /// <summary>
         /// Address of endpoint. The constraints of this value is determined by the endpoint type.
         /// </summary>
         string EndPointAddress { get; }

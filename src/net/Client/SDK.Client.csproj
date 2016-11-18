@@ -172,8 +172,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AcsTokenProvider.cs" />
     <Compile Include="Collections\AssetFilterBaseCollection.cs" />
     <Compile Include="Collections\EncodingReservedUnitCollection.cs" />
+    <Compile Include="Collections\TaskNotificationSubscriptionCollection.cs" />
     <Compile Include="Collections\StreamingFilterBaseCollection.cs" />
     <Compile Include="ContentKeyAuthorization\ContentKeyAuthorizationPolicyCollection.cs" />
     <Compile Include="ContentKeyAuthorization\ContentKeyAuthorizationPolicyData.cs" />
@@ -230,6 +232,7 @@
     <Compile Include="DynamicEncryption\OutputAsset.cs" />
     <Compile Include="Entities\AssetFileOptions.cs" />
     <Compile Include="Entities\AssetFilterData.cs" />
+    <Compile Include="Entities\AssetFormatOption.cs" />
     <Compile Include="Entities\EncodingReservedUnitData.cs" />
     <Compile Include="Entities\AccessPermissions.cs" />
     <Compile Include="Collections\AccessPolicyBaseCollection.cs">
@@ -284,7 +287,13 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Entities\FilterTrackCompareOperator.cs" />
+    <Compile Include="Entities\FirstQuality.cs" />
+    <Compile Include="Entities\FirstQualityData.cs" />
     <Compile Include="Entities\IEncodingReservedUnit.cs" />
+    <Compile Include="Entities\ITaskNotificationSubscription.cs" />
+    <Compile Include="Entities\NotificationEndpointCredentialType.cs" />
+    <Compile Include="Entities\TaskNotificationSubscription.cs" />
+    <Compile Include="ITokenProvider.cs" />
     <Compile Include="Live\AdMarkerSource.cs" />
     <Compile Include="Entities\IFilterTrackPropertyCondition.cs" />
     <Compile Include="Entities\IStreamingAssetFilter.cs" />
@@ -360,10 +369,26 @@
     <Compile Include="MediaServicesCredentials.cs" />
     <Compile Include="Cache.cs" />
     <Compile Include="Encryption\NullableFileEncryption.cs" />
+    <Compile Include="Telemetry\ChannelHeartbeat.cs" />
+    <Compile Include="Telemetry\ChannelMetricsCollection.cs" />
+    <Compile Include="Telemetry\EnumerableExtensions.cs" />
+    <Compile Include="Telemetry\IChannelHeartbeat.cs" />
+    <Compile Include="Telemetry\IStreamingEndPointRequestLog.cs" />
     <Compile Include="RequestAdapters\IDataServiceContextAdapter.cs" />
     <Compile Include="RequestAdapters\AssetDeleteOptionsRequestAdapter.cs" />
     <Compile Include="RequestAdapters\IWebRequestAdapter.cs" />
     <Compile Include="ReservedUnitType.cs" />
+    <Compile Include="Telemetry\ComponentMonitoringSetting.cs" />
+    <Compile Include="Telemetry\IComponentMonitoringSetting.cs" />
+    <Compile Include="Telemetry\IMonitoringConfiguration.cs" />
+    <Compile Include="Telemetry\MonitoringComponent.cs" />
+    <Compile Include="Telemetry\MonitoringConfiguration.cs" />
+    <Compile Include="Telemetry\MonitoringConfigurationCollection.cs" />
+    <Compile Include="Telemetry\MonitoringLevel.cs" />
+    <Compile Include="Telemetry\StreamingEndPointRequestLog.cs" />
+    <Compile Include="Telemetry\StreamingEndPointRequestLogCollection.cs" />
+    <Compile Include="Telemetry\TelemetryStorage.cs" />
+    <Compile Include="Telemetry\TelemetryUtilities.cs" />
     <Compile Include="TransientFaultHandling\IRetryPolicyAdapter.cs" />
     <Compile Include="TransientFaultHandling\RetryPolicyExtensions.cs" />
     <Compile Include="TransientFaultHandling\StorageTransientErrorDetectionStrategy.cs" />

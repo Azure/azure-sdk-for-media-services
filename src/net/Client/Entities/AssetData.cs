@@ -387,6 +387,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             return (AssetCreationOptions)options;
         }
 
+        private static AssetFormatOption GetExposedFormatOption(int formatOption)
+        {
+            return (AssetFormatOption)formatOption;
+        }
+
         private void InvalidateFilesCollection()
         {
             this.Files.Clear();

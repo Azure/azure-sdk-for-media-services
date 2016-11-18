@@ -31,6 +31,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         string Name { get; }
 
         /// <summary>
+        /// First quality
+        /// </summary>
+        FirstQuality FirstQuality { get; set; }
+
+        /// <summary>
         /// Presentation time range
         /// </summary>
         PresentationTimeRange PresentationTimeRange { get; set; }

@@ -259,6 +259,15 @@
   <data name="ErrorReadOnlyCollectionToSubmittedTask" xml:space="preserve">
     <value>Collection {0} is readonly for submitted Task.</value>
   </data>
+  <data name="ErrorAddAssetToOutputAssetsOfTask" xml:space="preserve">
+    <value>Only assets associated with the current job may be shared across multiple tasks.</value>
+  </data>
+  <data name="ErrorAddingNonOutputAssetToTask" xml:space="preserve">
+    <value>Only outputasset can be added to the task output assets.</value>
+  </data>
+  <data name="NonValidateStateToAddOutputAssetToTask" xml:space="preserve">
+    <value>Either Task or Asset was not in valid state.</value>
+  </data>
   <data name="NotSupportedFileInfoSave" xml:space="preserve">
     <value>IFileInfo.Save operation is not supported when asset is not in initialized state.</value>
   </data>
@@ -348,5 +357,26 @@
   </data>
   <data name="NotSupportedFragblobUpload" xml:space="preserve">
     <value>Data for Fragmented AssetFiles cannot be uploaded.</value>
+  </data>
+  <data name="InvalidStorageAccount" xml:space="preserve">
+    <value>System can't detect the given Azure storage account. Please contact support.</value>
+  </data>
+  <data name="NonUtcDateTime" xml:space="preserve">
+    <value>the datatime must be a UTC format.</value>
+  </data>
+  <data name="InvalidTimeRange" xml:space="preserve">
+    <value>Start time must be before the end time.</value>
+  </data>
+  <data name="InvalidChannelInput" xml:space="preserve">
+    <value>Channel Id can't be parsed as a Guid format.</value>
+  </data>
+  <data name="InvalidMediaServicesAccountIdInput" xml:space="preserve">
+    <value>MediaServicesAccountId can't be parsed as a Guid format.</value>
+  </data>
+  <data name="InvalidStreamingEndPointInput" xml:space="preserve">
+    <value>StreamingEndPoint Id id can't be parsed as a Guid format.</value>
+  </data>
+  <data name="SupportWebHookWithCredentialOnly" xml:space="preserve">
+    <value>Only support set credential for webhook endpoints.</value>
   </data>
 </root>

@@ -29,15 +29,20 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     {
         public StreamingFilterData()
         {
+            FirstQuality = null;
             PresentationTimeRange = new PresentationTimeRangeData();
             Tracks = new List<FilterTrackSelectStatementData>();
             ResourceSetName = StreamingFilterBaseCollection.FilterSet;
         }
 
-        public StreamingFilterData(string name, PresentationTimeRange timeRange,
-            IList<FilterTrackSelectStatement> trackConditions)
+        public StreamingFilterData(
+            string name, 
+            PresentationTimeRange timeRange,
+            IList<FilterTrackSelectStatement> trackConditions,
+            FirstQuality firstQuality = null)
         {
             Name = name;
+            FirstQuality = firstQuality != null ? new FirstQualityData(firstQuality) : null;
             PresentationTimeRange = timeRange != null
                 ? new PresentationTimeRangeData(timeRange)
                 : new PresentationTimeRangeData();
@@ -51,6 +56,23 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Name of filter
         /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        /// First Quality
+        /// </summary>
+        public FirstQualityData FirstQuality { get; set; }
+
+        FirstQuality IStreamingFilter.FirstQuality
+        {
+            get { return FirstQuality != null ? new FirstQuality(FirstQuality) : null; }
+            set
+            {
+                if (value != null)
+                {
+                    FirstQuality = new FirstQualityData(value);
+                }
+            }
+        }
 
         /// <summary>
         /// Presentation time range

@@ -24,7 +24,19 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets Microsoft WindowsAzure Media Services credentials used for authenticating requests.
         /// </summary>
-        public MediaServicesCredentials Credentials { get; protected set; }
+        public MediaServicesCredentials Credentials
+        {
+            get
+            {
+                return TokenProvider as MediaServicesCredentials;
+            }
+        }
+
+
+        /// <summary>
+        /// A token provider to get authorization tokens for Azure Media Services.
+        /// </summary>
+        public ITokenProvider TokenProvider { get; set; }
 
         /// <summary>
         /// Gets a collection to operate on AccessPolicies.
@@ -110,6 +122,21 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public abstract IngestManifestAssetCollection IngestManifestAssets { get; }
         public abstract LocatorBaseCollection Locators { get; }
         public abstract StreamingFilterBaseCollection Filters { get; }
+
+        /// <summary>
+        /// Gets the collection of monitoring configuration available in the system.
+        /// </summary>
+        public abstract MonitoringConfigurationCollection MonitoringConfigurations { get; }
+
+        /// <summary>
+        /// Gets the collection of channel metrics available in the system.
+        /// </summary>
+        public abstract ChannelMetricsCollection ChannelMetrics { get; }
+
+        /// <summary>
+        /// Gets the collection of streaming endpoint metrics available in the system.
+        /// </summary>
+        public abstract StreamingEndPointRequestLogCollection StreamingEndPointRequestLogs { get; }
 
         /// <summary>
         /// Gets or sets the number of threads to use to for each blob transfer.
