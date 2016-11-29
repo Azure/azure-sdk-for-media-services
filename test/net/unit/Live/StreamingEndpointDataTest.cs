@@ -68,7 +68,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
 
             var originCreationOptions = new StreamingEndpointCreationOptions("unittest", 1)
             {
-                CdnEnabled = true
+                CdnEnabled = true,
+                CdnProfile = "testCdnProfile",
+                CdnProvider = CdnProviderType.StandardAkamai,
+                StreamingEndpointVersion = new Version("1.0")
             };
             var fakeResponse = new TestMediaDataServiceResponse(new Dictionary<string, string>
             {
@@ -93,6 +96,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.UnitTests
             Assert.AreEqual(originCreationOptions.Name, actual.Name);
             Assert.AreEqual(originCreationOptions.ScaleUnits, actual.ScaleUnits);
             Assert.AreEqual(originCreationOptions.CdnEnabled, actual.CdnEnabled);
+            Assert.AreEqual(originCreationOptions.CdnProvider.ToString(), actual.CdnProvider);
+            Assert.AreEqual(originCreationOptions.CdnProfile, actual.CdnProfile);
+            Assert.AreEqual(originCreationOptions.StreamingEndpointVersion.ToString(), actual.StreamingEndpointVersion);
         }
     }
 }
