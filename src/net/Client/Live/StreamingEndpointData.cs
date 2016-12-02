@@ -89,7 +89,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             set
             {
                 Live.CdnProviderType cdnProvider;
-                if (!Enum.TryParse(value, true, out cdnProvider))
+                if (value != null && !Enum.TryParse(value, true, out cdnProvider))
                 {
                     throw new ArgumentException("Not a valid CDN provider");
                 }
@@ -183,7 +183,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             CdnEnabled = options.CdnEnabled;
             CdnProfile = options.CdnProfile;
             CdnProvider = options.CdnProvider.ToString();
-            StreamingEndpointVersion = options.StreamingEndpointVersion.ToString();
+            StreamingEndpointVersion = options.StreamingEndpointVersion == null
+                ? StreamingEndpointCreationOptions.DefaultVersion.ToString()
+                : options.StreamingEndpointVersion.ToString();
             CrossSiteAccessPolicies = options.CrossSiteAccessPolicies;
 
             if (options.CustomHostNames != null)
