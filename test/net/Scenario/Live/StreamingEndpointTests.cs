@@ -15,8 +15,10 @@
 // </license>
 
 using System;
+using System.Net;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.WindowsAzure.MediaServices.Client.Live;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
@@ -47,17 +49,35 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [Priority(0)]
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
-        public void StreamingEndpointVerifyCDNEnabledFlag()
+        public void StreamingEndpointVerifyCdnOptions()
         {
             var name = "StreamingEndpoint" + DateTime.UtcNow.ToString("hhmmss");
             var option = new StreamingEndpointCreationOptions(name, 1)
             {
-                CdnEnabled = true
+                CdnEnabled = true,
+                CdnProfile = "testCdnProfile",
+                CdnProvider = CdnProviderType.PremiumVerizon,
+                StreamingEndpointVersion = new Version("2.0")
             };
             var streamingEndpoint = _mediaContext.StreamingEndpoints.Create(option);
             var createdToValidate = _mediaContext.StreamingEndpoints.Where(c => c.Id == streamingEndpoint.Id).FirstOrDefault();
+
             Assert.IsNotNull(createdToValidate);
             Assert.AreEqual(true, createdToValidate.CdnEnabled);
+            Assert.AreEqual(option.CdnProfile, createdToValidate.CdnProfile);
+            Assert.AreEqual(option.CdnProvider.ToString(), createdToValidate.CdnProvider);
+            Assert.AreEqual(new Version("2.0").ToString(), createdToValidate.StreamingEndpointVersion);
+            Assert.IsNotNull(createdToValidate.FreeTrialEndTime);
+
+            var updateProfile = "UpdatedProfile";
+            streamingEndpoint.CdnEnabled = false;
+            streamingEndpoint.CdnProfile = updateProfile;
+            streamingEndpoint.Update();
+
+            createdToValidate = _mediaContext.StreamingEndpoints.Where(c => c.Id == streamingEndpoint.Id).FirstOrDefault();
+            Assert.AreEqual(false, createdToValidate.CdnEnabled);
+            Assert.IsTrue(string.Equals(updateProfile, createdToValidate.CdnProfile));
+
             streamingEndpoint.Delete();
             name = "CDNDisabled" + DateTime.UtcNow.ToString("hhmmss");
             var disabledOption = new StreamingEndpointCreationOptions(name, 1)
@@ -68,6 +88,38 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             createdToValidate = _mediaContext.StreamingEndpoints.Where(c => c.Id == streamingEndpoint.Id).FirstOrDefault();
             Assert.IsNotNull(createdToValidate);
             Assert.AreEqual(false, createdToValidate.CdnEnabled);
+            streamingEndpoint.Delete();
+        }
+
+        [TestMethod]
+        [Priority(0)]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        public void StreamingEndpointVerifyDefaultCdnOptions()
+        {
+            var name = "StreamingEndpoint" + DateTime.UtcNow.ToString("hhmmss");
+            var option = new StreamingEndpointCreationOptions(name, 1)
+            {
+                CdnEnabled = true
+            };
+
+            var streamingEndpoint = _mediaContext.StreamingEndpoints.Create(option);
+            var createdToValidate = _mediaContext.StreamingEndpoints.Where(c => c.Id == streamingEndpoint.Id).FirstOrDefault();
+
+            Assert.IsNotNull(createdToValidate);
+            Assert.AreEqual(createdToValidate.CdnProvider, CdnProviderType.StandardVerizon.ToString());
+            Assert.AreEqual(createdToValidate.CdnProfile, StreamingEndpointCreationOptions.DefaultCdnProfile);
+            Assert.AreEqual(new Version("2.0").ToString(), createdToValidate.StreamingEndpointVersion);
+            Assert.IsNotNull(createdToValidate.FreeTrialEndTime);
+
+            createdToValidate.CdnProfile = "newTestcdnProfile";
+            createdToValidate.CdnProvider = CdnProviderType.PremiumVerizon.ToString();
+            createdToValidate.Update();
+
+            createdToValidate = _mediaContext.StreamingEndpoints.Where(c => c.Id == streamingEndpoint.Id).FirstOrDefault();
+            Assert.AreEqual(createdToValidate.CdnProvider, CdnProviderType.PremiumVerizon.ToString());
+            Assert.AreEqual(createdToValidate.CdnProfile, "newTestcdnProfile");
+
             streamingEndpoint.Delete();
         }
 

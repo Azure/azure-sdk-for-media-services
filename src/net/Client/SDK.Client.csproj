@@ -317,6 +317,7 @@
     <Compile Include="Live\AkamaiSignatureHeaderAuthenticationKey.cs" />
     <Compile Include="Live\AsyncHelper.cs" />
     <Compile Include="Live\AudioStream.cs" />
+    <Compile Include="Live\CdnProviderType.cs" />
     <Compile Include="Live\ChannelAccessControl.cs" />
     <Compile Include="Live\ChannelAccessControlData.cs" />
     <Compile Include="Live\ChannelBaseCollection.cs" />
