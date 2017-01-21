@@ -22,7 +22,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// <summary>
     /// A Streaming EndPoint request log metric.
     /// </summary>
-    internal class StreamingEndPointRequestLog : IStreamingEndPointRequestLog
+    internal class StreamingEndPointRequestLog : IStreamingEndpointRequestLog
     {
         /// <summary>
         /// Gets the partition key of the record.
@@ -99,7 +99,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="bytesSent">The bytes sent.</param>
         /// <param name="serverLatency">The server latency.</param>
         /// <param name="endToEndLatency">The end to end request time.</param>
-        private StreamingEndPointRequestLog(string partitionKey, string rowKey, Guid accountId, Guid streamingEndpointId, DateTime observedTime, string hostName, int statusCode, string resultCode, int requestCount, long bytesSent, int serverLatency, int endToEndLatency)
+        internal StreamingEndPointRequestLog(string partitionKey, string rowKey, Guid accountId, Guid streamingEndpointId, DateTime observedTime, string hostName, int statusCode, string resultCode, int requestCount, long bytesSent, int serverLatency, int endToEndLatency)
         {
             PartitionKey = partitionKey;
             RowKey = rowKey;

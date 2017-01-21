@@ -235,7 +235,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="singleResult">Whether a single result is expected or not.</param>
         /// <param name="parameters">OperationParameters to be sent with the Execute request.</param>
         /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
-        Task<IEnumerable<string>> ExecuteAsync(Uri requestUri, string httpMethod, bool singleResult, params OperationParameter[] parameters);
+        Task<IEnumerable<T>> ExecuteAsync<T>(Uri requestUri, string httpMethod, bool singleResult, params OperationParameter[] parameters);
 
         /// 
         /// <summary>Executes the batch operation asynchronously.

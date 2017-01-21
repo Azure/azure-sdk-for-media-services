@@ -227,7 +227,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
                     try
                     {
-                        IEnumerable<string> results = retryPolicy.ExecuteAction<IEnumerable<string>>(() => dataContext.ExecuteAsync(uriGetKeyDeliveryUrl, "POST", true, keyDeliveryTypeParameter).Result);
+                        IEnumerable<string> results = retryPolicy.ExecuteAction<IEnumerable<string>>(() => dataContext.ExecuteAsync<string>(uriGetKeyDeliveryUrl, "POST", true, keyDeliveryTypeParameter).Result);
 
                         if (results != null)
                         {

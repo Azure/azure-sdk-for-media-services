@@ -68,6 +68,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
 
         public static string TelemetryStorageAccountName = ConfigurationManager.AppSettings["TelemetryStorageAccountName"];
         public static string TelemetryStorageAccountKey = ConfigurationManager.AppSettings["TelemetryStorageAccountKey"];
+        public static string AccountId = ConfigurationManager.AppSettings["AccountId"];
         
 
         public static CloudMediaContext CreateCloudMediaContext()

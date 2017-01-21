@@ -347,7 +347,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<string>> ExecuteAsync(Uri requestUri, string httpMethod, bool singleResult, params OperationParameter[] parameters)
+        public Task<IEnumerable<T>> ExecuteAsync<T>(Uri requestUri, string httpMethod, bool singleResult, params OperationParameter[] parameters)
         {
             throw new NotImplementedException();
         }

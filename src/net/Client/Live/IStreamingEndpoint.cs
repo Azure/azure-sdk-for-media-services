@@ -15,6 +15,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.MediaServices.Client.Telemetry;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -224,5 +225,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <returns>Task to wait on for operation sending completion.</returns>
         Task<IOperation> SendScaleOperationAsync(int scaleUnits);
+
+        /// <summary>
+        /// Returns an object that can be queried to get streaming endpoint monitoring data.
+        /// </summary>
+        /// <returns>Returns instance of <see cref="StreamingEndpointTelemetryDataProvider"/>.</returns>
+        StreamingEndpointTelemetryDataProvider GetTelemetry();
     }
 }
