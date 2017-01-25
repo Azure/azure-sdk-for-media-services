@@ -17,7 +17,6 @@ using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.Auth;
 using System.Collections.Generic;
 using System.Reflection;
-
 namespace ConsoleApplication1
 {
     // This code sample demonstrates how to use the Windows Azure Media Services   
