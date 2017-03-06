@@ -20,6 +20,8 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.MediaServices.Client.Properties;
+using Microsoft.WindowsAzure.MediaServices.Client.Telemetry;
+using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -388,6 +390,26 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public Task<IOperation> SendScaleOperationAsync(int scaleUnits)
         {
             return Task.Factory.StartNew(() => SendScaleOperation(scaleUnits));
+        }
+
+        /// <summary>
+        /// Returns an object that can be queried to get streaming endpoint monitoring data.
+        /// </summary>
+        /// <returns>Returns instance of <see cref="StreamingEndpointTelemetryDataProvider"/>.</returns>
+        public StreamingEndpointTelemetryDataProvider GetTelemetry()
+        {
+            IMediaDataServiceContext dataContext = GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
+
+            var monitoringConfig = GetMediaContext().MonitoringConfigurations.Single();
+            var notificationEndpoint = GetMediaContext().NotificationEndPoints.Where(n => n.Id == monitoringConfig.NotificationEndPointId).Single();
+
+            var streamingEndpointId = new Guid(Id.Split(':').Last());
+
+            var telemetryDataCache = new TelemetryDataCache((start, end) => notificationEndpoint.GetMonitoringSasUris(start, end));
+            return new StreamingEndpointTelemetryDataProvider(
+                streamingEndpointId,
+                telemetryDataCache,
+                new TelemetryStorage());
         }
 
         internal override void Refresh()

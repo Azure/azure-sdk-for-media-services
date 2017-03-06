@@ -18,7 +18,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using Microsoft.WindowsAzure.Storage.Auth;
+using System.Linq.Expressions;
+using Microsoft.WindowsAzure.MediaServices.Client.Telemetry;
 using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
@@ -30,53 +31,47 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     {
         private const int TimeSkewMinutes = 5;
         private const int SecondsPerDay = 86400;
-        private const string MetricsTablePrefix = "TelemetryMetrics";
         private const string ChannelMetrics = "ChannelHeartbeat";
         private const string StreamingEndPointMetrics = "StreamingEndpointRequestLog";
-        private readonly CloudTableClient _tableClient;
-
-        /// <summary>
-        /// Initializes a new instance of the TelemetryStorage class.
-        /// </summary>
-        /// <param name="storageCredentials">Storage credentials for the storage account containing the telemetry data.</param>
-        /// <param name="tableEndPoint">The table endpoint of the storage account.</param>
-        public TelemetryStorage(StorageCredentials storageCredentials, Uri tableEndPoint)
-        {
-            _tableClient = new CloudTableClient(tableEndPoint, storageCredentials);
-        }
 
         /// <summary>
         /// Gets metrics for a Media Services Channel.
         /// </summary>
-        /// <param name="accountId">The Media Services account ID.</param>
         /// <param name="channelId">The Channel ID.</param>
         /// <param name="start">The start time.</param>
         /// <param name="end">The end time.</param>
         /// <returns>The Channel metrics for the given channel within the given time range.</returns>
-        public ICollection<IChannelHeartbeat> GetChannelMetrics(Guid accountId, Guid channelId, DateTime start, DateTime end)
+        public ICollection<IChannelHeartbeat> GetChannelMetrics(
+            List<MonitoringSasUri> monitoringSasUris,
+            Guid channelId,
+            DateTime start,
+            DateTime end)
         {
-            return GetMetrics(accountId, channelId, start, end, CreateChannelMetrics);
+            return GetMetrics(monitoringSasUris, channelId, start, end, CreateChannelMetrics);
         }
 
         /// <summary>
         /// Gets metrics for a Media Services Streaming EndPoint.
         /// </summary>
-        /// <param name="accountId">The Media Services account ID.</param>
         /// <param name="streamingEndPointId">The Streaming EndPoint ID.</param>
         /// <param name="start">The start time.</param>
         /// <param name="end">The end time.</param>
         /// <returns>The Streaming Endpoint metrics for the given streaming end point within the given time range.</returns>
-        public ICollection<IStreamingEndPointRequestLog> GetStreamingEndPointMetrics(Guid accountId, Guid streamingEndPointId, DateTime start, DateTime end)
+        public ICollection<IStreamingEndpointRequestLog> GetStreamingEndPointMetrics(
+            List<MonitoringSasUri> monitoringSasUris,
+            Guid streamingEndPointId,
+            DateTime start, 
+            DateTime end)
         {
-            return GetMetrics(accountId, streamingEndPointId, start, end, CreateStreamingEndPointMetrics);
+            return GetMetrics(monitoringSasUris, streamingEndPointId, start, end, CreateStreamingEndPointMetrics);
         } 
 
-        private T GetMetrics<T>(
-            Guid accountId,
+        private static T GetMetrics<T>(
+            List<MonitoringSasUri> monitoringSasUris,
             Guid serviceId,
             DateTime start,
             DateTime end,
-            Func<IEnumerable<IQueryable<DynamicTableEntity>>, Predicate<DynamicTableEntity>, T>  createFunc)
+            Func<IEnumerable<DynamicTableEntity>, Predicate<DynamicTableEntity>, T>  createFunc)
         {
             // Expand the query range to allow for telemetry batching and latency (the result will later be filtered to the requested
             // range.
@@ -84,129 +79,155 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             var queryEnd = end.AddMinutes(TimeSkewMinutes);
 
             // Create queries for each day in the query range.
-            var queries = CreateQueries(MetricsTablePrefix, accountId, serviceId, queryStart, queryEnd);
+            var queries = CreateQueries(monitoringSasUris, serviceId, queryStart, queryEnd);
 
             // Drop items outside of the query range.
             Predicate<DynamicTableEntity> filter = entity =>
             {
                 var observedTime = entity.Properties["ObservedTime"].DateTime.GetValueOrDefault();
-                return observedTime > start && observedTime < end;
+                return observedTime >= start && observedTime <= end;
             };
 
             return createFunc(queries, filter);
         }
 
-        private IEnumerable<IQueryable<DynamicTableEntity>> CreateQueries(
-            string tablePrefix,
-            Guid accountId,
+        private static IEnumerable<DynamicTableEntity> CreateQueries(
+            List<MonitoringSasUri> monitoringSasUris,
             Guid serviceId,
             DateTime queryStart,
             DateTime queryEnd)
         {
-            var dates = Enumerable.Range(0, (queryEnd.Date - queryStart.Date).Days + 1).Select(x => queryStart.AddDays(x).Date).ToArray();
+            if (monitoringSasUris == null)
+            {
+                throw new ArgumentNullException(nameof(monitoringSasUris));
+            }
+
+            var accountId = monitoringSasUris.First().AccountId;
+
+            if (accountId == Guid.Empty)
+            {
+                throw new ArgumentNullException("Account Id is not specified in MonitoringSasUri");
+            }
+
             var partitionKey = string.Format(CultureInfo.InvariantCulture, "{0}_{1}", accountId.ToString("n"), serviceId.ToString("n"));
             var startMinRowKey = string.Format(CultureInfo.InvariantCulture, "{0:D5}_99999", SecondsPerDay - (int)queryStart.TimeOfDay.TotalSeconds);
             var endMaxRowKey = string.Format(CultureInfo.InvariantCulture, "{0:D5}_00000", SecondsPerDay - (int)queryEnd.TimeOfDay.TotalSeconds);
 
-            return dates.Select((date, index) =>
+            return  monitoringSasUris.SelectMany((uris, index) =>
             {
-                var table = _tableClient.GetTableReference(FormatTableName(tablePrefix, date));
-                var startOfRange = index == 0;
-                var endOfRange = index == dates.Length - 1;
+                var startOfRange = uris.MetricDataDate.Date == queryStart.Date;
+                var endOfRange = uris.MetricDataDate.Date == queryEnd.Date;
 
                 if (startOfRange && endOfRange)
                 {
                     // For dates that contain both the start and end of the query range (i.e. the query does not cross any UTC
                     // day boundaries), give a range of row keys within the partition.
-                    return table
-                        .CreateQuery<DynamicTableEntity>()
-                        .Where(x =>
-                            x.PartitionKey == partitionKey &&
-                            string.Compare(x.RowKey, startMinRowKey, StringComparison.Ordinal) < 0 &&
-                            string.Compare(x.RowKey, endMaxRowKey, StringComparison.Ordinal) > 0);
+
+                    Expression<Func<DynamicTableEntity, bool>> filter = x =>
+                        x.PartitionKey == partitionKey &&
+                        string.Compare(x.RowKey, startMinRowKey, StringComparison.Ordinal) < 0 &&
+                        string.Compare(x.RowKey, endMaxRowKey, StringComparison.Ordinal) > 0;
+
+                    return RetrieveData(uris, filter);
                 }
                 else if (startOfRange)
                 {
                     // For dates that contain the start of the query range (i.e. the query starts on this date and continues to the
                     // next day), specify the minimum row key.
-                    return table
-                        .CreateQuery<DynamicTableEntity>()
-                        .Where(x =>
-                            x.PartitionKey == partitionKey &&
-                            string.Compare(x.RowKey, startMinRowKey, StringComparison.Ordinal) < 0);
+                    Expression<Func<DynamicTableEntity, bool>> filter = x =>
+                        x.PartitionKey == partitionKey &&
+                        string.Compare(x.RowKey, startMinRowKey, StringComparison.Ordinal) < 0;
+                    return RetrieveData(uris, filter);
                 }
                 else if (endOfRange)
                 {
                     // For dates that contain the end of the query range (i.e. the query starts on a previous day and continues through
                     // part of this day), specify the maximum row key.
-                    return table
-                        .CreateQuery<DynamicTableEntity>()
-                        .Where(x =>
-                            x.PartitionKey == partitionKey &&
-                            string.Compare(x.RowKey, endMaxRowKey, StringComparison.Ordinal) > 0);
+                    Expression<Func<DynamicTableEntity, bool>> filter = x =>
+                        x.PartitionKey == partitionKey &&
+                        string.Compare(x.RowKey, endMaxRowKey, StringComparison.Ordinal) > 0;
+                    return RetrieveData(uris, filter);
                 }
                 else
                 {
                     // For dates where the query does not start or end (i.e. whole days within the query), filter only on the
                     // partition key.
-                    return table
-                        .CreateQuery<DynamicTableEntity>()
-                        .Where(x => x.PartitionKey == partitionKey);
+                    Expression<Func<DynamicTableEntity, bool>> filter = x => x.PartitionKey == partitionKey;
+                    return RetrieveData(uris, filter);
                 }
             });
         }
 
-        private ICollection<IChannelHeartbeat> CreateChannelMetrics(IEnumerable<IQueryable<DynamicTableEntity>> queries, Predicate<DynamicTableEntity> predicate)
+        private static IEnumerable<DynamicTableEntity> RetrieveData(MonitoringSasUri uri, Expression<Func<DynamicTableEntity, bool>> filter)
+        {
+            List<DynamicTableEntity> records = null;
+
+            if (uri.SasUriExpiryDate <= DateTime.UtcNow)
+            {
+                throw new ArgumentException("SAS URL is expired.");
+            }
+
+            foreach (var url in uri.SasUris)
+            {
+                CloudTable table = new CloudTable(new Uri(url));
+
+                records = table
+                    .CreateQuery<DynamicTableEntity>()
+                    .Where(filter)
+                    .SkipTableNotFoundErrors()
+                    .ToList();
+
+                if (records.Count() != 0)
+                {
+                    break;
+                }
+            }
+
+            return records;
+        }
+
+        private static ICollection<IChannelHeartbeat> CreateChannelMetrics(IEnumerable<DynamicTableEntity> items, Predicate<DynamicTableEntity> predicate)
         {
             var channelHeartbeats = new List<IChannelHeartbeat>();
             // Execute each of the queries (this could be executed in parallel if needed).
-            foreach (var query in queries)
+            foreach (var item in items)
             {
-                foreach (var item in query.SkipTableNotFoundErrors())
+                var itemName = item.Properties["Name"].StringValue;
+                if (!predicate(item))
                 {
-                    var itemName = item.Properties["Name"].StringValue;
-                    if (!predicate(item))
-                    {
-                        continue;
-                    }
-                    // Parse the items and them to the result collections.
-                    switch (itemName)
-                    {
-                        case ChannelMetrics:
-                            channelHeartbeats.Add(ChannelHeartbeat.FromTableEntity(item));
-                            break;
-                    }
+                    continue;
+                }
+                // Parse the items and them to the result collections.
+                switch (itemName)
+                {
+                    case ChannelMetrics:
+                        channelHeartbeats.Add(ChannelHeartbeat.FromTableEntity(item));
+                        break;
                 }
             }
             return channelHeartbeats;
         }
 
-        private ICollection<IStreamingEndPointRequestLog> CreateStreamingEndPointMetrics(IEnumerable<IQueryable<DynamicTableEntity>> queries, Predicate<DynamicTableEntity> predicate)
+        private static ICollection<IStreamingEndpointRequestLog> CreateStreamingEndPointMetrics(IEnumerable<DynamicTableEntity> items, Predicate<DynamicTableEntity> predicate)
         {
-            var streamingEndPointRequestLogs = new List<IStreamingEndPointRequestLog>();
-            foreach (var query in queries)
+            var streamingEndPointRequestLogs = new List<IStreamingEndpointRequestLog>();
+            foreach (var item in items)
             {
-                foreach (var item in query.SkipTableNotFoundErrors())
+
+                var itemName = item.Properties["Name"].StringValue;
+
+                if (!predicate(item))
                 {
-                    var itemName = item.Properties["Name"].StringValue;
-                    if (!predicate(item))
-                    {
-                        continue;
-                    }
-                    switch (itemName)
-                    {
-                        case StreamingEndPointMetrics:
-                            streamingEndPointRequestLogs.Add(StreamingEndPointRequestLog.FromTableEntity(item));
-                            break;
-                    }
+                    continue;
+                }
+                switch (itemName)
+                {
+                    case StreamingEndPointMetrics:
+                        streamingEndPointRequestLogs.Add(StreamingEndPointRequestLog.FromTableEntity(item));
+                        break;
                 }
             }
             return streamingEndPointRequestLogs;
-        }
-
-        private static string FormatTableName(string tablePrefix, DateTime date)
-        {
-            return tablePrefix + date.ToString("yyyyMMdd", CultureInfo.InvariantCulture);
         }
     }
 }

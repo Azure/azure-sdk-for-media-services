@@ -15,9 +15,13 @@
 // </license>
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data.Services.Client;
 using System.Data.Services.Common;
+using System.Globalization;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.MediaServices.Client.Telemetry;
 using Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
@@ -251,6 +255,54 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             MediaRetryPolicy retryPolicy = this.GetMediaContext().MediaServicesClassFactory.GetSaveChangesRetryPolicy(dataContext as IRetryPolicyAdapter);
 
             return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(this));
+        }
+
+        /// <summary>
+        /// Returns monitoring data for notification endpoint.
+        /// </summary>
+        /// <param name="start">Requested start date in UTC.</param>
+        /// <param name="end">Requested end date in UTC.</param>
+        /// <returns>Returns a list of <see cref="MonitoringSasUri"/>.</returns>
+        public IEnumerable<MonitoringSasUri> GetMonitoringSasUris(DateTime start, DateTime end)
+        {
+            try
+            {
+                return GetMonitoringSasUrisAsync(start, end).Result;
+            }
+            catch (AggregateException exception)
+            {
+                throw exception.InnerException;
+            }       
+        }
+
+        /// <summary>
+        /// Returns monitoring data for notification endpoint in asynchronous mode.
+        /// </summary>
+        /// <param name="start">Requested start date in UTC.</param>
+        /// <param name="end">Requested end date in UTC.</param>
+        /// <returns>Task of retrieving list of <see cref="MonitoringSasUri"/> .</returns>
+        public Task<IEnumerable<MonitoringSasUri>> GetMonitoringSasUrisAsync(DateTime start, DateTime end)
+        {
+            if (start.Kind != DateTimeKind.Utc || end.Kind != DateTimeKind.Utc)
+            {
+                throw new ArgumentException("Start and end dates must be in UTC format.");
+            }
+
+            IMediaDataServiceContext dataContext = GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
+
+            Uri mointoringSasRequestUri = new Uri(string.Format(CultureInfo.InvariantCulture, "/NotificationEndPoints('{0}')/GetMonitoringSasUris", Id), UriKind.Relative);
+
+            var parameters = new OperationParameter[]
+            {
+                new BodyOperationParameter("monitoringStartDate", start),
+                new BodyOperationParameter("monitoringEndDate", end)
+            };
+
+            return dataContext.ExecuteAsync<MonitoringSasUri>(
+                requestUri: mointoringSasRequestUri,
+                httpMethod: "POST",
+                singleResult: false,
+                parameters: parameters);
         }
     }
 }

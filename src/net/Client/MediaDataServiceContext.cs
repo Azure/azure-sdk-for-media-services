@@ -17,7 +17,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Services.Client;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -323,13 +322,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="singleResult">Whether a single result is expected or not.</param>
         /// <param name="parameters">OperationParameters to be sent with the Execute request.</param>
         /// <returns>A function delegate that returns the future result to be available through the Task.</returns>
-        public Task<IEnumerable<string>> ExecuteAsync(Uri requestUri, string httpMethod, bool singleResult, params OperationParameter[] parameters)
+        public Task<IEnumerable<T>> ExecuteAsync<T>(Uri requestUri, string httpMethod, bool singleResult, params OperationParameter[] parameters)
         {
             object state = null; // unused
 
-            return Task.Factory.FromAsync<Uri, string, IEnumerable<string>>(
-                (url, method, asyncCallback, stateObj) => _dataContext.BeginExecute<string>(url, asyncCallback, stateObj, method, singleResult, parameters),
-                (asyncResult) => _dataContext.EndExecute<string>(asyncResult),
+            return Task.Factory.FromAsync<Uri, string, IEnumerable<T>>(
+                (url, method, asyncCallback, stateObj) => _dataContext.BeginExecute<T>(url, asyncCallback, stateObj, method, singleResult, parameters),
+                (asyncResult) => _dataContext.EndExecute<T>(asyncResult),
                 requestUri,
                 httpMethod,
                 state);

@@ -130,6 +130,7 @@
     <Compile Include="Live\ProgramTests.cs" />
     <Compile Include="Live\RestEntityTests.cs" />
     <Compile Include="Live\StreamingEndpointTest.cs" />
+    <Compile Include="Live\TelemetryDataCacheTest.cs" />
     <Compile Include="Live\TestRestEntity.cs" />
     <Compile Include="LocatorTest.cs" />
     <Compile Include="MediaRetryPolicyTest.cs" />

@@ -371,7 +371,7 @@
     <Compile Include="Cache.cs" />
     <Compile Include="Encryption\NullableFileEncryption.cs" />
     <Compile Include="Telemetry\ChannelHeartbeat.cs" />
-    <Compile Include="Telemetry\ChannelMetricsCollection.cs" />
+    <Compile Include="Telemetry\ChannelTelemetryDataProvider.cs" />
     <Compile Include="Telemetry\EnumerableExtensions.cs" />
     <Compile Include="Telemetry\IChannelHeartbeat.cs" />
     <Compile Include="Telemetry\IStreamingEndPointRequestLog.cs" />
@@ -386,8 +386,10 @@
     <Compile Include="Telemetry\MonitoringConfiguration.cs" />
     <Compile Include="Telemetry\MonitoringConfigurationCollection.cs" />
     <Compile Include="Telemetry\MonitoringLevel.cs" />
+    <Compile Include="Telemetry\MonitoringSasUri.cs" />
     <Compile Include="Telemetry\StreamingEndPointRequestLog.cs" />
-    <Compile Include="Telemetry\StreamingEndPointRequestLogCollection.cs" />
+    <Compile Include="Telemetry\StreamingEndpointTelemetryDataProvider.cs" />
+    <Compile Include="Telemetry\TelemetryDataCache.cs" />
     <Compile Include="Telemetry\TelemetryStorage.cs" />
     <Compile Include="Telemetry\TelemetryUtilities.cs" />
     <Compile Include="TransientFaultHandling\IRetryPolicyAdapter.cs" />

@@ -14,7 +14,10 @@
 // limitations under the License.
 // </license>
 
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.MediaServices.Client.Telemetry;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -74,5 +77,21 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         /// <returns>Task of deleting the notification endpoint.</returns>
         Task DeleteAsync();
+
+        /// <summary>
+        /// Returns monitoring data for notification endpoint.
+        /// </summary>
+        /// <param name="start">Requested start date in UTC.</param>
+        /// <param name="end">Requested end date in UTC.</param>
+        /// <returns>Returns a list of <see cref="MonitoringSasUri"/>.</returns>
+        IEnumerable<MonitoringSasUri> GetMonitoringSasUris(DateTime start, DateTime end);
+
+        /// <summary>
+        /// Returns monitoring data for notification endpoint in asynchronous mode.
+        /// </summary>
+        /// <param name="start">Requested start date in UTC.</param>
+        /// <param name="end">Requested end date in UTC.</param>
+        /// <returns>Task of retrieving list of <see cref="MonitoringSasUri"/> .</returns>
+        Task<IEnumerable<MonitoringSasUri>> GetMonitoringSasUrisAsync(DateTime start, DateTime end);
     }
 }

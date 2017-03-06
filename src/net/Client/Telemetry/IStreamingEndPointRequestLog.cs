@@ -21,7 +21,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// <summary>
     /// A Streaming EndPoint request log metric.
     /// </summary>
-    public interface IStreamingEndPointRequestLog
+    public interface IStreamingEndpointRequestLog
     {
         /// <summary>
         /// Gets the partition key of the record.
