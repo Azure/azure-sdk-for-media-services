@@ -81,5 +81,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption
         /// IV in the AssetDeliveryPolicy.
         /// </summary>
         CommonEncryptionIVForCbcs,
+
+        /// <summary>
+        /// FourCCs that will be streamed unecrypted.
+        /// </summary>
+        UnencryptedTracksByFourCC
     }
 }

@@ -25,11 +25,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     public class StreamingEndpointCreationOptions
     {
         /// <summary>
-        /// Default CDN Profile.
-        /// </summary>
-        public static readonly string DefaultCdnProfile = "AzureMediaStreamingPlatformCdnProfile";
-
-        /// <summary>
         /// Default streaming endpoint version.
         /// </summary>
         public static readonly Version DefaultVersion = new Version("2.0");

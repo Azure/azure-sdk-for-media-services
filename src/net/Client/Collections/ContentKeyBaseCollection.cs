@@ -19,7 +19,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
-using System.Net;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
@@ -93,6 +92,31 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="contentKeyType">Type of content key to create.</param>
         /// <returns>A <see cref="IContentKey"/> that can be associated with an <see cref="IAsset"/>.</returns>
         public abstract IContentKey Create(Guid keyId, byte[] contentKey, string name, ContentKeyType contentKeyType);
+
+        /// <summary>
+        /// Asynchronously creates a content key with the specifies key identifier and value.
+        /// </summary>
+        /// <param name="keyId">The key identifier.</param>
+        /// <param name="contentKey">The value of the content key.</param>
+        /// <param name="name">A friendly name for the content key.</param>
+        /// <param name="contentKeyType">Type of content key to create.</param>
+        /// <param name="trackIdentifiers">A list of tracks to be encrypted by this content key.</param>
+        /// <returns>
+        /// A function delegate that returns the future result to be available through the Task&lt;IContentKey&gt;.
+        /// </returns>
+        public abstract Task<IContentKey> CreateAsync(Guid keyId, byte[] contentKey, string name, ContentKeyType contentKeyType, IEnumerable<string> trackIdentifiers);
+
+        /// <summary>
+        /// Creates a content key with the specifies key identifier and value.
+        /// </summary>
+        /// <param name="keyId">The key identifier.</param>
+        /// <param name="contentKey">The value of the content key.</param>
+        /// <param name="name">A friendly name for the content key.</param>
+        /// <param name="contentKeyType">Type of content key to create.</param>
+        /// <param name="trackIdentifiers">A list of tracks to be encrypted by this content key.</param>
+        /// <returns>A <see cref="IContentKey"/> that can be associated with an <see cref="IAsset"/>.</returns>
+        public abstract IContentKey Create(Guid keyId, byte[] contentKey, string name, ContentKeyType contentKeyType, IEnumerable<string> trackIdentifiers);
+
 
         /// <summary>
         /// Asynchronously creates a content key with the specifies key identifier and value.
@@ -295,7 +319,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets the protection key id for content key.
         /// </summary>
-        /// <param name="dataContext">The data context.</param>
+        /// <param name="mediaContext">The data context.</param>
         /// <param name="contentKeyType">Type of the content key.</param>
         /// <returns>The content key.</returns>
         internal static string GetProtectionKeyIdForContentKey(MediaContextBase mediaContext, ContentKeyType contentKeyType)
