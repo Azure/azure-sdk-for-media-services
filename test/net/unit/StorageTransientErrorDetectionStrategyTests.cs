@@ -46,6 +46,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
                         HttpStatusCode.RequestTimeout,
                         HttpStatusCode.ServiceUnavailable,
                         HttpStatusCode.Unauthorized,
+                        HttpStatusCode.Forbidden,
                     });
 
         private static readonly ReadOnlyCollection<String> SupportedRetryableStorageErrorStrings 
