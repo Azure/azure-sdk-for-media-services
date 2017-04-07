@@ -207,6 +207,7 @@
     <Compile Include="ContentKeyAuthorization\Templates\PlayReadyLicenseTemplate.cs" />
     <Compile Include="ContentKeyAuthorization\Templates\PlayReadyLicenseType.cs" />
     <Compile Include="ContentKeyAuthorization\Templates\PlayReadyPlayRight.cs" />
+    <Compile Include="ContentKeyAuthorization\Templates\RentalAndLeaseKeyType.cs" />
     <Compile Include="ContentKeyAuthorization\Templates\RSATokenVerificationKey.cs" />
     <Compile Include="ContentKeyAuthorization\Templates\ScmsRestriction.cs" />
     <Compile Include="ContentKeyAuthorization\Templates\SymmetricVerificationKey.cs" />
