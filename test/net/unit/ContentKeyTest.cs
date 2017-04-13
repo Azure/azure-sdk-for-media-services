@@ -70,14 +70,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
             UpdateDeleteContentKey(key);
 
         }
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        public void ContentKeyStorageEncryptionEncryptionCRUD()
-        {
-            IContentKey key = _mediaContext.ContentKeys.Create(Guid.NewGuid(), new byte[16] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }, Guid.NewGuid().ToString(), contentKeyType: ContentKeyType.StorageEncryption);
-            UpdateDeleteContentKey(key);
 
-        }
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void ContentKeyUrlEncryptionCRUD()

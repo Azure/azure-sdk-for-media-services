@@ -219,6 +219,31 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [TestCategory("Bvt")]
+        public void ShouldCreateStorageEncryptionKey()
+        {
+            Guid keyId = Guid.NewGuid();
+            byte[] contentKeyBytes = GetRandomBuffer(16);
+
+            IContentKey key = null;
+            try
+            {
+                key = _mediaContext.ContentKeys.Create(keyId, contentKeyBytes, "TestStorageEncryptionKey", ContentKeyType.StorageEncryption);
+
+                Assert.IsTrue(contentKeyBytes.SequenceEqual(key.GetClearKeyValue()));
+            }
+            finally
+            {
+                if (key != null)
+                {
+                    key.Delete();
+                }
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void ShouldDeleteContentKeyWithDifferentContexts()
         {
             Guid keyId = Guid.NewGuid();

@@ -68,6 +68,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             var allowedKeyTypes = new[] 
             { 
                 ContentKeyType.CommonEncryption, 
+                ContentKeyType.StorageEncryption,
                 ContentKeyType.CommonEncryptionCbcs, 
                 ContentKeyType.EnvelopeEncryption, 
                 ContentKeyType.FairPlayASk,
@@ -103,6 +104,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             if (contentKeyType == ContentKeyType.CommonEncryption)
             {
                 contentKeyData = InitializeCommonContentKey(keyId, contentKey, name, certToUse);
+            }
+            else if (contentKeyType == ContentKeyType.StorageEncryption)
+            {
+                certToUse = GetCertificateToEncryptContentKey(MediaContext, ContentKeyType.StorageEncryption);
+                contentKeyData = InitializeCommonContentKey(keyId, contentKey, name, certToUse);
+                contentKeyData.ContentKeyType = (int)ContentKeyType.StorageEncryption;
             }
             else if (contentKeyType == ContentKeyType.CommonEncryptionCbcs)
             {
@@ -174,7 +181,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 task.Wait();
 
                 return task.Result;
-    }
+            }
             catch (AggregateException exception)
             {
                 throw exception.InnerException;
