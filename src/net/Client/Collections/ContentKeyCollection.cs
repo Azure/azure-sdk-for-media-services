@@ -90,7 +90,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 throw new ArgumentNullException("contentKey");
             }
 
-            if (contentKeyType != ContentKeyType.FairPlayPfxPassword && 
+            if (contentKeyType != ContentKeyType.FairPlayPfxPassword &&
+                contentKeyType != ContentKeyType.StorageEncryption &&
                 contentKey.Length != EncryptionUtils.KeySizeInBytesForAes128)
             {
                 throw new ArgumentException(StringTable.ErrorCommonEncryptionKeySize, "contentKey");
@@ -108,8 +109,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             else if (contentKeyType == ContentKeyType.StorageEncryption)
             {
                 certToUse = GetCertificateToEncryptContentKey(MediaContext, ContentKeyType.StorageEncryption);
-                contentKeyData = InitializeCommonContentKey(keyId, contentKey, name, certToUse);
-                contentKeyData.ContentKeyType = (int)ContentKeyType.StorageEncryption;
+                contentKeyData = InitializeStorageContentKey(new FileEncryption(contentKey, keyId), certToUse);
+                contentKeyData.Name = name;
             }
             else if (contentKeyType == ContentKeyType.CommonEncryptionCbcs)
             {

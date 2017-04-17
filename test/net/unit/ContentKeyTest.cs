@@ -73,7 +73,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
         [TestMethod]
         public void ContentKeyStorageEncryptionEncryptionCRUD()
         {
-            IContentKey key = _mediaContext.ContentKeys.Create(Guid.NewGuid(), new byte[16] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }, Guid.NewGuid().ToString(), contentKeyType: ContentKeyType.StorageEncryption);
+            byte[] keyData = Enumerable.Range(0, 32).Select(i => (byte)1).ToArray();
+            IContentKey key = _mediaContext.ContentKeys.Create(Guid.NewGuid(), keyData, Guid.NewGuid().ToString(), contentKeyType: ContentKeyType.StorageEncryption);
             UpdateDeleteContentKey(key);
         }
 

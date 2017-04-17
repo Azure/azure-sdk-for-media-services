@@ -222,7 +222,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         public void ShouldCreateStorageEncryptionKey()
         {
             Guid keyId = Guid.NewGuid();
-            byte[] contentKeyBytes = GetRandomBuffer(16);
+            byte[] contentKeyBytes = GetRandomBuffer(32);
 
             IContentKey key = null;
             try
@@ -230,6 +230,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 key = _mediaContext.ContentKeys.Create(keyId, contentKeyBytes, "TestStorageEncryptionKey", ContentKeyType.StorageEncryption);
 
                 Assert.IsTrue(contentKeyBytes.SequenceEqual(key.GetClearKeyValue()));
+                Assert.AreEqual(ContentKeyType.StorageEncryption, key.ContentKeyType);
             }
             finally
             {
