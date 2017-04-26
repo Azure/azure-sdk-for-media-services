@@ -83,8 +83,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.DynamicEncryption
         CommonEncryptionIVForCbcs,
 
         /// <summary>
-        /// FourCCs that will be streamed unecrypted.
+        /// Comma separated list of FourCCs
+        /// that will not be encrypted.
         /// </summary>
-        UnencryptedTracksByFourCC
+        UnencryptedTracksByFourCC,
+
+        /// <summary>
+        /// Boolean flag.
+        /// Currently it is supported only with Dynamic Common Encryption Cbcs used by FairPlay.
+        /// </summary>
+        AllowPersistentLicense,
     }
 }

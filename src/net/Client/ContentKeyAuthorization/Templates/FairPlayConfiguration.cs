@@ -46,6 +46,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.FairPlay
         /// </summary>
         public string ContentEncryptionIV { get; set; }
 
+        public RentalAndLeaseKeyType RentalAndLeaseKeyType { get; set; }
+
+        public uint RentalDuration { get; set; }
+
         /// <summary>
         /// Creates a string that can be used as FairPlay Policy Option Configuration.
         /// </summary>
@@ -61,7 +65,38 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.FairPlay
             string pfxPassword,
             Guid pfxPasswordKeyId,
             Guid askId,
-            byte[] contentIv)
+            byte[] contentIv) 
+        {
+            return CreateSerializedFairPlayOptionConfiguration(
+                appCertificate,
+                pfxPassword,
+                pfxPasswordKeyId,
+                askId,
+                contentIv, 
+                RentalAndLeaseKeyType.Undefined, 
+                0);
+        }
+
+        /// <summary>
+        /// Creates a string that can be used as FairPlay Policy Option Configuration.
+        /// </summary>
+        /// <param name="appCertificate">FairPlay application certificate.</param>
+        /// <param name="pfxPassword">Password protecting FairPlay application certificate.</param>
+        /// <param name="pfxPasswordKeyId">Id of the key storing the password protecting 
+        /// FairPlay application certificate.</param>
+        /// <param name="askId">Id of the FairPlay Aplication Secret key.</param>
+        /// <param name="contentIv">Initialization Vector used for encrypting the content.</param>
+        /// <param name="rentalAndLeaseKeyType">Rental and lease KeyType.</param>
+        /// <param name="rentalDuration">Rental duration in seconds.</param>
+        /// <returns>String that can be used as FairPlay Policy Option Configuration.</returns>
+        public static string CreateSerializedFairPlayOptionConfiguration(
+            X509Certificate2 appCertificate,
+            string pfxPassword,
+            Guid pfxPasswordKeyId,
+            Guid askId,
+            byte[] contentIv,
+            RentalAndLeaseKeyType rentalAndLeaseKeyType,
+            uint rentalDuration)
         {
             byte[] certificateBytes = appCertificate.Export(X509ContentType.Pfx, pfxPassword);
             string certString = Convert.ToBase64String(certificateBytes);
@@ -75,6 +110,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.FairPlay
                 FairPlayPfx = certString,
                 FairPlayPfxPasswordId = pfxPasswordKeyId
             };
+
+            if (rentalAndLeaseKeyType != RentalAndLeaseKeyType.Undefined)
+            {
+                config.RentalAndLeaseKeyType = rentalAndLeaseKeyType;
+                config.RentalDuration = rentalDuration;
+            }
 
             string configuration = JsonConvert.SerializeObject(config);
 

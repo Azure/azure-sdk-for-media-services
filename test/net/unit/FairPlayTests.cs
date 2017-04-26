@@ -50,13 +50,17 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
                 password,
                 passwordId,
                 askId,
-                iv);
+                iv,
+                RentalAndLeaseKeyType.PersistentUnlimited,
+                123);
 
             var result = JsonConvert.DeserializeObject<FairPlayConfiguration>(configuration);
 
             Assert.AreEqual(passwordId, result.FairPlayPfxPasswordId);
             Assert.AreEqual(askId, result.ASkId);
             Assert.AreEqual("0102030405060708090A0B0C0D0E0F10", result.ContentEncryptionIV);
+            Assert.AreEqual(RentalAndLeaseKeyType.PersistentUnlimited, result.RentalAndLeaseKeyType);
+            Assert.AreEqual(123U, result.RentalDuration);
 
             var cert2 = new X509Certificate2(Convert.FromBase64String(result.FairPlayPfx));
             Assert.AreEqual(cert.Thumbprint, cert2.Thumbprint);

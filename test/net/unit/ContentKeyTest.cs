@@ -81,16 +81,16 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
             var check = _mediaContext.ContentKeys.Single(k => k.Id.Equals(key.Id, StringComparison.OrdinalIgnoreCase));
             Assert.AreEqual("mp4a,aacl", check.TrackIdentifiers);
             UpdateDeleteContentKey(key);
-
         }
+
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void ContentKeyStorageEncryptionEncryptionCRUD()
         {
-            IContentKey key = _mediaContext.ContentKeys.Create(Guid.NewGuid(), new byte[16] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }, Guid.NewGuid().ToString(), contentKeyType: ContentKeyType.StorageEncryption);
+            byte[] keyData = Enumerable.Range(0, 32).Select(i => (byte)1).ToArray();
+            IContentKey key = _mediaContext.ContentKeys.Create(Guid.NewGuid(), keyData, Guid.NewGuid().ToString(), contentKeyType: ContentKeyType.StorageEncryption);
             UpdateDeleteContentKey(key);
-
         }
+
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void ContentKeyUrlEncryptionCRUD()

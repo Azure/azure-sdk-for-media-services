@@ -236,7 +236,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 pfxPassword,
                 pfxPasswordId,
                 askId,
-                iv);
+                iv,
+                RentalAndLeaseKeyType.Undefined,
+                0);
 
             var policyOption = _mediaContext.ContentKeyAuthorizationPolicyOptions.Create(
                 "fairPlayTest",
