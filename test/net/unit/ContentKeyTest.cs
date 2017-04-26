@@ -15,6 +15,7 @@
 // </license>
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
@@ -27,31 +28,33 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
     [TestClass]
     public class ContentKeyTest
     {
-		private CloudMediaContext _mediaContext;
-		public TestContext TestContext { get; set; }
+        private CloudMediaContext _mediaContext;
+        private readonly byte[] ContentKeyBytes = new byte[16] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
 
-		[TestInitialize]
-		public void SetupTest()
-		{
-			_mediaContext = Helper.GetMediaDataServiceContextForUnitTests();
-		}
+        public TestContext TestContext { get; set; }
+
+        [TestInitialize]
+        public void SetupTest()
+        {
+            _mediaContext = Helper.GetMediaDataServiceContextForUnitTests();
+        }
 
        
         [TestMethod]
         public void ContentKeyCRUD()
         {
-            IContentKey key = _mediaContext.ContentKeys.Create(Guid.NewGuid(), new byte[16] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 });
+            IContentKey key = _mediaContext.ContentKeys.Create(Guid.NewGuid(), ContentKeyBytes);
             Assert.IsNotNull(_mediaContext.ContentKeys.Where(c=>c.Id == key.Id).FirstOrDefault());
             Assert.AreEqual(ContentKeyType.CommonEncryption, key.ContentKeyType);
             Assert.AreEqual(ProtectionKeyType.X509CertificateThumbprint, key.ProtectionKeyType);
             UpdateDeleteContentKey(key);
-            key = _mediaContext.ContentKeys.Create(Guid.NewGuid(), new byte[16] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 });
+            key = _mediaContext.ContentKeys.Create(Guid.NewGuid(), ContentKeyBytes);
             key.DeleteAsync();
         }
         [TestMethod]
         public void ContentKeyCommonEncryptionCRUD()
         {
-            IContentKey key = _mediaContext.ContentKeys.Create(Guid.NewGuid(), new byte[16] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }, Guid.NewGuid().ToString(), contentKeyType: ContentKeyType.CommonEncryption);
+            IContentKey key = _mediaContext.ContentKeys.Create(Guid.NewGuid(), ContentKeyBytes, Guid.NewGuid().ToString(), contentKeyType: ContentKeyType.CommonEncryption);
             UpdateDeleteContentKey(key);
 
         }
@@ -59,14 +62,24 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
         [ExpectedException(typeof(ArgumentException))]
         public void ContentKeyConfigurationEncryptionCRUD()
         {
-            IContentKey key = _mediaContext.ContentKeys.Create(Guid.NewGuid(), new byte[16] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }, Guid.NewGuid().ToString(), contentKeyType: ContentKeyType.ConfigurationEncryption);
+            IContentKey key = _mediaContext.ContentKeys.Create(Guid.NewGuid(), ContentKeyBytes, Guid.NewGuid().ToString(), contentKeyType: ContentKeyType.ConfigurationEncryption);
             UpdateDeleteContentKey(key);
 
         }
         [TestMethod]
         public void ContentKeyEnvelopeEncryptionCRUD()
         {
-            IContentKey key = _mediaContext.ContentKeys.Create(Guid.NewGuid(), new byte[16] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }, Guid.NewGuid().ToString(), contentKeyType: ContentKeyType.EnvelopeEncryption);
+            IContentKey key = _mediaContext.ContentKeys.Create(Guid.NewGuid(), ContentKeyBytes, Guid.NewGuid().ToString(), contentKeyType: ContentKeyType.EnvelopeEncryption);
+            UpdateDeleteContentKey(key);
+
+        }
+        [TestMethod]
+        public void ContentKeyTrackIdentifiersCRUD()
+        {
+            var tracks = new List<string> {"mp4a", "aacl"};
+            IContentKey key = _mediaContext.ContentKeys.Create(Guid.NewGuid(), ContentKeyBytes, Guid.NewGuid().ToString(), ContentKeyType.EnvelopeEncryption, tracks);
+            var check = _mediaContext.ContentKeys.Single(k => k.Id.Equals(key.Id, StringComparison.OrdinalIgnoreCase));
+            Assert.AreEqual("mp4a,aacl", check.TrackIdentifiers);
             UpdateDeleteContentKey(key);
         }
 
@@ -82,7 +95,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
         [ExpectedException(typeof(ArgumentException))]
         public void ContentKeyUrlEncryptionCRUD()
         {
-            IContentKey key = _mediaContext.ContentKeys.Create(Guid.NewGuid(), new byte[16] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }, Guid.NewGuid().ToString(), contentKeyType: ContentKeyType.UrlEncryption);
+            IContentKey key = _mediaContext.ContentKeys.Create(Guid.NewGuid(), ContentKeyBytes, Guid.NewGuid().ToString(), contentKeyType: ContentKeyType.UrlEncryption);
             UpdateDeleteContentKey(key);
 
         }
@@ -100,7 +113,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
         [TestMethod]
         public void LinkContentKeyToAsset()
         {
-            IContentKey key = _mediaContext.ContentKeys.Create(Guid.NewGuid(), new byte[16] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 });
+            IContentKey key = _mediaContext.ContentKeys.Create(Guid.NewGuid(), ContentKeyBytes);
             IAsset asset = _mediaContext.Assets.Create("LinkContentKeyToAsset", AssetCreationOptions.StorageEncrypted);
             asset.ContentKeys.Add(key);
             var keys = asset.ContentKeys.ToList();
@@ -112,7 +125,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Unit
         [TestMethod]
         public void CreateShortContentKeyAsyncWithEmptyNameShouldPass()
         {
-            var key = _mediaContext.ContentKeys.Create(Guid.NewGuid(), new byte[16] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }, String.Empty);
+            var key = _mediaContext.ContentKeys.Create(Guid.NewGuid(), ContentKeyBytes, String.Empty);
         }
 
         [TestMethod]

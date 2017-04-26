@@ -150,6 +150,37 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [TestCategory("Bvt")]
+        public void AssetDeliveryPolicyTestConfiguration()
+        {
+            IAssetDeliveryPolicy policy = null;
+            try
+            {
+                policy = _mediaContext.AssetDeliveryPolicies.Create(
+                    "TestConfiguration",
+                    AssetDeliveryPolicyType.DynamicCommonEncryption,
+                    AssetDeliveryProtocol.Dash,
+                    new Dictionary<AssetDeliveryPolicyConfigurationKey, string>()
+                    {
+                        {AssetDeliveryPolicyConfigurationKey.PlayReadyLicenseAcquisitionUrl, "http://keyDelivery.com"},
+                        {AssetDeliveryPolicyConfigurationKey.UnencryptedTracksByFourCC, "mp4a"}
+                    });
+
+                var check = _mediaContext.AssetDeliveryPolicies.Where(p => p.Id == policy.Id).Single();
+
+                Assert.AreEqual(check.AssetDeliveryConfiguration[AssetDeliveryPolicyConfigurationKey.PlayReadyLicenseAcquisitionUrl], "http://keyDelivery.com");
+                Assert.AreEqual(check.AssetDeliveryConfiguration[AssetDeliveryPolicyConfigurationKey.UnencryptedTracksByFourCC], "mp4a");
+            }
+            finally
+            {
+                policy?.Delete();
+            }
+            
+        }
+
+        [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [TestCategory("Bvt")]
         public void EnvelopeAssetDeliveryPolicyTestAttach()
         {
             var asset = _mediaContext.Assets.Create("Asset for EnvelopeAssetDeliveryPolicyTestAttach", AssetCreationOptions.None);

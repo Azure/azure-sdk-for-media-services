@@ -200,6 +200,12 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             get;
         }
 
+        /// <include file='Documentation.xml' path='Documentation/Member[@name="IContentKey.TrackIdentifiers"]'/>
+        string TrackIdentifiers
+        {
+            get;
+        }
+
 
         /// <include file='Documentation.xml' path='Documentation/Member[@name="IContentKey.AuthorizationPolicyId"]'/>
         string AuthorizationPolicyId

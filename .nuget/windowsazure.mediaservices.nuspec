@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>windowsazure.mediaservices</id>
-    <version>3.9.0.0</version>
+    <version>3.9.0.1</version>
     <title>Windows Azure Media Services .NET SDK</title>
     <authors>Microsoft Corporation</authors>
     <owners>Microsoft Corporation</owners>
@@ -10,7 +10,7 @@
     <projectUrl>http://aka.ms/wamsmsdn</projectUrl>
     <iconUrl>http://nimbuspmteam.blob.core.windows.net/nuget/Media Services 150.png</iconUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
-    <description>This package contains Windows Azure Media Service library 3.9.0.0 for .NET.</description>
+    <description>This package contains Windows Azure Media Service library 3.9.0.1 for .NET.</description>
     <releaseNotes>For more information, please check our forum: http://social.msdn.microsoft.com/Forums/en-US/MediaServices/threads
 
 For MSDN documentation please visit http://aka.ms/wamsmsdn

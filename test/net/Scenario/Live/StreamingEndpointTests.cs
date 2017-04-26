@@ -15,8 +15,6 @@
 // </license>
 
 using System;
-using System.Diagnostics;
-using System.Net;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.Live;
@@ -32,6 +30,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
     public class StreamingEndpointTests
     {
         private CloudMediaContext _mediaContext;
+        private static readonly string DefaultCdnProfile = "AzureMediaStreamingPlatformCdnProfile-StandardVerizon";
+
         [TestInitialize]
         public void SetupTest()
         {
@@ -81,7 +81,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             createdToValidate = _mediaContext.StreamingEndpoints.Where(c => c.Id == streamingEndpoint.Id).FirstOrDefault();
             Assert.AreEqual(false, createdToValidate.CdnEnabled);
-            Assert.IsTrue(string.Equals(updateProfile, createdToValidate.CdnProfile));
+            Assert.IsTrue(string.IsNullOrWhiteSpace(createdToValidate.CdnProfile));
 
             streamingEndpoint.Delete();
             name = "CDNDisabled" + DateTime.UtcNow.ToString("hhmmss");
@@ -112,8 +112,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             var createdToValidate = _mediaContext.StreamingEndpoints.Where(c => c.Id == streamingEndpoint.Id).FirstOrDefault();
 
             Assert.IsNotNull(createdToValidate);
-            Assert.AreEqual(createdToValidate.CdnProvider, CdnProviderType.StandardVerizon.ToString());
-            Assert.AreEqual(createdToValidate.CdnProfile, StreamingEndpointCreationOptions.DefaultCdnProfile);
+            Assert.AreEqual(CdnProviderType.StandardVerizon.ToString(), createdToValidate.CdnProvider);
+            Assert.AreEqual(DefaultCdnProfile, createdToValidate.CdnProfile);
             Assert.AreEqual(new Version("2.0").ToString(), createdToValidate.StreamingEndpointVersion);
             Assert.IsNotNull(createdToValidate.FreeTrialEndTime);
 
@@ -122,7 +122,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             createdToValidate.Update();
 
             createdToValidate = _mediaContext.StreamingEndpoints.Where(c => c.Id == streamingEndpoint.Id).FirstOrDefault();
-            Assert.AreEqual(createdToValidate.CdnProvider, CdnProviderType.PremiumVerizon.ToString());
+            Assert.AreEqual(CdnProviderType.PremiumVerizon.ToString(), createdToValidate.CdnProvider);
             Assert.AreEqual(createdToValidate.CdnProfile, "newTestcdnProfile");
 
             streamingEndpoint.Delete();

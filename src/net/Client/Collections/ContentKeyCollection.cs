@@ -16,6 +16,7 @@
 
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
@@ -36,8 +37,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             : base(cloudMediaContext)
         {
         }
-
-
 
         /// <summary>
         /// Asynchronously creates a content key with the specified key identifier and value.
@@ -60,13 +59,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <param name="contentKey">The value of the content key.</param>
         /// <param name="name">A friendly name for the content key.</param>
         /// <param name="contentKeyType">Type of content key to create.</param>
+        /// <param name="trackIdentifiers">A list of tracks to be encrypted by this content key.</param>
         /// <returns>
         /// A function delegate that returns the future result to be available through the Task&lt;IContentKey&gt;.
         /// </returns>
-        public override Task<IContentKey> CreateAsync(Guid keyId, byte[] contentKey, string name, ContentKeyType contentKeyType)
+        public override Task<IContentKey> CreateAsync(Guid keyId, byte[] contentKey, string name, ContentKeyType contentKeyType, IEnumerable<string> trackIdentifiers)
         {
-            var allowedKeyTypes = new[] 
-            { 
+            var allowedKeyTypes = new[]
+            {
                 ContentKeyType.CommonEncryption, 
                 ContentKeyType.StorageEncryption,
                 ContentKeyType.CommonEncryptionCbcs, 
@@ -132,6 +132,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
             dataContext.AddObject(ContentKeySet, contentKeyData);
 
+            contentKeyData.TrackIdentifiers = (trackIdentifiers!= null && trackIdentifiers.Any()) ? string.Join(",", trackIdentifiers) : null;
+
+
             MediaRetryPolicy retryPolicy = this.MediaContext.MediaServicesClassFactory.GetSaveChangesRetryPolicy(dataContext as IRetryPolicyAdapter);
 
             return retryPolicy.ExecuteAsync<IMediaDataServiceResponse>(() => dataContext.SaveChangesAsync(contentKeyData))
@@ -143,6 +146,30 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                         return (ContentKeyData)t.Result.AsyncState;
                     },
                     TaskContinuationOptions.ExecuteSynchronously);
+        }
+
+        /// <summary>
+        /// Creates a content key with the specifies key identifier and value.
+        /// </summary>
+        /// <param name="keyId">The key identifier.</param>
+        /// <param name="contentKey">The value of the content key.</param>
+        /// <param name="name">A friendly name for the content key.</param>
+        /// <param name="contentKeyType">Type of content key to create.</param>
+        /// <param name="trackIdentifiers">A list of tracks to be encrypted by this content key.</param>
+        /// <returns>A <see cref="IContentKey"/> that can be associated with an <see cref="IAsset"/>.</returns>
+        public override IContentKey Create(Guid keyId, byte[] contentKey, string name, ContentKeyType contentKeyType, IEnumerable<string> trackIdentifiers)
+        {
+            try
+            {
+                Task<IContentKey> task = this.CreateAsync(keyId, contentKey, name, contentKeyType, trackIdentifiers);
+                task.Wait();
+
+                return task.Result;
+            }
+            catch (AggregateException exception)
+            {
+                throw exception.InnerException;
+            }
         }
 
         /// <summary>
