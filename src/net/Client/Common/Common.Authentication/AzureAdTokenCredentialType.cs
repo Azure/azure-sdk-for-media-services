@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="ITokenProvider.cs" company="Microsoft">Copyright 2016 Microsoft Corporation</copyright>
+// <copyright file="AzureAdTokenCredentialType.cs" company="Microsoft">Copyright 2012 Microsoft Corporation</copyright>
 // <license>
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,25 +14,21 @@
 // limitations under the License.
 // </license>
 
-using System;
-
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
-    /// A generic interface to a RFC6750 bearer token provider.
+    /// Describes the AAD token crendential type.
     /// </summary>
-    public interface ITokenProvider
+    public enum AzureAdTokenCredentialType
     {
         /// <summary>
-        /// Gets a value for the Authorization header in RFC6750 format
+        /// User Credential by prompting user for user name and password.
         /// </summary>
-        /// <returns></returns>
-        string GetAuthorizationHeader();
+        UserCredential,
 
         /// <summary>
-        /// Gets the access token to use.
+        /// Service Principal credential.
         /// </summary>
-        /// <returns>A tuple containing access token and its expiration time.</returns>
-        Tuple<string, DateTimeOffset> GetAccessToken();
+        ServicePrincipal
     }
 }

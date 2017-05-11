@@ -30,6 +30,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDK.Client.Common.BlobTrans
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDK.Client.Common.FileEncryption", "src\net\Client\Common\Common.FileEncryption\SDK.Client.Common.FileEncryption.csproj", "{630D064C-8D3D-4419-BCC9-A61EF577A387}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDK.Client.Common.Authentication", "src\net\Client\Common\Common.Authentication\SDK.Client.Common.Authentication.csproj", "{57005DBF-B478-4087-84DC-24441714D0F5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Coverage|Any CPU = Coverage|Any CPU
@@ -209,6 +211,36 @@ Global
 		{630D064C-8D3D-4419-BCC9-A61EF577A387}.Stage|Any CPU.Build.0 = Release|Any CPU
 		{630D064C-8D3D-4419-BCC9-A61EF577A387}.Stage|x64.ActiveCfg = Release|Any CPU
 		{630D064C-8D3D-4419-BCC9-A61EF577A387}.Stage|x86.ActiveCfg = Release|Any CPU
+		{57005DBF-B478-4087-84DC-24441714D0F5}.Coverage|Any CPU.ActiveCfg = Release|Any CPU
+		{57005DBF-B478-4087-84DC-24441714D0F5}.Coverage|Any CPU.Build.0 = Release|Any CPU
+		{57005DBF-B478-4087-84DC-24441714D0F5}.Coverage|x64.ActiveCfg = Release|Any CPU
+		{57005DBF-B478-4087-84DC-24441714D0F5}.Coverage|x64.Build.0 = Release|Any CPU
+		{57005DBF-B478-4087-84DC-24441714D0F5}.Coverage|x86.ActiveCfg = Release|Any CPU
+		{57005DBF-B478-4087-84DC-24441714D0F5}.Coverage|x86.Build.0 = Release|Any CPU
+		{57005DBF-B478-4087-84DC-24441714D0F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57005DBF-B478-4087-84DC-24441714D0F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57005DBF-B478-4087-84DC-24441714D0F5}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{57005DBF-B478-4087-84DC-24441714D0F5}.Debug|x64.Build.0 = Debug|Any CPU
+		{57005DBF-B478-4087-84DC-24441714D0F5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{57005DBF-B478-4087-84DC-24441714D0F5}.Debug|x86.Build.0 = Debug|Any CPU
+		{57005DBF-B478-4087-84DC-24441714D0F5}.IncrementVersion|Any CPU.ActiveCfg = Release|Any CPU
+		{57005DBF-B478-4087-84DC-24441714D0F5}.IncrementVersion|Any CPU.Build.0 = Release|Any CPU
+		{57005DBF-B478-4087-84DC-24441714D0F5}.IncrementVersion|x64.ActiveCfg = Release|Any CPU
+		{57005DBF-B478-4087-84DC-24441714D0F5}.IncrementVersion|x64.Build.0 = Release|Any CPU
+		{57005DBF-B478-4087-84DC-24441714D0F5}.IncrementVersion|x86.ActiveCfg = Release|Any CPU
+		{57005DBF-B478-4087-84DC-24441714D0F5}.IncrementVersion|x86.Build.0 = Release|Any CPU
+		{57005DBF-B478-4087-84DC-24441714D0F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57005DBF-B478-4087-84DC-24441714D0F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57005DBF-B478-4087-84DC-24441714D0F5}.Release|x64.ActiveCfg = Release|Any CPU
+		{57005DBF-B478-4087-84DC-24441714D0F5}.Release|x64.Build.0 = Release|Any CPU
+		{57005DBF-B478-4087-84DC-24441714D0F5}.Release|x86.ActiveCfg = Release|Any CPU
+		{57005DBF-B478-4087-84DC-24441714D0F5}.Release|x86.Build.0 = Release|Any CPU
+		{57005DBF-B478-4087-84DC-24441714D0F5}.Stage|Any CPU.ActiveCfg = Release|Any CPU
+		{57005DBF-B478-4087-84DC-24441714D0F5}.Stage|Any CPU.Build.0 = Release|Any CPU
+		{57005DBF-B478-4087-84DC-24441714D0F5}.Stage|x64.ActiveCfg = Release|Any CPU
+		{57005DBF-B478-4087-84DC-24441714D0F5}.Stage|x64.Build.0 = Release|Any CPU
+		{57005DBF-B478-4087-84DC-24441714D0F5}.Stage|x86.ActiveCfg = Release|Any CPU
+		{57005DBF-B478-4087-84DC-24441714D0F5}.Stage|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
