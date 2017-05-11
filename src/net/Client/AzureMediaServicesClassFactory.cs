@@ -23,6 +23,7 @@ using System.Data.Services.Client;
 using System.Data.Services.Common;
 using System.Linq;
 using System.Net;
+using System.Text.RegularExpressions;
 
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
@@ -32,6 +33,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// </summary>
     public class AzureMediaServicesClassFactory : MediaServicesClassFactory
     {
+        private static readonly Regex ValidAccountCustomHostExpression = new Regex(
+            @"^[a-z0-9]{3,24}\.restv2\.[^.]+\..+$",
+            RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
         private readonly Uri _azureMediaServicesEndpoint;
         private readonly OAuthDataServiceAdapter _dataServiceAdapter;
         private readonly ServiceVersionAdapter _serviceVersionAdapter;
@@ -258,15 +263,19 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
         private Uri CreateAzureMediaServicesEndPoint(Uri azureMediaServicesEndpoint, MediaContextBase mediaContext)
         {
-            string cacheKey = string.Format(
-                "{0},{1}",
-                mediaContext.TokenProvider.MediaServicesAccountName,
-                azureMediaServicesEndpoint.ToString());
+            var cacheKey = IsAccountCustomHost(azureMediaServicesEndpoint.Host)
+                ? azureMediaServicesEndpoint.ToString()
+                : string.Format("{0},{1}", mediaContext.Credentials.MediaServicesAccountName, azureMediaServicesEndpoint.ToString());
 
             return (_endpointCache.GetOrAdd(
                 cacheKey,
                 () => GetAccountApiEndpoint(_dataServiceAdapter, _serviceVersionAdapter, azureMediaServicesEndpoint, _userAgentAdapter, CreateClientRequestIdAdapter()),
                 () => mediaContext.TokenProvider.GetAccessToken().Item2.DateTime));
+        }
+
+        private static bool IsAccountCustomHost(string host)
+        {
+            return !string.IsNullOrWhiteSpace(host) && ValidAccountCustomHostExpression.IsMatch(host);
         }
     }
 }

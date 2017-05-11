@@ -1,12 +1,12 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="ITokenProvider.cs" company="Microsoft">Copyright 2016 Microsoft Corporation</copyright>
+// <copyright file="AzureEnvironments.cs" company="Microsoft">Copyright 2012 Microsoft Corporation</copyright>
 // <license>
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-//
+// 
 // http://www.apache.org/licenses/LICENSE-2.0
-//
+// 
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,25 +14,20 @@
 // limitations under the License.
 // </license>
 
-using System;
-
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
     /// <summary>
-    /// A generic interface to a RFC6750 bearer token provider.
+    /// Describes the well-known Azure environments.
     /// </summary>
-    public interface ITokenProvider
+    public static class AzureEnvironments
     {
         /// <summary>
-        /// Gets a value for the Authorization header in RFC6750 format
+        /// Azure Cloud environment.
         /// </summary>
-        /// <returns></returns>
-        string GetAuthorizationHeader();
-
-        /// <summary>
-        /// Gets the access token to use.
-        /// </summary>
-        /// <returns>A tuple containing access token and its expiration time.</returns>
-        Tuple<string, DateTimeOffset> GetAccessToken();
+        public static readonly AzureEnvironment AzureCloudEnvironment = new AzureEnvironment(
+            AzureEnvironmentConstants.AzureCloudActiveDirectoryEndpoint,
+            AzureEnvironmentConstants.AzureCloudMediaServicesResource,
+            AzureEnvironmentConstants.AzureCloudSdkAadApplicationId,
+            AzureEnvironmentConstants.SdkAadApplicationRedirectUri);
     }
 }
