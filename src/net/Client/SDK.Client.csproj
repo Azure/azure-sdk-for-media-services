@@ -294,7 +294,6 @@
     <Compile Include="Entities\ITaskNotificationSubscription.cs" />
     <Compile Include="Entities\NotificationEndpointCredentialType.cs" />
     <Compile Include="Entities\TaskNotificationSubscription.cs" />
-    <Compile Include="ITokenProvider.cs" />
     <Compile Include="Live\AdMarkerSource.cs" />
     <Compile Include="Entities\IFilterTrackPropertyCondition.cs" />
     <Compile Include="Entities\IStreamingAssetFilter.cs" />
@@ -580,6 +579,10 @@
     <None Include="Settings.stylecop" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="Common\Common.Authentication\SDK.Client.Common.Authentication.csproj">
+      <Project>{57005DBF-B478-4087-84DC-24441714D0F5}</Project>
+      <Name>SDK.Client.Common.Authentication</Name>
+    </ProjectReference>
     <ProjectReference Include="Common\Common.BlobTransfer\SDK.Client.Common.BlobTransfer.csproj">
       <Project>{f0c14570-44f9-4f3e-ac4f-d9965c4b1d06}</Project>
       <Name>SDK.Client.Common.BlobTransfer</Name>
