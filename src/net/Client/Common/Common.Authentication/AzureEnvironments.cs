@@ -27,7 +27,34 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public static readonly AzureEnvironment AzureCloudEnvironment = new AzureEnvironment(
             AzureEnvironmentConstants.AzureCloudActiveDirectoryEndpoint,
             AzureEnvironmentConstants.AzureCloudMediaServicesResource,
-            AzureEnvironmentConstants.AzureCloudSdkAadApplicationId,
+            AzureEnvironmentConstants.SdkAadApplicationId,
+            AzureEnvironmentConstants.SdkAadApplicationRedirectUri);
+
+        /// <summary>
+        /// Azure China Cloud environment.
+        /// </summary>
+        public static readonly AzureEnvironment AzureChinaCloudEnvironment = new AzureEnvironment(
+            AzureEnvironmentConstants.AzureChinaCloudActiveDirectoryEndpoint,
+            AzureEnvironmentConstants.AzureChinaCloudMediaServicesResource,
+            AzureEnvironmentConstants.SdkAadApplicationId,
+            AzureEnvironmentConstants.SdkAadApplicationRedirectUri);
+
+        /// <summary>
+        /// Azure US Government environment.
+        /// </summary>
+        public static readonly AzureEnvironment AzureUsGovernmentEnvironment = new AzureEnvironment(
+            AzureEnvironmentConstants.AzureUsGovernmentActiveDirectoryEndpoint,
+            AzureEnvironmentConstants.AzureUsGovernmentMediaServicesResource,
+            AzureEnvironmentConstants.AzureUsGovernmentSdkAadAppliationId,
+            AzureEnvironmentConstants.SdkAadApplicationRedirectUri);
+
+        /// <summary>
+        /// Azure German Cloud environment.
+        /// </summary>
+        public static readonly AzureEnvironment AzureGermanCloudEnvironment = new AzureEnvironment(
+            AzureEnvironmentConstants.AzureGermanCloudActiveDirectoryEndpoint,
+            AzureEnvironmentConstants.AzureGermanCloudMediaServicesResource,
+            AzureEnvironmentConstants.SdkAadApplicationId,
             AzureEnvironmentConstants.SdkAadApplicationRedirectUri);
     }
 }
