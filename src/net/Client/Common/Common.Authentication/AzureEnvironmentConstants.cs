@@ -34,9 +34,44 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public const string AzureCloudMediaServicesResource = "https://rest.media.azure.net";
 
         /// <summary>
-        /// The native SDK AAD application ID for Azure Cloud environment.
+        /// The Active Directory endpoint for Azure China Cloud environment.
         /// </summary>
-        public const string AzureCloudSdkAadApplicationId = "d476653d-842c-4f52-862d-397463ada5e7";
+        public static readonly Uri AzureChinaCloudActiveDirectoryEndpoint = new Uri("https://login.chinacloudapi.cn/");
+
+        /// <summary>
+        /// The Media Services resource for Azure China Cloud environment.
+        /// </summary>
+        public const string AzureChinaCloudMediaServicesResource = "https://rest.media.chinacloudapi.cn";
+
+        /// <summary>
+        /// The Active Directory endpoint for Azure US Government environment.
+        /// </summary>
+        public static readonly Uri AzureUsGovernmentActiveDirectoryEndpoint = new Uri("https://login-us.microsoftonline.com/");
+
+        /// <summary>
+        /// The Media Services resource for Azure US Government environment.
+        /// </summary>
+        public const string AzureUsGovernmentMediaServicesResource = "https://rest.media.usgovcloudapi.net";
+
+        /// <summary>
+        /// The native SDK AAD application ID for Azure US Government environment.
+        /// </summary>
+        public const string AzureUsGovernmentSdkAadAppliationId = "68dac91e-cab5-461b-ab4a-ec7dcff0bd67";
+
+        /// <summary>
+        /// The Active Directory endpoint for Azure German cloud environment.
+        /// </summary>
+        public static readonly Uri AzureGermanCloudActiveDirectoryEndpoint = new Uri("https://login.microsoftonline.de/");
+
+        /// <summary>
+        /// The Media Services resource for Azure German Cloud environment.
+        /// </summary>
+        public const string AzureGermanCloudMediaServicesResource = "https://rest.media.cloudapi.de";
+
+        /// <summary>
+        /// The native SDK AAD application ID for Azure Cloud, Azure China Cloud and Azure German Cloud environment.
+        /// </summary>
+        public const string SdkAadApplicationId = "d476653d-842c-4f52-862d-397463ada5e7";
 
         /// <summary>
         /// The native SDK AAD application's redirect URL for all environments.
