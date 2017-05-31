@@ -4,11 +4,13 @@ echo Creating \drop\WAMSSDK\lib\net45
 md .\drop\WAMSSDK\lib\net45
 
 echo Copy MediaServices.Client.dll
-copy /y \\adxsdkbuilder\Signed\Microsoft.WindowsAzure.MediaServices.Client.dll .\drop\WAMSSDK\lib\net45\
+copy /y \\adxsdkbuilder2\Signed\Microsoft.WindowsAzure.MediaServices.Client.dll .\drop\WAMSSDK\lib\net45\
+echo Copy Microsoft.WindowsAzure.MediaServices.Client.Common.Authentication.dll
+copy /y \\adxsdkbuilder2\Signed\Microsoft.WindowsAzure.MediaServices.Client.Common.Authentication.dll .\drop\WAMSSDK\lib\net45\
 echo Copy Microsoft.WindowsAzure.MediaServices.Client.Common.FileEncryption.dll
-copy /y \\adxsdkbuilder\Signed\Microsoft.WindowsAzure.MediaServices.Client.Common.FileEncryption.dll .\drop\WAMSSDK\lib\net45\
+copy /y \\adxsdkbuilder2\Signed\Microsoft.WindowsAzure.MediaServices.Client.Common.FileEncryption.dll .\drop\WAMSSDK\lib\net45\
 echo Copy Microsoft.WindowsAzure.MediaServices.Client.Common.BlobTransfer.dll
-copy /y \\adxsdkbuilder\Signed\Microsoft.WindowsAzure.MediaServices.Client.Common.BlobTransfer.dll .\drop\WAMSSDK\lib\net45\
+copy /y \\adxsdkbuilder2\Signed\Microsoft.WindowsAzure.MediaServices.Client.Common.BlobTransfer.dll .\drop\WAMSSDK\lib\net45\
 echo Copy MediaServices.Client.pdb
 copy /y .\Publish\Build\Release\Microsoft.WindowsAzure.MediaServices.Client.pdb .\drop\WAMSSDK\lib\net45\
 
