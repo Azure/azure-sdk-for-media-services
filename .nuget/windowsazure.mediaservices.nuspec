@@ -28,11 +28,13 @@ Source in GitHub at https://github.com/WindowsAzure/azure-sdk-for-media-services
       <dependency id="WindowsAzure.Storage" version="4.3.0.0" />
       <dependency id="Newtonsoft.Json" version="6.0.8" />
       <dependency id="System.IdentityModel.Tokens.Jwt" version="4.0.2.205111437" />
+      <dependency id="Microsoft.IdentityModel.Clients.ActiveDirectory" version="3.13.1" />
     </dependencies>
     <references>
       <reference file="Microsoft.WindowsAzure.MediaServices.Client.dll" />
       <reference file="Microsoft.WindowsAzure.MediaServices.Client.Common.BlobTransfer.dll" />
       <reference file="Microsoft.WindowsAzure.MediaServices.Client.Common.FileEncryption.dll" />
+      <reference file="Microsoft.WindowsAzure.MediaServices.Client.Common.Authentication.dll" />
     </references>
   </metadata>
 </package>
