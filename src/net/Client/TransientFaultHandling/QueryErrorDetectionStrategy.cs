@@ -18,7 +18,7 @@ using System;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client.TransientFaultHandling
 {
-    class QueryErrorDetectionStrategy : MediaErrorDetectionStrategy
+    public class QueryErrorDetectionStrategy : MediaErrorDetectionStrategy
     {
         protected override bool CheckIsTransient(Exception ex)
         {
