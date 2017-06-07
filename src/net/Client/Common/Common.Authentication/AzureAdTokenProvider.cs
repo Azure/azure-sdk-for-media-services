@@ -84,12 +84,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                         _tokenCredentials.AzureEnvironment.MediaServicesSdkRedirectUri,
                         new PlatformParameters(PromptBehavior.Auto)).Result;
 
-                case AzureAdTokenCredentialType.ServicePrincipal:
-                    return  _authenticationContext.AcquireTokenAsync(
-                        mediaServicesResource,
-                        new ClientCredential(
-                            _tokenCredentials.ClientId,
-                            _tokenCredentials.ClientSecret)).Result;
+                case AzureAdTokenCredentialType.ServicePrincipalWithClientSymmetricKey:
+                    return  _authenticationContext.AcquireTokenAsync(mediaServicesResource, _tokenCredentials.ClientKey).Result;
+
+                case AzureAdTokenCredentialType.ServicePrincipalWithClientCertificate:
+                    return _authenticationContext.AcquireTokenAsync(mediaServicesResource, _tokenCredentials.ClientCertificate).Result;
 
                 default:
                     throw new NotSupportedException(

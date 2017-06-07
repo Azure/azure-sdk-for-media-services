@@ -15,6 +15,7 @@
 // </license>
 
 using System;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
 namespace Microsoft.WindowsAzure.MediaServices.Client
 {
@@ -29,24 +30,24 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public string Tenant { get; }
 
         /// <summary>
-        /// Gets the client ID.
+        /// Gets the client symmetric key credential.
         /// </summary>
-        public string ClientId { get; }
+        public ClientCredential ClientKey { get; }
 
         /// <summary>
-        /// Gets the client secret.
+        /// Gets the client certificate credential.
         /// </summary>
-        public string ClientSecret { get; }
-
-        /// <summary>
-        /// Gets the credential type.
-        /// </summary>
-        public AzureAdTokenCredentialType CredentialType { get; }
-
+        public ClientAssertionCertificate ClientCertificate { get; }
+        
         /// <summary>
         /// Gets the environment.
         /// </summary>
         public AzureEnvironment AzureEnvironment { get; }
+
+        /// <summary>
+        /// Gets the credential type.
+        /// </summary>
+        internal AzureAdTokenCredentialType CredentialType { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AzureAdTokenCredentials"/> class.
@@ -74,24 +75,18 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Initializes a new instance of the <see cref="AzureAdTokenCredentials"/> class.
         /// </summary>
         /// <param name="tenant">The tenant.</param>
-        /// <param name="clientId">The client ID.</param>
-        /// <param name="clientSecret">The client secret.</param>
+        /// <param name="clientSymmetricKey">The client symmetric key.</param>
         /// <param name="azureEnvironment">The environment.</param>
-        public AzureAdTokenCredentials(string tenant, string clientId, string clientSecret, AzureEnvironment azureEnvironment)
+        public AzureAdTokenCredentials(string tenant, AzureAdClientSymmetricKey clientSymmetricKey, AzureEnvironment azureEnvironment)
         {
             if (string.IsNullOrWhiteSpace(tenant))
             {
                 throw new ArgumentException("tenant");
             }
 
-            if (string.IsNullOrWhiteSpace(clientId))
+            if (clientSymmetricKey == null)
             {
-                throw new ArgumentException("clientId");
-            }
-
-            if (string.IsNullOrWhiteSpace(clientSecret))
-            {
-                throw new ArgumentException("clientSecret");
+                throw new ArgumentNullException("clientSymmetricKey");
             }
 
             if (azureEnvironment == null)
@@ -100,10 +95,44 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             }
 
             Tenant = tenant;
-            ClientId = clientId;
-            ClientSecret = clientSecret;
+            ClientKey = new ClientCredential(clientSymmetricKey.ClientId, clientSymmetricKey.ClientKey);
             AzureEnvironment = azureEnvironment;
-            CredentialType = AzureAdTokenCredentialType.ServicePrincipal;
+            CredentialType = AzureAdTokenCredentialType.ServicePrincipalWithClientSymmetricKey;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AzureAdTokenCredentials"/> class.
+        /// </summary>
+        /// <param name="tenant">The tenant.</param>
+        /// <param name="clientCertificate">The client certificate.</param>
+        /// <param name="azureEnvironment">The environment.</param>
+        public AzureAdTokenCredentials(string tenant, AzureAdClientCertificate clientCertificate, AzureEnvironment azureEnvironment)
+        {
+            if (string.IsNullOrWhiteSpace(tenant))
+            {
+                throw new ArgumentException("tenant");
+            }
+
+            if (clientCertificate == null)
+            {
+                throw new ArgumentNullException("clientCertificate");
+            }
+
+            if (azureEnvironment == null)
+            {
+                throw new ArgumentNullException("azureEnvironment");
+            }
+
+            var cert = EncryptionUtils.GetCertificateFromStore(clientCertificate.ClientCertificateThumbprint);
+            if (cert == null)
+            {
+                throw new ArgumentException("Invalid ClientCertificateThumbprint in clientCertificate specified");
+            }
+
+            Tenant = tenant;
+            ClientCertificate = new ClientAssertionCertificate(clientCertificate.ClientId, cert);
+            AzureEnvironment = azureEnvironment;
+            CredentialType = AzureAdTokenCredentialType.ServicePrincipalWithClientCertificate;
         }
     }
 }
