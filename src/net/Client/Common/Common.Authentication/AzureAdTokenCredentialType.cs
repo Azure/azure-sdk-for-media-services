@@ -19,7 +19,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// <summary>
     /// Describes the AAD token crendential type.
     /// </summary>
-    public enum AzureAdTokenCredentialType
+    internal enum AzureAdTokenCredentialType
     {
         /// <summary>
         /// User Credential by prompting user for user name and password.
@@ -27,8 +27,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         UserCredential,
 
         /// <summary>
-        /// Service Principal credential.
+        /// Service Principal with the symmetric key credential.
         /// </summary>
-        ServicePrincipal
+        ServicePrincipalWithClientSymmetricKey,
+
+        /// <summary>
+        /// Service Principal with the certificate credential.
+        /// </summary>
+        ServicePrincipalWithClientCertificate
     }
 }

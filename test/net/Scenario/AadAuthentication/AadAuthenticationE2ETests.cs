@@ -52,15 +52,31 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.AadAuthentication
         [TestMethod]
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
-        public void TestServicePrincipalCredential()
+        public void TestServicePrincipalWithClientSymmetricKey()
         {
             var clientId = ConfigurationManager.AppSettings["ClientIdForAdAuth"];
             var clientSecret = ConfigurationManager.AppSettings["ClientSecretForAdAuth"];
 
             var environment = GetSelfDefinedEnvironment();
-            var tokenCredentials = new AzureAdTokenCredentials(ConfigurationManager.AppSettings["UserTenant"], clientId, clientSecret, environment);
+            var tokenCredentials = new AzureAdTokenCredentials(ConfigurationManager.AppSettings["UserTenant"], new AzureAdClientSymmetricKey(clientId, clientSecret), environment);
             var tokenProvider = new AzureAdTokenProvider(tokenCredentials);
 
+            var mediaContext = new CloudMediaContext(_mediaServicesApiServerUri, tokenProvider);
+            mediaContext.Assets.FirstOrDefault();
+        }
+
+        [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        public void TestServicePrincipalWithClientCertificate()
+        {
+            var clientId = ConfigurationManager.AppSettings["ClientIdForAdAuth"];
+            var clientCertificateThumbprint = ConfigurationManager.AppSettings["ClientCertificateThumbprintForAdAuth"];
+
+            var environment = GetSelfDefinedEnvironment();
+            var tokenCredentials = new AzureAdTokenCredentials(ConfigurationManager.AppSettings["UserTenant"], new AzureAdClientCertificate(clientId, clientCertificateThumbprint), environment);
+
+            var tokenProvider = new AzureAdTokenProvider(tokenCredentials);
             var mediaContext = new CloudMediaContext(_mediaServicesApiServerUri, tokenProvider);
             mediaContext.Assets.FirstOrDefault();
         }

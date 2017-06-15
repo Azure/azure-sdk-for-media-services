@@ -61,8 +61,10 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AzureAdClientCertificate.cs" />
+    <Compile Include="AzureAdClientSymmetricKey.cs" />
     <Compile Include="ITokenProvider.cs" />
-	<Compile Include="AzureAdTokenCredentials.cs" />
+    <Compile Include="AzureAdTokenCredentials.cs" />
     <Compile Include="AzureAdTokenCredentialType.cs" />
     <Compile Include="AzureAdTokenProvider.cs" />
     <Compile Include="AzureEnvironmentConstants.cs" />
@@ -75,6 +77,12 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common.FileEncryption\SDK.Client.Common.FileEncryption.csproj">
+      <Project>{630d064c-8d3d-4419-bcc9-a61ef577a387}</Project>
+      <Name>SDK.Client.Common.FileEncryption</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
