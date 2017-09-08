@@ -30,6 +30,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             EndTimestamp = Int64.MaxValue;
             PresentationWindowDuration = Int64.MaxValue;
             LiveBackoffDuration = 0;
+            ForceEndTimestamp = false;
         }
 
         public PresentationTimeRangeData(PresentationTimeRange range)
@@ -42,6 +43,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             Timescale = (Int64)(range.Timescale ?? PresentationTimeRange.TimescaleHns);
             StartTimestamp = (Int64) (range.StartTimestamp ?? 0);
             EndTimestamp = (Int64) (range.EndTimestamp ?? Int64.MaxValue);
+            ForceEndTimestamp = range.ForceEndTimestamp;
 
             PresentationWindowDuration = range.PresentationWindowDuration.HasValue && range.PresentationWindowDuration.Value != TimeSpan.MaxValue ? 
                 (Int64)range.PresentationWindowDuration.Value.TotalMilliseconds * (Timescale / 1000) : 
@@ -75,6 +77,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Define a live back off, presentation window right edge is relative to the end
         /// </summary>
         public Int64 LiveBackoffDuration { get; set; }
+
+        /// <summary>
+        /// Define a property that forces server to apply end (right edge) to the resulting manifest 
+        /// </summary>
+        public bool ForceEndTimestamp { get; set; }
 
     }
 }
