@@ -33,14 +33,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
             UInt64? start = null,
             UInt64? end = null,
             TimeSpan? pwDuration = null,
-            TimeSpan? backoff = null)
+            TimeSpan? backoff = null,
+            bool forceEnd = false)
         {
             Timescale = timescale;
             StartTimestamp = start;
             EndTimestamp = end;
             PresentationWindowDuration = pwDuration;
             LiveBackoffDuration = backoff;
-
+            ForceEndTimestamp = forceEnd;
             Validate();
         }
 
@@ -101,11 +102,21 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         public TimeSpan? LiveBackoffDuration { get; private set; }
 
+        /// <summary>
+        /// Define a property that forces server to apply end (right edge) to the resulting manifest 
+        /// </summary>
+        public bool ForceEndTimestamp { get; private set; }
+
         private void Validate()
         {
             if (StartTimestamp > EndTimestamp)
             {
                 throw new ArgumentException(String.Format(CultureInfo.InvariantCulture, "StartTimestamp is larger than EndTimestamp"));
+            }
+
+            if (ForceEndTimestamp == true && !EndTimestamp.HasValue)
+            {
+                throw new ArgumentException(String.Format(CultureInfo.InvariantCulture, "ForceEndtimestamp is present when EndTimestamp is not present"));
             }
         }
     }
