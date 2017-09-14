@@ -511,6 +511,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Azure Media Services endpoint Uri schema is not valid..
+        /// </summary>
+        internal static string InvalidAzureMediaServicesEndpoint {
+            get {
+                return ResourceManager.GetString("InvalidAzureMediaServicesEndpoint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Channel Id can&apos;t be parsed as a Guid format..
         /// </summary>
         internal static string InvalidChannelInput {

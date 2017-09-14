@@ -37,18 +37,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.OAuth
         /// <summary>
         /// Initializes a new instance of the <see cref="OAuthDataServiceAdapter"/> class.
         /// </summary>
-        /// <param name="credentials">Microsoft WindowsAzure Media Services credentials.</param>
-        /// <param name="trustedRestCertificateHash">The trusted rest certificate hash.</param>
-        /// <param name="trustedRestSubject">The trusted rest subject.</param>
-        [Obsolete("Use the constructor which accepts an ITokenProvider interface")]
-        public OAuthDataServiceAdapter(MediaServicesCredentials credentials, string trustedRestCertificateHash, string trustedRestSubject):
-            this(credentials)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="OAuthDataServiceAdapter"/> class.
-        /// </summary>
         /// <param name="tokenProvider">Azure Media Services token provider.</param>
         public OAuthDataServiceAdapter(ITokenProvider tokenProvider)
         {

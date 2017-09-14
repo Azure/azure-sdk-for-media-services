@@ -155,6 +155,10 @@
     <Compile Include="WebRequestTransientErrorDetectionStrategyTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\src\net\Client\Common\Common.Authentication\SDK.Client.Common.Authentication.csproj">
+      <Project>{57005dbf-b478-4087-84dc-24441714d0f5}</Project>
+      <Name>SDK.Client.Common.Authentication</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\src\net\Client\Common\Common.BlobTransfer\SDK.Client.Common.BlobTransfer.csproj">
       <Project>{f0c14570-44f9-4f3e-ac4f-d9965c4b1d06}</Project>
       <Name>SDK.Client.Common.BlobTransfer</Name>

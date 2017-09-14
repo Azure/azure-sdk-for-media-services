@@ -379,4 +379,7 @@
   <data name="SupportWebHookWithCredentialOnly" xml:space="preserve">
     <value>Only support set credential for webhook endpoints.</value>
   </data>
+  <data name="InvalidAzureMediaServicesEndpoint" xml:space="preserve">
+    <value>Azure Media Services endpoint Uri schema is not valid.</value>
+  </data>
 </root>

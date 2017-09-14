@@ -157,6 +157,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 // case 2: the start and end time are on different day
                 TestQuery2(dataCachce, testData, new Guid(accountId), channelId);
             }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
+            }
             finally
             {
                 table1?.DeleteIfExists();

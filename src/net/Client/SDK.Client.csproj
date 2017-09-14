@@ -172,7 +172,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AcsTokenProvider.cs" />
     <Compile Include="Collections\AssetFilterBaseCollection.cs" />
     <Compile Include="Collections\EncodingReservedUnitCollection.cs" />
     <Compile Include="Collections\TaskNotificationSubscriptionCollection.cs" />
@@ -367,7 +366,6 @@
     <Compile Include="Live\VideoStream.cs" />
     <Compile Include="MediaQueryable.cs" />
     <Compile Include="MediaQueryProvider.cs" />
-    <Compile Include="MediaServicesCredentials.cs" />
     <Compile Include="Cache.cs" />
     <Compile Include="Encryption\NullableFileEncryption.cs" />
     <Compile Include="Telemetry\ChannelHeartbeat.cs" />

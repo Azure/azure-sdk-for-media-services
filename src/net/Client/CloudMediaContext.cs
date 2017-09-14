@@ -25,8 +25,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
     /// </summary>
     public partial class CloudMediaContext : MediaContextBase
     {
-        private static readonly Uri _mediaServicesUri = new Uri("https://media.windows.net/");
-
         private AssetCollection _assets;
         private AssetFileCollection _files;
         private AccessPolicyBaseCollection _accessPolicies;
@@ -45,52 +43,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         private Uri _apiServer;
         private StreamingFilterBaseCollection _streamingFilters;
         private MonitoringConfigurationCollection _monitoringConfigurations;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CloudMediaContext"/> class.
-        /// </summary>
-        /// <param name="accountName">The Microsoft WindowsAzure Media Services account name to authenticate with.</param>
-        /// <param name="accountKey">The Microsoft WindowsAzure Media Services account key to authenticate with.</param>
-        [Obsolete("Use the constructor that takes an ITokenProvider")]
-        public CloudMediaContext(string accountName, string accountKey)
-            : this(_mediaServicesUri, new MediaServicesCredentials(accountName, accountKey))
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CloudMediaContext"/> class.
-        /// </summary>
-        /// <param name="apiServer">A <see cref="Uri"/> representing a the API endpoint.</param>
-        /// <param name="accountName">The Microsoft WindowsAzure Media Services account name to authenticate with.</param>
-        /// <param name="accountKey">The Microsoft WindowsAzure Media Services account key to authenticate with.</param>
-        [Obsolete("Use the constructor that takes an ITokenProvider")]
-        public CloudMediaContext(Uri apiServer, string accountName, string accountKey)
-            : this(apiServer, new MediaServicesCredentials(accountName, accountKey))
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CloudMediaContext"/> class.
-        /// </summary>
-        /// <param name="apiServer">A <see cref="Uri"/> representing a the API endpoint.</param>
-        /// <param name="accountName">The Microsoft WindowsAzure Media Services account name to authenticate with.</param>
-        /// <param name="accountKey">The Microsoft WindowsAzure Media Services account key to authenticate with.</param>
-        /// <param name="scope">The scope of authorization.</param>
-        /// <param name="acsBaseAddress">The access control endpoint to authenticate against.</param>
-        [Obsolete("Use the constructor that takes an ITokenProvider")]
-        public CloudMediaContext(Uri apiServer, string accountName, string accountKey, string scope, string acsBaseAddress)
-            : this(apiServer, new MediaServicesCredentials(accountName, accountKey, scope, acsBaseAddress))
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CloudMediaContext"/> class.
-        /// </summary>
-        /// <param name="tokenProvider">A token provider for authorization tokens</param>
-        public CloudMediaContext(ITokenProvider tokenProvider):
-            this(_mediaServicesUri, tokenProvider)
-        {
-        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CloudMediaContext"/> class.
