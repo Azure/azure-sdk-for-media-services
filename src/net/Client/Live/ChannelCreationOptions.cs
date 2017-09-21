@@ -65,6 +65,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public ChannelEncodingType EncodingType { get; set; }
 
         /// <summary>
+        /// Gets or sets the channel vanity url property.
+        /// </summary>
+        public bool VanityUrl { get; set; }
+
+        /// <summary>
         /// Gets or sets the channel slate.
         /// </summary>
         public ChannelSlate Slate { get; set; }

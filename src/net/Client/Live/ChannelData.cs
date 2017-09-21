@@ -42,6 +42,8 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
         private ChannelEncoding _encoding;
 
+        private bool _vanityUrl;
+
         protected override string EntitySetName { get { return ChannelBaseCollection.ChannelSet; } }
 
         /// <summary>
@@ -75,7 +77,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// Gets state of the channel.
         /// </summary>
         ChannelState IChannel.State 
-        { 
+        {
             get 
             {
                 return (ChannelState)Enum.Parse(typeof(ChannelState), State, true);
@@ -174,6 +176,23 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         {
             get { return _encoding; }
             set { _encoding = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets channel vanity url flag property.
+        /// </summary>
+        public bool VanityUrl
+        {
+            get { return _vanityUrl; }
+            set { _vanityUrl = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the channel vanityUrl property.
+        /// </summary>
+        bool IChannel.VanityUrl
+        {
+            get { return _vanityUrl; }
         }
 
         /// <summary>
