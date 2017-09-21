@@ -69,6 +69,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         ChannelPreview Preview { get; set; }
 
         /// <summary>
+        /// Gets channel vanity url flag property.
+        /// </summary>
+        bool VanityUrl { get; }
+
+        /// <summary>
         /// Gets or sets the channel output properties.
         /// </summary>
         ChannelOutput Output { get; set; }

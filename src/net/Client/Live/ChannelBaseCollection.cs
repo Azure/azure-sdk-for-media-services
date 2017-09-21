@@ -203,6 +203,9 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 Slate = options.Slate,
             };
 
+            //setting vanityUrl flag
+            channelData.VanityUrl = options.VanityUrl;
+
             IChannel channel = channelData;
 
             channel.Input = options.Input;
