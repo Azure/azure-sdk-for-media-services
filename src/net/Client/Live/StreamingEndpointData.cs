@@ -190,6 +190,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 : options.StreamingEndpointVersion.ToString();
             CrossSiteAccessPolicies = options.CrossSiteAccessPolicies;
 
+            // setting the state of the streaming endpoint
+            StreamingEndpointState streamingEndpointState = options.State == StreamingEndpointState.Running
+                ? options.State
+                : StreamingEndpointState.Stopped;
+
+            State = streamingEndpointState.ToString();
+
             if (options.CustomHostNames != null)
             {
                 CustomHostNames = (options.CustomHostNames as IList<string>) ??

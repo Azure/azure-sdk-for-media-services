@@ -203,6 +203,13 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
                 Slate = options.Slate,
             };
 
+            // setting the state of the channel
+            ChannelState channelState = options.State == ChannelState.Running
+                ? options.State
+                : ChannelState.Stopped;
+
+            channelData.State = channelState.ToString();
+
             //setting vanityUrl flag
             channelData.VanityUrl = options.VanityUrl;
 

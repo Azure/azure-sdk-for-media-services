@@ -54,6 +54,23 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [Priority(0)]
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
+        public void StreamingEndpointCreateInRunningState()
+        {
+            string testStreamingEndpointName = Guid.NewGuid().ToString().Substring(0, 23);
+            var streamingEndpointOptions = new StreamingEndpointCreationOptions(testStreamingEndpointName, 0);
+            streamingEndpointOptions.State = StreamingEndpointState.Running;
+
+            var actual = _mediaContext.StreamingEndpoints.Create(streamingEndpointOptions);
+            Assert.AreEqual(testStreamingEndpointName, actual.Name);
+            Assert.AreEqual(StreamingEndpointState.Running, actual.State);
+            actual.Stop();
+            actual.Delete();
+        }
+
+        [TestMethod]
+        [Priority(0)]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
         public void StreamingEndpointVerifyCdnOptions()
         {
             var name = "StreamingEndpoint" + DateTime.UtcNow.ToString("hhmmss");

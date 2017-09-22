@@ -45,6 +45,11 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         public ChannelInput Input { get; set; }
 
         /// <summary>
+        /// Gets or sets state of the channel.
+        /// </summary>
+        public ChannelState State { get; set; }
+
+        /// <summary>
         /// Gets or sets the channel preview properties.
         /// </summary>
         public ChannelPreview Preview { get; set; }
