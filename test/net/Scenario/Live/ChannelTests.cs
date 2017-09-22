@@ -108,6 +108,33 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [Priority(1)]
+        public void ChannelTestCreateInRunningStateWithVanityUrlFlag()
+        {
+            var channelName = Guid.NewGuid().ToString().Substring(0, 30);
+
+            IChannel channel = _mediaContext.Channels.Create(
+                new ChannelCreationOptions
+                {
+                    Name = channelName,
+                    Input = MakeChannelInput(),
+                    Preview = MakeChannelPreview(),
+                    Output = MakeChannelOutput(),
+                    State = ChannelState.Running,
+                    VanityUrl = true,
+                });
+            Assert.AreEqual(ChannelState.Running, channel.State);
+            Assert.AreEqual(true, channel.VanityUrl);
+
+            channel.Stop();
+            channel.Delete();
+            channel = _mediaContext.Channels.Where(c => c.Name == channelName).SingleOrDefault();
+            Assert.IsNull(channel);
+        }
+
+        [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [Priority(1)]
         public void GetChannelMetricsTest()
         {
             var channelName = Guid.NewGuid().ToString().Substring(0, 30);
