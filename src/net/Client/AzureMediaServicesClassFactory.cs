@@ -21,6 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Services.Client;
 using System.Data.Services.Common;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
@@ -263,9 +264,15 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
 
         private Uri CreateAzureMediaServicesEndPoint(Uri azureMediaServicesEndpoint, MediaContextBase mediaContext)
         {
-            var cacheKey = IsAccountCustomHost(azureMediaServicesEndpoint.Host)
-                ? azureMediaServicesEndpoint.ToString()
-                : string.Format("{0},{1}", mediaContext.Credentials.MediaServicesAccountName, azureMediaServicesEndpoint.ToString());
+            var cacheKey = String.Empty;
+            if (IsAccountCustomHost(azureMediaServicesEndpoint.Host))
+            {
+                cacheKey = azureMediaServicesEndpoint.ToString();
+            }
+            else
+            {
+                throw new ArgumentException(String.Format(CultureInfo.InvariantCulture, StringTable.InvalidAzureMediaServicesEndpoint));
+            }
 
             return (_endpointCache.GetOrAdd(
                 cacheKey,

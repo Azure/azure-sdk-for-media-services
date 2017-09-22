@@ -69,26 +69,33 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
         public static string TelemetryStorageAccountName = ConfigurationManager.AppSettings["TelemetryStorageAccountName"];
         public static string TelemetryStorageAccountKey = ConfigurationManager.AppSettings["TelemetryStorageAccountKey"];
         public static string AccountId = ConfigurationManager.AppSettings["AccountId"];
-        
+
+        //AAD related configuration
+        public static string MediaServicesAccountCustomApiServerEndpoint =
+            ConfigurationManager.AppSettings["MediaServicesAccountCustomApiServerEndpoint"];
+
+        public static string ActiveDirectoryEndpoint = ConfigurationManager.AppSettings["ActiveDirectoryEndpoint"];
+        public static string MediaServicesSdkClientId = ConfigurationManager.AppSettings["MediaServicesSdkClientId"];
+        public static string MediaServicesResource = ConfigurationManager.AppSettings["MediaServicesResource"];
+        public static string MediaServicesSdkRedirectUri = ConfigurationManager.AppSettings["MediaServicesSdkRedirectUri"];
+        public static string ClientIdForAdAuth = ConfigurationManager.AppSettings["ClientIdForAdAuth"];
+        public static string ClientSecretForAdAuth = ConfigurationManager.AppSettings["ClientSecretForAdAuth"];
+
+        private static AzureEnvironment GetSelfDefinedEnvironment()
+        {
+            return new AzureEnvironment(
+                new Uri(ActiveDirectoryEndpoint),
+                MediaServicesResource,
+                MediaServicesSdkClientId,
+                new Uri(MediaServicesSdkRedirectUri));
+        }
 
         public static CloudMediaContext CreateCloudMediaContext()
         {
-            // This overload is used for testing purposes
-            // It is recommended to use public CloudMediaContext(MediaServicesCredentials credentials) in your code to avoid code changes if default values will be changed later
-            return new CloudMediaContext(new Uri(MediaServicesUri), new MediaServicesCredentials(MediaServiceAccountName, MediaServiceAccountKey, MediaServicesAccessScope, MediaServicesAcsBaseAddress));
-           
-        }
-
-        public static CloudMediaContext CreateCloudMediaContext(MediaServicesCredentials credentials)
-        {
-            return new CloudMediaContext(new Uri(MediaServicesUri), credentials);
-        }
-
-        public static MediaServicesCredentials CreateMediaServicesCredentials()
-        {
-            // This overload is used for testing purposes
-            // It is recommended to use public MediaServicesCredentials(string accountName, string accountKey) in your code to avoid code changes if default values will be changed later
-            return new MediaServicesCredentials(MediaServiceAccountName, MediaServiceAccountKey, MediaServicesAccessScope, MediaServicesAcsBaseAddress);
+            var environment = GetSelfDefinedEnvironment();
+            var tokenCredentials = new AzureAdTokenCredentials(ConfigurationManager.AppSettings["UserTenant"], new AzureAdClientSymmetricKey(ClientIdForAdAuth, ClientSecretForAdAuth), environment);
+            var tokenProvider = new AzureAdTokenProvider(tokenCredentials);
+            return new CloudMediaContext(new Uri(MediaServicesAccountCustomApiServerEndpoint), tokenProvider);
         }
 
         public static string GetVideoSampleFilePath(TestContext testContext, string filepath)

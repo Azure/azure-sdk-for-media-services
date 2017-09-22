@@ -21,7 +21,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests.Common
 {
     public class TestCloudMediaContext : CloudMediaContext
     {
-        public TestCloudMediaContext(Uri apiServer, MediaServicesCredentials credentials) : base(apiServer, credentials)
+        public TestCloudMediaContext(Uri apiServer, ITokenProvider tokenProvider) : base(apiServer, tokenProvider)
         {
         }
 

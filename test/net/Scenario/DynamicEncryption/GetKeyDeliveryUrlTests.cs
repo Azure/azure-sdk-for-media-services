@@ -520,8 +520,6 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
                 Assert.IsNotNull(keyDeliveryServiceUri);
 
-                Assert.IsTrue(keyDeliveryServiceUri.Host.StartsWith(_mediaContext.Credentials.ClientId));
-
                 KeyDeliveryServiceClient keyClient = new KeyDeliveryServiceClient(RetryPolicy.DefaultFixed);
                 string swtTokenString = TokenRestrictionTemplateSerializer.GenerateTestToken(tokenRestrictionTemplate,
                     tokenRestrictionTemplate.PrimaryVerificationKey, contentKeyId, DateTime.Now.AddDays(2));
