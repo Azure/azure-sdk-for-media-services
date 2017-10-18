@@ -29,7 +29,7 @@ Source in GitHub at https://github.com/WindowsAzure/azure-sdk-for-media-services
       <dependency id="Newtonsoft.Json" version="6.0.8" />
       <dependency id="System.IdentityModel.Tokens.Jwt" version="4.0.2.205111437" />
       <dependency id="Microsoft.IdentityModel.Clients.ActiveDirectory" version="3.13.1" />
-      <dependency id="Microsoft.IdentityModel.Protocol.Extensions" version="1.0.2.205111437"
+      <dependency id="Microsoft.IdentityModel.Protocol.Extensions" version="1.0.2.205111437" />
     </dependencies>
     <references>
       <reference file="Microsoft.WindowsAzure.MediaServices.Client.dll" />
