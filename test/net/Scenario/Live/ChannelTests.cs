@@ -98,6 +98,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                     Output = MakeChannelOutput()
                 });
             Assert.AreEqual(ChannelState.Stopped, channel.State);
+            Assert.AreEqual(true, channel.VanityUrl);
 
             channel.Delete();
             channel = _mediaContext.Channels.Where(c => c.Name == channelName).SingleOrDefault();
@@ -120,10 +121,10 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                     Preview = MakeChannelPreview(),
                     Output = MakeChannelOutput(),
                     State = ChannelState.Running,
-                    VanityUrl = true,
+                    VanityUrl = false,
                 });
             Assert.AreEqual(ChannelState.Running, channel.State);
-            Assert.AreEqual(true, channel.VanityUrl);
+            Assert.AreEqual(false, channel.VanityUrl);
 
             channel.Stop();
             channel.Delete();
