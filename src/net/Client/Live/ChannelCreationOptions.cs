@@ -72,7 +72,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// Gets or sets the channel vanity url property.
         /// </summary>
-        public bool VanityUrl { get; set; }
+        public bool VanityUrl { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the channel slate.
