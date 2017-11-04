@@ -117,7 +117,17 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         ChannelInput IChannel.Input
         {
-            get { return _input; }
+            get
+            {
+                if (!String.IsNullOrWhiteSpace(this.Id))
+                {
+                    IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
+                    dataContext.AttachTo(ChannelBaseCollection.ChannelSet, this);
+                    LoadProperty(dataContext, "Input");
+                }
+
+                return _input;
+            }
             set { _input = value; }
         }
 
@@ -135,7 +145,17 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// </summary>
         ChannelPreview IChannel.Preview
         {
-            get { return _preview; }
+            get
+            {
+                if (!String.IsNullOrWhiteSpace(this.Id))
+                {
+                    IMediaDataServiceContext dataContext = this.GetMediaContext().MediaServicesClassFactory.CreateDataServiceContext();
+                    dataContext.AttachTo(ChannelBaseCollection.ChannelSet, this);
+                    LoadProperty(dataContext, "Preview");
+                }
+
+                return _preview;
+            }
             set { _preview = value; }
         }
 

@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.MediaServices.Client.Telemetry;
 using Microsoft.WindowsAzure.MediaServices.Client.Tests.Common;
@@ -127,6 +128,56 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
             Assert.AreEqual(false, channel.VanityUrl);
 
             channel.Stop();
+            channel.Delete();
+            channel = _mediaContext.Channels.Where(c => c.Name == channelName).SingleOrDefault();
+            Assert.IsNull(channel);
+        }
+
+        [TestMethod]
+        [TestCategory("ClientSDK")]
+        [Owner("ClientSDK")]
+        [Priority(1)]
+        public void ChannelTestDataRefreshAfterStateChange()
+        {
+            var channelName = Guid.NewGuid().ToString().Substring(0, 30);
+
+            IChannel channel = _mediaContext.Channels.Create(
+                new ChannelCreationOptions
+                {
+                    Name = channelName,
+                    Input = MakeChannelInput(),
+                    Preview = MakeChannelPreview(),
+                    Output = MakeChannelOutput(),
+                    VanityUrl = false
+                });
+            Assert.AreEqual(ChannelState.Stopped, channel.State);
+            Assert.AreEqual(false, channel.VanityUrl);
+            Assert.AreEqual(0, channel.Preview.Endpoints.Count);
+            Assert.AreEqual(0, channel.Input.Endpoints.Count);
+
+            // This is a deliberate call to make sure we create a channel object,
+            // we need to test that every object in channel collection get refreshed after querying
+            // specially Preview and Input endpoints
+            channel = _mediaContext.Channels.Where(c => c.Name == channelName).FirstOrDefault();
+
+            var channelStartOperation = channel.SendStartOperation();
+            ReportProgressAndEnsureAsyncOpComplete(channelStartOperation, TimeSpan.FromMinutes(60), "StartChannel");
+            channel = _mediaContext.Channels.Where(x => x.Name.Equals(channelName)).FirstOrDefault();
+            Assert.AreNotEqual(null, channel);
+            Assert.AreEqual(ChannelState.Running, channel.State);
+            Assert.AreEqual(false, channel.VanityUrl);
+            Assert.AreEqual(1, channel.Preview.Endpoints.Count);
+            Assert.AreEqual(1, channel.Input.Endpoints.Count);
+
+            var channelStopOperation = channel.SendStopOperation();
+            ReportProgressAndEnsureAsyncOpComplete(channelStopOperation, TimeSpan.FromMinutes(60), "StopChannel");
+            channel = _mediaContext.Channels.Where(x => x.Name.Equals(channelName)).FirstOrDefault();
+            Assert.AreNotEqual(null, channel);
+            Assert.AreEqual(ChannelState.Stopped, channel.State);
+            Assert.AreEqual(false, channel.VanityUrl);
+            Assert.AreEqual(0, channel.Preview.Endpoints.Count);
+            Assert.AreEqual(0, channel.Input.Endpoints.Count);
+
             channel.Delete();
             channel = _mediaContext.Channels.Where(c => c.Name == channelName).SingleOrDefault();
             Assert.IsNull(channel);
@@ -420,6 +471,43 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
                 Healthy = healthy;
                 Type = "Channel";
                 Name = "ChannelHeartbeat";
+            }
+        }
+
+        private void ReportProgressAndEnsureAsyncOpComplete(IOperation operation, TimeSpan waitTime, string description)
+        {
+            var waitMinutes = 0;
+            var timeout = DateTime.UtcNow + waitTime;
+
+            while (operation.State != OperationState.Succeeded)
+            {
+                if (operation.State != OperationState.InProgress)
+                {
+                    throw new InvalidOperationException(
+                        string.Format(
+                            "Operation failed, operation ID {0}, entity ID {1}, error code {2}, message '{3}'",
+                            operation.Id,
+                            string.IsNullOrEmpty(operation.TargetEntityId) ? "(not set)" : operation.TargetEntityId,
+                            operation.ErrorCode,
+                            operation.ErrorMessage));
+                }
+
+                if (DateTime.UtcNow > timeout)
+                {
+                    throw new TimeoutException("Hit timeout when " + operation + " ");
+                }
+
+                Console.WriteLine(
+                    "Waiting for '{0}' operation to complete, {1} minutes has elapsed, operation ID {2}, entity ID {3}",
+                    description,
+                    waitMinutes,
+                    operation.Id,
+                    string.IsNullOrEmpty(operation.TargetEntityId) ? "(not set)" : operation.TargetEntityId);
+
+                Thread.Sleep(TimeSpan.FromMinutes(1));
+                waitMinutes++;
+
+                operation = _mediaContext.Operations.GetOperation(operation.Id);
             }
         }
 
