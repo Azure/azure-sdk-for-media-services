@@ -44,7 +44,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         [Owner("ClientSDK")]
         public void StreamingEndpointCreate()
         {
-            string testStreamingEndpointName = Guid.NewGuid().ToString().Substring(0, 30);
+            string testStreamingEndpointName = Guid.NewGuid().ToString().Substring(0, 23);
             var actual = _mediaContext.StreamingEndpoints.Create(testStreamingEndpointName, 0);
             Assert.AreEqual(testStreamingEndpointName, actual.Name);
             actual.Delete();

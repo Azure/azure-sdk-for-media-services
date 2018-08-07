@@ -178,6 +178,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [Ignore]    // Media Processor Windows Azure Media Packager deprecated
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [DeploymentItem(@"Configuration\MP4 to Smooth Streams.xml", "Configuration")]

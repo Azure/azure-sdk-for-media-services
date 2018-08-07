@@ -287,6 +287,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [Ignore] // Media Processor Windows Azure Media Encryptor deprecated
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [DeploymentItem(@"Media\Small.ism", "Media")]
@@ -350,6 +351,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [Ignore] // Media Processor Windows Azure Media Encryptor deprecated
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [DeploymentItem(@"Configuration\Smooth Streams to Apple HTTP Live Streams.xml", "Configuration")]
@@ -375,6 +377,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [Ignore] // Media Processor Windows Azure Media Encryptor deprecated
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [DeploymentItem(@"Configuration\Smooth Streams to Apple HTTP Live Streams.xml", "Configuration")]
@@ -405,6 +408,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [Ignore] // Media Processor Windows Azure Media Encryptor deprecated
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [DeploymentItem(@"Configuration\Smooth Streams to Apple HTTP Live Streams.xml", "Configuration")]
@@ -439,6 +443,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [Ignore] // Media Processor Windows Azure Media Encryptor deprecated
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [DeploymentItem(@"Configuration\Smooth Streams to Encrypted Apple HTTP Live Streams.xml", "Configuration")]
@@ -581,7 +586,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
 
             ITask adpativeBitrateTask = job.Tasks.AddNew("MP4 to Adaptive Bitrate Task",
                 encoder,
-                "H264 Adaptive Bitrate MP4 Set 720p",
+                "H264 Multiple Bitrate 720p",
                 TaskOptions.None);
 
             // Specify the input Asset

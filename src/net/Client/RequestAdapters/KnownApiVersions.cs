@@ -46,13 +46,14 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.RequestAdapters
         public static readonly Version Version2_15 = new Version(major: 2, minor: 15);
         public static readonly Version Version2_16 = new Version(major: 2, minor: 16);
         public static readonly Version Version2_17 = new Version(major: 2, minor: 17);
-
+        public static readonly Version Version2_18 = new Version(major: 2, minor: 18);
+        public static readonly Version Version2_19 = new Version(major: 2, minor: 19);
         /// <summary>
         /// Gets the Media Service API version.
         /// </summary>
         public static Version Current
         {
-            get { return Version2_17; }
+            get { return Version2_19; }
         }
     }
 }

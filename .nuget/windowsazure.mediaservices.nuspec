@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>windowsazure.mediaservices</id>
-    <version>4.1.0.1</version>
+    <version>4.2.0.0</version>
     <title>Windows Azure Media Services .NET SDK</title>
     <authors>Microsoft Corporation</authors>
     <owners>Microsoft Corporation</owners>
@@ -10,7 +10,7 @@
     <projectUrl>http://aka.ms/wamsmsdn</projectUrl>
     <iconUrl>http://nimbuspmteam.blob.core.windows.net/nuget/Media Services 150.png</iconUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
-    <description>This package contains Windows Azure Media Service library 4.1.0.1 for .NET.</description>
+    <description>This package contains Windows Azure Media Service library 4.2.0.0 for .NET.</description>
     <releaseNotes>For more information, please check our forum: http://social.msdn.microsoft.com/Forums/en-US/MediaServices/threads
 
 For MSDN documentation please visit http://aka.ms/wamsmsdn
@@ -28,7 +28,7 @@ Source in GitHub at https://github.com/WindowsAzure/azure-sdk-for-media-services
       <dependency id="WindowsAzure.Storage" version="5.0.2.0" />
       <dependency id="Newtonsoft.Json" version="6.0.8" />
       <dependency id="System.IdentityModel.Tokens.Jwt" version="4.0.2.205111437" />
-      <dependency id="Microsoft.IdentityModel.Clients.ActiveDirectory" version="3.13.1" />
+      <dependency id="Microsoft.IdentityModel.Clients.ActiveDirectory" version="3.19.8" />
       <dependency id="Microsoft.IdentityModel.Protocol.Extensions" version="1.0.2.205111437" />
     </dependencies>
     <references>

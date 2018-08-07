@@ -319,6 +319,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Tests
         }
 
         [TestMethod]
+        [Ignore]    // Media Processor Windows Azure Media Encryptor deprecated
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
         [DeploymentItem(@"Configuration\PlayReady Protection.xml", "Configuration")]

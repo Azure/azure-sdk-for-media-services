@@ -34,6 +34,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
         }
 
         [TestMethod]
+        [Ignore]    // RTPMPEG2TS deprecated.
         [Priority(1)]
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
@@ -77,6 +78,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
 
 
         [TestMethod]
+        [Ignore]    // RTPMPEG2TS deprecated.
         [Priority(1)]
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]
@@ -122,6 +124,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client.Live.Tests
         }
 
         [TestMethod]
+        [Ignore]    // RTPMPEG2TS deprecated.
         [Priority(1)]
         [TestCategory("ClientSDK")]
         [Owner("ClientSDK")]

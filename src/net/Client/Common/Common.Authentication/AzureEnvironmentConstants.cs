@@ -46,7 +46,7 @@ namespace Microsoft.WindowsAzure.MediaServices.Client
         /// <summary>
         /// The Active Directory endpoint for Azure US Government environment.
         /// </summary>
-        public static readonly Uri AzureUsGovernmentActiveDirectoryEndpoint = new Uri("https://login-us.microsoftonline.com/");
+        public static readonly Uri AzureUsGovernmentActiveDirectoryEndpoint = new Uri("https://login.microsoftonline.us/");
 
         /// <summary>
         /// The Media Services resource for Azure US Government environment.
