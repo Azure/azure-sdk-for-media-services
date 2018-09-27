@@ -4,8 +4,9 @@
     <id>windowsazure.mediaservices</id>
     <version>4.2.0.0</version>
     <title>Windows Azure Media Services .NET SDK</title>
-    <authors>Microsoft Corporation</authors>
-    <owners>Microsoft Corporation</owners>
+    <authors>Microsoft</authors>
+    <owners>Microsoft</owners>
+	<copyright>© Microsoft Corporation. All rights reserved.</copyright>
     <licenseUrl>http://go.microsoft.com/fwlink/?LinkID=272666&amp;clcid=0x409</licenseUrl>
     <projectUrl>http://aka.ms/wamsmsdn</projectUrl>
     <iconUrl>http://nimbuspmteam.blob.core.windows.net/nuget/Media Services 150.png</iconUrl>
@@ -16,7 +17,6 @@
 For MSDN documentation please visit http://aka.ms/wamsmsdn
 
 Source in GitHub at https://github.com/WindowsAzure/azure-sdk-for-media-services</releaseNotes>
-    <copyright>Copyright 2013 Microsoft Corporation. All Rights Reserved</copyright>
     <language>en-US</language>
     <tags>windowsazureofficial, WindowsAzure, MediaServices, Microsoft,</tags>
     <dependencies>
