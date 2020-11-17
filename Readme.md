@@ -1,4 +1,4 @@
-# Windows Azure Media Services SDK .NET 4.5
+# Windows Azure Media Services SDK .NET 4.5 (REST v2)
 
 
 Windows Azure Media Services allows you to build a media distribution solution that can stream audio and video to Windows, iOS, Android, and other devices and platforms.To learn more, visit our [Developer Center](http://www.windowsazure.com/en-us/develop/media-services/).
