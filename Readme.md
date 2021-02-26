@@ -1,5 +1,5 @@
 
-# This Repository is for the legact v2 API which is now deprecated. Customers should migrate to use the v3 API only.
+# This Repository is for the legacy v2 API which is now deprecated. Customers should migrate to use the v3 API only.
 
 Please use the latest v3 API for .NET. 
 - [Configure the v3 API for .NET](https://docs.microsoft.com/en-us/azure/media-services/latest/configure-connect-dotnet-howto)
